@@ -22,7 +22,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include <curl/curl.h>
-
+#include "gcal.h"
 
 static const char *GCAL_URL = "https://www.google.com/accounts/ClientLogin";
 

@@ -1,0 +1,10 @@
+prefix=@prefix@
+exec_prefix=@exec_prefix@
+libdir=@libdir@
+includedir=@includedir@
+
+Name: libgcal
+Description: Library to access google calendar
+Version: @VERSION@
+Libs: -L${libdir} -lgcal
+Cflags: -I${includedir}
