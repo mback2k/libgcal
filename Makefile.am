@@ -14,6 +14,16 @@ libgcal_la_LIBADD = $(LIBCURL_LIBS)
 
 
 
+# unit tests
+if CHECK
+TESTS = utest
+noinst_PROGRAMS = utest
+utest_SOURCES = $(utestdir)/utest.c
+
+utest_CPPFLAGS = $(CHECK_FLAGS) $(AM_CPPFLAGS) -I$(csourcedir) -I$(headerdir)
+utest_LDADD = $(CHECK_LIBS) $(LDADD) $(lib_LTLIBRARIES)
+endif
+
 
 EXTRA_DIST = $(srcdir)/m4/auxdevel.m4 \
              $(srcdir)/m4/check.m4 \

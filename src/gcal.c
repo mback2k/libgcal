@@ -71,12 +71,3 @@ exit:
 
 }
 
-/* int main(void) */
-/* { */
-
-/* 	int res; */
-/* 	res = gcal_get_authentication("gcal4tester", "66libgcal", NULL); */
-/* 	printf("result = %d\n", res); */
-
-/* 	return 0; */
-/* } */
