@@ -6,7 +6,6 @@
  * @brief  Base file for a gcalendar service access library.
  *
  * \todo:
- * - autotools buildsystem
  * - move the code to a library (with pkg-config support)
  * - write utest to invoque the library
  * - doxygen comments
@@ -63,7 +62,6 @@ int gcal_get_authentication(char *user, char *password, char *auth)
 	}
 
 
-cleanup:
 	curl_easy_cleanup(curl);
 	if (post)
 		free(post);
