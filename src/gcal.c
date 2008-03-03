@@ -6,8 +6,6 @@
  * @brief  Base file for a gcalendar service access library.
  *
  * \todo:
- * - move the code to a library (with pkg-config support)
- * - write utest to invoque the library
  * - doxygen comments
  * - redirect HTTP output to a string buffer (currently it writes out
  * to stdout)
