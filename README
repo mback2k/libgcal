@@ -1,0 +1,22 @@
+libgcal README
+adenilson.silva@indt.org.br
+
+== About ==
+
+   This is library to access google calendar events, its purpose is
+
+   - provide easy access to available events
+
+   - enable common operations on events: add, delete, edit
+
+   - have few dependencies (up until now, only requires libcurl)
+
+
+== Status ==
+
+   Only authentication works.
+
+
+ps: you can format it to HTML running
+
+$txt2tags -t html README
