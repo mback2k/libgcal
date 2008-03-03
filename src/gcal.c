@@ -22,7 +22,7 @@
 #include "gcal.h"
 
 static const char *GCAL_URL = "https://www.google.com/accounts/ClientLogin";
-
+static const int GCAL_DEFAULT_ANSWER = 200;
 
 int gcal_get_authentication(char *user, char *password, char *auth)
 {
@@ -34,6 +34,7 @@ int gcal_get_authentication(char *user, char *password, char *auth)
 	int post_len = 300;
 	char *post = NULL;
 	int result = -1;
+	long request_stat;
 
 	if (!(post = (char *) malloc(post_len)))
 		goto exit;
@@ -48,17 +49,18 @@ int gcal_get_authentication(char *user, char *password, char *auth)
 	/* TODO: we should reuse this structure */
 	curl = curl_easy_init();
 	if (curl) {
-		curl_easy_setopt(curl, CURLOPT_HTTPHEADER,
-				 response_headers);
+		curl_easy_setopt(curl, CURLOPT_HTTPHEADER, response_headers);
 		curl_easy_setopt(curl, CURLOPT_URL, GCAL_URL);
 		curl_easy_setopt(curl, CURLOPT_POSTFIELDS, post);
 
 		res = curl_easy_perform(curl);
-		if (!res)
+		curl_easy_getinfo(curl , CURLINFO_HTTP_CODE, &request_stat);
+		if (!res && (request_stat == GCAL_DEFAULT_ANSWER))
 			result = 0;
+		else
+			fprintf(stderr, "%s\n", curl_easy_strerror(res));
 
 	}
-
 
 	curl_easy_cleanup(curl);
 	if (post)
