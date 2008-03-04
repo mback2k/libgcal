@@ -132,25 +132,20 @@ int gcal_get_authentication(char *user, char *password,
 	response_headers = curl_slist_append(response_headers,
 					     "application/x-www-form-urlencoded"
 					     );
-	curl_easy_setopt(ptr_gcal->curl, CURLOPT_HTTPHEADER,
-			 response_headers);
+	curl_easy_setopt(ptr_gcal->curl, CURLOPT_HTTPHEADER, response_headers);
 	curl_easy_setopt(ptr_gcal->curl, CURLOPT_URL, GCAL_URL);
 	curl_easy_setopt(ptr_gcal->curl, CURLOPT_POSTFIELDS, post);
 	curl_easy_setopt(ptr_gcal->curl, CURLOPT_WRITEFUNCTION, write_cb);
-	curl_easy_setopt(ptr_gcal->curl, CURLOPT_WRITEDATA,
-			 (void *)ptr_gcal);
+	curl_easy_setopt(ptr_gcal->curl, CURLOPT_WRITEDATA, (void *)ptr_gcal);
 
 	res = curl_easy_perform(ptr_gcal->curl);
 
-	curl_easy_getinfo(ptr_gcal->curl, CURLINFO_HTTP_CODE,
-			  &request_stat);
-	if (!res && (request_stat == GCAL_DEFAULT_ANSWER))
-		result = 0;
-	else
-		fprintf(stderr, "%s\n", curl_easy_strerror(res));
-
-	if (post)
-		free(post);
+	curl_easy_getinfo(ptr_gcal->curl, CURLINFO_HTTP_CODE, &request_stat);
+	if (res || (request_stat != GCAL_DEFAULT_ANSWER)) {
+		fprintf(stderr, "%s%s\n", "gcal_get_authentication: "
+			"failed request: ", curl_easy_strerror(res));
+		goto cleanup;
+	}
 
 	/* gcalendar server returns a string like this:
 	 * SID=value\n
@@ -165,9 +160,18 @@ int gcal_get_authentication(char *user, char *password,
 	while ((ptr = strchr(ptr, HEADER_BREAK))) {
 		++count;
 		++ptr;
-		if (count == 2)
-			ptr_gcal->auth = strdup(ptr + sizeof("Auth=") - 1);
+		if (count == 2) {
+			ptr_gcal->auth = strdup(ptr + sizeof("uth=") - 1);
+			if (!ptr_gcal->auth)
+				goto cleanup;
+		}
+
 	}
+
+	result = 0;
+
+cleanup:
+	free(post);
 
 exit:
 	return result;

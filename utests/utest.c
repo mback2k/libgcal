@@ -37,8 +37,9 @@ START_TEST (test_gcal_authenticate)
 
 	int result;
 	result = gcal_get_authentication("gcal4tester", "66libgcal", ptr_gcal);
-	fail_if(result != 0, "Failed authentication");
-
+	fail_if(result != 0, "Authentication should work");
+	result = gcal_get_authentication("gcal4tester", "fail_fail", ptr_gcal);
+	fail_if(result == 0, "Authentication must fail");
 
 }
 END_TEST
