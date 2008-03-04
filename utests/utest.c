@@ -1,3 +1,14 @@
+/**
+ * @file   utest.c
+ * @author teste
+ * @date   Mon Mar  3 20:14:13 2008
+ *
+ * @brief  Unit test module.
+ *
+ * All units goes here (they are useful to help refine the API of library
+ * and also provide a way to validate/document the code).
+ *
+ */
 #ifdef HAVE_CONFIG_H
 #include "config.h"
 #endif

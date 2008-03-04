@@ -12,6 +12,7 @@
  * - write methods to access gcalendar events
  * - think a way to securely store passwords
  * - more utests
+ * - should we use a logging of some sort?
  */
 
 
