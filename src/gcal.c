@@ -27,10 +27,16 @@ static const char PASSWD_FIELD[] = "Passwd=";
 static const char TRAILING_FIELD[] = "service=cl&source=libgcal";
 
 
+/** Library structure. It holds resources (curl, buffer, etc).
+ */
 struct gcal_resource {
-
+	/** Memory buffer */
 	char *buffer;
+	/** Its length */
 	size_t length;
+	/** gcalendar authorization */
+	char *auth;
+	/** curl data structure */
 	CURL *curl;
 };
 
