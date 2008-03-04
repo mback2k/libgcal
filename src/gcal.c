@@ -6,7 +6,6 @@
  * @brief  Base file for a gcalendar service access library.
  *
  * \todo:
- * - doxygen comments
  * - redirect HTTP output to a string buffer (currently it writes out
  * to stdout)
  * - write methods to access gcalendar events
