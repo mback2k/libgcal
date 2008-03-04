@@ -142,8 +142,10 @@ int gcal_get_authentication(char *user, char *password,
 
 	curl_easy_getinfo(ptr_gcal->curl, CURLINFO_HTTP_CODE, &request_stat);
 	if (res || (request_stat != GCAL_DEFAULT_ANSWER)) {
-		fprintf(stderr, "%s%s\n", "gcal_get_authentication: "
-			"failed request: ", curl_easy_strerror(res));
+		fprintf(stderr, "%s\n%s%s\n%s%d\n",
+			"gcal_get_authentication: failed request.",
+			"Curl code: ", curl_easy_strerror(res),
+			"HTTP code: ", (int)request_stat);
 		goto cleanup;
 	}
 
