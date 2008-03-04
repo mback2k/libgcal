@@ -25,7 +25,7 @@ static const char EMAIL_FIELD[] = "Email=";
 static const char EMAIL_ADDRESS[] = "@gmail.com";
 static const char PASSWD_FIELD[] = "Passwd=";
 static const char TRAILING_FIELD[] = "service=cl&source=libgcal";
-
+static const char HEADER_BREAK = '\n';
 
 /** Library structure. It holds resources (curl, buffer, etc).
  */
@@ -50,6 +50,7 @@ struct gcal_resource *gcal_initialize(void)
 		goto exit;
 	}
 
+	ptr->auth = NULL;
 	ptr->length = 256;
 	ptr->buffer = (char *) calloc(ptr->length, sizeof(char));
 	ptr->curl = curl_easy_init();
@@ -71,6 +72,8 @@ void gcal_destroy(struct gcal_resource *gcal_obj)
 		free(gcal_obj->buffer);
 	if (gcal_obj->curl)
 		curl_easy_cleanup(gcal_obj->curl);
+	if (gcal_obj->auth)
+		free(gcal_obj->auth);
 
 }
 
@@ -111,6 +114,8 @@ int gcal_get_authentication(char *user, char *password,
 	char *post = NULL;
 	int result = -1;
 	long request_stat;
+	int count = 0;
+	char *ptr = NULL;
 
 	post_len = strlen(user) + strlen(password) +
 		sizeof(EMAIL_FIELD) + sizeof(EMAIL_ADDRESS) +
@@ -147,9 +152,22 @@ int gcal_get_authentication(char *user, char *password,
 	if (post)
 		free(post);
 
-	/* TODO: parse the returned string in ptr_gcal->buffer and store
-	 *  only the 'Auth' field.
+	/* gcalendar server returns a string like this:
+	 * SID=value\n
+	 * LSID=value\n
+	 * Auth=value\n
+	 * and we only need the authorization token to login later.
+	 * TODO: treat error if 'strdup' fails.
 	 */
+	if (ptr_gcal->auth)
+		free(ptr_gcal->auth);
+	ptr = ptr_gcal->buffer;
+	while ((ptr = strchr(ptr, HEADER_BREAK))) {
+		++count;
+		++ptr;
+		if (count == 2)
+			ptr_gcal->auth = strdup(ptr + sizeof("Auth=") - 1);
+	}
 
 exit:
 	return result;
