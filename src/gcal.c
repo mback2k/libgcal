@@ -6,8 +6,6 @@
  * @brief  Base file for a gcalendar service access library.
  *
  * \todo:
- * - redirect HTTP output to a string buffer (currently it writes out
- * to stdout)
  * - write methods to access gcalendar events
  * - think a way to securely store passwords
  * - more utests
@@ -32,7 +30,7 @@ static const char TRAILING_FIELD[] = "service=cl&source=libgcal";
 struct gcal_resource {
 
 	char *buffer;
-	int length;
+	size_t length;
 	CURL *curl;
 };
 
@@ -47,7 +45,7 @@ struct gcal_resource *gcal_initialize(void)
 	}
 
 	ptr->length = 256;
-	ptr->buffer = (char *) malloc(ptr->length);
+	ptr->buffer = (char *) calloc(ptr->length, sizeof(char));
 	ptr->curl = curl_easy_init();
 
 	if (!(ptr->buffer) || (!(ptr->curl))) {
@@ -70,6 +68,33 @@ void gcal_destroy(struct gcal_resource *gcal_obj)
 
 }
 
+
+static size_t write_cb(void *ptr, size_t count, size_t chunk_size, void *data)
+{
+
+	size_t size = count * chunk_size;
+	struct gcal_resource *gcal_ptr = (struct gcal_resource *) data;
+
+	if (size > gcal_ptr->length) {
+		/* TODO: I think this maybe can go to a distinct function
+		 * if we are going to it in several points in the code
+		 */
+		free(gcal_ptr->buffer);
+		gcal_ptr->length = size + 1;
+		gcal_ptr->buffer = (char *) malloc(gcal_ptr->length);
+
+		if (!gcal_ptr->buffer) {
+			fprintf(stderr, "write_cb: Failed relloc\n");
+			goto exit;
+		}
+
+	}
+
+	strncpy(gcal_ptr->buffer, (char *)ptr, gcal_ptr->length);
+
+exit:
+	return size;
+}
 
 int gcal_get_authentication(char *user, char *password,
 			    struct gcal_resource *ptr_gcal)
@@ -96,11 +121,13 @@ int gcal_get_authentication(char *user, char *password,
 	response_headers = curl_slist_append(response_headers,
 					     "application/x-www-form-urlencoded"
 					     );
-
 	curl_easy_setopt(ptr_gcal->curl, CURLOPT_HTTPHEADER,
 			 response_headers);
 	curl_easy_setopt(ptr_gcal->curl, CURLOPT_URL, GCAL_URL);
 	curl_easy_setopt(ptr_gcal->curl, CURLOPT_POSTFIELDS, post);
+	curl_easy_setopt(ptr_gcal->curl, CURLOPT_WRITEFUNCTION, write_cb);
+	curl_easy_setopt(ptr_gcal->curl, CURLOPT_WRITEDATA,
+			 (void *)ptr_gcal);
 
 	res = curl_easy_perform(ptr_gcal->curl);
 
@@ -113,6 +140,10 @@ int gcal_get_authentication(char *user, char *password,
 
 	if (post)
 		free(post);
+
+	/* TODO: parse the returned string in ptr_gcal->buffer and store
+	 *  only the 'Auth' field.
+	 */
 
 exit:
 	return result;
