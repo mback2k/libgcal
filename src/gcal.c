@@ -1,6 +1,6 @@
 /**
  * @file   gcal.c
- * @author teste
+ * @author Adenilson Cavalcanti da Silva <adenilson.silva@indt.org.br>
  * @date   Mon Mar  3 12:32:11 2008
  *
  * @brief  Base file for a gcalendar service access library.
@@ -10,8 +10,8 @@
  * - redirect HTTP output to a string buffer (currently it writes out
  * to stdout)
  * - write methods to access gcalendar events
- * - reuse the CURL structure (maybe a structure to hold resources?)
  * - think a way to securely store passwords
+ * - more utests
  */
 
 
