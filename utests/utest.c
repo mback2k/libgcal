@@ -6,14 +6,18 @@
 #include <stdlib.h>
 #include "gcal.h"
 
+struct gcal_resource *ptr_gcal = NULL;
+
 static void setup(void)
 {
 	/* here goes any common data allocation */
+	ptr_gcal = gcal_initialize();
 }
 
 static void teardown(void)
 {
 	/* and here we clean up */
+	gcal_destroy(ptr_gcal);
 }
 
 
@@ -21,8 +25,9 @@ START_TEST (test_gcal_authenticate)
 {
 
 	int result;
-	result = gcal_get_authentication("gcal4tester", "66libgcal", NULL);
+	result = gcal_get_authentication("gcal4tester", "66libgcal", ptr_gcal);
 	fail_if(result != 0, "Failed authentication");
+
 
 }
 END_TEST

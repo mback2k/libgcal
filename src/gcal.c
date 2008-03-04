@@ -24,14 +24,54 @@
 static const char *GCAL_URL = "https://www.google.com/accounts/ClientLogin";
 static const int GCAL_DEFAULT_ANSWER = 200;
 
-int gcal_get_authentication(char *user, char *password, char *auth)
+struct gcal_resource {
+
+	char *buffer;
+	int length;
+	CURL *curl;
+};
+
+struct gcal_resource *gcal_initialize(void)
 {
 
-	CURL *curl;
+	struct gcal_resource *ptr;
+	ptr = (struct gcal_resource *) malloc(sizeof(struct gcal_resource));
+	if (!ptr) {
+		fprintf(stderr, "%s\n", "gcal_initialize: failed malloc\n");
+		goto exit;
+	}
+
+	ptr->length = 256;
+	ptr->buffer = (char *) malloc(ptr->length);
+	ptr->curl = curl_easy_init();
+
+	if (!(ptr->buffer) || (!(ptr->curl))) {
+		gcal_destroy(ptr);
+		ptr = NULL;
+	}
+
+exit:
+	return ptr;
+}
+
+
+void gcal_destroy(struct gcal_resource *gcal_obj)
+{
+
+	if (gcal_obj->buffer)
+		free(gcal_obj->buffer);
+	if (gcal_obj->curl)
+		curl_easy_cleanup(gcal_obj->curl);
+
+}
+
+int gcal_get_authentication(char *user, char *password,
+			    struct gcal_resource *ptr_gcal)
+{
 	CURLcode res;
 	struct curl_slist *response_headers = NULL;
 	/* FIXME: calculate size considering user + password */
-	int post_len = 300;
+	int post_len = 256;
 	char *post = NULL;
 	int result = -1;
 	long request_stat;
@@ -46,23 +86,21 @@ int gcal_get_authentication(char *user, char *password, char *auth)
 	response_headers = curl_slist_append(response_headers,
 					     "application/x-www-form-urlencoded"
 					     );
-	/* TODO: we should reuse this structure */
-	curl = curl_easy_init();
-	if (curl) {
-		curl_easy_setopt(curl, CURLOPT_HTTPHEADER, response_headers);
-		curl_easy_setopt(curl, CURLOPT_URL, GCAL_URL);
-		curl_easy_setopt(curl, CURLOPT_POSTFIELDS, post);
 
-		res = curl_easy_perform(curl);
-		curl_easy_getinfo(curl , CURLINFO_HTTP_CODE, &request_stat);
-		if (!res && (request_stat == GCAL_DEFAULT_ANSWER))
-			result = 0;
-		else
-			fprintf(stderr, "%s\n", curl_easy_strerror(res));
+	curl_easy_setopt(ptr_gcal->curl, CURLOPT_HTTPHEADER,
+			 response_headers);
+	curl_easy_setopt(ptr_gcal->curl, CURLOPT_URL, GCAL_URL);
+	curl_easy_setopt(ptr_gcal->curl, CURLOPT_POSTFIELDS, post);
 
-	}
+	res = curl_easy_perform(ptr_gcal->curl);
 
-	curl_easy_cleanup(curl);
+	curl_easy_getinfo(ptr_gcal->curl, CURLINFO_HTTP_CODE,
+			  &request_stat);
+	if (!res && (request_stat == GCAL_DEFAULT_ANSWER))
+		result = 0;
+	else
+		fprintf(stderr, "%s\n", curl_easy_strerror(res));
+
 	if (post)
 		free(post);
 
