@@ -21,8 +21,13 @@
 #include <curl/curl.h>
 #include "gcal.h"
 
-static const char *GCAL_URL = "https://www.google.com/accounts/ClientLogin";
+static const char GCAL_URL[] = "https://www.google.com/accounts/ClientLogin";
 static const int GCAL_DEFAULT_ANSWER = 200;
+static const char EMAIL_FIELD[] = "Email=";
+static const char EMAIL_ADDRESS[] = "@gmail.com";
+static const char PASSWD_FIELD[] = "Passwd=";
+static const char TRAILING_FIELD[] = "service=cl&source=libgcal";
+
 
 struct gcal_resource {
 
@@ -65,22 +70,27 @@ void gcal_destroy(struct gcal_resource *gcal_obj)
 
 }
 
+
 int gcal_get_authentication(char *user, char *password,
 			    struct gcal_resource *ptr_gcal)
 {
 	CURLcode res;
 	struct curl_slist *response_headers = NULL;
-	/* FIXME: calculate size considering user + password */
-	int post_len = 256;
+	int post_len = 0;
 	char *post = NULL;
 	int result = -1;
 	long request_stat;
 
+	post_len = strlen(user) + strlen(password) +
+		sizeof(EMAIL_FIELD) + sizeof(EMAIL_ADDRESS) +
+		sizeof(PASSWD_FIELD) + sizeof(TRAILING_FIELD);
+
 	if (!(post = (char *) malloc(post_len)))
 		goto exit;
 
-	snprintf(post, post_len - 1, "Email=%s@gmail.com&Passwd=%s&"
-		 "service=cl&source=libgcal", user, password);
+	snprintf(post, post_len - 1, "%s%s%s&%s%s&%s",
+		 EMAIL_FIELD, user, EMAIL_ADDRESS,
+		 PASSWD_FIELD, password, TRAILING_FIELD);
 
 
 	response_headers = curl_slist_append(response_headers,
