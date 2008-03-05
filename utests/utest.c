@@ -44,6 +44,19 @@ START_TEST (test_gcal_authenticate)
 }
 END_TEST
 
+START_TEST (test_gcal_dump)
+{
+	int result;
+	result = gcal_get_authentication("gcal4tester", "66libgcal", ptr_gcal);
+	if (result)
+		fail_if(1, "Authentication should work");
+
+	result = gcal_dump(ptr_gcal);
+	fail_if(result != 0, "Failed dumping events");
+
+}
+END_TEST
+
 TCase *gcal_tcase_create(void)
 {
 	TCase *tc = NULL;
@@ -52,6 +65,7 @@ TCase *gcal_tcase_create(void)
 	tcase_add_checked_fixture(tc, setup, teardown);
 	tcase_set_timeout (tc, timeout_seconds);
 	tcase_add_test(tc, test_gcal_authenticate);
+	tcase_add_test(tc, test_gcal_dump);
 
 	return tc;
 }

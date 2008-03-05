@@ -39,4 +39,16 @@ int gcal_get_authentication(char *user, char *password,
 			    struct gcal_resource *ptr_gcal);
 
 
+/** Dumps all events to internal buffer.
+ *
+ *
+ * @param ptr_gcal Pointer to a \ref gcal_resource structure, which has
+ *                 previously got the authentication using
+ *                 \ref gcal_get_authentication.
+ *
+ * @return Returns 0 on success, -1 otherwise.
+ */
+int gcal_dump(struct gcal_resource *ptr_gcal);
+
+
 #endif

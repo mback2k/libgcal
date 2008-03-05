@@ -180,3 +180,8 @@ exit:
 
 }
 
+int gcal_dump(struct gcal_resource *ptr_gcal __attribute__((unused)))
+{
+	/* TODO: write the code. */
+	return -1;
+}
