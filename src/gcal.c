@@ -20,12 +20,16 @@
 #include "gcal.h"
 
 static const char GCAL_URL[] = "https://www.google.com/accounts/ClientLogin";
+static const char GCAL_EVENTS[] = "http://www.google.com/calendar/feeds/default"
+	"/owncalendars/full";
 static const int GCAL_DEFAULT_ANSWER = 200;
+static const int GCAL_EVENT_ANSWER = 302;
 static const char EMAIL_FIELD[] = "Email=";
 static const char EMAIL_ADDRESS[] = "@gmail.com";
 static const char PASSWD_FIELD[] = "Passwd=";
 static const char TRAILING_FIELD[] = "service=cl&source=libgcal";
 static const char HEADER_BREAK = '\n';
+static const char HEADER_GET[] = "Authorization: GoogleLogin auth=";
 
 /** Library structure. It holds resources (curl, buffer, etc).
  */
@@ -154,7 +158,7 @@ int gcal_get_authentication(char *user, char *password,
 	 * LSID=value\n
 	 * Auth=value\n
 	 * and we only need the authorization token to login later.
-	 * TODO: treat error if 'strdup' fails.
+	 * TODO: move this to a distinct function and write utests.
 	 */
 	if (ptr_gcal->auth)
 		free(ptr_gcal->auth);
@@ -163,7 +167,7 @@ int gcal_get_authentication(char *user, char *password,
 		++count;
 		++ptr;
 		if (count == 2) {
-			ptr_gcal->auth = strdup(ptr + sizeof("uth=") - 1);
+			ptr_gcal->auth = strdup(ptr + sizeof("Auth"));
 			if (!ptr_gcal->auth)
 				goto cleanup;
 		}
@@ -180,8 +184,50 @@ exit:
 
 }
 
-int gcal_dump(struct gcal_resource *ptr_gcal __attribute__((unused)))
+/* TODO: treat the received stream */
+static size_t test_cb(void *ptr, size_t count, size_t chunk_size, void *data)
 {
-	/* TODO: write the code. */
-	return -1;
+	size_t size = count * chunk_size;
+	(void) ptr;
+	(void) data;
+	//printf("\n%s\n", (char *)ptr);
+	return size;
+}
+
+int gcal_dump(struct gcal_resource *ptr_gcal)
+{
+	struct curl_slist *response_headers = NULL;
+	int length = 0;
+	int result = -1;
+	long request_stat;
+	char *tmp_buffer = NULL;
+
+	length = strlen(ptr_gcal->auth) + sizeof(HEADER_GET) + 1;
+	tmp_buffer = (char *) malloc(length);
+	if (!tmp_buffer)
+		goto exit;
+	snprintf(tmp_buffer, length - 1, "%s%s", HEADER_GET, ptr_gcal->auth);
+
+	response_headers = curl_slist_append(response_headers, tmp_buffer);
+
+	curl_easy_setopt(ptr_gcal->curl, CURLOPT_HTTPGET, 1);
+	curl_easy_setopt(ptr_gcal->curl, CURLOPT_HTTPHEADER, response_headers);
+	curl_easy_setopt(ptr_gcal->curl, CURLOPT_URL, GCAL_EVENTS);
+	curl_easy_setopt(ptr_gcal->curl, CURLOPT_WRITEFUNCTION, test_cb);
+	curl_easy_setopt(ptr_gcal->curl, CURLOPT_WRITEDATA, (void *)NULL);
+
+	result = curl_easy_perform(ptr_gcal->curl);
+	curl_easy_getinfo(ptr_gcal->curl, CURLINFO_HTTP_CODE, &request_stat);
+	if (result || (request_stat != GCAL_EVENT_ANSWER)) {
+		result = -1;
+		goto cleanup;
+	}
+
+	/* TODO: add code here to follow redirection and get the Atom feed */
+
+cleanup:
+
+	free(tmp_buffer);
+exit:
+	return result;
 }
