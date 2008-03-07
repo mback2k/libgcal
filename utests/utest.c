@@ -15,6 +15,7 @@
 
 #include <check.h>
 #include <stdlib.h>
+#include <string.h>
 #include "gcal.h"
 
 struct gcal_resource *ptr_gcal = NULL;
@@ -44,6 +45,31 @@ START_TEST (test_gcal_authenticate)
 }
 END_TEST
 
+START_TEST (test_url_parse)
+{
+	char value_url[] = "http://www.google.com/calendar/feeds/default"
+		"/owncalendars/full?gsessionid=3ymuQGgqKY1Qz8mk5qUJrw";
+	char *url;
+
+	char raw_data[] = "<HTML>\n"
+		"<HEAD>\n"
+		"<TITLE>Moved Temporarily</TITLE>\n"
+		"</HEAD>\n"
+		"<BODY BGCOLOR=\"#FFFFFF\" TEXT=\"#000000\">\n"
+		"<H1>Moved Temporarily</H1>\n"
+		"The document has moved"
+		"<A HREF=\"http://www.google.com/calendar/feeds/default/owncalendars/full?gsessionid=3ymuQGgqKY1Qz8mk5qUJrw\">here</A>.\n"
+		"</BODY>\n"
+		"</HTML>\n";
+
+	get_the_url(raw_data, sizeof(raw_data), &url);
+	fail_if(url == NULL, "Function failed to get the URL");
+	fail_if(strncmp(value_url, url, sizeof(value_url)) != 0,
+			"Returned url is wrong");
+
+}
+END_TEST
+
 START_TEST (test_gcal_dump)
 {
 	int result;
@@ -65,6 +91,7 @@ TCase *gcal_tcase_create(void)
 	tcase_add_checked_fixture(tc, setup, teardown);
 	tcase_set_timeout (tc, timeout_seconds);
 	tcase_add_test(tc, test_gcal_authenticate);
+	tcase_add_test(tc, test_url_parse);
 	tcase_add_test(tc, test_gcal_dump);
 
 	return tc;

@@ -184,6 +184,13 @@ exit:
 
 }
 
+void get_the_url(char *data, int length, char **url)
+{
+	(void)data;
+	(void)length;
+	*url = NULL;
+}
+
 /* TODO: treat the received stream */
 static size_t test_cb(void *ptr, size_t count, size_t chunk_size, void *data)
 {

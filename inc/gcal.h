@@ -39,6 +39,19 @@ int gcal_get_authentication(char *user, char *password,
 			    struct gcal_resource *ptr_gcal);
 
 
+/** Parses the returned HTML page and extracts the redirection URL
+ * that has the Atom feed.
+ *
+ * @param data Raw data (the HTML page).
+ * @param length Data buffer length.
+ * @param url Pointer to the pointer (ouch!) that will receive the URL
+ * (you should cleanup its memory). It will point to NULL if there is
+ * not a URL in the raw data buffer.
+ *
+ */
+void get_the_url(char *data, int length, char **url);
+
+
 /** Dumps all events to internal buffer.
  *
  *
