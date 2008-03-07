@@ -45,6 +45,8 @@ struct gcal_resource {
 	char *auth;
 	/** curl data structure */
 	CURL *curl;
+	/** Atom feed URL */
+	char *url;
 };
 
 struct gcal_resource *gcal_initialize(void)
@@ -57,6 +59,7 @@ struct gcal_resource *gcal_initialize(void)
 		goto exit;
 	}
 
+	ptr->url = NULL;
 	ptr->auth = NULL;
 	ptr->length = 256;
 	ptr->buffer = (char *) calloc(ptr->length, sizeof(char));
@@ -71,6 +74,10 @@ exit:
 	return ptr;
 }
 
+static void clean_buffer(struct gcal_resource *gcal_obj)
+{
+	memset(gcal_obj->buffer, 0, gcal_obj->length);
+}
 
 void gcal_destroy(struct gcal_resource *gcal_obj)
 {
@@ -81,6 +88,8 @@ void gcal_destroy(struct gcal_resource *gcal_obj)
 		curl_easy_cleanup(gcal_obj->curl);
 	if (gcal_obj->auth)
 		free(gcal_obj->auth);
+	if (gcal_obj->url)
+		free(gcal_obj->url);
 
 }
 
@@ -128,6 +137,8 @@ int gcal_get_authentication(char *user, char *password,
 	long request_stat;
 	int count = 0;
 	char *ptr = NULL;
+
+	clean_buffer(ptr_gcal);
 
 	post_len = strlen(user) + strlen(password) +
 		sizeof(EMAIL_FIELD) + sizeof(EMAIL_ADDRESS) +
@@ -250,6 +261,8 @@ int gcal_dump(struct gcal_resource *ptr_gcal)
 	long request_stat;
 	char *tmp_buffer = NULL;
 
+	clean_buffer(ptr_gcal);
+
 	length = strlen(ptr_gcal->auth) + sizeof(HEADER_GET) + 1;
 	tmp_buffer = (char *) malloc(length);
 	if (!tmp_buffer)
@@ -272,6 +285,8 @@ int gcal_dump(struct gcal_resource *ptr_gcal)
 	}
 
 	/* TODO: add code here to follow redirection and get the Atom feed */
+	get_the_url(ptr_gcal->buffer, ptr_gcal->length, &ptr_gcal->url);
+	//printf("the url is\n%s\n", ptr_gcal->url);
 
 cleanup:
 
