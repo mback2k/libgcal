@@ -12,9 +12,9 @@
  * - should we use a logging of some sort?
  */
 
-
-#include <stdio.h>
+#define _GNU_SOURCE
 #include <string.h>
+#include <stdio.h>
 #include <stdlib.h>
 #include <curl/curl.h>
 #include <libxml/parser.h>
@@ -91,22 +91,27 @@ static size_t write_cb(void *ptr, size_t count, size_t chunk_size, void *data)
 	size_t size = count * chunk_size;
 	struct gcal_resource *gcal_ptr = (struct gcal_resource *) data;
 
-	if (size > gcal_ptr->length) {
-		/* TODO: I think this maybe can go to a distinct function
-		 * if we are going to it in several points in the code
-		 */
-		free(gcal_ptr->buffer);
-		gcal_ptr->length = size + 1;
-		gcal_ptr->buffer = (char *) malloc(gcal_ptr->length);
+	if (size > (gcal_ptr->length -
+		    strnlen(gcal_ptr->buffer, gcal_ptr->length) - 1)) {
+		    gcal_ptr->length += size + 1;
+		    /* FIXME: is it save to continue reallocing more memory?
+		     * what happens if the gcalendar list is *really* big?
+		     * how big can it be? Maybe I should use another write
+		     * callback
+		     * when requesting the Atom feed (one that will treat the
+		     * the stream as its being read and not store it in memory).
+		     */
+		    gcal_ptr->buffer = realloc(gcal_ptr->buffer,
+					       gcal_ptr->length);
 
-		if (!gcal_ptr->buffer) {
-			fprintf(stderr, "write_cb: Failed relloc\n");
-			goto exit;
-		}
+		    if (!gcal_ptr->buffer) {
+			    fprintf(stderr, "write_cb: Failed relloc\n");
+			    goto exit;
+		    }
 
 	}
 
-	strncpy(gcal_ptr->buffer, (char *)ptr, gcal_ptr->length);
+	strncat(gcal_ptr->buffer, (char *)ptr, gcal_ptr->length);
 
 exit:
 	return size;
@@ -237,16 +242,6 @@ exit:
 	return;
 }
 
-/* TODO: treat the received stream */
-static size_t test_cb(void *ptr, size_t count, size_t chunk_size, void *data)
-{
-	size_t size = count * chunk_size;
-	(void) ptr;
-	(void) data;
-	//printf("\n%s\n", (char *)ptr);
-	return size;
-}
-
 int gcal_dump(struct gcal_resource *ptr_gcal)
 {
 	struct curl_slist *response_headers = NULL;
@@ -266,8 +261,8 @@ int gcal_dump(struct gcal_resource *ptr_gcal)
 	curl_easy_setopt(ptr_gcal->curl, CURLOPT_HTTPGET, 1);
 	curl_easy_setopt(ptr_gcal->curl, CURLOPT_HTTPHEADER, response_headers);
 	curl_easy_setopt(ptr_gcal->curl, CURLOPT_URL, GCAL_EVENTS);
-	curl_easy_setopt(ptr_gcal->curl, CURLOPT_WRITEFUNCTION, test_cb);
-	curl_easy_setopt(ptr_gcal->curl, CURLOPT_WRITEDATA, (void *)NULL);
+	curl_easy_setopt(ptr_gcal->curl, CURLOPT_WRITEFUNCTION, write_cb);
+	curl_easy_setopt(ptr_gcal->curl, CURLOPT_WRITEDATA, (void *)ptr_gcal);
 
 	result = curl_easy_perform(ptr_gcal->curl);
 	curl_easy_getinfo(ptr_gcal->curl, CURLINFO_HTTP_CODE, &request_stat);
