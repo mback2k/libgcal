@@ -9,8 +9,8 @@ lib_LTLIBRARIES = libgcal.la
 include_HEADERS = $(headerdir)/gcal.h
 libgcal_la_SOURCES = $(csourcedir)/gcal.c
 libgcal_la_CPPFLAGS = -I$(headerdir)
-libgcal_la_CFLAGS = $(AM_CFLAGS) $(LIBCURL_CFLAGS)
-libgcal_la_LIBADD = $(LIBCURL_LIBS)
+libgcal_la_CFLAGS = $(AM_CFLAGS) $(LIBCURL_CFLAGS) $(LIBXML_CFLAGS)
+libgcal_la_LIBADD = $(LIBCURL_LIBS) $(LIBXML_LIBS)
 
 
 

@@ -17,6 +17,9 @@
 #include <string.h>
 #include <stdlib.h>
 #include <curl/curl.h>
+#include <libxml/parser.h>
+#include <libxml/tree.h>
+
 #include "gcal.h"
 
 static const char GCAL_URL[] = "https://www.google.com/accounts/ClientLogin";
@@ -184,11 +187,54 @@ exit:
 
 }
 
+/* REMARK: this function is recursive, I'm not completely sure if this
+ * is a good idea (i.e. for small devices).
+ */
+static char *get(xmlNode *a_node)
+{
+	xmlNode *cur_node = NULL;
+	char *result = NULL;
+	xmlChar *uri = NULL;
+
+	for (cur_node = a_node; cur_node; cur_node = cur_node->next) {
+		if (xmlHasProp(cur_node, "HREF")) {
+			uri = xmlGetProp(cur_node, "HREF");
+			if (uri) {
+				result = strdup(uri);
+				xmlFree(uri);
+				goto exit;
+			}
+
+		}
+
+		result = get(cur_node->children);
+		if (result)
+			goto exit;
+	}
+
+exit:
+	return result;
+
+}
+
 void get_the_url(char *data, int length, char **url)
 {
-	(void)data;
-	(void)length;
+	xmlDoc *doc = NULL;
+	xmlNode *root_element = NULL;
+
 	*url = NULL;
+	doc = xmlReadMemory(data, length, "noname.xml", NULL, 0);
+	if (!doc)
+		goto exit;
+
+	root_element = xmlDocGetRootElement(doc);
+	*url = get(root_element);
+
+	xmlFreeDoc(doc);
+	xmlCleanupParser();
+
+exit:
+	return;
 }
 
 /* TODO: treat the received stream */

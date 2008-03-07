@@ -42,6 +42,9 @@ int gcal_get_authentication(char *user, char *password,
 /** Parses the returned HTML page and extracts the redirection URL
  * that has the Atom feed.
  *
+ * \todo Save the xmlDoc structure for future reuse (maybe within
+ * structure \ref gcal_resource).
+ *
  * @param data Raw data (the HTML page).
  * @param length Data buffer length.
  * @param url Pointer to the pointer (ouch!) that will receive the URL

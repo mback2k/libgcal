@@ -56,6 +56,12 @@ AC_SUBST(LIBCURL_CFLAGS)
 AC_SUBST(LIBCURL_LIBS)
 
 
+PKG_CHECK_MODULES(LIBXML, libxml-2.0,, \
+	AC_MSG_ERROR("*** libxml2 not found! You need it to build $PACKAGE_NAME. ***"))
+AC_SUBST(LIBXML_CFLAGS)
+AC_SUBST(LIBXML_LIBS)
+
+
 # enable configure options and automake conditionals useful for developers
 # look at m4/auxdevel.m4 for detailed documentation
 AC_SUBST(csourcedir, $srcdir/src)
@@ -78,8 +84,8 @@ $PACKAGE_NAME $PACKAGE_VERSION configuration:
   Source code location:       ${srcdir}
   Host System Type:           ${host}
   Compiler:                   ${CC}
-  Standard CFLAGS:            ${CFLAGS} ${ac_devel_default_warnings} ${LIBCURL_CFLAGS}
-  Libraries:                  ${LIBCURL_LIBS}
+  Standard CFLAGS:            ${CFLAGS} ${ac_devel_default_warnings} ${LIBCURL_CFLAGS} ${LIBXML_CFLAGS}
+  Libraries:                  ${LIBCURL_LIBS} ${LIBXML_LIBS}
   Install path (prefix):      ${prefix}
 
 
