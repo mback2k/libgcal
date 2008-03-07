@@ -51,8 +51,9 @@ int gcal_get_authentication(char *user, char *password,
  * (you should cleanup its memory). It will point to NULL if there is
  * not a URL in the raw data buffer.
  *
+ * @return Returns 0 on success, -1 otherwise.
  */
-void get_the_url(char *data, int length, char **url);
+int get_the_url(char *data, int length, char **url);
 
 
 /** Dumps all events to internal buffer.

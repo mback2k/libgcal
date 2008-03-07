@@ -138,6 +138,7 @@ int gcal_get_authentication(char *user, char *password,
 	int count = 0;
 	char *ptr = NULL;
 
+	/* Must cleanup HTTP buffer between requests */
 	clean_buffer(ptr_gcal);
 
 	post_len = strlen(user) + strlen(password) +
@@ -233,10 +234,11 @@ exit:
 
 }
 
-void get_the_url(char *data, int length, char **url)
+int get_the_url(char *data, int length, char **url)
 {
 	xmlDoc *doc = NULL;
 	xmlNode *root_element = NULL;
+	int result = -1;
 
 	*url = NULL;
 	doc = xmlReadMemory(data, length, "noname.xml", NULL, 0);
@@ -248,9 +250,9 @@ void get_the_url(char *data, int length, char **url)
 
 	xmlFreeDoc(doc);
 	xmlCleanupParser();
-
+	result = 0;
 exit:
-	return;
+	return result;
 }
 
 int gcal_dump(struct gcal_resource *ptr_gcal)
@@ -261,6 +263,7 @@ int gcal_dump(struct gcal_resource *ptr_gcal)
 	long request_stat;
 	char *tmp_buffer = NULL;
 
+	/* Must cleanup HTTP buffer between requests */
 	clean_buffer(ptr_gcal);
 
 	length = strlen(ptr_gcal->auth) + sizeof(HEADER_GET) + 1;
@@ -285,7 +288,8 @@ int gcal_dump(struct gcal_resource *ptr_gcal)
 	}
 
 	/* TODO: add code here to follow redirection and get the Atom feed */
-	get_the_url(ptr_gcal->buffer, ptr_gcal->length, &ptr_gcal->url);
+	if (get_the_url(ptr_gcal->buffer, ptr_gcal->length, &ptr_gcal->url))
+		result = -1;
 	//printf("the url is\n%s\n", ptr_gcal->url);
 
 cleanup:
