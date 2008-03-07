@@ -126,6 +126,25 @@ exit:
 	return size;
 }
 
+static int check_request_error(struct gcal_resource *ptr_gcal, int code,
+	int expected_answer)
+{
+	long request_stat;
+	int result = 0;
+
+	curl_easy_getinfo(ptr_gcal->curl, CURLINFO_HTTP_CODE, &request_stat);
+	if (code || (request_stat != expected_answer)) {
+		fprintf(stderr, "%s\n%s%s\n%s%d\n",
+			"gcal_get_authentication: failed request.",
+			"Curl code: ", curl_easy_strerror(code),
+			"HTTP code: ", (int)request_stat);
+		result = -1;
+	}
+
+	return result;
+}
+
+
 int gcal_get_authentication(char *user, char *password,
 			    struct gcal_resource *ptr_gcal)
 {
@@ -134,7 +153,7 @@ int gcal_get_authentication(char *user, char *password,
 	int post_len = 0;
 	char *post = NULL;
 	int result = -1;
-	long request_stat;
+
 	int count = 0;
 	char *ptr = NULL;
 
@@ -163,15 +182,8 @@ int gcal_get_authentication(char *user, char *password,
 	curl_easy_setopt(ptr_gcal->curl, CURLOPT_WRITEDATA, (void *)ptr_gcal);
 
 	res = curl_easy_perform(ptr_gcal->curl);
-
-	curl_easy_getinfo(ptr_gcal->curl, CURLINFO_HTTP_CODE, &request_stat);
-	if (res || (request_stat != GCAL_DEFAULT_ANSWER)) {
-		fprintf(stderr, "%s\n%s%s\n%s%d\n",
-			"gcal_get_authentication: failed request.",
-			"Curl code: ", curl_easy_strerror(res),
-			"HTTP code: ", (int)request_stat);
+	if (check_request_error(ptr_gcal, res, GCAL_DEFAULT_ANSWER))
 		goto cleanup;
-	}
 
 	/* gcalendar server returns a string like this:
 	 * SID=value\n
@@ -260,7 +272,6 @@ int gcal_dump(struct gcal_resource *ptr_gcal)
 	struct curl_slist *response_headers = NULL;
 	int length = 0;
 	int result = -1;
-	long request_stat;
 	char *tmp_buffer = NULL;
 
 	/* Must cleanup HTTP buffer between requests */
@@ -281,16 +292,26 @@ int gcal_dump(struct gcal_resource *ptr_gcal)
 	curl_easy_setopt(ptr_gcal->curl, CURLOPT_WRITEDATA, (void *)ptr_gcal);
 
 	result = curl_easy_perform(ptr_gcal->curl);
-	curl_easy_getinfo(ptr_gcal->curl, CURLINFO_HTTP_CODE, &request_stat);
-	if (result || (request_stat != GCAL_EVENT_ANSWER)) {
+	if (check_request_error(ptr_gcal, result, GCAL_EVENT_ANSWER)) {
 		result = -1;
 		goto cleanup;
 	}
 
-	/* TODO: add code here to follow redirection and get the Atom feed */
-	if (get_the_url(ptr_gcal->buffer, ptr_gcal->length, &ptr_gcal->url))
+	if (get_the_url(ptr_gcal->buffer, ptr_gcal->length, &ptr_gcal->url)) {
 		result = -1;
-	//printf("the url is\n%s\n", ptr_gcal->url);
+		goto cleanup;
+	}
+
+	clean_buffer(ptr_gcal);
+	curl_easy_setopt(ptr_gcal->curl, CURLOPT_URL, ptr_gcal->url);
+	result = curl_easy_perform(ptr_gcal->curl);
+	if (check_request_error(ptr_gcal, result, GCAL_DEFAULT_ANSWER)) {
+		result = -1;
+		goto cleanup;
+	}
+
+	/* TODO: get all the Atom feed and parse its XML */
+ 	/* printf("%s\n", ptr_gcal->buffer); */
 
 cleanup:
 
