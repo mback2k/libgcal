@@ -1,6 +1,6 @@
 /**
  * @file   utest.c
- * @author teste
+ * @author Adenilson Cavalcanti da Silva <adenilson.silva@indt.org.br>
  * @date   Mon Mar  3 20:14:13 2008
  *
  * @brief  Unit test module.

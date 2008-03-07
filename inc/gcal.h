@@ -1,6 +1,6 @@
 /**
  * @file   gcal.h
- * @author teste
+ * @author Adenilson Cavalcanti da Silva <adenilson.silva@indt.org.br>
  * @date   Mon Mar  3 20:15:09 2008
  *
  * @brief  libgcal header file.
