@@ -101,10 +101,10 @@ static size_t write_cb(void *ptr, size_t count, size_t chunk_size, void *data)
 
 	size_t size = count * chunk_size;
 	struct gcal_resource *gcal_ptr = (struct gcal_resource *) data;
+	int current_length = strnlen(gcal_ptr->buffer, gcal_ptr->length);
 
-	if (size > (gcal_ptr->length -
-		    strnlen(gcal_ptr->buffer, gcal_ptr->length) - 1)) {
-		    gcal_ptr->length += size + 1;
+	if (size > (gcal_ptr->length - current_length - 1)) {
+		    gcal_ptr->length = current_length + size + 1;
 		    /* FIXME: is it save to continue reallocing more memory?
 		     * what happens if the gcalendar list is *really* big?
 		     * how big can it be? Maybe I should use another write
