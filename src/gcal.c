@@ -122,7 +122,7 @@ static size_t write_cb(void *ptr, size_t count, size_t chunk_size, void *data)
 
 	}
 
-	strncat(gcal_ptr->buffer, (char *)ptr, gcal_ptr->length);
+	strncat(gcal_ptr->buffer, (char *)ptr, size);
 
 exit:
 	return size;
@@ -316,7 +316,8 @@ int gcal_dump(struct gcal_resource *ptr_gcal)
 	}
 
 	/* TODO: get all the Atom feed and parse its XML */
- 	/* printf("%s\n", ptr_gcal->buffer); */
+/*  	printf("%s\nlen = %d\tbuf_size =%d\n", ptr_gcal->buffer, */
+/* 	       strlen(ptr_gcal->buffer), ptr_gcal->length); */
 
 cleanup:
 
