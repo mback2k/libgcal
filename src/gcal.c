@@ -213,7 +213,10 @@ int gcal_get_authentication(char *user, char *password,
 	result = 0;
 
 cleanup:
-	free(post);
+	if (post)
+		free(post);
+	if (response_headers)
+		curl_slist_free_all(response_headers);
 
 exit:
 	return result;
@@ -319,7 +322,11 @@ int gcal_dump(struct gcal_resource *ptr_gcal)
 
 cleanup:
 
-	free(tmp_buffer);
+	if (tmp_buffer)
+		free(tmp_buffer);
+	if (response_headers)
+		curl_slist_free_all(response_headers);
+
 exit:
 	return result;
 }
