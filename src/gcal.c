@@ -7,8 +7,6 @@
  *
  * \todo:
  * - add private deps on libgcal.pc
- * - free possible leak from use of curl_slist (curl_slist_free_all should fix
- *  it).
  * - change 0 for NULL when reseting the buffer
  * - write methods to access gcalendar events
  * - think a way to securely store passwords
