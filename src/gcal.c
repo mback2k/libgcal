@@ -6,6 +6,11 @@
  * @brief  Base file for a gcalendar service access library.
  *
  * \todo:
+ * - add private deps on libgcal.pc
+ * - add 2 enums to select which calendar list is required
+ * - free possible leak from use of curl_slist (curl_slist_free_all should fix
+ *  it).
+ * - change 0 for NULL when reseting the buffer
  * - write methods to access gcalendar events
  * - think a way to securely store passwords
  * - more utests
@@ -23,8 +28,9 @@
 #include "gcal.h"
 
 static const char GCAL_URL[] = "https://www.google.com/accounts/ClientLogin";
-static const char GCAL_EVENTS[] = "http://www.google.com/calendar/feeds/default"
-	"/owncalendars/full";
+/* static const char GCAL_EVENTS[] = "http://www.google.com/calendar/feeds/default" */
+/* 	"/owncalendars/full"; */
+static const char GCAL_EVENTS[] = "http://www.google.com/calendar/feeds/default/allcalendars/full";
 static const int GCAL_DEFAULT_ANSWER = 200;
 static const int GCAL_EVENT_ANSWER = 302;
 static const char EMAIL_FIELD[] = "Email=";
