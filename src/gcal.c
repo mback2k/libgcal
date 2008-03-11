@@ -6,7 +6,7 @@
  * @brief  Base file for a gcalendar service access library.
  *
  * \todo:
- * - change 0 for NULL when reseting the buffer
+ * - parse Atom feed (events and calendar lists)
  * - think a way to securely store passwords
  * - more utests
  * - should we use a logging of some sort?
