@@ -6,7 +6,6 @@
  * @brief  Base file for a gcalendar service access library.
  *
  * \todo:
- * - add private deps on libgcal.pc
  * - change 0 for NULL when reseting the buffer
  * - think a way to securely store passwords
  * - more utests
