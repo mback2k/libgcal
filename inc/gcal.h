@@ -56,8 +56,9 @@ int gcal_get_authentication(char *user, char *password,
 int get_the_url(char *data, int length, char **url);
 
 
-/** Dumps all events to internal buffer.
- *
+/** Dumps events from default calendar to internal buffer.
+ * \todo Let the library user select which calendar he/she wants
+ * to get the events. See \ref gcal_calendar_list.
  *
  * @param ptr_gcal Pointer to a \ref gcal_resource structure, which has
  *                 previously got the authentication using
@@ -67,5 +68,20 @@ int get_the_url(char *data, int length, char **url);
  */
 int gcal_dump(struct gcal_resource *ptr_gcal);
 
+/** Get a list of users calendars (gcalendar supports multiple calendars
+ * besides the default calendar).
+ *
+ * I think it would be a good idea to let the library user decide which
+ * calendar to get the events. See too \ref gcal_dump.
+ *
+ * \todo Parse the Atom feed and provide easy access to the calendar lists.
+ *
+ * @param ptr_gcal Pointer to a \ref gcal_resource structure, which has
+ *                 previously got the authentication using
+ *                 \ref gcal_get_authentication.
+ *
+ * @return Returns 0 on success, -1 otherwise.
+ */
+int gcal_calendar_list(struct gcal_resource *ptr_gcal);
 
 #endif

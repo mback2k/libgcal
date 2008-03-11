@@ -8,7 +8,6 @@
  * \todo:
  * - add private deps on libgcal.pc
  * - change 0 for NULL when reseting the buffer
- * - write methods to access gcalendar events
  * - think a way to securely store passwords
  * - more utests
  * - should we use a logging of some sort?
@@ -26,7 +25,11 @@
 
 static const char GCAL_URL[] = "https://www.google.com/accounts/ClientLogin";
 static const char GCAL_LIST[] = "http://www.google.com/calendar/feeds/"
-  "default/allcalendars/full";
+	"default/allcalendars/full";
+static const char GCAL_EVENT_START[] = "http://www.google.com/calendar/feeds/";
+static const char GCAL_EVENT_END[] = "@gmail.com/private/full";
+
+
 static const int GCAL_DEFAULT_ANSWER = 200;
 static const int GCAL_EVENT_ANSWER = 302;
 static const char EMAIL_FIELD[] = "Email=";
@@ -49,6 +52,8 @@ struct gcal_resource {
 	CURL *curl;
 	/** Atom feed URL */
 	char *url;
+	/** The user name */
+	char *user;
 };
 
 struct gcal_resource *gcal_initialize(void)
@@ -61,6 +66,7 @@ struct gcal_resource *gcal_initialize(void)
 		goto exit;
 	}
 
+	ptr->user = NULL;
 	ptr->url = NULL;
 	ptr->auth = NULL;
 	ptr->length = 256;
@@ -92,6 +98,8 @@ void gcal_destroy(struct gcal_resource *gcal_obj)
 		free(gcal_obj->auth);
 	if (gcal_obj->url)
 		free(gcal_obj->url);
+	if (gcal_obj->user)
+		free(gcal_obj->user);
 
 }
 
@@ -159,14 +167,19 @@ int gcal_get_authentication(char *user, char *password,
 	int count = 0;
 	char *ptr = NULL;
 
+
+	if (!user || !password)
+		goto exit;
+
 	/* Must cleanup HTTP buffer between requests */
 	clean_buffer(ptr_gcal);
 
+	ptr_gcal->user = strdup(user);
 	post_len = strlen(user) + strlen(password) +
 		sizeof(EMAIL_FIELD) + sizeof(EMAIL_ADDRESS) +
 		sizeof(PASSWD_FIELD) + sizeof(TRAILING_FIELD);
-
-	if (!(post = (char *) malloc(post_len)))
+	post = (char *) malloc(post_len);
+	if (!post || !ptr_gcal->user)
 		goto exit;
 
 	snprintf(post, post_len - 1, "%s%s%s&%s%s&%s",
@@ -272,7 +285,8 @@ exit:
 	return result;
 }
 
-int gcal_dump(struct gcal_resource *ptr_gcal)
+static int get_follow_redirection(struct gcal_resource *ptr_gcal,
+				  const char *url)
 {
 	struct curl_slist *response_headers = NULL;
 	int length = 0;
@@ -292,7 +306,7 @@ int gcal_dump(struct gcal_resource *ptr_gcal)
 
 	curl_easy_setopt(ptr_gcal->curl, CURLOPT_HTTPGET, 1);
 	curl_easy_setopt(ptr_gcal->curl, CURLOPT_HTTPHEADER, response_headers);
-	curl_easy_setopt(ptr_gcal->curl, CURLOPT_URL, GCAL_LIST);
+	curl_easy_setopt(ptr_gcal->curl, CURLOPT_URL, url);
 	curl_easy_setopt(ptr_gcal->curl, CURLOPT_WRITEFUNCTION, write_cb);
 	curl_easy_setopt(ptr_gcal->curl, CURLOPT_WRITEDATA, (void *)ptr_gcal);
 
@@ -302,6 +316,7 @@ int gcal_dump(struct gcal_resource *ptr_gcal)
 		goto cleanup;
 	}
 
+	/* It will extract and follow the first 'REF' link in the stream */
 	if (get_the_url(ptr_gcal->buffer, ptr_gcal->length, &ptr_gcal->url)) {
 		result = -1;
 		goto cleanup;
@@ -315,10 +330,6 @@ int gcal_dump(struct gcal_resource *ptr_gcal)
 		goto cleanup;
 	}
 
-	/* TODO: get all the Atom feed and parse its XML */
-/*  	printf("%s\nlen = %d\tbuf_size =%d\n", ptr_gcal->buffer, */
-/* 	       strlen(ptr_gcal->buffer), ptr_gcal->length); */
-
 cleanup:
 
 	if (tmp_buffer)
@@ -327,5 +338,38 @@ cleanup:
 		curl_slist_free_all(response_headers);
 
 exit:
+	return result;
+}
+
+int gcal_dump(struct gcal_resource *ptr_gcal)
+{
+	int result;
+	char *buffer = NULL;
+	int length = 0;
+
+	length = sizeof(GCAL_EVENT_START) + sizeof(GCAL_EVENT_END) +
+		strlen(ptr_gcal->user) + 1;
+	buffer = (char *)malloc(length);
+	if (!buffer)
+		goto exit;
+
+	snprintf(buffer, length - 1, "%s%s%s", GCAL_EVENT_START, ptr_gcal->user,
+		 GCAL_EVENT_END);
+	result =  get_follow_redirection(ptr_gcal, buffer);
+	/* TODO: parse the Atom feed */
+
+
+	free(buffer);
+exit:
+
+	return result;
+}
+
+int gcal_calendar_list(struct gcal_resource *ptr_gcal)
+{
+	int result;
+	result =  get_follow_redirection(ptr_gcal, GCAL_LIST);
+	/* TODO: parse the Atom feed */
+
 	return result;
 }
