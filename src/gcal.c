@@ -137,7 +137,7 @@ exit:
 }
 
 static int check_request_error(struct gcal_resource *ptr_gcal, int code,
-	int expected_answer)
+			       int expected_answer)
 {
 	long request_stat;
 	int result = 0;
