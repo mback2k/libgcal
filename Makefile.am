@@ -18,7 +18,8 @@ libgcal_la_LIBADD = $(LIBCURL_LIBS) $(LIBXML_LIBS)
 if CHECK
 TESTS = utest
 noinst_PROGRAMS = utest
-utest_SOURCES = $(utestdir)/utest.c
+utest_SOURCES = $(utestdir)/utest_gcal.h $(utestdir)/utest_gcal.c \
+		$(utestdir)/utest.c
 
 utest_CPPFLAGS = $(CHECK_FLAGS) $(AM_CPPFLAGS) -I$(csourcedir) -I$(headerdir)
 utest_LDADD = $(CHECK_LIBS) $(LDADD) $(lib_LTLIBRARIES)
