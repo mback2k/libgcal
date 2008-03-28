@@ -46,11 +46,16 @@ static void teardown(void)
 START_TEST (test_entry_list)
 {
 
-	int num_entries;
+	int num_entries, res;
 	xmlDoc *doc = NULL;
 
-	num_entries = atom_entries(&doc, xml_data);
+	res = build_doc_tree(&doc, xml_data);
+	fail_if(res == -1, "failed to build document tree!");
+
+	num_entries = atom_entries(doc);
 	fail_if(num_entries != 4, "failed get correct number of entries");
+
+	clean_doc_tree(&doc);
 }
 END_TEST
 

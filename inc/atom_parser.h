@@ -16,19 +16,34 @@
 
 #include <libxml/parser.h>
 
+/** Creates a document tree (required by other operations).
+ *
+ *
+ * @param document Creates a XML tree document,  remember to
+ * free it using \ref clean_doc_tree)
+ * @param xml_data A pointer to string with the Atom stream.
+ *
+ * @return -1 on error, 0 on success.
+ */
+int build_doc_tree(xmlDoc **document, char *xml_data);
+
+/** Cleans up a document tree.
+ *
+ *
+ * @param document Document pointer to pointer (it makes it point to NULL).
+ */
+void clean_doc_tree(xmlDoc **document);
+
+
 /** This function returns the number of event entries that a Atom feed
  * has.
  *
- * @param document Pointer to a pointer of libxml document, if it is NULL,
- * the function will create it and you can reuse it later (just remember to
- * free it using 'xmlFreeDoc')
- *
- * @param xml_data A pointer to string with the Atom stream.
+ * @param document Pointer to a pointer of libxml document.
  *
  * @return -1 on error, the number of entries otherwise (can be 0 zero).
  *
  */
-int atom_entries(xmlDoc **document, char *xml_data);
+int atom_entries(xmlDoc *document);
 
 
 #endif
