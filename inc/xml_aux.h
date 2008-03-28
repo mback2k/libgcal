@@ -8,9 +8,10 @@
  *
  * @brief  Auxiliary code to parse XML using XPath.
  *
- * It depends on libxml, and I based it on 'xpath1.c'
- * libxml example written by Aleksey Sanin (which I think
- * uses MIT license).
+ * It depends on libxml, and started with 'xpath1.c'
+ * libxml example written by Aleksey Sanin (which uses MIT license).
+ * In the end my code turn out to be rather different from him, but
+ * I decided to keep the same function names.
  *
  */
 

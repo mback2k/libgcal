@@ -1,4 +1,5 @@
 #include "atom_parser.h"
+#include "xml_aux.h"
 #include <string.h>
 
 
@@ -31,12 +32,32 @@ void clean_doc_tree(xmlDoc **document)
 int atom_entries(xmlDoc *document)
 {
 	int result = -1;
-	(void)document;
+	xmlXPathObject *xpath_obj = NULL;
+	xmlNodeSet *node;
 
 #if defined(LIBXML_XPATH_ENABLED) && defined(LIBXML_SAX1_ENABLED)
-	/* TODO: put code here */
+	xpath_obj = execute_xpath_expression(document,
+				       "//openSearch:totalResults/text()",
+				       NULL);
+	if (!xpath_obj)
+		goto exit;
+
+	node = xpath_obj->nodesetval;
+	/* The expression can only return 1 node */
+	if (node->nodeNr != 1)
+		goto cleanup;
+	/* Node type must be 'text' */
+	if (strcmp(node->nodeTab[0]->name, "text") ||
+	    (node->nodeTab[0]->type != XML_TEXT_NODE))
+		goto cleanup;
+
+	result = atoi(node->nodeTab[0]->content);
+
+cleanup:
+	xmlXPathFreeObject(xpath_obj);
 
 #endif
 
+exit:
 	return result;
 }

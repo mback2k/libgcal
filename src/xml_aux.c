@@ -3,12 +3,17 @@
 
 const char atom_href[] = "http://www.w3.org/2005/Atom";
 const char atom_ns[] = "atom";
+
 const char gd_href[] = "http://schemas.google.com/g/2005";
 const char gd_ns[] = "gd";
+
+const char open_search_href[] = "http://a9.com/-/spec/opensearchrss/1.0/";
+const char open_search_ns[] = "openSearch";
 
 int register_namespaces(xmlXPathContext *xpathCtx, const xmlChar *name_space,
 			const xmlChar* href)
 {
+	int result = -1;
 	assert(xpathCtx);
 	if (name_space && href) {
 		/* do register namespace */
@@ -16,15 +21,20 @@ int register_namespaces(xmlXPathContext *xpathCtx, const xmlChar *name_space,
 			fprintf(stderr,"Error: unable to register NS with"
 				"prefix=\"%s\" and href=\"%s\"\n",
 				name_space, href);
-			return(-1);
+			goto exit;
 		}
 	}
 	else {
-		register_namespaces(xpathCtx, atom_ns, atom_href);
-		register_namespaces(xpathCtx, gd_ns, gd_href);
+		if (register_namespaces(xpathCtx, atom_ns, atom_href) ||
+		    register_namespaces(xpathCtx, gd_ns, gd_href) ||
+		    register_namespaces(xpathCtx, open_search_ns,
+					open_search_href))
+			goto exit;
 	}
 
-	return 0;
+	result = 0;
+exit:
+	return result;
 
 }
 
@@ -42,12 +52,14 @@ xmlXPathObject* execute_xpath_expression(xmlDoc *doc,
 			fprintf(stderr,"Error: unable to create new XPath"
 				"context\n");
 			goto exit;
-
 		}
+
+		if (register_namespaces(xpathCtx, NULL, NULL))
+				goto exit;
+
 	}
 
-	/* TODO: write xpath execution code */
-
+	xpath_obj = xmlXPathEvalExpression(xpathExpr, xpathCtx);
 	if (ownership && (xpathCtx != NULL))
 		xmlXPathFreeContext(xpathCtx);
 
