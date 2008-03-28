@@ -2,6 +2,7 @@
 
 #include "utest_xpath.h"
 #include "atom_parser.h"
+#include "xml_aux.h"
 #include <string.h>
 #include <stdio.h>
 #include <stdlib.h>

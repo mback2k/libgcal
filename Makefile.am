@@ -6,8 +6,10 @@ pkgconfig_DATA = libgcal.pc
 libmandir = $(mandir)/man3
 #libman_DATA = libfrob.3
 lib_LTLIBRARIES = libgcal.la
-include_HEADERS = $(headerdir)/gcal.h $(headerdir)/atom_parser.h
-libgcal_la_SOURCES = $(csourcedir)/gcal.c $(csourcedir)/atom_parser.c
+include_HEADERS = $(headerdir)/gcal.h $(headerdir)/atom_parser.h \
+		$(headerdir)/xml_aux.h
+libgcal_la_SOURCES = $(csourcedir)/gcal.c $(csourcedir)/atom_parser.c \
+		$(csourcedir)/xml_aux.c
 libgcal_la_CPPFLAGS = -I$(headerdir)
 libgcal_la_CFLAGS = $(AM_CFLAGS) $(LIBCURL_CFLAGS) $(LIBXML_CFLAGS)
 libgcal_la_LIBADD = $(LIBCURL_LIBS) $(LIBXML_LIBS)
