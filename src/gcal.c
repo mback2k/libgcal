@@ -342,7 +342,7 @@ exit:
 
 int gcal_dump(struct gcal_resource *ptr_gcal)
 {
-	int result;
+	int result = 0;
 	char *buffer = NULL;
 	int length = 0;
 
