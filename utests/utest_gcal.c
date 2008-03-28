@@ -71,7 +71,7 @@ END_TEST
 TCase *gcal_tcase_create(void)
 {
 	TCase *tc = NULL;
-	int timeout_seconds = 50;
+	int timeout_seconds = 90;
 	tc = tcase_create("gcal");
 	tcase_add_checked_fixture(tc, setup, teardown);
 	tcase_set_timeout (tc, timeout_seconds);
