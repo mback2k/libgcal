@@ -1,6 +1,7 @@
 #define _GNU_SOURCE
 
 #include "utest_xpath.h"
+#include "atom_parser.h"
 #include <string.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -45,7 +46,11 @@ static void teardown(void)
 START_TEST (test_entry_list)
 {
 
+	int num_entries;
+	xmlDoc *doc = NULL;
 
+	num_entries = atom_entries(&doc, xml_data);
+	fail_if(num_entries != 4, "failed get correct number of entries");
 }
 END_TEST
 
