@@ -42,7 +42,6 @@ xmlXPathObject* execute_xpath_expression(xmlDoc *doc,
 					 const xmlChar* xpathExpr,
 					 xmlXPathContext *xpathCtx)
 {
-	(void) xpathExpr;
 	unsigned char ownership = 0;
 	xmlXPathObject *xpath_obj = NULL;
 	if (!xpathCtx) {
