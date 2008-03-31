@@ -1,5 +1,4 @@
 #include "xml_aux.h"
-#include <assert.h>
 
 const char atom_href[] = "http://www.w3.org/2005/Atom";
 const char atom_ns[] = "atom";
@@ -14,7 +13,8 @@ int register_namespaces(xmlXPathContext *xpathCtx, const xmlChar *name_space,
 			const xmlChar* href)
 {
 	int result = -1;
-	assert(xpathCtx);
+	if (!xpathCtx)
+		goto exit;
 	if (name_space && href) {
 		/* do register namespace */
 		if(xmlXPathRegisterNs(xpathCtx, name_space, href) != 0) {

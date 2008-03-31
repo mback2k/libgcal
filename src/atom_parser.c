@@ -1,7 +1,6 @@
 #include "atom_parser.h"
 #include "xml_aux.h"
 #include <string.h>
-#include <assert.h>
 
 int build_doc_tree(xmlDoc **document, char *xml_data)
 {
@@ -35,7 +34,8 @@ int atom_entries(xmlDoc *document)
 	xmlXPathObject *xpath_obj = NULL;
 	xmlNodeSet *node;
 
-	assert(document);
+	if (!document)
+		goto exit;
 
 #if defined(LIBXML_XPATH_ENABLED) && defined(LIBXML_SAX1_ENABLED)
 	xpath_obj = execute_xpath_expression(document,

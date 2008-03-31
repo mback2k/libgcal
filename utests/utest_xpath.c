@@ -58,6 +58,9 @@ START_TEST (test_entry_list)
 	int num_entries, res;
 	xmlDoc *doc = NULL;
 
+	num_entries = atom_entries(doc);
+	fail_if(num_entries != -1, "Function tried to proceed with NULL doc!");
+
 	res = build_doc_tree(&doc, xml_data);
 	fail_if(res == -1, "failed to build document tree!");
 
