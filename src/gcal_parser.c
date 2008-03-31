@@ -83,11 +83,8 @@ exit:
 
 void clean_dom_document(dom_document *doc)
 {
-	if (doc) {
-		if (doc)
-			clean_doc_tree(&doc);
-		free(doc);
-	}
+	if (doc)
+		clean_doc_tree(&doc);
 
 }
 
