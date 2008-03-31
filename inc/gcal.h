@@ -18,9 +18,26 @@ struct gcal_resource;
 /** Library structure, represents each calendar event entry.
  */
 struct gcal_entries {
+	/** The 'what' field */
+	char *title;
+	/** element ID */
+	char *id;
+	/** The edit URL */
+	char *edit_uri;
+	/** The event description */
+	char *content;
+	/** If the event is recurrent */
+	char *dt_recurrent;
+	/** When/start time */
+	char *dt_start;
+	/** When/end time */
+	char *dt_end;
+	/** Location of event */
+	char *where;
+	/** Event status */
+	char *status;
 	/** Time when the event was updated. */
 	char *updated;
-	/** TODO: add remaining important fields here */
 };
 
 /** Library structure destructor (use it free its internal resources properly).

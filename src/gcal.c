@@ -374,10 +374,31 @@ struct gcal_entries *gcal_get_entries(struct gcal_resource *ptr_gcal,
 }
 
 
+static void clean_string(char *ptr_str)
+{
+	if (ptr_str)
+		free(ptr_str);
+}
+
 void gcal_destroy_entries(struct gcal_entries *entries, size_t length)
 {
-	(void)entries;
-	(void)length;
+	size_t i = 0;
+	if (!entries)
+		return;
 
+	for (; i < length; ++i) {
+		clean_string(entries[i].title);
+		clean_string(entries[i].id);
+		clean_string(entries[i].edit_uri);
+		clean_string(entries[i].content);
+		clean_string(entries[i].dt_recurrent);
+		clean_string(entries[i].dt_start);
+		clean_string(entries[i].dt_end);
+		clean_string(entries[i].where);
+		clean_string(entries[i].status);
+		clean_string(entries[i].updated);
+	}
+
+	free(entries);
 }
 
