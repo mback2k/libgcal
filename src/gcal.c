@@ -63,6 +63,8 @@ struct gcal_resource {
 	char *user;
 	/** DOM xml tree (an abstract type so I can plug another xml parser) */
 	dom_document *document;
+	/** A flag to control if the buffer has XML atom stream */
+	char has_xml;
 
 };
 
@@ -76,6 +78,7 @@ struct gcal_resource *gcal_initialize(void)
 		goto exit;
 	}
 
+	ptr->has_xml = 0;
 	ptr->document = NULL;
 	ptr->user = NULL;
 	ptr->url = NULL;
@@ -287,7 +290,8 @@ static int get_follow_redirection(struct gcal_resource *ptr_gcal,
 	clean_buffer(ptr_gcal);
 	curl_easy_setopt(ptr_gcal->curl, CURLOPT_URL, ptr_gcal->url);
 	result = curl_easy_perform(ptr_gcal->curl);
-	if (check_request_error(ptr_gcal, result, GCAL_DEFAULT_ANSWER)) {
+	if ((result = check_request_error(ptr_gcal, result,
+					  GCAL_DEFAULT_ANSWER))) {
 		result = -1;
 		goto cleanup;
 	}
@@ -318,8 +322,9 @@ int gcal_dump(struct gcal_resource *ptr_gcal)
 	snprintf(buffer, length - 1, "%s%s%s", GCAL_EVENT_START, ptr_gcal->user,
 		 GCAL_EVENT_END);
 	result =  get_follow_redirection(ptr_gcal, buffer);
-	/* TODO: parse the Atom feed */
 
+	if (!result)
+		ptr_gcal->has_xml = 1;
 
 	free(buffer);
 exit:
@@ -346,7 +351,7 @@ int gcal_entries_number(struct gcal_resource *ptr_gcal)
 	/* FIXME: create a flag to signal that the structure has
 	 * a valid atom xml stream.
 	 */
-	if (!ptr_gcal->buffer || !ptr_gcal->auth)
+	if (!ptr_gcal->buffer || !ptr_gcal->has_xml)
 		goto exit;
 
 	ptr_gcal->document = build_dom_document(ptr_gcal->buffer);
