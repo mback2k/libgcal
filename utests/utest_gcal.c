@@ -1,3 +1,11 @@
+/*
+ * @file   utest_gcal.h
+ * @author Adenilson Cavalcanti da Silva <adenilson.silva@indt.org.br>
+ * @date   Started on Mar 03 2008
+ *
+ * @brief  Module for libgcal utests.
+ */
+
 #include "utest_gcal.h"
 #include "gcal.h"
 #include <string.h>

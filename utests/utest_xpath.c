@@ -1,4 +1,12 @@
 #define _GNU_SOURCE
+/*
+ * @file   utest_gcal.h
+ * @author Adenilson Cavalcanti da Silva <adenilson.silva@indt.org.br>
+ * @date   Thu Mar 27 2008
+ *
+ * @brief  Header module for xpath utests.
+ *
+ */
 
 #include "utest_xpath.h"
 #include "atom_parser.h"
