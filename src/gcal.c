@@ -385,3 +385,26 @@ int gcal_calendar_list(struct gcal_resource *ptr_gcal)
 
 	return result;
 }
+
+int gcal_entries_number(struct gcal_resource *ptr_gcal)
+{
+	(void)ptr_gcal;
+	return -1;
+}
+
+struct gcal_entries *gcal_get_entries(struct gcal_resource *ptr_gcal,
+				      int *length)
+{
+	(void)ptr_gcal;
+	(void)length;
+	return NULL;
+}
+
+
+void gcal_destroy_entries(struct gcal_entries *entries, size_t length)
+{
+	(void)entries;
+	(void)length;
+
+}
+

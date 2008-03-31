@@ -15,6 +15,14 @@
  */
 struct gcal_resource;
 
+/** Library structure, represents each calendar event entry.
+ */
+struct gcal_entries {
+	/** Time when the event was updated. */
+	char *updated;
+	/** TODO: add remaining important fields here */
+};
+
 /** Library structure destructor (use it free its internal resources properly).
  */
 void gcal_destroy(struct gcal_resource *gcal_obj);
@@ -83,5 +91,49 @@ int gcal_dump(struct gcal_resource *ptr_gcal);
  * @return Returns 0 on success, -1 otherwise.
  */
 int gcal_calendar_list(struct gcal_resource *ptr_gcal);
+
+
+/** Return the number of event entries a calendar has (you should
+ * had got the atom stream before, using \ref gcal_dump).
+ *
+ * @param ptr_gcal Pointer to a \ref gcal_resource structure, which has
+ *                 previously got the authentication using
+ *                 \ref gcal_get_authentication.
+ *
+ * @return -1 on error, any number >= 0 otherwise.
+ */
+int gcal_entries_number(struct gcal_resource *ptr_gcal);
+
+
+/** Extracts from the atom stream the calendar event entries (you should
+ * had got the atom stream before, using \ref gcal_dump).
+ *
+ * Pay attention that it returns a vector of structures that must be destroyed
+ * using \ref gcal_destroy_entries.
+ *
+ * Since atom XML feeds can get huge, as soon the function creates entries
+ * vector and copies the data from the internal \ref gcal_resource buffer,
+ * it will free its internal buffer to save memory.
+ *
+ *
+ * @param ptr_gcal Pointer to a \ref gcal_resource structure, which has
+ *                 previously got the authentication using
+ *                 \ref gcal_get_authentication.
+ *
+ * @param length Pointer to an int, it will have the vector length.
+ *
+ * @return A pointer on sucess, NULL otherwise.
+ */
+struct gcal_entries *gcal_get_entries(struct gcal_resource *ptr_gcal,
+				      int *length);
+
+
+/** Cleanup the memory of a vector of calendar entries created using
+ * \ref gcal_get_entries.
+ *
+ * @param entries A pointer to a vector of \ref gcal_entries structure.
+ */
+void gcal_destroy_entries(struct gcal_entries *entries, size_t length);
+
 
 #endif

@@ -75,6 +75,37 @@ START_TEST (test_gcal_dump)
 END_TEST
 
 
+START_TEST (test_gcal_entries)
+{
+	int result, i;
+	struct gcal_entries *entries;
+	char *entries_update[] = { "2008-03-26T20:20:51.000Z",
+				   "2008-03-26T12:30:06.000Z",
+				   "2008-03-10T12:56:43.000Z",
+				   "2008-03-06T15:32:25.000Z" };
+
+	result = gcal_get_authentication("gcal4tester", "66libgcal", ptr_gcal);
+	if (result)
+		fail_if(1, "Authentication should work");
+
+	result = gcal_dump(ptr_gcal);
+	fail_if(result != 0, "Failed dumping events");
+
+	result = gcal_entries_number(ptr_gcal);
+	fail_if(result != 4, "Got wrong number of entries");
+
+	entries = gcal_get_entries(ptr_gcal, &result);
+	fail_if(entries == NULL, "Failed extracting the entries vector");
+
+	for (i = 0; i < result; ++i)
+		fail_if(!strcmp(entries[i].updated, entries_update[i]));
+
+	gcal_destroy_entries(entries, result);
+
+}
+END_TEST
+
+
 
 TCase *gcal_tcase_create(void)
 {
@@ -86,7 +117,7 @@ TCase *gcal_tcase_create(void)
 	tcase_add_test(tc, test_gcal_authenticate);
 	tcase_add_test(tc, test_url_parse);
 	tcase_add_test(tc, test_gcal_dump);
-
+	tcase_add_test(tc, test_gcal_entries);
 	return tc;
 }
 
