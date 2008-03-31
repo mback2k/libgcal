@@ -19,10 +19,6 @@
  * - think a way to securely store passwords
  * - more utests
  * - should we use a logging of some sort?
-
- * - think a way to securely store passwords
- * - more utests
- * - should we use a logging of some sort?
  */
 
 #define _GNU_SOURCE
@@ -30,10 +26,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <curl/curl.h>
-#include <libxml/parser.h>
-#include <libxml/tree.h>
 
 #include "gcal.h"
+#include "gcal_parser.h"
 
 static const char GCAL_URL[] = "https://www.google.com/accounts/ClientLogin";
 static const char GCAL_LIST[] = "http://www.google.com/calendar/feeds/"
@@ -66,6 +61,9 @@ struct gcal_resource {
 	char *url;
 	/** The user name */
 	char *user;
+	/** DOM xml tree (an abstract type so I can plug another xml parser) */
+	struct dom_document *document;
+
 };
 
 struct gcal_resource *gcal_initialize(void)
@@ -78,6 +76,7 @@ struct gcal_resource *gcal_initialize(void)
 		goto exit;
 	}
 
+	ptr->document = NULL;
 	ptr->user = NULL;
 	ptr->url = NULL;
 	ptr->auth = NULL;
@@ -244,57 +243,6 @@ cleanup:
 exit:
 	return result;
 
-}
-
-/* REMARK: this function is recursive, I'm not completely sure if this
- * is a good idea (i.e. for small devices).
- */
-static char *get(xmlNode *a_node)
-{
-	xmlNode *cur_node = NULL;
-	char *result = NULL;
-	xmlChar *uri = NULL;
-
-	for (cur_node = a_node; cur_node; cur_node = cur_node->next) {
-		if (xmlHasProp(cur_node, "HREF")) {
-			uri = xmlGetProp(cur_node, "HREF");
-			if (uri) {
-				result = strdup(uri);
-				xmlFree(uri);
-				goto exit;
-			}
-
-		}
-
-		result = get(cur_node->children);
-		if (result)
-			goto exit;
-	}
-
-exit:
-	return result;
-
-}
-
-int get_the_url(char *data, int length, char **url)
-{
-	xmlDoc *doc = NULL;
-	xmlNode *root_element = NULL;
-	int result = -1;
-
-	*url = NULL;
-	doc = xmlReadMemory(data, length, "noname.xml", NULL, 0);
-	if (!doc)
-		goto exit;
-
-	root_element = xmlDocGetRootElement(doc);
-	*url = get(root_element);
-
-	xmlFreeDoc(doc);
-	xmlCleanupParser();
-	result = 0;
-exit:
-	return result;
 }
 
 static int get_follow_redirection(struct gcal_resource *ptr_gcal,

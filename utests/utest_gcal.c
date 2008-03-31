@@ -8,6 +8,7 @@
 
 #include "utest_gcal.h"
 #include "gcal.h"
+#include "gcal_parser.h"
 #include <string.h>
 
 struct gcal_resource *ptr_gcal = NULL;

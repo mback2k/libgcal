@@ -47,23 +47,6 @@ int gcal_get_authentication(char *user, char *password,
 			    struct gcal_resource *ptr_gcal);
 
 
-/** Parses the returned HTML page and extracts the redirection URL
- * that has the Atom feed.
- *
- * \todo Save the xmlDoc structure for future reuse (maybe within
- * structure \ref gcal_resource).
- *
- * @param data Raw data (the HTML page).
- * @param length Data buffer length.
- * @param url Pointer to the pointer (ouch!) that will receive the URL
- * (you should cleanup its memory). It will point to NULL if there is
- * not a URL in the raw data buffer.
- *
- * @return Returns 0 on success, -1 otherwise.
- */
-int get_the_url(char *data, int length, char **url);
-
-
 /** Dumps events from default calendar to internal buffer.
  * \todo Let the library user select which calendar he/she wants
  * to get the events. See \ref gcal_calendar_list.
