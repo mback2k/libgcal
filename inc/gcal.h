@@ -115,6 +115,8 @@ struct gcal_entries *gcal_get_entries(struct gcal_resource *ptr_gcal,
  * \ref gcal_get_entries.
  *
  * @param entries A pointer to a vector of \ref gcal_entries structure.
+ *
+ * @param length The vector length.
  */
 void gcal_destroy_entries(struct gcal_entries *entries, size_t length);
 

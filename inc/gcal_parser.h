@@ -35,12 +35,31 @@ typedef xmlDoc dom_document;
 int get_the_url(char *data, int length, char **url);
 
 
+/** Builds a DOM tree from a XML string.
+ *
+ * This is a thin wrapper to \ref build_doc_tree.
+ *
+ * @param xml_data A pointer to a string with XML content.
+ *
+ * @return NULL on error, a pointer to a document in sucess.
+ */
 dom_document *build_dom_document(char *xml_data);
 
 
+/** Clean up a DOM tree.
+ *
+ * This is a thin wrapper to \ref clean_doc_tree.
+ * @param doc A pointer to a document data type.
+ */
 void clean_dom_document(dom_document *doc);
 
-
+/** Return the number of calendar entries in the document.
+ *
+ * This is a thin wrapper to \ref clean_doc_tree.
+ * @param doc A pointer to a document data type.
+ *
+ * @return -1 on error or the number of entries.
+ */
 int get_entries_number(dom_document *doc);
 
 
