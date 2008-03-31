@@ -7,6 +7,19 @@
  *
  * \todo:
  * - parse Atom feed (events and calendar lists)
+ * - enable user get all events
+ * - enable user access events individually
+ * - enable user do queries: by string and date range
+ * - enable user add new events
+ * - enable user edit events
+ * - enable user delete events
+ * - enable user list and access available calendars
+ * - enable user create new calendars
+ * - enable user delete calendars
+ * - think a way to securely store passwords
+ * - more utests
+ * - should we use a logging of some sort?
+
  * - think a way to securely store passwords
  * - more utests
  * - should we use a logging of some sort?
