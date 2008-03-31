@@ -7,14 +7,16 @@ int build_doc_tree(xmlDoc **document, char *xml_data)
 	int result = -1;
 
 #if defined(LIBXML_XPATH_ENABLED) && defined(LIBXML_SAX1_ENABLED)
+	/* Only build a tree if there isn't one */
 	if (!*document) {
 		*document = xmlReadMemory(xml_data, strlen(xml_data),
 					  "noname.xml", NULL, 0);
 		if (!*document)
 			goto exit;
+
+		result = 0;
 	}
 
-	result = 0;
 #endif
 
 exit:

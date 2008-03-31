@@ -3,6 +3,11 @@
 #include <libxml/tree.h>
 #include <string.h>
 
+struct dom_document {
+	xmlDoc *document;
+};
+
+
 /* REMARK: this function is recursive, I'm not completely sure if this
  * is a good idea (i.e. for small devices).
  */
@@ -54,3 +59,47 @@ exit:
 	return result;
 }
 
+dom_document *build_dom_document(char *xml_data)
+{
+	dom_document *ptr = NULL;
+	if (!xml_data)
+		goto exit;
+
+	if (build_doc_tree(&ptr, xml_data)) {
+		fprintf(stderr, "build_dom_document: failed doc parse");
+		goto cleanup;
+	}
+
+	goto exit;
+
+cleanup:
+	if (ptr)
+		free(ptr);
+
+exit:
+	return ptr;
+}
+
+
+void clean_dom_document(dom_document *doc)
+{
+	if (doc) {
+		if (doc)
+			clean_doc_tree(&doc);
+		free(doc);
+	}
+
+}
+
+int get_entries_number(dom_document *doc)
+{
+	int result = -1;
+	if (!doc) {
+		fprintf(stderr, "get_entries_number: null document!");
+		goto exit;
+	}
+
+	result = atom_entries(doc);
+exit:
+	return result;
+}

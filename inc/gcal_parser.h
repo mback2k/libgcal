@@ -11,9 +11,11 @@
  * wrappers to extract data.
  */
 
+#include <libxml/parser.h>
+
 /** Abstract type to represent a DOM xml tree (a thin layer over xmlDoc).
  */
-struct dom_document;
+typedef xmlDoc dom_document;
 
 
 /** Parses the returned HTML page and extracts the redirection URL
@@ -31,5 +33,15 @@ struct dom_document;
  * @return Returns 0 on success, -1 otherwise.
  */
 int get_the_url(char *data, int length, char **url);
+
+
+dom_document *build_dom_document(char *xml_data);
+
+
+void clean_dom_document(dom_document *doc);
+
+
+int get_entries_number(dom_document *doc);
+
 
 #endif

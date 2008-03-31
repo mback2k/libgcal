@@ -62,7 +62,7 @@ struct gcal_resource {
 	/** The user name */
 	char *user;
 	/** DOM xml tree (an abstract type so I can plug another xml parser) */
-	struct dom_document *document;
+	dom_document *document;
 
 };
 
@@ -111,6 +111,8 @@ void gcal_destroy(struct gcal_resource *gcal_obj)
 		free(gcal_obj->url);
 	if (gcal_obj->user)
 		free(gcal_obj->user);
+	if (gcal_obj->document)
+		clean_dom_document(gcal_obj->document);
 
 }
 
@@ -336,8 +338,26 @@ int gcal_calendar_list(struct gcal_resource *ptr_gcal)
 
 int gcal_entries_number(struct gcal_resource *ptr_gcal)
 {
-	(void)ptr_gcal;
-	return -1;
+	int result = -1;
+
+	if (!ptr_gcal)
+		goto exit;
+
+	/* FIXME: create a flag to signal that the structure has
+	 * a valid atom xml stream.
+	 */
+	if (!ptr_gcal->buffer || !ptr_gcal->auth)
+		goto exit;
+
+	ptr_gcal->document = build_dom_document(ptr_gcal->buffer);
+	if (!ptr_gcal->document)
+		goto exit;
+
+	result = get_entries_number(ptr_gcal->document);
+	clean_dom_document(ptr_gcal->document);
+
+exit:
+	return result;
 }
 
 struct gcal_entries *gcal_get_entries(struct gcal_resource *ptr_gcal,
