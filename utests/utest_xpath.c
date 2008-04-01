@@ -107,7 +107,6 @@ START_TEST (test_get_entries)
 	known_value.status = "http://schemas.google.com/g/2005#event.confirmed";
 	known_value.updated = "2008-03-26T20:20:51.000Z";
 
-	/* TODO: put code to test each field here */
 	fail_if(strcmp(known_value.title, ptr->title),
 		"failed field extraction");
 	fail_if(strcmp(known_value.id, ptr->id),
