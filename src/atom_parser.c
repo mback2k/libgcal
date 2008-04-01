@@ -42,6 +42,7 @@ int atom_entries(xmlDoc *document)
 		goto exit;
 
 #if defined(LIBXML_XPATH_ENABLED) && defined(LIBXML_SAX1_ENABLED)
+
 	xpath_obj = execute_xpath_expression(document,
 				       "//openSearch:totalResults/text()",
 				       NULL);
@@ -77,6 +78,7 @@ xmlXPathObject *atom_get_entries(xmlDoc *document)
 
 
 #if defined(LIBXML_XPATH_ENABLED) && defined(LIBXML_SAX1_ENABLED)
+
 	xpath_obj = execute_xpath_expression(document,
 				       "//atom:entry",
 				       NULL);
