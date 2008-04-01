@@ -15,6 +15,8 @@
 #define __GCAL_ATOM__
 
 #include <libxml/parser.h>
+#include <libxml/xpath.h>
+#include "gcal.h"
 
 /** Creates a document tree (required by other operations).
  *
@@ -45,5 +47,24 @@ void clean_doc_tree(xmlDoc **document);
  */
 int atom_entries(xmlDoc *document);
 
+
+/** Get a list of entry nodes from Atom feed.
+ *
+ *
+ * @param document Pointer to a libxml document.
+ *
+ * @return NULL on error, a pointer to xmlXPathObject on sucess.
+ */
+xmlXPathObject *atom_get_entries(xmlDoc *document);
+
+
+/** Extract information from a Atom entry (what, where, location, etc).
+ *
+ * @param entry Pointer to a libxml node.
+ *
+ * @return NULL on error, a pointer to a \ref gcal_entries structure.
+ * You should clean up it using \ref gcal_destroy_entry.
+ */
+struct gcal_entries *atom_extract_data(xmlNode *entry);
 
 #endif

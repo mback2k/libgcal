@@ -11,6 +11,7 @@
 #include "utest_xpath.h"
 #include "atom_parser.h"
 #include "xml_aux.h"
+#include "gcal.h"
 #include <string.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -71,13 +72,54 @@ START_TEST (test_entry_list)
 }
 END_TEST
 
+
+
+START_TEST (test_get_entries)
+{
+
+	xmlXPathObject *xpath_obj = NULL;
+	xmlDoc *doc = NULL;
+	xmlNodeSet *nodes;
+	struct gcal_entries known_value;
+	struct gcal_entries *ptr = NULL;
+	int res;
+
+	res = build_doc_tree(&doc, xml_data);
+	fail_if(res == -1, "failed to build document tree!");
+
+	xpath_obj = atom_get_entries(doc);
+	fail_if(xpath_obj == NULL, "failed to get entry node list!");
+
+	nodes = xpath_obj->nodesetval;
+	fail_if(nodes->nodeNr != 4, "should return 4 entries!");
+
+	ptr = atom_extract_data(nodes->nodeTab[0]);
+	fail_if(ptr == NULL, "failed to extract data from node!");
+
+	known_value.title = "an event with location";
+	known_value.id  = "http://www.google.com/calendar/feeds/gcal4tester%40gmail.com/private/full/saq81ktu4iqv7r20b8ctv70q7s";
+	known_value.edit_uri  = "http://www.google.com/calendar/feeds/gcal4tester%40gmail.com/private/full/saq81ktu4iqv7r20b8ctv70q7s/63342246051";
+	known_value.content  = "I should be there";
+	/* The event is not recurrent */
+	known_value.dt_recurrent  = "";
+	known_value.dt_start  = "2008-03-26T18:00:00.000-05:00";
+	known_value.dt_end = "2008-03-26T19:00:00.000-05:00";
+	known_value.where = "my house";
+	known_value.status = "http://schemas.google.com/g/2005#event.confirmed";
+	known_value.updated = "2008-03-26T20:20:51.000Z";
+
+	/* TODO: put code to test each field here */
+
+}
+END_TEST
+
 TCase *xpath_tcase_create(void)
 {
 	TCase *tc = NULL;
 	tc = tcase_create("xpath");
 	tcase_add_checked_fixture(tc, setup, teardown);
 	tcase_add_test(tc, test_entry_list);
-
+	tcase_add_test(tc, test_get_entries);
 	return tc;
 
 }

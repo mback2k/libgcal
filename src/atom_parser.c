@@ -67,3 +67,18 @@ cleanup:
 exit:
 	return result;
 }
+
+xmlXPathObject *atom_get_entries(xmlDoc *document)
+{
+
+	(void)document;
+	return NULL;
+
+}
+
+
+struct gcal_entries *atom_extract_data(xmlNode *entry)
+{
+	(void)entry;
+	return NULL;
+}

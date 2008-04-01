@@ -127,6 +127,12 @@ int gcal_entries_number(struct gcal_resource *ptr_gcal);
 struct gcal_entries *gcal_get_entries(struct gcal_resource *ptr_gcal,
 				      int *length);
 
+/** Cleanup memory of 1 entry structure pointer.
+ *
+ *
+ * @param entry A pointer to a \ref gcal_entries.
+ */
+void gcal_destroy_entry(struct gcal_entries *entry);
 
 /** Cleanup the memory of a vector of calendar entries created using
  * \ref gcal_get_entries.

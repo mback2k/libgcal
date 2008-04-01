@@ -378,24 +378,28 @@ static void clean_string(char *ptr_str)
 		free(ptr_str);
 }
 
+void gcal_destroy_entry(struct gcal_entries *entry)
+{
+	clean_string(entry->title);
+	clean_string(entry->id);
+	clean_string(entry->edit_uri);
+	clean_string(entry->content);
+	clean_string(entry->dt_recurrent);
+	clean_string(entry->dt_start);
+	clean_string(entry->dt_end);
+	clean_string(entry->where);
+	clean_string(entry->status);
+	clean_string(entry->updated);
+}
+
 void gcal_destroy_entries(struct gcal_entries *entries, size_t length)
 {
 	size_t i = 0;
 	if (!entries)
 		return;
 
-	for (; i < length; ++i) {
-		clean_string(entries[i].title);
-		clean_string(entries[i].id);
-		clean_string(entries[i].edit_uri);
-		clean_string(entries[i].content);
-		clean_string(entries[i].dt_recurrent);
-		clean_string(entries[i].dt_start);
-		clean_string(entries[i].dt_end);
-		clean_string(entries[i].where);
-		clean_string(entries[i].status);
-		clean_string(entries[i].updated);
-	}
+	for (; i < length; ++i)
+		gcal_destroy_entry((entries + i));
 
 	free(entries);
 }
