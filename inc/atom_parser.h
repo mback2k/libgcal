@@ -60,11 +60,13 @@ xmlXPathObject *atom_get_entries(xmlDoc *document);
 
 /** Extract information from a Atom entry (what, where, location, etc).
  *
+ *
  * @param entry Pointer to a libxml node.
  *
- * @return NULL on error, a pointer to a \ref gcal_entries structure.
- * You should clean up it using \ref gcal_destroy_entry.
+ * @param ptr_entry Pointer to a libgcal entry (see \ref gcal_entries).
+ *
+ * @return 0 on sucess, -1 otherwise.
  */
-struct gcal_entries *atom_extract_data(xmlNode *entry);
+int atom_extract_data(xmlNode *entry, struct gcal_entries *ptr_entry);
 
 #endif

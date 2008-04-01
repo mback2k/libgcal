@@ -80,7 +80,7 @@ START_TEST (test_get_entries)
 	xmlDoc *doc = NULL;
 	xmlNodeSet *nodes;
 	struct gcal_entries known_value;
-	struct gcal_entries *ptr = NULL;
+	struct gcal_entries extracted;
 	int res;
 
 	res = build_doc_tree(&doc, xml_data);
@@ -92,8 +92,8 @@ START_TEST (test_get_entries)
 	nodes = xpath_obj->nodesetval;
 	fail_if(nodes->nodeNr != 4, "should return 4 entries!");
 
-	ptr = atom_extract_data(nodes->nodeTab[0]);
-	fail_if(ptr == NULL, "failed to extract data from node!");
+	res = atom_extract_data(nodes->nodeTab[0], &extracted);
+	fail_if(res == -1, "failed to extract data from node!");
 
 	known_value.title = "an event with location";
 	known_value.id  = "http://www.google.com/calendar/feeds/gcal4tester%40gmail.com/private/full/saq81ktu4iqv7r20b8ctv70q7s";
@@ -107,31 +107,31 @@ START_TEST (test_get_entries)
 	known_value.status = "http://schemas.google.com/g/2005#event.confirmed";
 	known_value.updated = "2008-03-26T20:20:51.000Z";
 
-	fail_if(strcmp(known_value.title, ptr->title),
+	fail_if(strcmp(known_value.title, extracted.title),
 		"failed field extraction");
-	fail_if(strcmp(known_value.id, ptr->id),
+	fail_if(strcmp(known_value.id, extracted.id),
 		"failed field extraction");
-	fail_if(strcmp(known_value.edit_uri, ptr->edit_uri),
+	fail_if(strcmp(known_value.edit_uri, extracted.edit_uri),
 		"failed field extraction");
-	fail_if(strcmp(known_value.content, ptr->content),
+	fail_if(strcmp(known_value.content, extracted.content),
 		"failed field extraction");
-	fail_if(strcmp(known_value.dt_recurrent, ptr->dt_recurrent),
+	fail_if(strcmp(known_value.dt_recurrent, extracted.dt_recurrent),
 		"failed field extraction");
-	fail_if(strcmp(known_value.dt_start, ptr->dt_start),
+	fail_if(strcmp(known_value.dt_start, extracted.dt_start),
 		"failed field extraction");
-	fail_if(strcmp(known_value.dt_end, ptr->dt_end),
+	fail_if(strcmp(known_value.dt_end, extracted.dt_end),
 		"failed field extraction");
-	fail_if(strcmp(known_value.where, ptr->where),
+	fail_if(strcmp(known_value.where, extracted.where),
 		"failed field extraction");
-	fail_if(strcmp(known_value.status, ptr->status),
+	fail_if(strcmp(known_value.status, extracted.status),
 		"failed field extraction");
-	fail_if(strcmp(known_value.updated, ptr->updated),
+	fail_if(strcmp(known_value.updated, extracted.updated),
 		"failed field extraction");
 
 	if (xpath_obj)
 		xmlXPathFreeObject(xpath_obj);
 
-	gcal_destroy_entry(ptr);
+	gcal_destroy_entry(&extracted);
 	clean_doc_tree(&doc);
 }
 END_TEST

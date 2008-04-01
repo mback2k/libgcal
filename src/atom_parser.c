@@ -92,8 +92,13 @@ exit:
 }
 
 
-struct gcal_entries *atom_extract_data(xmlNode *entry)
+int atom_extract_data(xmlNode *entry, struct gcal_entries *ptr_entry)
 {
-	(void)entry;
-	return NULL;
+	int result = -1;
+	if (!entry || !ptr_entry)
+		goto exit;
+
+
+exit:
+	return result;
 }
