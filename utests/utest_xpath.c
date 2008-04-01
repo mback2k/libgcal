@@ -76,7 +76,6 @@ END_TEST
 
 START_TEST (test_get_entries)
 {
-
 	xmlXPathObject *xpath_obj = NULL;
 	xmlDoc *doc = NULL;
 	xmlNodeSet *nodes;
@@ -109,7 +108,32 @@ START_TEST (test_get_entries)
 	known_value.updated = "2008-03-26T20:20:51.000Z";
 
 	/* TODO: put code to test each field here */
+	fail_if(strcmp(known_value.title, ptr->title),
+		"failed field extraction");
+	fail_if(strcmp(known_value.id, ptr->id),
+		"failed field extraction");
+	fail_if(strcmp(known_value.edit_uri, ptr->edit_uri),
+		"failed field extraction");
+	fail_if(strcmp(known_value.content, ptr->content),
+		"failed field extraction");
+	fail_if(strcmp(known_value.dt_recurrent, ptr->dt_recurrent),
+		"failed field extraction");
+	fail_if(strcmp(known_value.dt_start, ptr->dt_start),
+		"failed field extraction");
+	fail_if(strcmp(known_value.dt_end, ptr->dt_end),
+		"failed field extraction");
+	fail_if(strcmp(known_value.where, ptr->where),
+		"failed field extraction");
+	fail_if(strcmp(known_value.status, ptr->status),
+		"failed field extraction");
+	fail_if(strcmp(known_value.updated, ptr->updated),
+		"failed field extraction");
 
+	if (xpath_obj)
+		xmlXPathFreeObject(xpath_obj);
+
+	gcal_destroy_entry(ptr);
+	clean_doc_tree(&doc);
 }
 END_TEST
 

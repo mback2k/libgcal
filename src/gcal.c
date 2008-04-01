@@ -380,6 +380,9 @@ static void clean_string(char *ptr_str)
 
 void gcal_destroy_entry(struct gcal_entries *entry)
 {
+	if (!entry)
+		return;
+
 	clean_string(entry->title);
 	clean_string(entry->id);
 	clean_string(entry->edit_uri);
