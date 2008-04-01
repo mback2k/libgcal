@@ -98,8 +98,9 @@ START_TEST (test_gcal_entries)
 	entries = gcal_get_entries(ptr_gcal, &result);
 	fail_if(entries == NULL, "Failed extracting the entries vector");
 
-	for (i = 0; i < result; ++i)
-		fail_if(!strcmp(entries[i].updated, entries_update[i]));
+	if (entries != NULL)
+		for (i = 0; i < result; ++i)
+			fail_if(!strcmp(entries[i].updated, entries_update[i]));
 
 	gcal_destroy_entries(entries, result);
 

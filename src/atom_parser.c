@@ -26,7 +26,9 @@ exit:
 
 void clean_doc_tree(xmlDoc **document)
 {
-	xmlFreeDoc(*document);
+	if (document)
+		if (*document)
+			xmlFreeDoc(*document);
 	*document = NULL;
 }
 

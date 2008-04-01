@@ -360,6 +360,7 @@ int gcal_entries_number(struct gcal_resource *ptr_gcal)
 
 	result = get_entries_number(ptr_gcal->document);
 	clean_dom_document(ptr_gcal->document);
+	ptr_gcal->document = NULL;
 
 exit:
 	return result;
