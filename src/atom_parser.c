@@ -70,9 +70,22 @@ exit:
 
 xmlXPathObject *atom_get_entries(xmlDoc *document)
 {
+	xmlXPathObject *xpath_obj = NULL;
 
-	(void)document;
-	return NULL;
+	if (!document)
+		goto exit;
+
+
+#if defined(LIBXML_XPATH_ENABLED) && defined(LIBXML_SAX1_ENABLED)
+	xpath_obj = execute_xpath_expression(document,
+				       "//atom:entry",
+				       NULL);
+
+
+#endif
+
+exit:
+	return xpath_obj;
 
 }
 
