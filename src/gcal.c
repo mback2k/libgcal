@@ -348,9 +348,6 @@ int gcal_entries_number(struct gcal_resource *ptr_gcal)
 	if (!ptr_gcal)
 		goto exit;
 
-	/* FIXME: create a flag to signal that the structure has
-	 * a valid atom xml stream.
-	 */
 	if (!ptr_gcal->buffer || !ptr_gcal->has_xml)
 		goto exit;
 
