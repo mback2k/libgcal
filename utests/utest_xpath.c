@@ -99,7 +99,7 @@ START_TEST (test_get_entries)
 	known_value.id  = "http://www.google.com/calendar/feeds/gcal4tester%40gmail.com/private/full/saq81ktu4iqv7r20b8ctv70q7s";
 	known_value.edit_uri  = "http://www.google.com/calendar/feeds/gcal4tester%40gmail.com/private/full/saq81ktu4iqv7r20b8ctv70q7s/63342246051";
 	known_value.content  = "I should be there";
-	/* The event is not recurrent */
+	/* The event is not recurrent: for empty fields, I use a empty string */
 	known_value.dt_recurrent  = "";
 	known_value.dt_start  = "2008-03-26T18:00:00.000-05:00";
 	known_value.dt_end = "2008-03-26T19:00:00.000-05:00";
@@ -109,10 +109,6 @@ START_TEST (test_get_entries)
 
 	fail_if(strcmp(known_value.title, extracted.title),
 		"failed field extraction");
-	/* FIXME: remove this! */
-	//printf("heaven = %s\n", extracted.title);
-	return;
-
 	fail_if(strcmp(known_value.id, extracted.id),
 		"failed field extraction");
 	fail_if(strcmp(known_value.edit_uri, extracted.edit_uri),

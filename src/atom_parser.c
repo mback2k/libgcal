@@ -90,11 +90,12 @@ exit:
 	return xpath_obj;
 
 }
-static char *extract_and_check(xmlDoc *doc, char *xpath_expression)
+static char *extract_and_check(xmlDoc *doc, char *xpath_expression, char *attr)
 {
 	xmlXPathObject *xpath_obj;
 	char *result = NULL;
 	xmlNodeSet *node;
+	xmlChar *tmp;
 	xpath_obj = execute_xpath_expression(doc,
 					     xpath_expression,
 					     NULL);
@@ -105,14 +106,30 @@ static char *extract_and_check(xmlDoc *doc, char *xpath_expression)
 	}
 
 	node = xpath_obj->nodesetval;
-	if (node->nodeNr != 1)
+	/* Empty fields are set to a empty string */
+	if (!node) {
+		result = strdup("");
+		goto cleanup;
+	} else if (node->nodeNr != 1) {
+		result = strdup("");
+		goto cleanup;
+	}
+
+	if ((node->nodeTab[0]->type != XML_TEXT_NODE) &&
+	    (node->nodeTab[0]->type != XML_ELEMENT_NODE))
 		goto cleanup;
 
-	if (strcmp(node->nodeTab[0]->name, "text") ||
-	    (node->nodeTab[0]->type != XML_TEXT_NODE))
-		goto cleanup;
-
-	result = strdup(node->nodeTab[0]->content);
+	if (node->nodeTab[0]->type == XML_TEXT_NODE) {
+		if (node->nodeTab[0]->content)
+			result = strdup(node->nodeTab[0]->content);
+	} else if ((node->nodeTab[0]->type == XML_ELEMENT_NODE) &&
+		   (attr != NULL)) {
+		tmp = xmlGetProp(node->nodeTab[0], attr);
+		if (!tmp)
+			goto cleanup;
+		result = strdup(tmp);
+		xmlFree(tmp);
+	}
 
 cleanup:
 	xmlXPathFreeObject(xpath_obj);
@@ -144,23 +161,78 @@ int atom_extract_data(xmlNode *entry, struct gcal_entries *ptr_entry)
 
 	/* Gets the 'what' calendar field */
 	ptr_entry->title = extract_and_check(doc,
-					     "//atom:entry/atom:title/text()");
+					     "//atom:entry/atom:title/text()",
+					     NULL);
 	if (!ptr_entry->title)
 		goto cleanup;
 
 	/* Gets the 'id' calendar field */
+	ptr_entry->id = extract_and_check(doc,
+					  "//atom:entry/atom:id/text()",
+					  NULL);
+	if (!ptr_entry->id)
+		goto cleanup;
 
-	/* Gets the 'edit url' calendar field */
+	/* Gets the 'edit url' calendar field
+	 * FIXME: I dont known how to extract attribute value from
+	 * XML_ATTRIBUTE_NODE. If I discover later how to do it, it
+	 * should work with the XPath expression:
+	 * '//atom:entry/atom:link[@rel='edit']/@href'
+	 */
+	ptr_entry->edit_uri = extract_and_check(doc, "//atom:entry/"
+						"atom:link[@rel='edit']",
+						"href");
+	if (!ptr_entry->edit_uri)
+		goto cleanup;
 
 	/* Gets the 'content' calendar field */
+	ptr_entry->content = extract_and_check(doc,
+					       "//atom:entry/"
+					       "atom:content/text()",
+					       NULL);
 
 	/* Gets the 'recurrent' calendar field */
+	ptr_entry->dt_recurrent = extract_and_check(doc,
+						    "//atom:entry/"
+						    "gd:recurrence/text()",
+						    NULL);
 
 	/* Gets the when 'start' calendar field */
+	ptr_entry->dt_start = extract_and_check(doc,
+						"//atom:entry/gd:when",
+						"startTime");
+	if (!ptr_entry->dt_start)
+		goto cleanup;
 
 	/* Gets the when 'end' calendar field */
+	ptr_entry->dt_end = extract_and_check(doc,
+					      "//atom:entry/gd:when",
+					      "endTime");
+	if (!ptr_entry->dt_end)
+		goto cleanup;
+
 
 	/* Gets the 'where' calendar field */
+	ptr_entry->where = extract_and_check(doc,
+					     "//atom:entry/"
+					     "gd:where",
+					     "valueString");
+
+	/* Gets the 'status' calendar field */
+	ptr_entry->status = extract_and_check(doc,
+					      "//atom:entry/gd:eventStatus",
+					      "value");
+	if (!ptr_entry->status)
+		goto cleanup;
+
+
+	/* Gets the 'updated' calendar field */
+	ptr_entry->updated = extract_and_check(doc,
+					       "//atom:entry/"
+					       "atom:updated/text()",
+					       NULL);
+	if (!ptr_entry->id)
+		goto cleanup;
 
 	result = 0;
 

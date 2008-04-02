@@ -60,6 +60,7 @@ xmlXPathObject *atom_get_entries(xmlDoc *document);
 
 /** Extract information from a Atom entry (what, where, location, etc).
  *
+ * \todo check which fields are optional and which are mandatory
  *
  * @param entry Pointer to a libxml node.
  *
