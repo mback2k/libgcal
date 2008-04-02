@@ -90,15 +90,41 @@ exit:
 	return xpath_obj;
 
 }
+static char *extract_and_check(xmlDoc *doc, char *xpath_expression)
+{
+	xmlXPathObject *xpath_obj;
+	char *result = NULL;
+	xmlNodeSet *node;
+	xpath_obj = execute_xpath_expression(doc,
+					     xpath_expression,
+					     NULL);
 
+	if (!xpath_obj) {
+		fprintf(stderr, "extract_and_check: failed to extract data");
+		goto exit;
+	}
+
+	node = xpath_obj->nodesetval;
+	if (node->nodeNr != 1)
+		goto cleanup;
+
+	if (strcmp(node->nodeTab[0]->name, "text") ||
+	    (node->nodeTab[0]->type != XML_TEXT_NODE))
+		goto cleanup;
+
+	result = strdup(node->nodeTab[0]->content);
+
+cleanup:
+	xmlXPathFreeObject(xpath_obj);
+exit:
+	return result;
+}
 
 int atom_extract_data(xmlNode *entry, struct gcal_entries *ptr_entry)
 {
 	int result = -1;
 	xmlDoc *doc = NULL;
 	xmlNode *copy = NULL;
-	xmlNodeSet *node;
-	xmlXPathObject *xpath_obj = NULL;
 
 	if (!entry || !ptr_entry)
 		goto exit;
@@ -117,26 +143,10 @@ int atom_extract_data(xmlNode *entry, struct gcal_entries *ptr_entry)
 	xmlDocSetRootElement(doc, copy);
 
 	/* Gets the 'what' calendar field */
-	xpath_obj = execute_xpath_expression(doc,
-					     "//atom:entry/atom:title/text()",
-					     NULL);
-
-	if (!xpath_obj) {
-		fprintf(stderr, "atom_extract_data: failed to extract data");
-		goto cleanup;
-	}
-
-	node = xpath_obj->nodesetval;
-	if (node->nodeNr != 1)
-		goto error;
-
-	if (strcmp(node->nodeTab[0]->name, "text") ||
-	    (node->nodeTab[0]->type != XML_TEXT_NODE))
-		goto error;
-
-	ptr_entry->title = strdup(node->nodeTab[0]->content);
+	ptr_entry->title = extract_and_check(doc,
+					     "//atom:entry/atom:title/text()");
 	if (!ptr_entry->title)
-		goto error;
+		goto cleanup;
 
 	/* Gets the 'id' calendar field */
 
@@ -153,9 +163,6 @@ int atom_extract_data(xmlNode *entry, struct gcal_entries *ptr_entry)
 	/* Gets the 'where' calendar field */
 
 	result = 0;
-
-error:
-	xmlXPathFreeObject(xpath_obj);
 
 cleanup:
 
