@@ -369,7 +369,7 @@ exit:
 }
 
 struct gcal_entries *gcal_get_entries(struct gcal_resource *ptr_gcal,
-				      int *length)
+				      size_t *length)
 {
 
 	int result = -1;

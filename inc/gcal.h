@@ -11,6 +11,9 @@
 #ifndef __GCAL_LIB__
 #define __GCAL_LIB__
 
+/* For size_t */
+#include <stdlib.h>
+
 /** Library structure. It holds resources (curl, buffer, etc).
  */
 struct gcal_resource;
@@ -125,7 +128,7 @@ int gcal_entries_number(struct gcal_resource *ptr_gcal);
  * @return A pointer on sucess, NULL otherwise.
  */
 struct gcal_entries *gcal_get_entries(struct gcal_resource *ptr_gcal,
-				      int *length);
+				      size_t *length);
 
 /** Cleanup memory of 1 entry structure pointer.
  *
