@@ -68,6 +68,12 @@ struct gcal_resource {
 
 };
 
+static void reset_buffer(struct gcal_resource *ptr)
+{
+	ptr->length = 256;
+	ptr->buffer = (char *) calloc(ptr->length, sizeof(char));
+}
+
 struct gcal_resource *gcal_initialize(void)
 {
 
@@ -83,8 +89,7 @@ struct gcal_resource *gcal_initialize(void)
 	ptr->user = NULL;
 	ptr->url = NULL;
 	ptr->auth = NULL;
-	ptr->length = 256;
-	ptr->buffer = (char *) calloc(ptr->length, sizeof(char));
+	reset_buffer(ptr);
 	ptr->curl = curl_easy_init();
 
 	if (!(ptr->buffer) || (!(ptr->curl))) {
@@ -366,9 +371,50 @@ exit:
 struct gcal_entries *gcal_get_entries(struct gcal_resource *ptr_gcal,
 				      int *length)
 {
-	(void)ptr_gcal;
-	(void)length;
-	return NULL;
+
+	int result = -1;
+	struct gcal_entries *ptr_res = NULL;
+
+	if (!ptr_gcal)
+		goto exit;
+
+	if (!ptr_gcal->buffer || !ptr_gcal->has_xml)
+		goto exit;
+
+	/* create a doc and free atom xml buffer
+	 * TODO: I'm not completely sure if reseting the buffer
+	 * is a good idea (say that the user wants to do something else
+	 * using the atom stream?).
+	 */
+	ptr_gcal->document = build_dom_document(ptr_gcal->buffer);
+	if (!ptr_gcal->document)
+		goto exit;
+	reset_buffer(ptr_gcal);
+
+	result = get_entries_number(ptr_gcal->document);
+	if (result == -1)
+		goto cleanup;
+
+	ptr_res = malloc(sizeof(struct gcal_entries) * result);
+	if (!ptr_res)
+		goto cleanup;
+
+	*length = result;
+	result = extract_all_entries(ptr_gcal->document, ptr_res, result);
+	if (result == -1) {
+		free(ptr_res);
+		ptr_res = NULL;
+	}
+
+	goto exit;
+
+cleanup:
+	clean_dom_document(ptr_gcal->document);
+	ptr_gcal->document = NULL;
+
+exit:
+
+	return ptr_res;
 }
 
 

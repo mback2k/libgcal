@@ -12,6 +12,7 @@
  */
 
 #include <libxml/parser.h>
+#include "gcal.h"
 
 /** Abstract type to represent a DOM xml tree (a thin layer over xmlDoc).
  */
@@ -61,6 +62,10 @@ void clean_dom_document(dom_document *doc);
  * @return -1 on error or the number of entries.
  */
 int get_entries_number(dom_document *doc);
+
+
+int extract_all_entries(dom_document *doc,
+			struct gcal_entries *data_extract, int length);
 
 
 #endif

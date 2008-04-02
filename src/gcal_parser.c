@@ -100,3 +100,20 @@ int get_entries_number(dom_document *doc)
 exit:
 	return result;
 }
+
+int extract_all_entries(dom_document *doc,
+			struct gcal_entries *data_extract, int length)
+{
+
+	int result = -1;
+	(void) doc;
+	(void) data_extract;
+	(void) length;
+
+	/* TODO: get the entry node list */
+
+
+	/* TODO: extract the fields */
+
+	return result;
+}
