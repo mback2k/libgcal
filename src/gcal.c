@@ -70,6 +70,8 @@ struct gcal_resource {
 
 static void reset_buffer(struct gcal_resource *ptr)
 {
+	if (ptr->buffer)
+		free(ptr->buffer);
 	ptr->length = 256;
 	ptr->buffer = (char *) calloc(ptr->length, sizeof(char));
 }
@@ -89,6 +91,7 @@ struct gcal_resource *gcal_initialize(void)
 	ptr->user = NULL;
 	ptr->url = NULL;
 	ptr->auth = NULL;
+	ptr->buffer = NULL;
 	reset_buffer(ptr);
 	ptr->curl = curl_easy_init();
 
