@@ -105,15 +105,38 @@ int extract_all_entries(dom_document *doc,
 			struct gcal_entries *data_extract, int length)
 {
 
-	int result = -1;
+	int result = -1, i;
+	xmlXPathObject *xpath_obj = NULL;
+	xmlNodeSet *nodes;
 	(void) doc;
 	(void) data_extract;
 	(void) length;
 
-	/* TODO: get the entry node list */
+	/* get the entry node list */
+	xpath_obj = atom_get_entries(doc);
+	if (!xpath_obj)
+		goto exit;
+	nodes = xpath_obj->nodesetval;
+	if (!nodes)
+		goto exit;
 
+	if (length != nodes->nodeNr) {
+		fprintf(stderr, "extract_all_entries: Size mismatch!");
+		goto cleanup;
+	}
 
-	/* TODO: extract the fields */
+	/* extract the fields */
+	for (i = 0; i < length; ++i) {
+		result = atom_extract_data(nodes->nodeTab[i], &data_extract[i]);
+		if (result == -1)
+			goto cleanup;
+	}
 
+	result = 0;
+
+cleanup:
+	xmlXPathFreeObject(xpath_obj);
+
+exit:
 	return result;
 }
