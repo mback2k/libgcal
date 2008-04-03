@@ -110,6 +110,38 @@ END_TEST
 
 
 
+START_TEST (test_gcal_naive)
+{
+	/* This test uses a user/password invalid. The purpose is to check
+	 * if the library will behave correctly.
+	 */
+	size_t result, i;
+	struct gcal_resource *local_gcal;
+	struct gcal_entries *entries;
+
+	local_gcal = gcal_initialize();
+	result = gcal_get_authentication("username", "a_password", local_gcal);
+	fail_if((signed)result != -1, "Authentication must fail!");
+
+	result = gcal_dump(local_gcal);
+	fail_if((signed)result != -1, "Dump must fail!");
+
+	entries = gcal_get_entries(local_gcal, &result);
+	fail_if(entries, "Getting the calendar field data must fail!");
+
+	if (entries)
+		for (i = 0; i < result; ++i)
+			printf("%s\t%s\n", entries[i].title,
+			       entries[i].updated);
+
+	gcal_destroy_entries(entries, result);
+	gcal_destroy(local_gcal);
+
+}
+END_TEST
+
+
+
 TCase *gcal_tcase_create(void)
 {
 	TCase *tc = NULL;
@@ -121,6 +153,7 @@ TCase *gcal_tcase_create(void)
 	tcase_add_test(tc, test_url_parse);
 	tcase_add_test(tc, test_gcal_dump);
 	tcase_add_test(tc, test_gcal_entries);
+	tcase_add_test(tc, test_gcal_naive);
 	return tc;
 }
 
