@@ -317,9 +317,15 @@ exit:
 
 int gcal_dump(struct gcal_resource *ptr_gcal)
 {
-	int result = 0;
+	int result = -1;
 	char *buffer = NULL;
 	int length = 0;
+
+	if (!ptr_gcal)
+		goto exit;
+	/* Failed to get authentication token */
+	if (!ptr_gcal->auth)
+		goto exit;
 
 	length = sizeof(GCAL_EVENT_START) + sizeof(GCAL_EVENT_END) +
 		strlen(ptr_gcal->user) + 1;
@@ -354,6 +360,9 @@ int gcal_entries_number(struct gcal_resource *ptr_gcal)
 	int result = -1;
 
 	if (!ptr_gcal)
+		goto exit;
+	/* Failed to get authentication token */
+	if (!ptr_gcal->auth)
 		goto exit;
 
 	if (!ptr_gcal->buffer || !ptr_gcal->has_xml)
