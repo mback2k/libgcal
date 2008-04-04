@@ -3,7 +3,7 @@
 
 /**
  * @file   xml_aux.h
- * @author teste
+ * @author Adenilson Cavalcanti da Silva <adenilson.silva@indt.org.br>
  * @date   Fri Mar 28 14:31:21 2008
  *
  * @brief  Auxiliary code to parse XML using XPath, iIt depends on libxml.

@@ -1,6 +1,6 @@
 /**
  * @file   atom_parser.h
- * @author teste
+ * @author Adenilson Cavalcanti da Silva <adenilson.silva@indt.org.br>
  * @date   Fri Mar 28 08:07:43 2008
  *
  * @brief  This is the Atom XML feed parser, it provides functions

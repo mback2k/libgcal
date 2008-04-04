@@ -64,6 +64,21 @@ void clean_dom_document(dom_document *doc);
 int get_entries_number(dom_document *doc);
 
 
+/** Receiving a DOM document of the Atom stream, it will extract all the event
+ * entries and parse then, storing each entry field in a vector of
+ * \ref gcal_entries.
+ *
+ * It depends on \ref atom_extract_data and \ref atom_get_entries.
+ *
+ * @param doc A document pointer with the Atom stream.
+ *
+ * @param data_extract A pointer to a pre-allocated vector \ref gcal_entries.
+ *
+ * @param length Its length, should be the same as the number of entries. See
+ * also \ref get_entries_number.
+ *
+ * @return 0 on success, -1 on error.
+ */
 int extract_all_entries(dom_document *doc,
 			struct gcal_entries *data_extract, int length);
 
