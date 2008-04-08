@@ -158,13 +158,13 @@ exit:
 	return size;
 }
 
-static int check_request_error(struct gcal_resource *ptr_gcal, int code,
+static int check_request_error(CURL *curl_ctx, int code,
 			       int expected_answer)
 {
 	long request_stat;
 	int result = 0;
 
-	curl_easy_getinfo(ptr_gcal->curl, CURLINFO_HTTP_CODE, &request_stat);
+	curl_easy_getinfo(curl_ctx, CURLINFO_HTTP_CODE, &request_stat);
 	if (code || (request_stat != expected_answer)) {
 		fprintf(stderr, "%s\n%s%s\n%s%d\n",
 			"gcal_get_authentication: failed request.",
@@ -175,7 +175,6 @@ static int check_request_error(struct gcal_resource *ptr_gcal, int code,
 
 	return result;
 }
-
 
 int gcal_get_authentication(char *user, char *password,
 			    struct gcal_resource *ptr_gcal)
@@ -213,13 +212,14 @@ int gcal_get_authentication(char *user, char *password,
 					     "application/x-www-form-urlencoded"
 					     );
 	curl_easy_setopt(ptr_gcal->curl, CURLOPT_HTTPHEADER, response_headers);
+	curl_easy_setopt(ptr_gcal->curl, CURLOPT_POST, 1);
 	curl_easy_setopt(ptr_gcal->curl, CURLOPT_URL, GCAL_URL);
 	curl_easy_setopt(ptr_gcal->curl, CURLOPT_POSTFIELDS, post);
 	curl_easy_setopt(ptr_gcal->curl, CURLOPT_WRITEFUNCTION, write_cb);
 	curl_easy_setopt(ptr_gcal->curl, CURLOPT_WRITEDATA, (void *)ptr_gcal);
 
 	res = curl_easy_perform(ptr_gcal->curl);
-	if (check_request_error(ptr_gcal, res, GCAL_DEFAULT_ANSWER))
+	if (check_request_error(ptr_gcal->curl, res, GCAL_DEFAULT_ANSWER))
 		goto cleanup;
 
 	/* gcalendar server returns a string like this:
@@ -282,7 +282,7 @@ static int get_follow_redirection(struct gcal_resource *ptr_gcal,
 	curl_easy_setopt(ptr_gcal->curl, CURLOPT_WRITEDATA, (void *)ptr_gcal);
 
 	result = curl_easy_perform(ptr_gcal->curl);
-	if (check_request_error(ptr_gcal, result, GCAL_EVENT_ANSWER)) {
+	if (check_request_error(ptr_gcal->curl, result, GCAL_EVENT_ANSWER)) {
 		result = -1;
 		goto cleanup;
 	}
@@ -296,7 +296,7 @@ static int get_follow_redirection(struct gcal_resource *ptr_gcal,
 	clean_buffer(ptr_gcal);
 	curl_easy_setopt(ptr_gcal->curl, CURLOPT_URL, ptr_gcal->url);
 	result = curl_easy_perform(ptr_gcal->curl);
-	if ((result = check_request_error(ptr_gcal, result,
+	if ((result = check_request_error(ptr_gcal->curl, result,
 					  GCAL_DEFAULT_ANSWER))) {
 		result = -1;
 		goto cleanup;
