@@ -31,12 +31,16 @@
 static const char GCAL_URL[] = "https://www.google.com/accounts/ClientLogin";
 static const char GCAL_LIST[] = "http://www.google.com/calendar/feeds/"
 	"default/allcalendars/full";
+static const char GCAL_EDIT_URL[] = "http://www.google.com/calendar/feeds"
+	"/default/private/full";
 static const char GCAL_EVENT_START[] = "http://www.google.com/calendar/feeds/";
 static const char GCAL_EVENT_END[] = "@gmail.com/private/full";
 
 
 static const int GCAL_DEFAULT_ANSWER = 200;
-static const int GCAL_EVENT_ANSWER = 302;
+static const int GCAL_REDIRECT_ANSWER = 302;
+static const int GCAL_EDIT_ANSWER = 201;
+
 static const char EMAIL_FIELD[] = "Email=";
 static const char EMAIL_ADDRESS[] = "@gmail.com";
 static const char PASSWD_FIELD[] = "Passwd=";
@@ -178,14 +182,18 @@ static int check_request_error(CURL *curl_ctx, int code,
 
 
 static int http_post(struct gcal_resource *ptr_gcal, const char *url,
-		     char *header, char *post_data, const int expected_answer)
+		     char *header, char *content_type, char *post_data,
+		     const int expected_answer)
 {
 	int result = -1;
 	CURLcode res;
 	CURL *curl_ctx = ptr_gcal->curl;
 	struct curl_slist *response_headers = NULL;
 
-	response_headers = curl_slist_append(response_headers, header);
+	if (header)
+		response_headers = curl_slist_append(response_headers, header);
+	if (content_type)
+		response_headers = curl_slist_append(response_headers, content_type);
 	if (!response_headers)
 		return result;
 
@@ -193,6 +201,7 @@ static int http_post(struct gcal_resource *ptr_gcal, const char *url,
 	curl_easy_setopt(curl_ctx, CURLOPT_POST, 1);
 	curl_easy_setopt(curl_ctx, CURLOPT_URL, url);
 	curl_easy_setopt(curl_ctx, CURLOPT_POSTFIELDS, post_data);
+	curl_easy_setopt(curl_ctx, CURLOPT_POSTFIELDSIZE, strlen(post_data));
 	curl_easy_setopt(curl_ctx, CURLOPT_WRITEFUNCTION, write_cb);
 	curl_easy_setopt(curl_ctx, CURLOPT_WRITEDATA, (void *)ptr_gcal);
 
@@ -236,6 +245,7 @@ int gcal_get_authentication(char *user, char *password,
 
 
 	result = http_post(ptr_gcal, GCAL_URL,
+			   NULL,
 			   "application/x-www-form-urlencoded",
 			   post, GCAL_DEFAULT_ANSWER);
 	if (result)
@@ -299,7 +309,7 @@ static int get_follow_redirection(struct gcal_resource *ptr_gcal,
 	curl_easy_setopt(ptr_gcal->curl, CURLOPT_WRITEDATA, (void *)ptr_gcal);
 
 	result = curl_easy_perform(ptr_gcal->curl);
-	if (check_request_error(ptr_gcal->curl, result, GCAL_EVENT_ANSWER)) {
+	if (check_request_error(ptr_gcal->curl, result, GCAL_REDIRECT_ANSWER)) {
 		result = -1;
 		goto cleanup;
 	}
@@ -484,8 +494,36 @@ int gcal_create_event(struct gcal_entries *entries,
 		      struct gcal_resource *ptr_gcal)
 {
 	int result = -1;
-	(void) entries;
-	(void) ptr_gcal;
+	int length = 0;
+	char *tmp_buffer = NULL, *xml_entry = "foo";
 
+	if (!entries || !ptr_gcal)
+		goto exit;
+
+	if (!ptr_gcal->auth)
+		goto exit;
+
+	/* Must cleanup HTTP buffer between requests */
+	clean_buffer(ptr_gcal);
+
+	length = strlen(ptr_gcal->auth) + sizeof(HEADER_GET) + 1;
+	tmp_buffer = (char *) malloc(length);
+	if (!tmp_buffer)
+		goto exit;
+
+	snprintf(tmp_buffer, length - 1, "%s%s", HEADER_GET, ptr_gcal->auth);
+
+	/* TODO: mount XML entry */
+	result = http_post(ptr_gcal, GCAL_EDIT_URL, tmp_buffer,
+			   "application/atom+xml",
+			   xml_entry, GCAL_REDIRECT_ANSWER);
+	if (result == -1)
+		goto cleanup;
+
+
+cleanup:
+
+	free(tmp_buffer);
+exit:
 	return result;
 }
