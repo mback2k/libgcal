@@ -23,8 +23,8 @@
 static Suite *core_suite(void)
 {
 	Suite *s = suite_create("core");
-	suite_add_tcase(s, gcal_tcase_create());
-	suite_add_tcase(s, xpath_tcase_create());
+// 	suite_add_tcase(s, gcal_tcase_create());
+// 	suite_add_tcase(s, xpath_tcase_create());
 	suite_add_tcase(s, edit_tcase_create());
 	return s;
 }

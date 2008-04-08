@@ -497,9 +497,8 @@ int gcal_create_event(struct gcal_entries *entries,
 {
 	int result = -1;
 	int length = 0;
-	char *tmp_buffer = NULL, *tmp_buffer2 = NULL, *xml_entry = "foo";
-
-	(void)tmp_buffer2;
+	char *h_auth = NULL, *h_length = NULL, *xml_entry = "foobar", *tmp;
+	const char header[] = "Content-length: ";
 
 	if (!entries || !ptr_gcal)
 		goto exit;
@@ -510,18 +509,32 @@ int gcal_create_event(struct gcal_entries *entries,
 	/* Must cleanup HTTP buffer between requests */
 	clean_buffer(ptr_gcal);
 
-	length = strlen(ptr_gcal->auth) + sizeof(HEADER_GET) + 1;
-	tmp_buffer = (char *) malloc(length);
-	if (!tmp_buffer)
+	/* Mounts content length string */
+	length = strlen(xml_entry) + strlen(header) + 1;
+	h_length = (char *) malloc(length) ;
+	if (!h_length)
 		goto exit;
+	strncpy(h_length, header, sizeof(header));
+	tmp = h_length + sizeof(header) - 1;
+	snprintf(tmp, length - (sizeof(header) + 1), "%d", strlen(xml_entry));
 
-	snprintf(tmp_buffer, length - 1, "%s%s", HEADER_GET, ptr_gcal->auth);
+	/* Mounts authentication header string */
+	length = strlen(ptr_gcal->auth) + sizeof(HEADER_GET) + 1;
+	h_auth = (char *) malloc(length);
+	if (!h_auth)
+		goto exit;
+	snprintf(h_auth, length - 1, "%s%s", HEADER_GET, ptr_gcal->auth);
 
-	/* TODO: mount XML entry and dynamically create the Content-length */
+
+	/* TODO: to mount XML entry */
+
+
+
+	/* Request data */
 	result = http_post(ptr_gcal, GCAL_EDIT_URL,
 			   "Content-Type: application/atom+xml",
-			   "Content-length: 3",
-			   tmp_buffer,
+			   h_length,
+			   h_auth,
 			   xml_entry, GCAL_REDIRECT_ANSWER);
 	//printf("buffer = %s\n", ptr_gcal->buffer);
 	if (result == -1)
@@ -530,7 +543,8 @@ int gcal_create_event(struct gcal_entries *entries,
 
 cleanup:
 
-	free(tmp_buffer);
+	free(h_length);
+	free(h_auth);
 exit:
 	return result;
 }
