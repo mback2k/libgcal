@@ -147,4 +147,7 @@ void gcal_destroy_entry(struct gcal_entries *entry);
 void gcal_destroy_entries(struct gcal_entries *entries, size_t length);
 
 
+int gcal_create_event(struct gcal_entries *entries,
+		      struct gcal_resource *ptr_gcal);
+
 #endif

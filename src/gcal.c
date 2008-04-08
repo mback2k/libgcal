@@ -463,3 +463,12 @@ void gcal_destroy_entries(struct gcal_entries *entries, size_t length)
 	free(entries);
 }
 
+int gcal_create_event(struct gcal_entries *entries,
+		      struct gcal_resource *ptr_gcal)
+{
+	int result = -1;
+	(void) entries;
+	(void) ptr_gcal;
+
+	return result;
+}
