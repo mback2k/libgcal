@@ -177,8 +177,8 @@ static int check_request_error(CURL *curl_ctx, int code,
 }
 
 
-static int http_post(struct gcal_resource *ptr_gcal, char *header,
-		     char *post_data)
+static int http_post(struct gcal_resource *ptr_gcal, const char *url,
+		     char *header, char *post_data, const int expected_answer)
 {
 	int result = -1;
 	CURLcode res;
@@ -191,13 +191,13 @@ static int http_post(struct gcal_resource *ptr_gcal, char *header,
 
 	curl_easy_setopt(curl_ctx, CURLOPT_HTTPHEADER, response_headers);
 	curl_easy_setopt(curl_ctx, CURLOPT_POST, 1);
-	curl_easy_setopt(curl_ctx, CURLOPT_URL, GCAL_URL);
+	curl_easy_setopt(curl_ctx, CURLOPT_URL, url);
 	curl_easy_setopt(curl_ctx, CURLOPT_POSTFIELDS, post_data);
 	curl_easy_setopt(curl_ctx, CURLOPT_WRITEFUNCTION, write_cb);
 	curl_easy_setopt(curl_ctx, CURLOPT_WRITEDATA, (void *)ptr_gcal);
 
 	res = curl_easy_perform(curl_ctx);
-	result = check_request_error(ptr_gcal->curl, res, GCAL_DEFAULT_ANSWER);
+	result = check_request_error(ptr_gcal->curl, res, expected_answer);
 	curl_slist_free_all(response_headers);
 
 	return result;
@@ -235,8 +235,9 @@ int gcal_get_authentication(char *user, char *password,
 		 PASSWD_FIELD, password, TRAILING_FIELD);
 
 
-	result = http_post(ptr_gcal, "application/x-www-form-urlencoded",
-			   post);
+	result = http_post(ptr_gcal, GCAL_URL,
+			   "application/x-www-form-urlencoded",
+			   post, GCAL_DEFAULT_ANSWER);
 	if (result)
 		goto cleanup;
 
