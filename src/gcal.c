@@ -545,6 +545,7 @@ cleanup:
 
 	free(h_length);
 	free(h_auth);
+
 exit:
 	return result;
 }
