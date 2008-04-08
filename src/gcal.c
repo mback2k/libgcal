@@ -176,15 +176,42 @@ static int check_request_error(CURL *curl_ctx, int code,
 	return result;
 }
 
+
+static int http_post(struct gcal_resource *ptr_gcal, char *header,
+		     char *post_data)
+{
+	int result = -1;
+	CURLcode res;
+	CURL *curl_ctx = ptr_gcal->curl;
+	struct curl_slist *response_headers = NULL;
+
+	response_headers = curl_slist_append(response_headers, header);
+	if (!response_headers)
+		return result;
+
+	curl_easy_setopt(curl_ctx, CURLOPT_HTTPHEADER, response_headers);
+	curl_easy_setopt(curl_ctx, CURLOPT_POST, 1);
+	curl_easy_setopt(curl_ctx, CURLOPT_URL, GCAL_URL);
+	curl_easy_setopt(curl_ctx, CURLOPT_POSTFIELDS, post_data);
+	curl_easy_setopt(curl_ctx, CURLOPT_WRITEFUNCTION, write_cb);
+	curl_easy_setopt(curl_ctx, CURLOPT_WRITEDATA, (void *)ptr_gcal);
+
+	res = curl_easy_perform(curl_ctx);
+	result = check_request_error(ptr_gcal->curl, res, GCAL_DEFAULT_ANSWER);
+	curl_slist_free_all(response_headers);
+
+	return result;
+
+}
+
+
 int gcal_get_authentication(char *user, char *password,
 			    struct gcal_resource *ptr_gcal)
 {
-	CURLcode res;
-	struct curl_slist *response_headers = NULL;
+
 	int post_len = 0;
 	char *post = NULL;
 	int result = -1;
-
 	int count = 0;
 	char *ptr = NULL;
 
@@ -208,18 +235,9 @@ int gcal_get_authentication(char *user, char *password,
 		 PASSWD_FIELD, password, TRAILING_FIELD);
 
 
-	response_headers = curl_slist_append(response_headers,
-					     "application/x-www-form-urlencoded"
-					     );
-	curl_easy_setopt(ptr_gcal->curl, CURLOPT_HTTPHEADER, response_headers);
-	curl_easy_setopt(ptr_gcal->curl, CURLOPT_POST, 1);
-	curl_easy_setopt(ptr_gcal->curl, CURLOPT_URL, GCAL_URL);
-	curl_easy_setopt(ptr_gcal->curl, CURLOPT_POSTFIELDS, post);
-	curl_easy_setopt(ptr_gcal->curl, CURLOPT_WRITEFUNCTION, write_cb);
-	curl_easy_setopt(ptr_gcal->curl, CURLOPT_WRITEDATA, (void *)ptr_gcal);
-
-	res = curl_easy_perform(ptr_gcal->curl);
-	if (check_request_error(ptr_gcal->curl, res, GCAL_DEFAULT_ANSWER))
+	result = http_post(ptr_gcal, "application/x-www-form-urlencoded",
+			   post);
+	if (result)
 		goto cleanup;
 
 	/* gcalendar server returns a string like this:
@@ -248,8 +266,6 @@ int gcal_get_authentication(char *user, char *password,
 cleanup:
 	if (post)
 		free(post);
-	if (response_headers)
-		curl_slist_free_all(response_headers);
 
 exit:
 	return result;
