@@ -182,7 +182,7 @@ static int check_request_error(CURL *curl_ctx, int code,
 
 
 static int http_post(struct gcal_resource *ptr_gcal, const char *url,
-		     char *header, char *content_type, char *post_data,
+		     char *header, char *header2, char *header3, char *post_data,
 		     const int expected_answer)
 {
 	int result = -1;
@@ -192,8 +192,11 @@ static int http_post(struct gcal_resource *ptr_gcal, const char *url,
 
 	if (header)
 		response_headers = curl_slist_append(response_headers, header);
-	if (content_type)
-		response_headers = curl_slist_append(response_headers, content_type);
+	if (header2)
+		response_headers = curl_slist_append(response_headers, header2);
+	if (header3)
+		response_headers = curl_slist_append(response_headers, header3);
+
 	if (!response_headers)
 		return result;
 
@@ -245,9 +248,8 @@ int gcal_get_authentication(char *user, char *password,
 
 
 	result = http_post(ptr_gcal, GCAL_URL,
-			   NULL,
-			   "application/x-www-form-urlencoded",
-			   post, GCAL_DEFAULT_ANSWER);
+			   "Content-Type: application/x-www-form-urlencoded",
+			   NULL, NULL, post, GCAL_DEFAULT_ANSWER);
 	if (result)
 		goto cleanup;
 
@@ -495,7 +497,9 @@ int gcal_create_event(struct gcal_entries *entries,
 {
 	int result = -1;
 	int length = 0;
-	char *tmp_buffer = NULL, *xml_entry = "foo";
+	char *tmp_buffer = NULL, *tmp_buffer2 = NULL, *xml_entry = "foo";
+
+	(void)tmp_buffer2;
 
 	if (!entries || !ptr_gcal)
 		goto exit;
@@ -513,10 +517,13 @@ int gcal_create_event(struct gcal_entries *entries,
 
 	snprintf(tmp_buffer, length - 1, "%s%s", HEADER_GET, ptr_gcal->auth);
 
-	/* TODO: mount XML entry */
-	result = http_post(ptr_gcal, GCAL_EDIT_URL, tmp_buffer,
-			   "application/atom+xml",
+	/* TODO: mount XML entry and dynamically create the Content-length */
+	result = http_post(ptr_gcal, GCAL_EDIT_URL,
+			   "Content-Type: application/atom+xml",
+			   "Content-length: 3",
+			   tmp_buffer,
 			   xml_entry, GCAL_REDIRECT_ANSWER);
+	//printf("buffer = %s\n", ptr_gcal->buffer);
 	if (result == -1)
 		goto cleanup;
 
