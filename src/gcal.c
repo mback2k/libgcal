@@ -532,7 +532,7 @@ int gcal_create_event(struct gcal_entries *entries,
 
 
 
-	/* Request data */
+	/* Post the entry data */
 	result = http_post(ptr_gcal, GCAL_EDIT_URL,
 			   "Content-Type: application/atom+xml",
 			   h_length,
@@ -545,6 +545,18 @@ int gcal_create_event(struct gcal_entries *entries,
 		free(ptr_gcal->url);
 	if (get_the_url(ptr_gcal->buffer, ptr_gcal->length, &ptr_gcal->url))
 		goto cleanup;
+
+
+	clean_buffer(ptr_gcal);
+	result = http_post(ptr_gcal, ptr_gcal->url,
+			   "Content-Type: application/atom+xml",
+			   h_length,
+			   h_auth,
+			   xml_entry, GCAL_EDIT_ANSWER);
+	if (result == -1) {
+		fprintf(stderr, "result = %s\n", ptr_gcal->buffer);
+		goto cleanup;
+	}
 
 cleanup:
 
