@@ -509,7 +509,7 @@ int gcal_create_event(struct gcal_entries *entries,
 	/* Must cleanup HTTP buffer between requests */
 	clean_buffer(ptr_gcal);
 
-	/* Mounts content length string */
+	/* Mounts content length and  authentication header strings */
 	length = strlen(xml_entry) + strlen(header) + 1;
 	h_length = (char *) malloc(length) ;
 	if (!h_length)
@@ -518,7 +518,7 @@ int gcal_create_event(struct gcal_entries *entries,
 	tmp = h_length + sizeof(header) - 1;
 	snprintf(tmp, length - (sizeof(header) + 1), "%d", strlen(xml_entry));
 
-	/* Mounts authentication header string */
+
 	length = strlen(ptr_gcal->auth) + sizeof(HEADER_GET) + 1;
 	h_auth = (char *) malloc(length);
 	if (!h_auth)
@@ -536,10 +536,15 @@ int gcal_create_event(struct gcal_entries *entries,
 			   h_length,
 			   h_auth,
 			   xml_entry, GCAL_REDIRECT_ANSWER);
-	//printf("buffer = %s\n", ptr_gcal->buffer);
 	if (result == -1)
 		goto cleanup;
 
+	if (ptr_gcal->url)
+		free(ptr_gcal->url);
+	if (get_the_url(ptr_gcal->buffer, ptr_gcal->length, &ptr_gcal->url))
+		goto cleanup;
+
+	printf("buffer = %s\n%s\n", ptr_gcal->buffer, ptr_gcal->url);
 
 cleanup:
 
