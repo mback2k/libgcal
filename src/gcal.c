@@ -317,6 +317,8 @@ static int get_follow_redirection(struct gcal_resource *ptr_gcal,
 	}
 
 	/* It will extract and follow the first 'REF' link in the stream */
+	if (ptr_gcal->url)
+		free(ptr_gcal->url);
 	if (get_the_url(ptr_gcal->buffer, ptr_gcal->length, &ptr_gcal->url)) {
 		result = -1;
 		goto cleanup;
@@ -543,8 +545,6 @@ int gcal_create_event(struct gcal_entries *entries,
 		free(ptr_gcal->url);
 	if (get_the_url(ptr_gcal->buffer, ptr_gcal->length, &ptr_gcal->url))
 		goto cleanup;
-
-	printf("buffer = %s\n%s\n", ptr_gcal->buffer, ptr_gcal->url);
 
 cleanup:
 
