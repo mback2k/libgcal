@@ -61,7 +61,7 @@ START_TEST (test_edit_xml)
 	result = xmlentry_create(&event, &xml, &length);
 	fail_if(result == -1, "Failed creating XML for a new calendar entry");
 
-	/* TODO: add a text to validate the generated XML. */
+	/* TODO: add a way to validate the generated XML. */
 
 }
 END_TEST
