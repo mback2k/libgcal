@@ -83,4 +83,20 @@ int extract_all_entries(dom_document *doc,
 			struct gcal_entries *data_extract, int length);
 
 
+/** Creates the XML for a new calendar entry.
+ *
+ * It depends on \ref xmlentry_init_resources and
+ * \ref xmlentry_destroy_resources.
+ *
+ * @param entry A pointer to an calendar entry event (see \ref gcal_entries).
+ *
+ * @param xml_entry Pointer to pointer string (you must free its memory!).
+ *
+ * @param length A pointer to a variable that will have its length.
+ *
+ * @return 0 on sucess, -1 on error.
+ */
+int xmlentry_create(struct gcal_entries *entry, char **xml_entry, int *length);
+
+
 #endif

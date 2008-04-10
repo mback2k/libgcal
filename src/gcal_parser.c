@@ -140,3 +140,13 @@ cleanup:
 exit:
 	return result;
 }
+
+
+int xmlentry_create(struct gcal_entries *entry, char **xml_entry, int *length)
+{
+	(void)entry;
+	(void)xml_entry;
+	(void)length;
+	return -1;
+
+}

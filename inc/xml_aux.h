@@ -19,7 +19,7 @@
 #include <libxml/parser.h>
 #include <libxml/xpath.h>
 #include <libxml/xpathInternals.h>
-
+#include <libxml/xmlwriter.h>
 
 /** Call this function to register a namespace within a xmlXPathContext.
  *
@@ -57,5 +57,25 @@ xmlXPathObject* execute_xpath_expression(xmlDoc *doc,
 					 const xmlChar* xpathExpr,
 					 xmlXPathContext *xpathCtx);
 
+/** Allocates resources to create a XML document.
+ *
+ *
+ * @param writer Pointer to pointer to a libxml TextWriter.
+ *
+ * @param buffer Pointer to pointer to a libxml buffer.
+ *
+ * @return 0 on sucess, -1 on error.
+ */
+int xmlentry_init_resources(xmlTextWriter **writer, xmlBuffer **buffer);
+
+
+/** Destroys resources required to create a XML document.
+ *
+ *
+ * @param writer Pointer to pointer to a libxml TextWriter.
+ *
+ * @param buffer Pointer to pointer to a libxml buffer.
+ */
+void xmlentry_destroy_resources(xmlTextWriter **writer, xmlBuffer **buffer);
 
 #endif

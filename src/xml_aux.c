@@ -67,3 +67,36 @@ exit:
 	return xpath_obj;
 
 }
+
+int xmlentry_init_resources(xmlTextWriter **writer, xmlBuffer **buffer)
+{
+	int result = -1;
+	*buffer = xmlBufferCreate();
+	if (!buffer)
+		goto exit;
+
+	*writer = xmlNewTextWriterMemory(*buffer, 0);
+	if (!*writer)
+		goto exit;
+
+exit:
+	return result;
+
+}
+
+
+void xmlentry_destroy_resources(xmlTextWriter **writer, xmlBuffer **buffer)
+{
+	if (!writer || !buffer)
+		return;
+
+	if (*writer) {
+		xmlFreeTextWriter(*writer);
+		*writer = NULL;
+	}
+
+	if (*buffer) {
+		xmlBufferFree(*buffer);
+		*buffer = NULL;
+	}
+}
