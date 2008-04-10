@@ -8,6 +8,7 @@
 
 #include "utest_edit.h"
 #include "gcal.h"
+#include "xml_aux.h"
 #include "gcal_parser.h"
 #include <string.h>
 
@@ -17,6 +18,7 @@ static void setup(void)
 {
 	/* here goes any common data allocation */
 	ptr_gcal = gcal_initialize();
+
 }
 
 static void teardown(void)
@@ -25,6 +27,44 @@ static void teardown(void)
 	gcal_destroy(ptr_gcal);
 }
 
+START_TEST (test_edit_xmlres)
+{
+	xmlTextWriter *writer;
+	xmlBuffer *buffer;
+	int result;
+
+	result = xmlentry_init_resources(&writer, &buffer);
+	fail_if(result == -1, "Failed creating XML resources");
+
+	xmlentry_destroy_resources(&writer, &buffer);
+
+
+}
+END_TEST
+
+START_TEST (test_edit_xml)
+{
+	struct gcal_entries event;
+	char *xml;
+	int result, length;
+
+	event.title = "A new event";
+	event.content = "Here goes the description of my new event";
+	event.dt_start = "2008-04-08T08:00:00.000Z";
+	event.dt_end = "2008-04-08T09:00:00.000Z";
+	event.where = "someplace";
+	/* TODO: think in a better way to describe the status, maybe use
+	 * a set of strings.
+	 */
+	event.status = "confirmed";
+
+	result = xmlentry_create(&event, &xml, &length);
+	fail_if(result == -1, "Failed creating XML for a new calendar entry");
+
+	/* TODO: add a text to validate the generated XML. */
+
+}
+END_TEST
 
 START_TEST (test_edit_add)
 {
@@ -59,6 +99,8 @@ TCase *edit_tcase_create(void)
 	tcase_add_checked_fixture(tc, setup, teardown);
 	tcase_set_timeout (tc, timeout_seconds);
 	tcase_add_test(tc, test_edit_add);
+	tcase_add_test(tc, test_edit_xmlres);
+	tcase_add_test(tc, test_edit_xml);
 	return tc;
 }
 

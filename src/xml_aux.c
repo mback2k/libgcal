@@ -79,6 +79,8 @@ int xmlentry_init_resources(xmlTextWriter **writer, xmlBuffer **buffer)
 	if (!*writer)
 		goto exit;
 
+	result = 0;
+
 exit:
 	return result;
 
