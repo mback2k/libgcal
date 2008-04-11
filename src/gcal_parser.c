@@ -141,6 +141,8 @@ exit:
 	return result;
 }
 
+char scheme_href[] = "http://schemas.google.com/g/2005#kind";
+char term_href[] = "http://schemas.google.com/g/2005#event";
 
 int xmlentry_create(struct gcal_entries *entry, char **xml_entry, int *length)
 {
@@ -164,24 +166,59 @@ int xmlentry_create(struct gcal_entries *entry, char **xml_entry, int *length)
 	if (result < 0)
 		goto cleanup;
 
-	result = xmlTextWriterStartElement(writer, BAD_CAST "entry");
+	result = xmlTextWriterStartElementNS(writer, NULL, BAD_CAST "entry",
+					     atom_href);
 	if (result < 0)
 		goto cleanup;
 
 	/* TODO: remove this 2 cast warnings. */
-	result = xmlTextWriterWriteAttribute(writer, BAD_CAST "xmlns",
-					     BAD_CAST atom_href);
-	if (result < 0)
-		goto cleanup;
-
 	result = xmlTextWriterWriteAttribute(writer, BAD_CAST "xmlns:gd",
 					     BAD_CAST gd_href);
 	if (result < 0)
 		goto cleanup;
 
+// 	result = xmlTextWriterStartAttributeNS(writer,  "gd",
+// 					       BAD_CAST "gd",
+// 					       BAD_CAST gd_href);
+	if (result < 0)
+		goto cleanup;
+
+	/* category element */
 	result = xmlTextWriterStartElement(writer, BAD_CAST "category");
 	if (result < 0)
 		goto cleanup;
+
+	result = xmlTextWriterWriteAttribute(writer, BAD_CAST "scheme",
+					     BAD_CAST scheme_href);
+	if (result < 0)
+		goto cleanup;
+
+	result = xmlTextWriterWriteAttribute(writer, BAD_CAST "term",
+					     BAD_CAST term_href);
+	if (result < 0)
+		goto cleanup;
+
+	result = xmlTextWriterEndElement(writer);
+	if (result < 0)
+		goto cleanup;
+
+
+	/* title element */
+	result = xmlTextWriterStartElement(writer, BAD_CAST "title");
+	if (result < 0)
+		goto cleanup;
+	result = xmlTextWriterWriteAttribute(writer, BAD_CAST "type",
+					     BAD_CAST "text");
+	if (result < 0)
+		goto cleanup;
+
+	/* event status */
+
+
+	/* where */
+
+
+	/* when */
 
 
 	/* Close document */
