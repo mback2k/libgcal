@@ -21,6 +21,20 @@
 #include <libxml/xpathInternals.h>
 #include <libxml/xmlwriter.h>
 
+/** Atom URL/URI (ps: Its shared with \ref gcal_parser) */
+static const char atom_href[] = "http://www.w3.org/2005/Atom";
+static const char atom_ns[] = "atom";
+
+/** Google data URL/URI */
+static const char gd_href[] = "http://schemas.google.com/g/2005";
+static const char gd_ns[] = "gd";
+
+/** Opensearch URL/URI */
+static const char open_search_href[] = "http://a9.com/-/spec/opensearchrss/1.0/";
+static const char open_search_ns[] = "openSearch";
+
+
+
 /** Call this function to register a namespace within a xmlXPathContext.
  *
  *

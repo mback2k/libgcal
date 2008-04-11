@@ -45,7 +45,7 @@ END_TEST
 START_TEST (test_edit_xml)
 {
 	struct gcal_entries event;
-	char *xml;
+	char *xml = NULL;
 	int result, length;
 
 	event.title = "A new event";
@@ -59,9 +59,12 @@ START_TEST (test_edit_xml)
 	event.status = "confirmed";
 
 	result = xmlentry_create(&event, &xml, &length);
-	fail_if(result == -1, "Failed creating XML for a new calendar entry");
+	fail_if(result == -1 || xml == NULL,
+		"Failed creating XML for a new calendar entry");
 
 	/* TODO: add a way to validate the generated XML. */
+
+	free(xml);
 
 }
 END_TEST

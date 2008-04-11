@@ -1,14 +1,5 @@
 #include "xml_aux.h"
 
-const char atom_href[] = "http://www.w3.org/2005/Atom";
-const char atom_ns[] = "atom";
-
-const char gd_href[] = "http://schemas.google.com/g/2005";
-const char gd_ns[] = "gd";
-
-const char open_search_href[] = "http://a9.com/-/spec/opensearchrss/1.0/";
-const char open_search_ns[] = "openSearch";
-
 int register_namespaces(xmlXPathContext *xpathCtx, const xmlChar *name_space,
 			const xmlChar* href)
 {
@@ -89,16 +80,18 @@ exit:
 
 void xmlentry_destroy_resources(xmlTextWriter **writer, xmlBuffer **buffer)
 {
-	if (!writer || !buffer)
+	if (!writer && !buffer)
 		return;
 
-	if (*writer) {
-		xmlFreeTextWriter(*writer);
-		*writer = NULL;
-	}
+	if (writer)
+		if (*writer) {
+			xmlFreeTextWriter(*writer);
+			*writer = NULL;
+		}
 
-	if (*buffer) {
-		xmlBufferFree(*buffer);
-		*buffer = NULL;
-	}
+	if (buffer)
+		if (*buffer) {
+			xmlBufferFree(*buffer);
+			*buffer = NULL;
+		}
 }

@@ -1,12 +1,12 @@
 #include "gcal_parser.h"
 #include "atom_parser.h"
+#include "xml_aux.h"
 #include <libxml/tree.h>
 #include <string.h>
 
 struct dom_document {
 	xmlDoc *document;
 };
-
 
 /* REMARK: this function is recursive, I'm not completely sure if this
  * is a good idea (i.e. for small devices).
@@ -144,9 +144,64 @@ exit:
 
 int xmlentry_create(struct gcal_entries *entry, char **xml_entry, int *length)
 {
+#if defined(LIBXML_WRITER_ENABLED)
+
+	int result = 0;
+	xmlTextWriter *writer;
+	xmlBuffer *buffer;
+	const char ENCODING[] = "UTF-8";//"ISO-8859-1";
 	(void)entry;
 	(void)xml_entry;
 	(void)length;
-	return -1;
+
+	result = xmlentry_init_resources(&writer, &buffer);
+	if (result == -1)
+		goto exit;
+
+
+	/* TODO: mount the XML here */
+	result = xmlTextWriterStartDocument(writer, NULL, ENCODING, NULL);
+	if (result < 0)
+		goto cleanup;
+
+	result = xmlTextWriterStartElement(writer, BAD_CAST "entry");
+	if (result < 0)
+		goto cleanup;
+
+	/* TODO: remove this 2 cast warnings. */
+	result = xmlTextWriterWriteAttribute(writer, BAD_CAST "xmlns",
+					     BAD_CAST atom_href);
+	if (result < 0)
+		goto cleanup;
+
+	result = xmlTextWriterWriteAttribute(writer, BAD_CAST "xmlns:gd",
+					     BAD_CAST gd_href);
+	if (result < 0)
+		goto cleanup;
+
+	result = xmlTextWriterStartElement(writer, BAD_CAST "category");
+	if (result < 0)
+		goto cleanup;
+
+
+	/* Close document */
+	result = xmlTextWriterEndDocument(writer);
+	if (result < 0)
+		goto cleanup;
+
+	xmlentry_destroy_resources(&writer, NULL);
+	*xml_entry = strdup((const char *) buffer->content);
+	if (*xml_entry)
+		result = 0;
+
+cleanup:
+	xmlentry_destroy_resources(NULL, &buffer);
+
+
+
+exit:
+
+#endif
+	return result;
 
 }
