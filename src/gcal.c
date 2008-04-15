@@ -502,6 +502,7 @@ int gcal_create_event(struct gcal_entries *entries,
 	char *h_auth = NULL, *h_length = NULL, *xml_entry = "foobar", *tmp;
 	char buffer[300];
 	const char header[] = "Content-length: ";
+	const char gsessionid[] = "gsessionid=";
 
 	if (!entries || !ptr_gcal)
 		goto exit;
@@ -555,6 +556,16 @@ int gcal_create_event(struct gcal_entries *entries,
 		goto cleanup;
 
 	clean_buffer(ptr_gcal);
+
+	/* Add gsessionid to authorization header */
+	free(h_auth);
+	length += strlen(buffer) + strlen(gsessionid) + 1;
+	h_auth = (char *) malloc(length);
+	if (!h_auth)
+		goto exit;
+	snprintf(h_auth, length - 1, "%s%s %s%s", HEADER_GET, ptr_gcal->auth,
+		 gsessionid, buffer);
+
 	result = http_post(ptr_gcal, ptr_gcal->url,
 			   "Content-Type: application/atom+xml",
 			   h_length,
