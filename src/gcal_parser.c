@@ -164,27 +164,20 @@ int xmlentry_create(struct gcal_entries *entry, char **xml_entry, int *length)
 		goto exit;
 
 	xmlSetProp(root, BAD_CAST "xmlns", BAD_CAST atom_href);
-	ns =  xmlNewNs (root, BAD_CAST scheme_href, BAD_CAST "gd");
+	ns =  xmlNewNs (root, BAD_CAST gd_href, BAD_CAST "gd");
 
 	xmlDocSetRootElement(doc, root);
 
 	/* TODO: mount the XML here */
 
-//	result = xmlTextWriterStartElementNS(writer, NULL, BAD_CAST "entry",
-//					     atom_href);
-
-	/* TODO: remove this 2 cast warnings. */
-//	result = xmlTextWriterWriteAttribute(writer, BAD_CAST "xmlns:gd",
-//					     BAD_CAST gd_href);
-
 
 	/* category element */
-
-// 	result = xmlTextWriterWriteAttribute(writer, BAD_CAST "scheme",
-// 					     BAD_CAST scheme_href);
-
-// 	result = xmlTextWriterWriteAttribute(writer, BAD_CAST "term",
-// 					     BAD_CAST term_href);
+	node = xmlNewNode(NULL, "category");
+	if (!node)
+		goto cleanup;
+	xmlSetProp(node, BAD_CAST "scheme", BAD_CAST scheme_href);
+	xmlSetProp(node, BAD_CAST "term", BAD_CAST term_href);
+	xmlAddChild(root, node);
 
 	/* title element */
 
