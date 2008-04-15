@@ -195,8 +195,21 @@ int xmlentry_create(struct gcal_entries *entry, char **xml_entry, int *length)
 	xmlNodeAddContent(node, entry->content);
 	xmlAddChild(root, node);
 
+	/* transparency */
+	node = xmlNewNode(ns, "transparency");
+	if (!node)
+		goto cleanup;
+	xmlSetProp(node, BAD_CAST "value",
+		   BAD_CAST "http://schemas.google.com/g/2005#event.opaque");
+	xmlAddChild(root, node);
 
 	/* event status */
+	node = xmlNewNode(ns, "eventStatus");
+	if (!node)
+		goto cleanup;
+	xmlSetProp(node, BAD_CAST "value",
+		   BAD_CAST "http://schemas.google.com/g/2005#event.confirmed");
+	xmlAddChild(root, node);
 
 
 	/* where */
@@ -213,6 +226,9 @@ int xmlentry_create(struct gcal_entries *entry, char **xml_entry, int *length)
 			result = 0;
 
 cleanup:
+
+	if (xml_str)
+		xmlFree(xml_str);
 
 	if (doc)
 		xmlFreeDoc(doc);
