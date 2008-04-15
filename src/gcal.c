@@ -500,6 +500,7 @@ int gcal_create_event(struct gcal_entries *entries,
 	int result = -1;
 	int length = 0;
 	char *h_auth = NULL, *h_length = NULL, *xml_entry = "foobar", *tmp;
+	char buffer[300];
 	const char header[] = "Content-length: ";
 
 	if (!entries || !ptr_gcal)
@@ -548,6 +549,10 @@ int gcal_create_event(struct gcal_entries *entries,
 	if (get_the_url(ptr_gcal->buffer, ptr_gcal->length, &ptr_gcal->url))
 		goto cleanup;
 
+
+	result = get_sessionid(ptr_gcal->url, buffer, sizeof(buffer));
+	if (result == -1)
+		goto cleanup;
 
 	clean_buffer(ptr_gcal);
 	result = http_post(ptr_gcal, ptr_gcal->url,
