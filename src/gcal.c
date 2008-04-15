@@ -511,6 +511,12 @@ int gcal_create_event(struct gcal_entries *entries,
 	/* Must cleanup HTTP buffer between requests */
 	clean_buffer(ptr_gcal);
 
+	/* mount XML entry */
+	result = xmlentry_create(entries, &xml_entry, &length);
+	if (result == -1)
+		goto cleanup;
+
+
 	/* Mounts content length and  authentication header strings */
 	length = strlen(xml_entry) + strlen(header) + 1;
 	h_length = (char *) malloc(length) ;
@@ -526,10 +532,6 @@ int gcal_create_event(struct gcal_entries *entries,
 	if (!h_auth)
 		goto exit;
 	snprintf(h_auth, length - 1, "%s%s", HEADER_GET, ptr_gcal->auth);
-
-
-	/* TODO: to mount XML entry */
-
 
 
 	/* Post the entry data */
@@ -555,6 +557,8 @@ int gcal_create_event(struct gcal_entries *entries,
 			   xml_entry, GCAL_EDIT_ANSWER);
 	if (result == -1) {
 		fprintf(stderr, "result = %s\n", ptr_gcal->buffer);
+		fprintf(stderr, "h_length = %s\nh_auth = %s\nxml_entry =%s%d\n",
+			h_length, h_auth, xml_entry, strlen(xml_entry));
 		goto cleanup;
 	}
 
