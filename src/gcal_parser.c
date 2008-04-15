@@ -187,6 +187,15 @@ int xmlentry_create(struct gcal_entries *entry, char **xml_entry, int *length)
 	xmlNodeAddContent(node, entry->title);
 	xmlAddChild(root, node);
 
+	/* content element */
+	node = xmlNewNode(NULL, "content");
+	if (!node)
+		goto cleanup;
+	xmlSetProp(node, BAD_CAST "type", BAD_CAST "text");
+	xmlNodeAddContent(node, entry->content);
+	xmlAddChild(root, node);
+
+
 	/* event status */
 
 
