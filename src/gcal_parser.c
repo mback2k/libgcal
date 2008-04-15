@@ -144,73 +144,49 @@ exit:
 char scheme_href[] = "http://schemas.google.com/g/2005#kind";
 char term_href[] = "http://schemas.google.com/g/2005#event";
 
+
 int xmlentry_create(struct gcal_entries *entry, char **xml_entry, int *length)
 {
-#if defined(LIBXML_WRITER_ENABLED)
+	int result = -1;
+	xmlDoc *doc = NULL;
+	xmlNode *root, *node;
+	xmlNs *ns;
+	xmlChar *xml_str;
 
-	int result = 0;
-	xmlTextWriter *writer;
-	xmlBuffer *buffer;
-	const char ENCODING[] = "UTF-8";//"ISO-8859-1";
 	(void)entry;
-	(void)xml_entry;
 	(void)length;
+	(void)node;
 
-	result = xmlentry_init_resources(&writer, &buffer);
-	if (result == -1)
+	doc = xmlNewDoc(BAD_CAST "1.0");
+	root = xmlNewNode(NULL, BAD_CAST "entry");
+
+	if (!doc || !root)
 		goto exit;
 
+	xmlSetProp(root, BAD_CAST "xmlns", BAD_CAST atom_href);
+	ns =  xmlNewNs (root, BAD_CAST scheme_href, BAD_CAST "gd");
+
+	xmlDocSetRootElement(doc, root);
 
 	/* TODO: mount the XML here */
-	result = xmlTextWriterStartDocument(writer, NULL, ENCODING, NULL);
-	if (result < 0)
-		goto cleanup;
 
-	result = xmlTextWriterStartElementNS(writer, NULL, BAD_CAST "entry",
-					     atom_href);
-	if (result < 0)
-		goto cleanup;
+//	result = xmlTextWriterStartElementNS(writer, NULL, BAD_CAST "entry",
+//					     atom_href);
 
 	/* TODO: remove this 2 cast warnings. */
-	result = xmlTextWriterWriteAttribute(writer, BAD_CAST "xmlns:gd",
-					     BAD_CAST gd_href);
-	if (result < 0)
-		goto cleanup;
+//	result = xmlTextWriterWriteAttribute(writer, BAD_CAST "xmlns:gd",
+//					     BAD_CAST gd_href);
 
-// 	result = xmlTextWriterStartAttributeNS(writer,  "gd",
-// 					       BAD_CAST "gd",
-// 					       BAD_CAST gd_href);
-	if (result < 0)
-		goto cleanup;
 
 	/* category element */
-	result = xmlTextWriterStartElement(writer, BAD_CAST "category");
-	if (result < 0)
-		goto cleanup;
 
-	result = xmlTextWriterWriteAttribute(writer, BAD_CAST "scheme",
-					     BAD_CAST scheme_href);
-	if (result < 0)
-		goto cleanup;
+// 	result = xmlTextWriterWriteAttribute(writer, BAD_CAST "scheme",
+// 					     BAD_CAST scheme_href);
 
-	result = xmlTextWriterWriteAttribute(writer, BAD_CAST "term",
-					     BAD_CAST term_href);
-	if (result < 0)
-		goto cleanup;
-
-	result = xmlTextWriterEndElement(writer);
-	if (result < 0)
-		goto cleanup;
-
+// 	result = xmlTextWriterWriteAttribute(writer, BAD_CAST "term",
+// 					     BAD_CAST term_href);
 
 	/* title element */
-	result = xmlTextWriterStartElement(writer, BAD_CAST "title");
-	if (result < 0)
-		goto cleanup;
-	result = xmlTextWriterWriteAttribute(writer, BAD_CAST "type",
-					     BAD_CAST "text");
-	if (result < 0)
-		goto cleanup;
 
 	/* event status */
 
@@ -221,24 +197,20 @@ int xmlentry_create(struct gcal_entries *entry, char **xml_entry, int *length)
 	/* when */
 
 
-	/* Close document */
-	result = xmlTextWriterEndDocument(writer);
-	if (result < 0)
-		goto cleanup;
-
-	xmlentry_destroy_resources(&writer, NULL);
-	*xml_entry = strdup((const char *) buffer->content);
-	if (*xml_entry)
-		result = 0;
+	xmlDocDumpMemory (doc, &xml_str, length);
+	/* xmlDocDumpMemory doesn't include the last 0 in the returned size */
+	++(*length);
+	if (xml_str)
+		if ((*xml_entry = strdup(xml_str)))
+			result = 0;
 
 cleanup:
-	xmlentry_destroy_resources(NULL, &buffer);
 
-
+	if (doc)
+		xmlFreeDoc(doc);
 
 exit:
 
-#endif
 	return result;
 
 }
