@@ -164,7 +164,7 @@ int xmlentry_create(struct gcal_entries *entry, char **xml_entry, int *length)
 		goto exit;
 
 	xmlSetProp(root, BAD_CAST "xmlns", BAD_CAST atom_href);
-	ns =  xmlNewNs (root, BAD_CAST gd_href, BAD_CAST "gd");
+	ns =  xmlNewNs(root, BAD_CAST gd_href, BAD_CAST "gd");
 
 	xmlDocSetRootElement(doc, root);
 
@@ -180,6 +180,12 @@ int xmlentry_create(struct gcal_entries *entry, char **xml_entry, int *length)
 	xmlAddChild(root, node);
 
 	/* title element */
+	node = xmlNewNode(NULL, "title");
+	if (!node)
+		goto cleanup;
+	xmlSetProp(node, BAD_CAST "type", BAD_CAST "text");
+	xmlNodeAddContent(node, entry->title);
+	xmlAddChild(root, node);
 
 	/* event status */
 
