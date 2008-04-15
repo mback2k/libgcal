@@ -151,11 +151,7 @@ int xmlentry_create(struct gcal_entries *entry, char **xml_entry, int *length)
 	xmlDoc *doc = NULL;
 	xmlNode *root, *node;
 	xmlNs *ns;
-	xmlChar *xml_str;
-
-	(void)entry;
-	(void)length;
-	(void)node;
+	xmlChar *xml_str = NULL;
 
 	doc = xmlNewDoc(BAD_CAST "1.0");
 	root = xmlNewNode(NULL, BAD_CAST "entry");
@@ -167,9 +163,6 @@ int xmlentry_create(struct gcal_entries *entry, char **xml_entry, int *length)
 	ns =  xmlNewNs(root, BAD_CAST gd_href, BAD_CAST "gd");
 
 	xmlDocSetRootElement(doc, root);
-
-	/* TODO: mount the XML here */
-
 
 	/* category element */
 	node = xmlNewNode(NULL, "category");
