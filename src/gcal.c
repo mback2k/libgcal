@@ -528,9 +528,7 @@ int gcal_create_event(struct gcal_entries *entries,
 	int result = -1;
 	int length = 0;
 	char *h_auth = NULL, *h_length = NULL, *xml_entry = "foobar", *tmp;
-	char buffer[300];
 	const char header[] = "Content-length: ";
-	const char gsessionid[] = "gsessionid=";
 
 	if (!entries || !ptr_gcal)
 		goto exit;
@@ -578,31 +576,22 @@ int gcal_create_event(struct gcal_entries *entries,
 	if (get_the_url(ptr_gcal->buffer, ptr_gcal->length, &ptr_gcal->url))
 		goto cleanup;
 
-
-	result = get_sessionid(ptr_gcal->url, buffer, sizeof(buffer));
-	if (result == -1)
-		goto cleanup;
-
+	/* fprintf(stderr, "result = %s\n", ptr_gcal->buffer); */
 	clean_buffer(ptr_gcal);
 
-	/* Add gsessionid to authorization header */
-	free(h_auth);
-	length += strlen(buffer) + strlen(gsessionid) + 1;
-	h_auth = (char *) malloc(length);
-	if (!h_auth)
-		goto exit;
-	snprintf(h_auth, length - 1, "%s%s %s%s", HEADER_GET, ptr_gcal->auth,
-		 gsessionid, buffer);
-
+	/* Add gsessionid to post URL */
 	result = http_post(ptr_gcal, ptr_gcal->url,
 			   "Content-Type: application/atom+xml",
 			   h_length,
 			   h_auth,
 			   xml_entry, GCAL_EDIT_ANSWER);
+
 	if (result == -1) {
 		fprintf(stderr, "result = %s\n", ptr_gcal->buffer);
-		fprintf(stderr, "h_length = %s\nh_auth = %s\nxml_entry =%s%d\n",
-			h_length, h_auth, xml_entry, strlen(xml_entry));
+		fprintf(stderr, "\nurl = %s\nh_length = %s\nh_auth = %s"
+			"\nxml_entry =%s%d\n",
+			ptr_gcal->url, h_length, h_auth, xml_entry,
+			strlen(xml_entry));
 		goto cleanup;
 	}
 
