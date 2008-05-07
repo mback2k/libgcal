@@ -529,7 +529,7 @@ int gcal_create_event(struct gcal_entries *entries,
 {
 	int result = -1;
 	int length = 0;
-	char *h_auth = NULL, *h_length = NULL, *xml_entry = "foobar", *tmp;
+	char *h_auth = NULL, *h_length = NULL, *xml_entry = NULL, *tmp;
 	const char header[] = "Content-length: ";
 
 	if (!entries || !ptr_gcal)
@@ -599,8 +599,12 @@ int gcal_create_event(struct gcal_entries *entries,
 
 cleanup:
 
-	free(h_length);
-	free(h_auth);
+	if (xml_entry)
+		free(xml_entry);
+	if (h_length)
+		free(h_length);
+	if (h_auth)
+		free(h_auth);
 
 exit:
 	return result;
