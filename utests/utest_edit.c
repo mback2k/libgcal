@@ -88,7 +88,7 @@ START_TEST (test_edit_add)
 	fail_if(result == -1, "Authentication should work.");
 
 	result = gcal_create_event(&event, ptr_gcal);
-	fail_if(result = -1, "Failed creating a new event!");
+	fail_if(result == -1, "Failed creating a new event!");
 
 
 }

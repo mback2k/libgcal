@@ -285,12 +285,14 @@ int gcal_get_authentication(char *user, char *password,
 	 * SID=value\n
 	 * LSID=value\n
 	 * Auth=value\n
-	 * and we only need the authorization token to login later.
+	 * and we only need the authorization token to login later
+	 * without the '\r\n' in the end of string.
 	 * TODO: move this to a distinct function and write utests.
 	 */
 	if (ptr_gcal->auth)
 		free(ptr_gcal->auth);
 	ptr = ptr_gcal->buffer;
+	ptr[strlen(ptr) - 1] = '\0';
 	while ((ptr = strchr(ptr, HEADER_BREAK))) {
 		++count;
 		++ptr;
