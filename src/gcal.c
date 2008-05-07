@@ -613,9 +613,32 @@ exit:
 int gcal_delete_event(struct gcal_entries *entry,
 		      struct gcal_resource *ptr_gcal)
 {
-	int result = -1;
-	(void)entry;
-	(void)ptr_gcal;
+	int result = -1, length;
+	char *h_auth;
+
+	if (!entry || !ptr_gcal)
+		goto exit;
+
+	/* Must cleanup HTTP buffer between requests */
+	clean_buffer(ptr_gcal);
+
+	length = strlen(ptr_gcal->auth) + sizeof(HEADER_GET) + 1;
+	h_auth = (char *) malloc(length);
+	if (!h_auth)
+		goto exit;
+	snprintf(h_auth, length - 1, "%s%s", HEADER_GET, ptr_gcal->auth);
+
+	fprintf(stderr, "Before HTTP request!");
+	result = http_post(ptr_gcal, entry->edit_uri,
+			   "Content-Type: application/atom+xml",
+			   NULL,
+			   h_auth,
+			   "DELETE", GCAL_DEFAULT_ANSWER);
+
+/* 	fprintf(stderr, "result = %s\nuri = %s\n", ptr_gcal->buffer, */
+/* 		entry->edit_uri); */
+
+exit:
 
 	return result;
 
