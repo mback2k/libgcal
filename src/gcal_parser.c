@@ -91,31 +91,6 @@ exit:
 	return result;
 }
 
-/* Not used */
-static int get_sessionid(char *data, char *buffer, int length)
-{
-	int result = -1, pos = 0;
-	char *tmp;
-	const char substr[] = "gsessionid";
-
-	(void) length;
-
-	tmp = strstr(data, substr);
-	if (!tmp)
-		goto exit;
-
-	tmp += sizeof(substr);
-	while (*tmp && (pos < length)) {
-		*buffer++ = *tmp++;
-		++pos;
-	}
-
-	result = 0;
-
-exit:
-	return result;
-}
-
 dom_document *build_dom_document(char *xml_data)
 {
 	dom_document *ptr = NULL;
