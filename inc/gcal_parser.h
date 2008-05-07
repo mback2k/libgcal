@@ -64,9 +64,6 @@ typedef xmlDoc dom_document;
 int get_the_url(char *data, int length, char **url);
 
 
-int get_sessionid(char *data, char *buffer, int length);
-
-
 /** Builds a DOM tree from a XML string.
  *
  * This is a thin wrapper to \ref build_doc_tree.

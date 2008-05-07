@@ -34,7 +34,6 @@ POSSIBILITY OF SUCH DAMAGE.
  * @brief  Base file for a gcalendar service access library.
  *
  * \todo:
- * - enable user add new events
  * - enable user edit events
  * - enable user delete events
  * - enable user do queries: by string and date range

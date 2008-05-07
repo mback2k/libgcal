@@ -32,7 +32,11 @@ POSSIBILITY OF SUCH DAMAGE.
 #include <libxml/tree.h>
 #include <string.h>
 
+/** A thin wrapper around libxml document structure
+ *
+ */
 struct dom_document {
+	/** libxml DOM document structure pointer */
 	xmlDoc *document;
 };
 
@@ -87,7 +91,8 @@ exit:
 	return result;
 }
 
-int get_sessionid(char *data, char *buffer, int length)
+/* Not used */
+static int get_sessionid(char *data, char *buffer, int length)
 {
 	int result = -1, pos = 0;
 	char *tmp;

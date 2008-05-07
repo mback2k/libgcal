@@ -14,7 +14,34 @@ adenilson.silva@indt.org.br
 
 == Status ==
 
-   Only authentication works.
+=== Functional ===
+
+ - authentication
+
+ - get all events
+
+ - atom stream parsing
+
+ - access to individual events
+
+ - add new event
+
+
+
+=== Missing ===
+
+- delete event
+
+- edit event.
+
+- select range of entries
+
+
+=== Dependencies ===
+
+ - libxml
+
+ - libcurl
 
 
 ps: you can format it to HTML running
