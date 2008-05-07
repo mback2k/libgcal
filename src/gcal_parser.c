@@ -258,19 +258,23 @@ int xmlentry_create(struct gcal_entries *entry, char **xml_entry, int *length)
 
 
 	/* where */
-	node = xmlNewNode(ns, "where");
-	if (!node)
-		goto cleanup;
-	xmlSetProp(node, BAD_CAST "valueString", BAD_CAST entry->where);
-	xmlAddChild(root, node);
-
+	if (entry->where) {
+		node = xmlNewNode(ns, "where");
+		if (!node)
+			goto cleanup;
+		xmlSetProp(node, BAD_CAST "valueString", BAD_CAST entry->where);
+		xmlAddChild(root, node);
+	}
 
 	/* when */
 	node = xmlNewNode(ns, "when");
 	if (!node)
 		goto cleanup;
-	xmlSetProp(node, BAD_CAST "startTime", BAD_CAST entry->dt_start);
-	xmlSetProp(node, BAD_CAST "endTime", BAD_CAST entry->dt_end);
+	if (entry->dt_start)
+		xmlSetProp(node, BAD_CAST "startTime",
+			   BAD_CAST entry->dt_start);
+	if (entry->dt_end)
+		xmlSetProp(node, BAD_CAST "endTime", BAD_CAST entry->dt_end);
 	xmlAddChild(root, node);
 
 
