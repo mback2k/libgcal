@@ -94,6 +94,49 @@ START_TEST (test_edit_add)
 }
 END_TEST
 
+START_TEST (test_edit_delete)
+{
+
+	int result, i, entry_index = -1;
+	struct gcal_entries event;
+	struct gcal_entries *entries;
+
+	event.title = "A soon to be deleted event";
+	event.content = "This event will be included and deleted soon";
+	event.dt_start = "2008-05-07T08:00:00.000Z";
+	event.dt_end = "2008-05-07T09:00:00.000Z";
+	event.where = "nevermind";
+	/* TODO: think in a better way to describe the status, maybe use
+	 * a set of strings.
+	 */
+	event.status = "confirmed";
+
+	result = gcal_get_authentication("gcalntester", "77libgcal", ptr_gcal);
+	fail_if(result == -1, "Authentication should work.");
+
+	result = gcal_create_event(&event, ptr_gcal);
+	fail_if(result == -1, "Failed creating a new event!");
+
+	result = gcal_dump(ptr_gcal);
+	fail_if(result == -1, "Failed dumping events");
+
+	entries = gcal_get_entries(ptr_gcal, &result);
+	fail_if(entries == NULL, "Failed extracting entries");
+
+	for (i = 0; i < result; ++i)
+		if (!strcmp(entries[i].title, event.title)) {
+			entry_index = i;
+			break;
+		}
+	fail_if(entry_index == -1, "Cannot locate the newly added event!");
+
+	result = gcal_delete_event((entries + entry_index), ptr_gcal);
+	fail_if(result == -1, "Failed deleting event!");
+
+}
+END_TEST
+
+
 TCase *edit_tcase_create(void)
 {
 	TCase *tc = NULL;
@@ -104,6 +147,7 @@ TCase *edit_tcase_create(void)
 	tcase_add_test(tc, test_edit_add);
 	tcase_add_test(tc, test_edit_xmlres);
 	tcase_add_test(tc, test_edit_xml);
+	tcase_add_test(tc, test_edit_delete);
 	return tc;
 }
 

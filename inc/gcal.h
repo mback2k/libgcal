@@ -191,4 +191,19 @@ void gcal_destroy_entries(struct gcal_entries *entries, size_t length);
 int gcal_create_event(struct gcal_entries *entries,
 		      struct gcal_resource *ptr_gcal);
 
+/** Deletes a calendar event.
+ *
+ * You need to first succeed to get an authorization token using
+ * \ref gcal_get_authentication.
+ *
+ * @param entry A pointer to one calendar entry event (see \ref gcal_entries).
+ * @param ptr_gcal Pointer to a \ref gcal_resource structure, which has
+ *                 previously got the authentication using
+ *                 \ref gcal_get_authentication.
+ *
+ * @return -1 on error, 0 on success.
+ */
+int gcal_delete_event(struct gcal_entries *entry,
+		      struct gcal_resource *ptr_gcal);
+
 #endif

@@ -609,3 +609,14 @@ cleanup:
 exit:
 	return result;
 }
+
+int gcal_delete_event(struct gcal_entries *entry,
+		      struct gcal_resource *ptr_gcal)
+{
+	int result = -1;
+	(void)entry;
+	(void)ptr_gcal;
+
+	return result;
+
+}
