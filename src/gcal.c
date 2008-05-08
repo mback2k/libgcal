@@ -235,6 +235,9 @@ static int http_post(struct gcal_resource *ptr_gcal, const char *url,
 		curl_easy_setopt(curl_ctx, CURLOPT_POSTFIELDSIZE,
 				 strlen(post_data));
 	}
+	else
+		curl_easy_setopt(curl_ctx, CURLOPT_POSTFIELDSIZE, 0);
+
 	curl_easy_setopt(curl_ctx, CURLOPT_WRITEFUNCTION, write_cb);
 	curl_easy_setopt(curl_ctx, CURLOPT_WRITEDATA, (void *)ptr_gcal);
 
@@ -344,8 +347,11 @@ static int get_follow_redirection(struct gcal_resource *ptr_gcal,
 	}
 
 	/* It will extract and follow the first 'REF' link in the stream */
-	if (ptr_gcal->url)
+	if (ptr_gcal->url) {
 		free(ptr_gcal->url);
+		ptr_gcal->url = NULL;
+	}
+
 	if (get_the_url(ptr_gcal->buffer, ptr_gcal->length, &ptr_gcal->url)) {
 		result = -1;
 		goto cleanup;
@@ -570,8 +576,11 @@ int gcal_create_event(struct gcal_entries *entries,
 	if (result == -1)
 		goto cleanup;
 
-	if (ptr_gcal->url)
+	if (ptr_gcal->url) {
 		free(ptr_gcal->url);
+		ptr_gcal->url = NULL;
+	}
+
 	if (get_the_url(ptr_gcal->buffer, ptr_gcal->length, &ptr_gcal->url))
 		goto cleanup;
 
@@ -631,10 +640,29 @@ int gcal_delete_event(struct gcal_entries *entry,
 			   "Content-Type: application/atom+xml",
 			   NULL,
 			   h_auth,
+			   NULL, GCAL_REDIRECT_ANSWER);
+
+	/* Get the gsessionid redirect URL */
+	if (result == -1)
+		goto cleanup;
+
+	if (ptr_gcal->url) {
+		free(ptr_gcal->url);
+		ptr_gcal->url = NULL;
+	}
+	if (get_the_url(ptr_gcal->buffer, ptr_gcal->length, &ptr_gcal->url))
+		goto cleanup;
+
+	result = http_post(ptr_gcal, ptr_gcal->url,
+			   "Content-Type: application/atom+xml",
+			   NULL,
+			   h_auth,
 			   NULL, GCAL_DEFAULT_ANSWER);
 
-/* 	fprintf(stderr, "result = %s\nuri = %s\n", ptr_gcal->buffer, */
-/*  		entry->edit_uri); */
+cleanup:
+
+	if (h_auth)
+		free(h_auth);
 
 exit:
 
