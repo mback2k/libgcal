@@ -76,8 +76,8 @@ START_TEST (test_edit_add)
 
 	event.title = "A new event";
 	event.content = "Here goes the description of my new event";
-	event.dt_start = "2008-04-08T08:00:00.000Z";
-	event.dt_end = "2008-04-08T09:00:00.000Z";
+	event.dt_start = "2008-05-10T08:00:00.000Z";
+	event.dt_end = "2008-05-10T09:00:00.000Z";
 	event.where = "someplace";
 	/* TODO: think in a better way to describe the status, maybe use
 	 * a set of strings.
