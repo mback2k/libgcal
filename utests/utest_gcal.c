@@ -109,9 +109,8 @@ START_TEST (test_gcal_entries)
 		for (i = 0; i < result; ++i)
 			fail_if(strcmp(entries[i].updated, entries_update[i]),
 				"extracted data differs from expected");
-
+	/* Cleanup */
 	gcal_destroy_entries(entries, result);
-
 }
 END_TEST
 
@@ -140,7 +139,7 @@ START_TEST (test_gcal_naive)
 		for (i = 0; i < result; ++i)
 			printf("%s\t%s\n", entries[i].title,
 			       entries[i].updated);
-
+	/* Cleanup */
 	gcal_destroy_entries(entries, result);
 	gcal_destroy(local_gcal);
 

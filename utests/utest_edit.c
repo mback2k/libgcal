@@ -133,6 +133,8 @@ START_TEST (test_edit_delete)
 	result = gcal_delete_event((entries + entry_index), ptr_gcal);
 	fail_if(result == -1, "Failed deleting event!");
 
+	/* Cleanup */
+	gcal_destroy_entries(entries, result);
 }
 END_TEST
 
