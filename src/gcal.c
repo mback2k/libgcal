@@ -72,7 +72,7 @@ static const char EMAIL_FIELD[] = "Email=";
 static const char EMAIL_ADDRESS[] = "@gmail.com";
 static const char PASSWD_FIELD[] = "Passwd=";
 static const char TRAILING_FIELD[] = "service=cl&source=libgcal";
-static const char HEADER_BREAK = '\n';
+static const char HEADER_AUTH[] = "Auth=";
 static const char HEADER_GET[] = "Authorization: GoogleLogin auth=";
 
 /** Library structure. It holds resources (curl, buffer, etc).
@@ -251,9 +251,7 @@ int gcal_get_authentication(char *user, char *password,
 	int post_len = 0;
 	char *post = NULL;
 	int result = -1;
-	int count = 0;
-	char *ptr = NULL;
-
+	char *tmp = NULL;
 
 	if (!user || !password)
 		goto exit;
@@ -290,18 +288,15 @@ int gcal_get_authentication(char *user, char *password,
 	 */
 	if (ptr_gcal->auth)
 		free(ptr_gcal->auth);
-	ptr = ptr_gcal->buffer;
-	ptr[strlen(ptr) - 1] = '\0';
-	while ((ptr = strchr(ptr, HEADER_BREAK))) {
-		++count;
-		++ptr;
-		if (count == 2) {
-			ptr_gcal->auth = strdup(ptr + sizeof("Auth"));
-			if (!ptr_gcal->auth)
-				goto cleanup;
-		}
 
-	}
+	ptr_gcal->auth = strstr(ptr_gcal->buffer, HEADER_AUTH);
+	ptr_gcal->auth = strdup(ptr_gcal->auth + strlen(HEADER_AUTH));
+	if (!ptr_gcal->auth)
+		goto cleanup;
+
+	tmp = strstr(ptr_gcal->auth, "\n");
+	if (tmp)
+		*tmp = '\0';
 
 	result = 0;
 
