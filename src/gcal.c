@@ -230,8 +230,11 @@ static int http_post(struct gcal_resource *ptr_gcal, const char *url,
 	curl_easy_setopt(curl_ctx, CURLOPT_HTTPHEADER, response_headers);
 	curl_easy_setopt(curl_ctx, CURLOPT_POST, 1);
 	curl_easy_setopt(curl_ctx, CURLOPT_URL, url);
-	curl_easy_setopt(curl_ctx, CURLOPT_POSTFIELDS, post_data);
-	curl_easy_setopt(curl_ctx, CURLOPT_POSTFIELDSIZE, strlen(post_data));
+	if (post_data) {
+		curl_easy_setopt(curl_ctx, CURLOPT_POSTFIELDS, post_data);
+		curl_easy_setopt(curl_ctx, CURLOPT_POSTFIELDSIZE,
+				 strlen(post_data));
+	}
 	curl_easy_setopt(curl_ctx, CURLOPT_WRITEFUNCTION, write_cb);
 	curl_easy_setopt(curl_ctx, CURLOPT_WRITEDATA, (void *)ptr_gcal);
 
@@ -623,14 +626,15 @@ int gcal_delete_event(struct gcal_entries *entry,
 	snprintf(h_auth, length - 1, "%s%s", HEADER_GET, ptr_gcal->auth);
 
 	fprintf(stderr, "Before HTTP request!");
+	curl_easy_setopt(ptr_gcal->curl, CURLOPT_CUSTOMREQUEST, "DELETE");
 	result = http_post(ptr_gcal, entry->edit_uri,
 			   "Content-Type: application/atom+xml",
 			   NULL,
 			   h_auth,
-			   "DELETE", GCAL_DEFAULT_ANSWER);
+			   NULL, GCAL_DEFAULT_ANSWER);
 
 /* 	fprintf(stderr, "result = %s\nuri = %s\n", ptr_gcal->buffer, */
-/* 		entry->edit_uri); */
+/*  		entry->edit_uri); */
 
 exit:
 
