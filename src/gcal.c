@@ -634,7 +634,6 @@ int gcal_delete_event(struct gcal_entries *entry,
 		goto exit;
 	snprintf(h_auth, length - 1, "%s%s", HEADER_GET, ptr_gcal->auth);
 
-	fprintf(stderr, "Before HTTP request!");
 	curl_easy_setopt(ptr_gcal->curl, CURLOPT_CUSTOMREQUEST, "DELETE");
 	result = http_post(ptr_gcal, entry->edit_uri,
 			   "Content-Type: application/atom+xml",
