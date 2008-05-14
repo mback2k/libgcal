@@ -165,9 +165,9 @@ START_TEST (test_edit_stress)
 
 
 	/* Whole month loop */
-	for (i = 1; i < 31; ++i) {
+	for (i = 1; i < 31; i += 2) {
 		/* whole day loop */
-		for (j = 4; j < 23; ++j) {
+		for (j = 4; j < 23; j += 3) {
 			snprintf(number_buffer1, sizeof(number_buffer1) - 1,
 				 "%02d", i);
 			snprintf(number_buffer2, sizeof(number_buffer2) - 1,
