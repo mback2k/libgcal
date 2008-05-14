@@ -206,4 +206,22 @@ int gcal_create_event(struct gcal_entries *entries,
 int gcal_delete_event(struct gcal_entries *entry,
 		      struct gcal_resource *ptr_gcal);
 
+
+/** Edits a calendar event.
+ *
+ * It requires the presence of field 'edit_uri' in entry pointer structure
+ * (see \ref gcal_entries).
+ *
+ * @param entries A pointer to an calendar entry event.
+ *
+ * @param ptr_gcal Pointer to a \ref gcal_resource structure, which has
+ *                 previously got the authentication using
+ *                 \ref gcal_get_authentication.
+ *
+ * @return -1 on error, 0 on success.
+ */
+int gcal_edit_event(struct gcal_entries *entry,
+		    struct gcal_resource *ptr_gcal);
+
+
 #endif

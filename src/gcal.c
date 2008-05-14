@@ -34,8 +34,7 @@ POSSIBILITY OF SUCH DAMAGE.
  * @brief  Base file for a gcalendar service access library.
  *
  * \todo:
- * - enable user edit events
- * - enable user delete events
+ * - enable user edit events: requires changes in 'create' to get the edit_uri
  * - enable user do queries: by string and date range
  * - enable user list and access available calendars
  * - enable user create new calendars
@@ -668,6 +667,23 @@ cleanup:
 		free(h_auth);
 
 exit:
+
+	return result;
+
+}
+
+int gcal_edit_event(struct gcal_entries *entry,
+		    struct gcal_resource *ptr_gcal)
+{
+	/* TODO: I think it makes sense when the user add a new event,
+	 * return for him the gcal_entries strucuture with edit_uri field
+	 * filled.
+	 * It will require to parse the returned result after POST in
+	 * gcal_create_event.
+	 */
+	int result = -1;
+	(void)entry;
+	(void)ptr_gcal;
 
 	return result;
 

@@ -188,8 +188,10 @@ START_TEST (test_edit_stress)
 		}
 	}
 
-	/* Give me some time to check if everything was added */
-	sleep(40);
+	/* Give me some time to check if everything was added
+	 * TODO: read an environment variable with the sleep time.
+	 */
+	sleep(10);
 
 	/* Delete all test events */
 	result = gcal_dump(ptr_gcal);
@@ -207,6 +209,50 @@ START_TEST (test_edit_stress)
 }
 END_TEST
 
+START_TEST (test_edit_edit)
+{
+
+	int result, i, entry_index = -1;
+	struct gcal_entries event;
+	struct gcal_entries *entries;
+
+	event.title = "An editable event";
+	event.content = "This event will be included and edited";
+	event.dt_start = "2008-05-07T08:00:00.000Z";
+	event.dt_end = "2008-05-07T09:00:00.000Z";
+	event.where = "nevermind";
+	/* TODO: think in a better way to describe the status, maybe use
+	 * a set of strings.
+	 */
+	event.status = "confirmed";
+
+	result = gcal_get_authentication("gcalntester", "77libgcal", ptr_gcal);
+	fail_if(result == -1, "Authentication should work.");
+
+	result = gcal_create_event(&event, ptr_gcal);
+	fail_if(result == -1, "Failed creating a new event!");
+
+	result = gcal_dump(ptr_gcal);
+	fail_if(result == -1, "Failed dumping events");
+
+	entries = gcal_get_entries(ptr_gcal, &result);
+	fail_if(entries == NULL, "Failed extracting entries");
+
+	for (i = 0; i < result; ++i)
+		if (!strcmp(entries[i].title, event.title)) {
+			entry_index = i;
+			break;
+		}
+	fail_if(entry_index == -1, "Cannot locate the newly added event!");
+
+	event.title = "An editable event: edited now!";
+	result = gcal_edit_event((entries + entry_index), ptr_gcal);
+	fail_if(result == -1, "Failed editing event!");
+
+	/* Cleanup */
+	gcal_destroy_entries(entries, result);
+}
+END_TEST
 
 TCase *edit_tcase_create(void)
 {
@@ -220,6 +266,7 @@ TCase *edit_tcase_create(void)
 	tcase_add_test(tc, test_edit_xml);
 	tcase_add_test(tc, test_edit_delete);
 	tcase_add_test(tc, test_edit_stress);
+	tcase_add_test(tc, test_edit_edit);
 	return tc;
 }
 
