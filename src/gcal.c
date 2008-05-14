@@ -62,7 +62,11 @@ static const char GCAL_EDIT_URL[] = "http://www.google.com/calendar/feeds"
 	"/default/private/full";
 static const char GCAL_EVENT_START[] = "http://www.google.com/calendar/feeds/";
 static const char GCAL_EVENT_END[] = "@gmail.com/private/full";
-
+/* Google 'pages' results in a range pages of 25 entries. But for downloading
+ * all results its requried to set a 'good enough' upper limit of range of
+ * entries. A hack to make 'gcal_dump' work.
+ */
+static const char GCAL_EVENT_UPPER[] = "?max-results=999999999";
 
 static const int GCAL_DEFAULT_ANSWER = 200;
 static const int GCAL_REDIRECT_ANSWER = 302;
@@ -390,13 +394,13 @@ int gcal_dump(struct gcal_resource *ptr_gcal)
 		goto exit;
 
 	length = sizeof(GCAL_EVENT_START) + sizeof(GCAL_EVENT_END) +
-		strlen(ptr_gcal->user) + 1;
+		sizeof(GCAL_EVENT_UPPER) + strlen(ptr_gcal->user) + 1;
 	buffer = (char *)malloc(length);
 	if (!buffer)
 		goto exit;
 
-	snprintf(buffer, length - 1, "%s%s%s", GCAL_EVENT_START, ptr_gcal->user,
-		 GCAL_EVENT_END);
+	snprintf(buffer, length - 1, "%s%s%s%s", GCAL_EVENT_START,
+		 ptr_gcal->user, GCAL_EVENT_END, GCAL_EVENT_UPPER);
 	result =  get_follow_redirection(ptr_gcal, buffer);
 
 	if (!result)
