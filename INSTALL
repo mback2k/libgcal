@@ -1,0 +1,41 @@
+libgcal INSTALL
+adenilson.silva@indt.org.br
+
+== Compile and install ==
+
+Dependencies: gcc, automake, libxml-dev, libcurl-dev
+
+
+In the project root directory, run:
+
+$autoreconf -i -f
+
+$mkdir build #its a good practice not polute source directory
+       	     #with binary objects
+
+$cd build
+
+$../configure
+
+$make
+
+$sudo make install
+
+
+
+== Development ==
+
+Dependencies: lcov, gcov, check
+
+Do the same but you can also add:
+
+$../configure --enable-devel #enable unit tests and other flags
+
+$make lcov #runs unit test and create coverage reports
+
+$make doxygen #generates API documentation
+
+
+
+ps: you can format it to HTML running
+$txt2tags -t html INSTALL
