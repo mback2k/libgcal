@@ -196,6 +196,19 @@ int xmlentry_create(struct gcal_entries *entry, char **xml_entry, int *length)
 
 	xmlDocSetRootElement(doc, root);
 
+
+	/* entry ID, only if the 'entry' is already existant (i.e. the user
+	 * of library just got one entry result from a request from
+	 * server).
+	 */
+	if (entry->id) {
+		node = xmlNewNode(NULL, "id");
+		if (!node)
+			goto cleanup;
+		xmlNodeAddContent(node, entry->id);
+		xmlAddChild(root, node);
+	}
+
 	/* category element */
 	node = xmlNewNode(NULL, "category");
 	if (!node)
@@ -219,6 +232,22 @@ int xmlentry_create(struct gcal_entries *entry, char **xml_entry, int *length)
 	xmlSetProp(node, BAD_CAST "type", BAD_CAST "text");
 	xmlNodeAddContent(node, entry->content);
 	xmlAddChild(root, node);
+
+	/* entry edit URL, only if the 'entry' is already existant.
+	 */
+	if (entry->edit_uri) {
+		node = xmlNewNode(NULL, "link");
+		if (!node)
+			goto cleanup;
+		xmlSetProp(node, BAD_CAST "rel", BAD_CAST "edit");
+		xmlSetProp(node, BAD_CAST "type",
+			   BAD_CAST "application/atom+xml");
+		xmlSetProp(node, BAD_CAST "href",
+			   BAD_CAST entry->edit_uri);
+		xmlAddChild(root, node);
+
+	}
+
 
 	/* transparency */
 	node = xmlNewNode(ns, "transparency");

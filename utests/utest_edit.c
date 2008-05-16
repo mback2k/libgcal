@@ -215,12 +215,15 @@ START_TEST (test_edit_edit)
 	int result, i, entry_index = -1;
 	struct gcal_entries event;
 	struct gcal_entries *entries;
+	char *tmp_ptr;
 
 	event.title = "An editable event";
 	event.content = "This event will be included and edited";
 	event.dt_start = "2008-05-07T08:00:00.000Z";
 	event.dt_end = "2008-05-07T09:00:00.000Z";
 	event.where = "nevermind";
+	event.id = NULL;
+	event.edit_uri = NULL;
 	/* TODO: think in a better way to describe the status, maybe use
 	 * a set of strings.
 	 */
@@ -245,8 +248,15 @@ START_TEST (test_edit_edit)
 		}
 	fail_if(entry_index == -1, "Cannot locate the newly added event!");
 
-	event.title = "An editable event: edited now!";
+	/* Ouch, what horrible hack! */
+	tmp_ptr = entries[entry_index].title;
+
+	entries[entry_index].title = "An editable event: edited now!";
 	result = gcal_edit_event((entries + entry_index), ptr_gcal);
+
+	/* Ouch, what horrible hack! */
+	entries[entry_index].title = tmp_ptr;
+
 	fail_if(result == -1, "Failed editing event!");
 
 	/* Cleanup */
