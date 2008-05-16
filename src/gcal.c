@@ -675,11 +675,11 @@ exit:
 int gcal_edit_event(struct gcal_entries *entry,
 		    struct gcal_resource *ptr_gcal)
 {
-	/* TODO: I think it makes sense when the user add a new event,
-	 * return for him the gcal_entries strucuture with edit_uri field
-	 * filled.
-	 * It will require to parse the returned result after POST in
-	 * gcal_create_event.
+	/* TODO:
+	 * - Add a function to parse the ptr_gcal->buffer and convert it
+	 * to a gcal_entry.
+	 * - provide public interface for that.
+	 *
 	 */
 	int result = -1;
 	(void)entry;
