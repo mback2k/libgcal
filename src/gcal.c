@@ -201,7 +201,7 @@ static int check_request_error(CURL *curl_ctx, int code,
 	curl_easy_getinfo(curl_ctx, CURLINFO_HTTP_CODE, &request_stat);
 	if (code || (request_stat != expected_answer)) {
 		fprintf(stderr, "%s\n%s%s\n%s%d\n",
-			"gcal_get_authentication: failed request.",
+			"check_request_erro: failed request.",
 			"Curl code: ", curl_easy_strerror(code),
 			"HTTP code: ", (int)request_stat);
 		result = -1;
@@ -626,6 +626,9 @@ int gcal_create_event(struct gcal_entries *entries,
 		      struct gcal_resource *ptr_gcal)
 {
 	int result = -1;
+	if ((!entries) || (!ptr_gcal))
+		return result;
+
 	result = post_event(entries, ptr_gcal, GCAL_EDIT_URL);
 	return result;
 }
@@ -693,9 +696,10 @@ int gcal_edit_event(struct gcal_entries *entry,
 	 *
 	 */
 	int result = -1;
-	(void)entry;
-	(void)ptr_gcal;
+	if ((!entry) || (!ptr_gcal))
+		return result;
 
+	result = post_event(entry, ptr_gcal, entry->edit_uri);
 	return result;
 
 }
