@@ -530,8 +530,12 @@ void gcal_destroy_entries(struct gcal_entries *entries, size_t length)
 	free(entries);
 }
 
-int gcal_create_event(struct gcal_entries *entries,
-		      struct gcal_resource *ptr_gcal)
+/* This internal function makes possible to share code between 'add'
+ * and 'edit' events.
+ */
+static int post_event(struct gcal_entries *entries,
+		      struct gcal_resource *ptr_gcal,
+		      const char *url_post)
 {
 	int result = -1;
 	int length = 0;
@@ -571,7 +575,7 @@ int gcal_create_event(struct gcal_entries *entries,
 
 
 	/* Post the entry data */
-	result = http_post(ptr_gcal, GCAL_EDIT_URL,
+	result = http_post(ptr_gcal, url_post,
 			   "Content-Type: application/atom+xml",
 			   h_length,
 			   h_auth,
@@ -587,7 +591,6 @@ int gcal_create_event(struct gcal_entries *entries,
 	if (get_the_url(ptr_gcal->buffer, ptr_gcal->length, &ptr_gcal->url))
 		goto cleanup;
 
-	/* fprintf(stderr, "result = %s\n", ptr_gcal->buffer); */
 	clean_buffer(ptr_gcal);
 
 	/* Add gsessionid to post URL */
@@ -616,6 +619,14 @@ cleanup:
 		free(h_auth);
 
 exit:
+	return result;
+}
+
+int gcal_create_event(struct gcal_entries *entries,
+		      struct gcal_resource *ptr_gcal)
+{
+	int result = -1;
+	result = post_event(entries, ptr_gcal, GCAL_EDIT_URL);
 	return result;
 }
 
