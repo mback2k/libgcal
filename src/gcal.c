@@ -201,7 +201,7 @@ static int check_request_error(CURL *curl_ctx, int code,
 	curl_easy_getinfo(curl_ctx, CURLINFO_HTTP_CODE, &request_stat);
 	if (code || (request_stat != expected_answer)) {
 		fprintf(stderr, "%s\n%s%s\n%s%d\n",
-			"check_request_erro: failed request.",
+			"check_request_error: failed request.",
 			"Curl code: ", curl_easy_strerror(code),
 			"HTTP code: ", (int)request_stat);
 		result = -1;
