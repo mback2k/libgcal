@@ -22,10 +22,29 @@
 
 static Suite *core_suite(void)
 {
-	Suite *s = suite_create("core");
+	char *test_var;
+	Suite *s;
+
+	s = suite_create("core");
+	test_var = getenv("GCALTEST");
+	if (test_var) {
+		if (!(strcmp(test_var, "gcal")))
+			suite_add_tcase(s, gcal_tcase_create());
+		else if (!(strcmp(test_var, "xpath")))
+			suite_add_tcase(s, xpath_tcase_create());
+		else if (!(strcmp(test_var, "edit")))
+			suite_add_tcase(s, edit_tcase_create());
+		else
+			goto all;
+
+		goto exit;
+	}
+
+all:
 	suite_add_tcase(s, gcal_tcase_create());
 	suite_add_tcase(s, xpath_tcase_create());
 	suite_add_tcase(s, edit_tcase_create());
+exit:
 	return s;
 }
 
