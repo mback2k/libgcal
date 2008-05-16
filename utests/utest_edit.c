@@ -54,6 +54,9 @@ START_TEST (test_edit_xml)
 	event.dt_start = "2008-04-08T08:00:00.000Z";
 	event.dt_end = "2008-04-08T09:00:00.000Z";
 	event.where = "someplace";
+	event.id = NULL;
+	event.edit_uri = NULL;
+
 	/* TODO: think in a better way to describe the status, maybe use
 	 * a set of strings.
 	 */
@@ -80,6 +83,9 @@ START_TEST (test_edit_add)
 	event.dt_start = "2008-05-10T08:00:00.000Z";
 	event.dt_end = "2008-05-10T09:00:00.000Z";
 	event.where = "someplace";
+	event.id = NULL;
+	event.edit_uri = NULL;
+
 	/* TODO: think in a better way to describe the status, maybe use
 	 * a set of strings.
 	 */
@@ -107,6 +113,9 @@ START_TEST (test_edit_delete)
 	event.dt_start = "2008-05-07T08:00:00.000Z";
 	event.dt_end = "2008-05-07T09:00:00.000Z";
 	event.where = "nevermind";
+	event.id = NULL;
+	event.edit_uri = NULL;
+
 	/* TODO: think in a better way to describe the status, maybe use
 	 * a set of strings.
 	 */
@@ -155,6 +164,9 @@ START_TEST (test_edit_stress)
 	format_start = "2008-05-%sT%s:00:00.000Z";
 	format_end = "2008-05-%sT%s:00:00.000Z";
 	event.where = "someplace";
+	event.id = NULL;
+	event.edit_uri = NULL;
+
 	/* TODO: think in a better way to describe the status, maybe use
 	 * a set of strings.
 	 */
@@ -275,7 +287,7 @@ TCase *edit_tcase_create(void)
 	tcase_add_test(tc, test_edit_xmlres);
 	tcase_add_test(tc, test_edit_xml);
 	tcase_add_test(tc, test_edit_delete);
-	tcase_add_test(tc, test_edit_stress);
+	//	tcase_add_test(tc, test_edit_stress);
 	tcase_add_test(tc, test_edit_edit);
 	return tc;
 }

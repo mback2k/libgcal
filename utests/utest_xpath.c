@@ -106,6 +106,8 @@ START_TEST (test_get_entries)
 	known_value.where = "my house";
 	known_value.status = "http://schemas.google.com/g/2005#event.confirmed";
 	known_value.updated = "2008-03-26T20:20:51.000Z";
+	known_value.id = NULL;
+	known_value.edit_uri = NULL;
 
 	fail_if(strcmp(known_value.title, extracted.title),
 		"failed field extraction");
