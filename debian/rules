@@ -1,0 +1,18 @@
+#!/usr/bin/make -f
+
+include /usr/share/cdbs/1/rules/debhelper.mk
+include /usr/share/cdbs/1/class/autotools.mk
+
+DEB_CONFIGURE_EXTRA_FLAGS := --enable-maintainer-mode
+
+ifneq (,$(findstring debug,$(DEB_BUILD_OPTIONS)))
+    DEB_CONFIFUGRE_EXTRA_FLAGS += --enable-debug=yes
+endif
+
+DEB_MAKE_CLEAN_TARGET := maintainer-clean
+
+debian/stamp-autotools-files:
+	autoreconf -v -i
+	touch debian/stamp-autotools-files
+
+

@@ -1,0 +1,6 @@
+debian/tmp/usr/lib/libgcal.a
+debian/tmp/usr/lib/libgcal.la
+debian/tmp/usr/lib/pkgconfig/*
+debian/tmp/usr/include/*
+
+
