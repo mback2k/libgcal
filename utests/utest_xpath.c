@@ -34,9 +34,11 @@ static void setup(void)
 
 	tmp = find_file_path(file_name);
 	fd = open(tmp, O_RDONLY);
-
-	if (fd == -1)
-		printf("cannot open file 4entries_location.xml.");
+	if (fd == -1) {
+		printf("cannot open file 4entries_location.xml: Path = %s.\n",
+			tmp);
+		return;
+	}
 
 	res = read_file(fd, &xml_data, &len);
 	fail_if(res, "failed reading the file!\n");
