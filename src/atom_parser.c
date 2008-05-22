@@ -33,6 +33,8 @@ POSSIBILITY OF SUCH DAMAGE.
 int build_doc_tree(xmlDoc **document, char *xml_data)
 {
 	int result = -1;
+	if (!xml_data)
+		goto exit;
 
 #if defined(LIBXML_XPATH_ENABLED) && defined(LIBXML_SAX1_ENABLED)
 	/* Only build a tree if there isn't one */
