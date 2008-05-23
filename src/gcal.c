@@ -34,15 +34,20 @@ POSSIBILITY OF SUCH DAMAGE.
  * @brief  Base file for a gcalendar service access library.
  *
  * \todo:
+ * High priority
  * - enable user edit events: requires changes in 'create' to get the edit_uri
  * - enable user do queries: by string and date range
+ * - batch operation (add/edit/delete): will require some new public functions
+ * - handle http_proxy
+ *
+ * Lower priority
  * - enable user list and access available calendars
  * - enable user create new calendars
  * - enable user delete calendars
- * - handle http_proxy
  * - think a way to securely store passwords
  * - more utests
  * - should we use a logging of some sort?
+ * - provide option to use another XML parser (maybe expat?)
  */
 
 #define _GNU_SOURCE
