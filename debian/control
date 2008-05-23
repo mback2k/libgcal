@@ -3,14 +3,14 @@ Maintainer: Mika Bostrom <mika.bostrom@nomovok.com>
 Section: libs
 Priority: optional
 Build-Depends: cdbs, dpkg-dev, autotools-dev, autoconf, automake,
-    libxml2-dev, libcurl4-dev, libcurl4-openssl-dev | libcurl4-gnutls-dev,
+    libtool, libxml2-dev, libcurl4-openssl-dev | libcurl4-gnutls-dev,
 Standards-Version: 3.7.2
 
 Package: libgcal0
 Architecture: any
 Section: libs
 Priority: optional
-Depends: libxml2, libcurl4-openssl | libcurl4-gnutls
+Depends: libxml2, libcurl3, libcurl4-openssl | libcurl3-gnutls
 Description: library to access Google Calendar
  view, delete and edit events in Google Calendar
 
@@ -18,7 +18,8 @@ Package: libgcal0-dev
 Architecture: any
 Section: libdevel
 Priority: optional
-Depends: libxml2-dev, libcurl4-openssl-dev | libcurl4-gnutls-dev
+Depends: libgcal0 (=${Source-Version}), libxml2-dev,
+    libcurl4-openssl-dev | libcurl4-gnutls-dev
 Description: development files for libgcal
  This package contains the development files needed to build
  programs using libgcal
