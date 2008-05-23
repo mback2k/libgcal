@@ -183,7 +183,7 @@ exit:
 
 char *find_file_path(char *file_name)
 {
-	char *path, *tmp = NULL;
+	char *path, *tmp = NULL, *pos;
 	int len = 0;
 	path = getcwd(NULL, 0);
 	if (path == NULL)
@@ -192,7 +192,14 @@ char *find_file_path(char *file_name)
 	/* This should run in a subdirectory 'build' */
 	len = strrchr(path, '/') - path;
 	tmp = malloc(len + strlen(file_name) + 1);
-	strncpy(tmp, path, len);
+
+	pos = strstr(path, "build");
+	if (pos) {
+		--pos;
+		*pos = '\0';
+	}
+
+	strcpy(tmp, path);
 	strncat(tmp, file_name, len + strlen(file_name) + 1);
 
 	free(path);
