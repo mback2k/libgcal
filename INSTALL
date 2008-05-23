@@ -31,11 +31,22 @@ Do the same but you can also add:
 
 $../configure --enable-devel #enable unit tests and other flags
 
+
+**Attention**: There is an issue with efence in Ubuntu Hardy (mprotect fails), you
+should run instead
+
+**$../configure --enable-warnings --enable-check --enable-lcov**
+
+
+
+
 $make lcov #runs unit test and create coverage reports
 
 $make doxygen #generates API documentation
 
 
 
-ps: you can format it to HTML running
+ps: you can format this doucument to HTML running
+
 $txt2tags -t html INSTALL
+

@@ -26,11 +26,10 @@ adenilson.silva@indt.org.br
 
  - add new event
 
+ - delete event
 
 
 === Missing ===
-
-- delete event
 
 - edit event.
 
@@ -44,6 +43,6 @@ adenilson.silva@indt.org.br
  - libcurl
 
 
-ps: you can format it to HTML running
+ps: you can format this document to HTML running
 
 $txt2tags -t html README
