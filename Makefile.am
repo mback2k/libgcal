@@ -23,6 +23,7 @@ noinst_PROGRAMS = utest
 utest_SOURCES = $(utestdir)/utest_gcal.h $(utestdir)/utest_gcal.c \
 		$(utestdir)/utest_xpath.h $(utestdir)/utest_xpath.c \
 		$(utestdir)/utest_edit.h $(utestdir)/utest_edit.c \
+		$(utestdir)/utest_contact.h $(utestdir)/utest_contact.c \
 		$(utestdir)/utest.c
 
 utest_CPPFLAGS = $(CHECK_FLAGS) $(AM_CPPFLAGS) -I$(csourcedir) -I$(headerdir) \

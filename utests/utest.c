@@ -19,6 +19,7 @@
 #include "utest_gcal.h"
 #include "utest_xpath.h"
 #include "utest_edit.h"
+#include "utest_contact.h"
 
 static Suite *core_suite(void)
 {
@@ -34,6 +35,8 @@ static Suite *core_suite(void)
 			suite_add_tcase(s, xpath_tcase_create());
 		else if (!(strcmp(test_var, "edit")))
 			suite_add_tcase(s, edit_tcase_create());
+		else if (!(strcmp(test_var, "contact")))
+			suite_add_tcase(s, gcontact_tcase_create());
 		else
 			goto all;
 
@@ -44,6 +47,7 @@ all:
 	suite_add_tcase(s, gcal_tcase_create());
 	suite_add_tcase(s, xpath_tcase_create());
 	suite_add_tcase(s, edit_tcase_create());
+	suite_add_tcase(s, gcontact_tcase_create());
 exit:
 	return s;
 }
