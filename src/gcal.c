@@ -64,13 +64,20 @@ static const char GCAL_LIST[] = "http://www.google.com/calendar/feeds/"
 	"default/allcalendars/full";
 static const char GCAL_EDIT_URL[] = "http://www.google.com/calendar/feeds"
 	"/default/private/full";
+
+/* Google calendar query URL */
 static const char GCAL_EVENT_START[] = "http://www.google.com/calendar/feeds/";
 static const char GCAL_EVENT_END[] = "@gmail.com/private/full";
+
+/* Google contact query URL */
+static const char GCONTACT_START[] = "http://www.google.com/m8/feeds/contacts/";
+static const char GCONTACT_END[] = "%40gmail.com/base";
+
 /* Google 'pages' results in a range pages of 25 entries. But for downloading
  * all results its requried to set a 'good enough' upper limit of range of
  * entries. A hack to make 'gcal_dump' work.
  */
-static const char GCAL_EVENT_UPPER[] = "?max-results=999999999";
+static const char GCAL_UPPER[] = "?max-results=999999999";
 
 static const int GCAL_DEFAULT_ANSWER = 200;
 static const int GCAL_REDIRECT_ANSWER = 302;
@@ -374,6 +381,15 @@ static int get_follow_redirection(struct gcal_resource *ptr_gcal,
 	curl_easy_setopt(ptr_gcal->curl, CURLOPT_WRITEDATA, (void *)ptr_gcal);
 
 	result = curl_easy_perform(ptr_gcal->curl);
+
+	/* For contacts, there is *not* redirection. */
+	if (!(result = check_request_error(ptr_gcal->curl, result,
+					  GCAL_DEFAULT_ANSWER))) {
+		result = 0;
+		goto cleanup;
+	}
+
+	/* For calendar, it *must* be redirection */
 	if (check_request_error(ptr_gcal->curl, result, GCAL_REDIRECT_ANSWER)) {
 		result = -1;
 		goto cleanup;
@@ -422,14 +438,25 @@ int gcal_dump(struct gcal_resource *ptr_gcal)
 	if (!ptr_gcal->auth)
 		goto exit;
 
-	length = sizeof(GCAL_EVENT_START) + sizeof(GCAL_EVENT_END) +
-		sizeof(GCAL_EVENT_UPPER) + strlen(ptr_gcal->user) + 1;
+	/* TODO: put the google service type string in an array. */
+	if (!(strcmp(ptr_gcal->service, "cl")))
+		length = sizeof(GCAL_EVENT_START) + sizeof(GCAL_EVENT_END) +
+			sizeof(GCAL_UPPER) + strlen(ptr_gcal->user) + 1;
+	else if (!(strcmp(ptr_gcal->service, "cp")))
+		length = sizeof(GCONTACT_START) + sizeof(GCONTACT_END) +
+			sizeof(GCAL_UPPER) + strlen(ptr_gcal->user) + 1;
+
 	buffer = (char *)malloc(length);
 	if (!buffer)
 		goto exit;
 
-	snprintf(buffer, length - 1, "%s%s%s%s", GCAL_EVENT_START,
-		 ptr_gcal->user, GCAL_EVENT_END, GCAL_EVENT_UPPER);
+	if (!(strcmp(ptr_gcal->service, "cl")))
+		snprintf(buffer, length - 1, "%s%s%s%s", GCAL_EVENT_START,
+			 ptr_gcal->user, GCAL_EVENT_END, GCAL_UPPER);
+	else if (!(strcmp(ptr_gcal->service, "cp")))
+		snprintf(buffer, length - 1, "%s%s%s%s", GCONTACT_START,
+			 ptr_gcal->user, GCONTACT_END, GCAL_UPPER);
+
 	result =  get_follow_redirection(ptr_gcal, buffer);
 
 	if (!result)

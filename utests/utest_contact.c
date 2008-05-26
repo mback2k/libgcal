@@ -9,6 +9,7 @@ static void setup(void)
 {
 	/* here goes any common data allocation */
 	ptr_gcal = gcal_initialize();
+	gcal_set_service(ptr_gcal, GCONTACT);
 }
 
 static void teardown(void)
@@ -18,12 +19,25 @@ static void teardown(void)
 }
 
 
+START_TEST (test_gcont_dump)
+{
+	int result;
+	result = gcal_get_authentication("gcal4tester", "66libgcal", ptr_gcal);
+	if (result)
+		fail_if(1, "Authentication should work");
+
+	result = gcal_dump(ptr_gcal);
+	fail_if(result != 0, "Failed dumping events");
+
+}
+END_TEST
+
+
 START_TEST (test_gcont_authenticate)
 {
 
 	int result;
 
-	gcal_set_service(ptr_gcal, GCONTACT);
 	result = gcal_get_authentication("gcal4tester", "66libgcal", ptr_gcal);
 	fail_if(result != 0, "Authentication should work");
 
@@ -43,7 +57,7 @@ TCase *gcontact_tcase_create(void)
 	tcase_add_checked_fixture(tc, setup, teardown);
 	tcase_set_timeout (tc, timeout_seconds);
 	tcase_add_test(tc, test_gcont_authenticate);
-
+	tcase_add_test(tc, test_gcont_dump);
 	return tc;
 }
 
