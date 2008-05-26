@@ -42,6 +42,9 @@ POSSIBILITY OF SUCH DAMAGE.
 /* For size_t */
 #include <stdlib.h>
 
+/** Google service that user will contact */
+typedef enum { GCALENDAR, GCONTACT } service;
+
 /** Library structure. It holds resources (curl, buffer, etc).
  */
 struct gcal_resource;
@@ -77,8 +80,25 @@ void gcal_destroy(struct gcal_resource *gcal_obj);
 
 /** Library structure constructor, the user can only have pointers to the
  * library \ref gcal_resource structure.
+ *
+ * Concerning google service type, it defaults to google calendar. You can
+ * change it using \ref gcal_set_service.
+ *
+ * @return A pointer to a newly created object or NULL.
  */
 struct gcal_resource *gcal_initialize(void);
+
+
+/** Sets the google service that user wants to authenticate.
+ *
+ * For while, only calendar (cl) and contacts (cp) are supported.
+ *
+ * @param ptr_gcal Pointer to a library resource structure \ref gcal_resource.
+ *
+ * @param option Service type, see \ref service.
+ */
+void gcal_set_service(struct gcal_resource *ptr_gcal, service option);
+
 
 /** Gets from google an authentication token, using the 'ClientLogin' service.
  *
@@ -212,7 +232,7 @@ int gcal_delete_event(struct gcal_entries *entry,
  * It requires the presence of field 'edit_uri' in entry pointer structure
  * (see \ref gcal_entries).
  *
- * @param entries A pointer to an calendar entry event.
+ * @param entry A pointer to an calendar entry event.
  *
  * @param ptr_gcal Pointer to a \ref gcal_resource structure, which has
  *                 previously got the authentication using

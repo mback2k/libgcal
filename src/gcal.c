@@ -79,7 +79,8 @@ static const int GCAL_EDIT_ANSWER = 201;
 static const char EMAIL_FIELD[] = "Email=";
 static const char EMAIL_ADDRESS[] = "@gmail.com";
 static const char PASSWD_FIELD[] = "Passwd=";
-static const char TRAILING_FIELD[] = "service=cl&source=libgcal";
+static const char SERVICE_FIELD[] = "service=";
+static const char CLIENT_SOURCE[] = "source=libgcal";
 static const char HEADER_AUTH[] = "Auth=";
 static const char HEADER_GET[] = "Authorization: GoogleLogin auth=";
 
@@ -102,6 +103,8 @@ struct gcal_resource {
 	dom_document *document;
 	/** A flag to control if the buffer has XML atom stream */
 	char has_xml;
+	/** Google service choose, see \ref service  */
+	char service[3];
 
 };
 
@@ -137,8 +140,23 @@ struct gcal_resource *gcal_initialize(void)
 		ptr = NULL;
 	}
 
+	/* Initializes to google calendar as default */
+	gcal_set_service(ptr, GCALENDAR);
+
 exit:
 	return ptr;
+}
+
+void gcal_set_service(struct gcal_resource *ptr_gcal, service option)
+{
+
+	if (ptr_gcal) {
+		if (option == GCALENDAR)
+			strcpy(ptr_gcal->service, "cl");
+		else if (option == GCONTACT)
+			strcpy(ptr_gcal->service, "cp");
+
+	}
 }
 
 static void clean_buffer(struct gcal_resource *gcal_obj)
@@ -276,15 +294,22 @@ int gcal_get_authentication(char *user, char *password,
 	ptr_gcal->user = strdup(user);
 	post_len = strlen(user) + strlen(password) +
 		sizeof(EMAIL_FIELD) + sizeof(EMAIL_ADDRESS) +
-		sizeof(PASSWD_FIELD) + sizeof(TRAILING_FIELD);
+		sizeof(PASSWD_FIELD) + sizeof(SERVICE_FIELD) +
+		strlen(ptr_gcal->service) + sizeof(CLIENT_SOURCE)
+		+ 4; /* thanks to 3 '&' between fields + null character */
 	post = (char *) malloc(post_len);
 	if (!post || !ptr_gcal->user)
 		goto exit;
 
-	snprintf(post, post_len - 1, "%s%s%s&%s%s&%s",
+	snprintf(post, post_len - 1,
+		 "%s%s%s&"
+		 "%s%s&"
+		 "%s%s&"
+		 "%s",
 		 EMAIL_FIELD, user, EMAIL_ADDRESS,
-		 PASSWD_FIELD, password, TRAILING_FIELD);
-
+		 PASSWD_FIELD, password,
+		 SERVICE_FIELD, ptr_gcal->service,
+		 CLIENT_SOURCE);
 
 	result = http_post(ptr_gcal, GCAL_URL,
 			   "Content-Type: application/x-www-form-urlencoded",
