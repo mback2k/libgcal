@@ -382,17 +382,24 @@ static int get_follow_redirection(struct gcal_resource *ptr_gcal,
 
 	result = curl_easy_perform(ptr_gcal->curl);
 
-	/* For contacts, there is *not* redirection. */
-	if (!(result = check_request_error(ptr_gcal->curl, result,
-					  GCAL_DEFAULT_ANSWER))) {
-		result = 0;
-		goto cleanup;
-	}
-
-	/* For calendar, it *must* be redirection */
-	if (check_request_error(ptr_gcal->curl, result, GCAL_REDIRECT_ANSWER)) {
-		result = -1;
-		goto cleanup;
+	if (!(strcmp(ptr_gcal->service, "cp"))) {
+		/* For contacts, there is *not* redirection. */
+		if (!(result = check_request_error(ptr_gcal->curl, result,
+						   GCAL_DEFAULT_ANSWER))) {
+			result = 0;
+			goto cleanup;
+		}
+	} else if (!(strcmp(ptr_gcal->service, "cl"))) {
+		/* For calendar, it *must* be redirection */
+		if (check_request_error(ptr_gcal->curl, result,
+					GCAL_REDIRECT_ANSWER)) {
+			result = -1;
+			goto cleanup;
+		}
+	} else {
+		/* No valid service, just exit. */
+			result = -1;
+			goto cleanup;
 	}
 
 	/* It will extract and follow the first 'REF' link in the stream */
