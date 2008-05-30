@@ -41,6 +41,7 @@ POSSIBILITY OF SUCH DAMAGE.
 
 #include <libxml/parser.h>
 #include "gcal.h"
+#include "gcontact.h"
 
 /** Abstract type to represent a DOM xml tree (a thin layer over xmlDoc).
  */
@@ -125,6 +126,25 @@ int extract_all_entries(dom_document *doc,
  * @return 0 on sucess, -1 on error.
  */
 int xmlentry_create(struct gcal_entries *entry, char **xml_entry, int *length);
+
+
+/** Receiving a DOM document of the Atom stream, it will extract all the
+ * contacts and parse then, storing each contact in a vector of
+ * \ref gcal_contact.
+ *
+ * It depends on \ref atom_extract_data and \ref atom_get_entries.
+ *
+ * @param doc A document pointer with the Atom stream.
+ *
+ * @param data_extract A pointer to a pre-allocated vector \ref gcal_contact.
+ *
+ * @param length Its length, should be the same as the number of entries. See
+ * also \ref get_entries_number.
+ *
+ * @return 0 on success, -1 on error.
+ */
+int extract_all_contacts(dom_document *doc,
+			 struct gcal_contact *data_extract, int length);
 
 
 #endif

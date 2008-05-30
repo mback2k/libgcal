@@ -307,3 +307,14 @@ exit:
 	return result;
 
 }
+
+int extract_all_contacts(dom_document *doc,
+			struct gcal_contact *data_extract, int length)
+{
+
+	(void)doc;
+	(void)data_extract;
+	(void)length;
+
+	return -1;
+}

@@ -6,7 +6,8 @@ pkgconfig_DATA = libgcal.pc
 libmandir = $(mandir)/man3
 #libman_DATA = libfrob.3
 lib_LTLIBRARIES = libgcal.la
-include_HEADERS = $(headerdir)/gcal.h $(headerdir)/atom_parser.h \
+include_HEADERS = $(headerdir)/internal_gcal.h \
+		$(headerdir)/gcal.h $(headerdir)/atom_parser.h \
 		$(headerdir)/xml_aux.h $(headerdir)/gcal_parser.h \
 		$(headerdir)/gcontact.h
 libgcal_la_SOURCES = $(csourcedir)/gcal.c $(csourcedir)/atom_parser.c \

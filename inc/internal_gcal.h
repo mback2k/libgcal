@@ -26,85 +26,46 @@ CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
 ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 */
-
 /**
- * @file   gcontact.c
+ * @file   internal_gcal.h
  * @author Adenilson Cavalcanti
- * @date   Fri May 30 15:30:35 2008
+ * @date   Fri May 30 16:46:00 2008
  *
- * @brief  Base file for google contacts service access library.
+ * @brief  Internal gcal resource structure definition. The user shalt not
+ * mess with it.
  *
- * \todo:
- * - move HTTP code common to gcalendar to a distinct module
- * - write the parsing code
- * - implement contact extraction from Atom stream
- * - implement contact add/delete/edit
- *
+ * I got to move it to a distinct file to share it between gcal.c and
+ * gcontact.h.
  */
-#include "internal_gcal.h"
-#include "gcontact.h"
+
+#ifndef __INTERNAL_GCAL__
+#define __INTERNAL_GCAL__
+
+#include <curl/curl.h>
 #include "gcal_parser.h"
 
+/** Library structure. It holds resources (curl, buffer, etc).
+ */
+struct gcal_resource {
+	/** Memory buffer */
+	char *buffer;
+	/** Its length */
+	size_t length;
+	/** gcalendar authorization */
+	char *auth;
+	/** curl data structure */
+	CURL *curl;
+	/** Atom feed URL */
+	char *url;
+	/** The user name */
+	char *user;
+	/** DOM xml tree (an abstract type so I can plug another xml parser) */
+	dom_document *document;
+	/** A flag to control if the buffer has XML atom stream */
+	char has_xml;
+	/** Google service choose, see \ref service  */
+	char service[3];
 
-struct gcal_contact *gcal_get_contacts(struct gcal_resource *ptr_gcal,
-				       size_t *length)
+};
 
-{
-	int result = -1;
-	struct gcal_contact *ptr_res = NULL;
-
-	if (!ptr_gcal)
-		goto exit;
-
-	if (!ptr_gcal->buffer || !ptr_gcal->has_xml)
-		goto exit;
-
-	/* create a doc and free atom xml buffer
-	 * TODO: I'm not completely sure if reseting the buffer
-	 * is a good idea (say that the user wants to do something else
-	 * using the atom stream?).
-	 */
-	ptr_gcal->document = build_dom_document(ptr_gcal->buffer);
-	if (!ptr_gcal->document)
-		goto exit;
-
-
-	result = get_entries_number(ptr_gcal->document);
-	if (result == -1)
-		goto cleanup;
-
-	ptr_res = malloc(sizeof(struct gcal_contact) * result);
-	if (!ptr_res)
-		goto cleanup;
-
-	*length = result;
-	result = extract_all_contacts(ptr_gcal->document, ptr_res, result);
-	if (result == -1) {
-		free(ptr_res);
-		ptr_res = NULL;
-	}
-
-	goto exit;
-
-cleanup:
-	clean_dom_document(ptr_gcal->document);
-	ptr_gcal->document = NULL;
-
-exit:
-
-	return ptr_res;
-
-}
-
-void gcal_destroy_contact(struct gcal_contact *contact)
-{
-	(void)contact;
-}
-
-
-void gcal_destroy_contacts(struct gcal_contact *contacts, size_t length)
-{
-
-	(void)contacts;
-	(void)length;
-}
+#endif

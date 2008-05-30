@@ -56,6 +56,7 @@ POSSIBILITY OF SUCH DAMAGE.
 #include <stdlib.h>
 #include <curl/curl.h>
 
+#include "internal_gcal.h"
 #include "gcal.h"
 #include "gcal_parser.h"
 
@@ -91,29 +92,6 @@ static const char CLIENT_SOURCE[] = "source=libgcal";
 static const char HEADER_AUTH[] = "Auth=";
 static const char HEADER_GET[] = "Authorization: GoogleLogin auth=";
 
-/** Library structure. It holds resources (curl, buffer, etc).
- */
-struct gcal_resource {
-	/** Memory buffer */
-	char *buffer;
-	/** Its length */
-	size_t length;
-	/** gcalendar authorization */
-	char *auth;
-	/** curl data structure */
-	CURL *curl;
-	/** Atom feed URL */
-	char *url;
-	/** The user name */
-	char *user;
-	/** DOM xml tree (an abstract type so I can plug another xml parser) */
-	dom_document *document;
-	/** A flag to control if the buffer has XML atom stream */
-	char has_xml;
-	/** Google service choose, see \ref service  */
-	char service[3];
-
-};
 
 static void reset_buffer(struct gcal_resource *ptr)
 {
