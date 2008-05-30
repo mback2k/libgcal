@@ -1,3 +1,10 @@
+/*
+ * @file   utest_contact.h
+ * @author Adenilson Cavalcanti da Silva <adenilson.silva@indt.org.br>
+ * @date   Started on May 25 2008
+ *
+ * @brief  Module for google contacts utests.
+ */
 
 #include "utest_contact.h"
 #include "gcal.h"

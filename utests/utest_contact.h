@@ -1,12 +1,12 @@
 #ifndef __UTEST_GCONT__
 #define __UTEST_GCONT__
+
 /*
- * @file   utest_gcal.h
+ * @file   utest_contact.h
  * @author Adenilson Cavalcanti da Silva <adenilson.silva@indt.org.br>
- * @date   Mar 27 2008
+ * @date   Started on May 25 2008
  *
- * @brief  Header module for libgcal utests.
- *
+ * @brief  Header module for google contacts utests.
  */
 
 #include <check.h>
