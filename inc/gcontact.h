@@ -27,7 +27,7 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 */
 /**
- * @file   gcont.h
+ * @file   gcontact.h
  * @author Adenilson Cavalcanti
  * @date   Fri May 30 14:52:52 2008
  *
@@ -74,7 +74,7 @@ struct gcal_contact {
 };
 
 /** Extracts from the atom stream the contact entries  (you should
- * had got the atom stream before, using \ref gcal.h:gcal_dump).
+ * had got the atom stream before, using \ref gcal_dump).
  *
  * Pay attention that it returns a vector of structures that must be destroyed
  * using \ref gcal_destroy_contacts.
@@ -94,7 +94,7 @@ struct gcal_contact *gcal_get_contacts(struct gcal_resource *ptr_gcal,
 /** Cleanup memory of 1 contact structure pointer.
  *
  *
- * @param entry A pointer to a \ref gcal_contact.
+ * @param contact A pointer to a \ref gcal_contact.
  */
 void gcal_destroy_contact(struct gcal_contact *contact);
 
@@ -103,7 +103,7 @@ void gcal_destroy_contact(struct gcal_contact *contact);
 /** Cleanup the memory of a vector of calendar entries created using
  * \ref gcal_get_entries.
  *
- * @param entries A pointer to a vector of \ref gcal_entries structure.
+ * @param contacts A pointer to a vector of \ref gcal_entries structure.
  *
  * @param length The vector length.
  */

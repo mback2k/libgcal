@@ -28,7 +28,7 @@ POSSIBILITY OF SUCH DAMAGE.
 */
 
 /**
- * @file   gcont.c
+ * @file   gcontact.c
  * @author Adenilson Cavalcanti
  * @date   Fri May 30 15:30:35 2008
  *
