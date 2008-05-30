@@ -767,3 +767,14 @@ int gcal_edit_event(struct gcal_entries *entry,
 	return result;
 
 }
+
+char *gcal_access_buffer(struct gcal_resource *ptr_gcal)
+{
+	char *result = NULL;
+	if (ptr_gcal)
+		if (ptr_gcal->buffer)
+			result = ptr_gcal->buffer;
+
+	return result;
+
+}

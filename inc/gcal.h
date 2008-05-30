@@ -244,4 +244,20 @@ int gcal_edit_event(struct gcal_entries *entry,
 		    struct gcal_resource *ptr_gcal);
 
 
+
+/** Provides access to internal buffer (e.g. to access the raw Atom stream).
+ *
+ * Pay attention that you *must not* mess with its memory, since when deleting
+ * the gcal_resource pointer with \ref gcal_destroy the memory pointed will
+ * be freed.
+ *
+ * @param ptr_gcal Pointer to a \ref gcal_resource structure, which has
+ *                 previously got the authentication using
+ *                 \ref gcal_get_authentication.
+ *
+ * @return A pointer to internal gcal_resource buffer.
+ */
+char *gcal_access_buffer(struct gcal_resource *ptr_gcal);
+
+
 #endif

@@ -9,6 +9,7 @@
 #include "utest_contact.h"
 #include "gcal.h"
 #include <string.h>
+#include <stdio.h>
 
 static struct gcal_resource *ptr_gcal = NULL;
 
@@ -59,7 +60,12 @@ END_TEST
 START_TEST (test_gcont_entries)
 {
 	/* obs: this test is a copy of utest_gcal.c:test_gcal_entries */
-	int result;
+	int result, i;
+	char *contacts_emails[] = { "cavalcantii@gmail.com",
+				   "gcal4tester@gmail.com",
+				   "gcalntester@gmail.com" };
+	char *ptr;
+	int contacts_count = 3;
 
 	result = gcal_get_authentication("gcalntester", "77libgcal", ptr_gcal);
 	if (result)
@@ -70,6 +76,12 @@ START_TEST (test_gcont_entries)
 
 	result = gcal_entries_number(ptr_gcal);
 	fail_if(result != 3, "Got wrong number of contacts");
+
+	for (i = 0; i < contacts_count; ++i)
+		if (!(ptr = strstr(gcal_access_buffer(ptr_gcal),
+				     contacts_emails[i])))
+			fail_if(1, "Can't find contact in atom stream. "
+				"Position = %i\n", i);
 
 
 }
