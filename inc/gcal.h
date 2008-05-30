@@ -171,7 +171,7 @@ int gcal_entries_number(struct gcal_resource *ptr_gcal);
  *                 previously got the authentication using
  *                 \ref gcal_get_authentication.
  *
- * @param length Pointer to an int, it will have the vector length.
+ * @param length Pointer to an unsigned int, it will have the vector length.
  *
  * @return A pointer on sucess, NULL otherwise.
  */

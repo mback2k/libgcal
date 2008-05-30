@@ -8,6 +8,7 @@
 
 #include "utest_contact.h"
 #include "gcal.h"
+#include "gcontact.h"
 #include <string.h>
 #include <stdio.h>
 
@@ -88,6 +89,44 @@ START_TEST (test_gcont_entries)
 END_TEST
 
 
+START_TEST (test_gcont_extract)
+{
+	int result;
+	size_t count, i;
+	struct gcal_contact *contacts;
+	char *contacts_email[] = { "cavalcantii@gmail.com",
+				   "gcal4tester@gmail.com",
+				   "gcalntester@gmail.com" };
+	char *contacts_name[] = { "Adenilson Cavalcanti",
+				   NULL, /* its valid not having a name */
+				   "gcalntester gcalntester" };
+
+	result = gcal_get_authentication("gcalntester", "77libgcal", ptr_gcal);
+	if (result)
+		fail_if(1, "Authentication should work");
+
+	result = gcal_dump(ptr_gcal);
+	fail_if(result != 0, "Failed dumping contacts");
+
+	contacts = gcal_get_contacts(ptr_gcal, &count);
+	fail_if(contacts == NULL, "Failed extracting the contacts vector");
+
+	if (contacts != NULL)
+		for (i = 0; i < count; ++i) {
+			fail_if(strcmp(contacts[i].email, contacts_email[i]),
+				"extracted data differs from expected: emails");
+
+			fail_if(strcmp(contacts[i].title, contacts_name[i]),
+				"extracted data differs from expected: name");
+
+		}
+
+
+	gcal_destroy_contacts(contacts, count);
+}
+END_TEST
+
+
 TCase *gcontact_tcase_create(void)
 {
 	TCase *tc = NULL;
@@ -98,6 +137,7 @@ TCase *gcontact_tcase_create(void)
 	tcase_add_test(tc, test_gcont_authenticate);
 	tcase_add_test(tc, test_gcont_dump);
 	tcase_add_test(tc, test_gcont_entries);
+	tcase_add_test(tc, test_gcont_extract);
 	return tc;
 }
 
