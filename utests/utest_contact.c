@@ -9,6 +9,7 @@ static void setup(void)
 {
 	/* here goes any common data allocation */
 	ptr_gcal = gcal_initialize();
+	/* here we set libgcal to handle contacts */
 	gcal_set_service(ptr_gcal, GCONTACT);
 }
 
@@ -27,7 +28,7 @@ START_TEST (test_gcont_dump)
 		fail_if(1, "Authentication should work");
 
 	result = gcal_dump(ptr_gcal);
-	fail_if(result != 0, "Failed dumping events");
+	fail_if(result != 0, "Failed dumping contacts");
 
 }
 END_TEST
@@ -48,6 +49,25 @@ START_TEST (test_gcont_authenticate)
 END_TEST
 
 
+START_TEST (test_gcont_entries)
+{
+	/* obs: this test is a copy of utest_gcal.c:test_gcal_entries */
+	int result;
+
+	result = gcal_get_authentication("gcalntester", "77libgcal", ptr_gcal);
+	if (result)
+		fail_if(1, "Authentication should work");
+
+	result = gcal_dump(ptr_gcal);
+	fail_if(result != 0, "Failed dumping contacts");
+
+	result = gcal_entries_number(ptr_gcal);
+	fail_if(result != 3, "Got wrong number of contacts");
+
+
+}
+END_TEST
+
 
 TCase *gcontact_tcase_create(void)
 {
@@ -58,6 +78,7 @@ TCase *gcontact_tcase_create(void)
 	tcase_set_timeout (tc, timeout_seconds);
 	tcase_add_test(tc, test_gcont_authenticate);
 	tcase_add_test(tc, test_gcont_dump);
+	tcase_add_test(tc, test_gcont_entries);
 	return tc;
 }
 
