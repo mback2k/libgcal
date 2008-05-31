@@ -311,9 +311,42 @@ int extract_all_contacts(dom_document *doc,
 			struct gcal_contact *data_extract, int length)
 {
 
-	(void)doc;
-	(void)data_extract;
-	(void)length;
+	/* The logic of this function is the same of 'extract_all_entries'
+	 * but I can't find a way to share code without having a common
+	 * type for contact/calendar and registering a callback which
+	 * would accept both types as a valid parameter and parse the
+	 * DOM outputing a vector of contacts/entries.
+	 */
+	int result = -1, i;
+	xmlXPathObject *xpath_obj = NULL;
+	xmlNodeSet *nodes;
 
-	return -1;
+	/* get the contact node list */
+	xpath_obj = atom_get_entries(doc);
+	if (!xpath_obj)
+		goto exit;
+	nodes = xpath_obj->nodesetval;
+	if (!nodes)
+		goto exit;
+
+	if (length != nodes->nodeNr) {
+		fprintf(stderr, "extract_all_contacts: Size mismatch!");
+		goto cleanup;
+	}
+
+	/* extract the fields */
+	for (i = 0; i < length; ++i) {
+		result = atom_extract_contact(nodes->nodeTab[i],
+					      &data_extract[i]);
+		if (result == -1)
+			goto cleanup;
+	}
+
+	result = 0;
+
+cleanup:
+	xmlXPathFreeObject(xpath_obj);
+
+exit:
+	return result;
 }
