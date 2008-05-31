@@ -143,9 +143,6 @@ int extract_all_entries(dom_document *doc,
 	int result = -1, i;
 	xmlXPathObject *xpath_obj = NULL;
 	xmlNodeSet *nodes;
-	(void) doc;
-	(void) data_extract;
-	(void) length;
 
 	/* get the entry node list */
 	xpath_obj = atom_get_entries(doc);
