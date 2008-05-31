@@ -32,6 +32,9 @@ POSSIBILITY OF SUCH DAMAGE.
 #include <libxml/tree.h>
 #include <string.h>
 
+char scheme_href[] = "http://schemas.google.com/g/2005#kind";
+char term_href[] = "http://schemas.google.com/g/2005#event";
+
 /** A thin wrapper around libxml document structure
  *
  */
@@ -172,10 +175,6 @@ cleanup:
 exit:
 	return result;
 }
-
-char scheme_href[] = "http://schemas.google.com/g/2005#kind";
-char term_href[] = "http://schemas.google.com/g/2005#event";
-
 
 int xmlentry_create(struct gcal_entries *entry, char **xml_entry, int *length)
 {
