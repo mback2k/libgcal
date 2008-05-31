@@ -109,7 +109,7 @@ START_TEST (test_gcont_extract)
 	fail_if(result != 0, "Failed dumping contacts");
 
 	contacts = gcal_get_contacts(ptr_gcal, &count);
-	fail_if(contacts == NULL, "Failed extracting the contacts vector");
+	fail_if(contacts == NULL, "Failed extracting the contacts vector!");
 
 	if (contacts != NULL)
 		for (i = 0; i < count; ++i) {
