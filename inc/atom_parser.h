@@ -45,6 +45,7 @@ POSSIBILITY OF SUCH DAMAGE.
 #include <libxml/parser.h>
 #include <libxml/xpath.h>
 #include "gcal.h"
+#include "gcontact.h"
 
 /** Creates a document tree (required by other operations).
  *
@@ -86,7 +87,7 @@ int atom_entries(xmlDoc *document);
 xmlXPathObject *atom_get_entries(xmlDoc *document);
 
 
-/** Extract information from a Atom entry (what, where, location, etc).
+/** Extract calendar information from a Atom entry (what, where, location, etc).
  *
  * \todo check which fields are optional and which are mandatory
  *
@@ -97,5 +98,19 @@ xmlXPathObject *atom_get_entries(xmlDoc *document);
  * @return 0 on sucess, -1 otherwise.
  */
 int atom_extract_data(xmlNode *entry, struct gcal_entries *ptr_entry);
+
+
+/** Extract contact information from Atom entry (name, e-mail, etc).
+ *
+ *
+ * @param entry Pointer to a libxml node.
+ *
+ * @param ptr_entry Pointer to a libgcal contact (see \ref gcal_contact).
+ *
+ * @return 0 on sucess, -1 otherwise.
+ */
+int atom_extract_contact(xmlNode *entry, struct gcal_contact *ptr_entry);
+
+
 
 #endif

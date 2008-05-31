@@ -275,3 +275,11 @@ cleanup:
 exit:
 	return result;
 }
+
+int atom_extract_contact(xmlNode *entry, struct gcal_contact *ptr_entry)
+{
+	(void)entry;
+	(void)ptr_entry;
+
+	return -1;
+}
