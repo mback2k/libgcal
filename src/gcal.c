@@ -508,7 +508,6 @@ struct gcal_entries *gcal_get_entries(struct gcal_resource *ptr_gcal,
 	ptr_gcal->document = build_dom_document(ptr_gcal->buffer);
 	if (!ptr_gcal->document)
 		goto exit;
-	reset_buffer(ptr_gcal);
 
 	result = get_entries_number(ptr_gcal->document);
 	if (result == -1)
@@ -524,8 +523,6 @@ struct gcal_entries *gcal_get_entries(struct gcal_resource *ptr_gcal,
 		free(ptr_res);
 		ptr_res = NULL;
 	}
-
-	goto exit;
 
 cleanup:
 	clean_dom_document(ptr_gcal->document);
