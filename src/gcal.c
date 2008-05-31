@@ -501,9 +501,6 @@ struct gcal_entries *gcal_get_entries(struct gcal_resource *ptr_gcal,
 		goto exit;
 
 	/* create a doc and free atom xml buffer
-	 * TODO: I'm not completely sure if reseting the buffer
-	 * is a good idea (say that the user wants to do something else
-	 * using the atom stream?).
 	 */
 	ptr_gcal->document = build_dom_document(ptr_gcal->buffer);
 	if (!ptr_gcal->document)
