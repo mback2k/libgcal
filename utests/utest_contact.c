@@ -9,6 +9,7 @@
 #include "utest_contact.h"
 #include "gcal.h"
 #include "gcontact.h"
+#include "gcal_parser.h"
 #include <string.h>
 #include <stdio.h>
 
@@ -126,6 +127,32 @@ START_TEST (test_gcont_extract)
 END_TEST
 
 
+START_TEST (test_contact_xml)
+{
+	int result, length;
+	struct gcal_contact contact;
+	char *xml = NULL;
+
+
+	contact.title = "John Doe";
+	contact.email = "john.doe@foo.bar.com";
+	contact.id = contact.updated = contact.edit_uri = NULL;
+	/* extra fields */
+	contact.content = "A very interesting person";
+	contact.org_name = "Foo software";
+	contact.org_title = "Software engineer";
+	contact.im = "john";
+	contact.phone_number = "+9977554422119900";
+	contact.post_address = "Unknown Av. St., n. 69, Someplace";
+
+	result = xmlcontact_create(&contact, &xml, &length);
+	fail_if(result == -1 || xml == NULL,
+		"Failed creating XML for a new contact!");
+
+}
+END_TEST
+
+
 START_TEST (test_contact_add)
 {
 	int result;
@@ -164,6 +191,7 @@ TCase *gcontact_tcase_create(void)
 	tcase_add_test(tc, test_gcont_dump);
 	tcase_add_test(tc, test_gcont_entries);
 	tcase_add_test(tc, test_gcont_extract);
+	tcase_add_test(tc, test_contact_xml);
 	tcase_add_test(tc, test_contact_add);
 	return tc;
 }

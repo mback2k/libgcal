@@ -347,3 +347,20 @@ cleanup:
 exit:
 	return result;
 }
+
+int xmlcontact_create(struct gcal_contact *contact, char **xml_contact,
+		      int *length)
+{
+	int result = -1;
+	/* XXX: this function is pretty much a copy of 'xmlentry_create'
+	 * some code could be shared if I provided a common type between
+	 * contact X calendar.
+	 */
+
+	(void)contact;
+	(void)xml_contact;
+	(void)length;
+
+	return result;
+
+}

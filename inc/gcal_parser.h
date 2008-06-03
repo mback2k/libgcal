@@ -147,4 +147,20 @@ int extract_all_contacts(dom_document *doc,
 			 struct gcal_contact *data_extract, int length);
 
 
+/** Creates the XML for a new contact entry.
+ *
+ * It depends on \ref xmlentry_init_resources and
+ * \ref xmlentry_destroy_resources.
+ *
+ * @param contact A pointer to a contact (see \ref gcal_contact).
+ *
+ * @param xml_contact Pointer to pointer string (you must free its memory!).
+ *
+ * @param length A pointer to a variable that will have its length.
+ *
+ * @return 0 on sucess, -1 on error.
+ */
+int xmlcontact_create(struct gcal_contact *contact, char **xml_contact,
+		      int *length);
+
 #endif
