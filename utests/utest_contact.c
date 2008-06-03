@@ -102,8 +102,7 @@ START_TEST (test_gcont_extract)
 				   "gcalntester gcalntester" };
 
 	result = gcal_get_authentication("gcalntester", "77libgcal", ptr_gcal);
-	if (result)
-		fail_if(1, "Authentication should work");
+	fail_if(result == -1, "Authentication should work");
 
 	result = gcal_dump(ptr_gcal);
 	fail_if(result != 0, "Failed dumping contacts");
@@ -127,6 +126,27 @@ START_TEST (test_gcont_extract)
 END_TEST
 
 
+START_TEST (test_contact_add)
+{
+	int result;
+	struct gcal_contact contact;
+
+	contact.title = "A new event";
+	contact.content = "Here goes the description of my new event";
+	contact.id = NULL;
+	contact.edit_uri = NULL;
+
+	result = gcal_get_authentication("gcalntester", "77libgcal", ptr_gcal);
+	fail_if(result == -1, "Authentication should work.");
+
+	result = gcal_create_contact(&contact, ptr_gcal);
+	fail_if(result == -1, "Failed creating a new contact!");
+
+
+}
+END_TEST
+
+
 TCase *gcontact_tcase_create(void)
 {
 	TCase *tc = NULL;
@@ -138,6 +158,7 @@ TCase *gcontact_tcase_create(void)
 	tcase_add_test(tc, test_gcont_dump);
 	tcase_add_test(tc, test_gcont_entries);
 	tcase_add_test(tc, test_gcont_extract);
+	tcase_add_test(tc, test_contact_add);
 	return tc;
 }
 

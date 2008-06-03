@@ -128,3 +128,14 @@ void gcal_destroy_contacts(struct gcal_contact *contacts, size_t length)
 
 	free(contacts);
 }
+
+int gcal_create_contact(struct gcal_contact *contact,
+			struct gcal_resource *ptr_gcal)
+{
+	int result = -1;
+	(void)contact;
+	(void)ptr_gcal;
+
+
+	return result;
+}

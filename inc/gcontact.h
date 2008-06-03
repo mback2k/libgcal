@@ -110,4 +110,21 @@ void gcal_destroy_contact(struct gcal_contact *contact);
 void gcal_destroy_contacts(struct gcal_contact *contacts, size_t length);
 
 
+/** Creates a new contact.
+ *
+ * You need to first succeed to get an authorization token using
+ * \ref gcal_get_authentication with mode set using
+ * \ref gcal_set_service to GCONTACT.
+ *
+ * @param contact A pointer to a libgcal \ref gcal_contact structure.
+ *
+ * @param ptr_gcal Pointer to a \ref gcal_resource structure, which has
+ *                 previously got the authentication using
+ *                 \ref gcal_get_authentication.
+ *
+ * @return -1 on error, 0 on success.
+ */
+int gcal_create_contact(struct gcal_contact *contact,
+			struct gcal_resource *ptr_gcal);
+
 #endif
