@@ -131,10 +131,16 @@ START_TEST (test_contact_add)
 	int result;
 	struct gcal_contact contact;
 
-	contact.title = "A new event";
-	contact.content = "Here goes the description of my new event";
-	contact.id = NULL;
-	contact.edit_uri = NULL;
+	contact.title = "John Doe";
+	contact.email = "john.doe@foo.bar.com";
+	contact.id = contact.updated = contact.edit_uri = NULL;
+	/* extra fields */
+	contact.content = "A very interesting person";
+	contact.org_name = "Foo software";
+	contact.org_title = "Software engineer";
+	contact.im = "john";
+	contact.phone_number = "+9977554422119900";
+	contact.post_address = "Unknown Av. St., n. 69, Someplace";
 
 	result = gcal_get_authentication("gcalntester", "77libgcal", ptr_gcal);
 	fail_if(result == -1, "Authentication should work.");
