@@ -59,8 +59,6 @@ struct gcal_contact *gcal_get_contacts(struct gcal_resource *ptr_gcal,
 	if (!ptr_gcal->buffer || !ptr_gcal->has_xml)
 		goto exit;
 
-	/* create a doc and free atom xml buffer
-	 */
 	ptr_gcal->document = build_dom_document(ptr_gcal->buffer);
 	if (!ptr_gcal->document)
 		goto exit;
@@ -93,15 +91,42 @@ exit:
 
 }
 
-void gcal_destroy_contact(struct gcal_contact *contact)
+static void clean_string(char *ptr_str)
 {
-	(void)contact;
+	if (ptr_str)
+		free(ptr_str);
 }
 
+void gcal_destroy_contact(struct gcal_contact *contact)
+{
+	if (!contact)
+		return;
+
+	clean_string(contact->id);
+	clean_string(contact->updated);
+	clean_string(contact->title);
+	clean_string(contact->edit_uri);
+	clean_string(contact->email);
+
+	/* Extra fields */
+	clean_string(contact->content);
+	clean_string(contact->org_name);
+	clean_string(contact->org_title);
+	clean_string(contact->im);
+	clean_string(contact->phone_number);
+	clean_string(contact->post_address);
+
+}
 
 void gcal_destroy_contacts(struct gcal_contact *contacts, size_t length)
 {
 
-	(void)contacts;
-	(void)length;
+	size_t i = 0;
+	if (!contacts)
+		return;
+
+	for (; i < length; ++i)
+		gcal_destroy_contact((contacts + i));
+
+	free(contacts);
 }

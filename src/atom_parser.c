@@ -339,13 +339,21 @@ int atom_extract_contact(xmlNode *entry, struct gcal_contact *ptr_entry)
 	if (!ptr_entry->email)
 		goto cleanup;
 
+	/* Here begins extra fields */
 
-	/* TODO: implement remaining extra fields */
 	/* Gets the 'content' contact field */
 	ptr_entry->content = extract_and_check(doc,
 					       "//atom:entry/"
 					       "atom:content/text()",
 					       NULL);
+
+	/* TODO: implement remaining extra fields */
+	ptr_entry->org_name = NULL;
+	ptr_entry->org_title = NULL;
+	ptr_entry->im = NULL;
+	ptr_entry->phone_number = NULL;
+	ptr_entry->post_address = NULL;
+
 
 	result = 0;
 
