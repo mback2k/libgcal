@@ -149,13 +149,16 @@ START_TEST (test_contact_xml)
 	fail_if(result == -1 || xml == NULL,
 		"Failed creating XML for a new contact!");
 
+	/* fprintf(stderr, "at: %s is nice\n", xml); */
+
 	ptr = strstr(xml, contact.title);
 	fail_if(ptr == NULL, "XML lacks a field: %s\n", contact.title);
+	ptr = strstr(xml, contact.email);
+	fail_if(ptr == NULL, "XML lacks a field: %s\n", contact.email);
 	ptr = strstr(xml, contact.post_address);
 	fail_if(ptr == NULL, "XML lacks a field: %s\n", contact.post_address);
 
 	free(xml);
-	fprintf(stderr, "at: %s is nice\n", xml);
 
 }
 END_TEST

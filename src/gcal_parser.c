@@ -415,7 +415,17 @@ int xmlcontact_create(struct gcal_contact *contact, char **xml_contact,
 
 	}
 
-	/* TODO: add email */
+	/* There are 3 types of e-mail: other, work, home */
+	node = xmlNewNode(ns, "email");
+	if (!node)
+		goto cleanup;
+
+	xmlSetProp(node, BAD_CAST "rel",
+		   BAD_CAST "http://schemas.google.com/g/2005#other");
+	xmlSetProp(node, BAD_CAST "address",
+		   BAD_CAST contact->email);
+	xmlAddChild(root, node);
+
 
 	/* Here begin extra fields */
 	/* content element */
