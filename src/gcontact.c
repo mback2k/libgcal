@@ -36,8 +36,6 @@ POSSIBILITY OF SUCH DAMAGE.
  *
  * \todo:
  * - move HTTP code common to gcalendar to a distinct module
- * - write the parsing code
- * - implement contact extraction from Atom stream
  * - implement contact add/delete/edit
  *
  */
