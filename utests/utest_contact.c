@@ -131,7 +131,7 @@ START_TEST (test_contact_xml)
 {
 	int result, length;
 	struct gcal_contact contact;
-	char *xml = NULL;
+	char *xml = NULL, *ptr;
 
 
 	contact.title = "John Doe";
@@ -148,6 +148,14 @@ START_TEST (test_contact_xml)
 	result = xmlcontact_create(&contact, &xml, &length);
 	fail_if(result == -1 || xml == NULL,
 		"Failed creating XML for a new contact!");
+
+	ptr = strstr(xml, contact.title);
+	fail_if(ptr == NULL, "XML lacks a field: %s\n", contact.title);
+	ptr = strstr(xml, contact.post_address);
+	fail_if(ptr == NULL, "XML lacks a field: %s\n", contact.post_address);
+
+	free(xml);
+	fprintf(stderr, "at: %s is nice\n", xml);
 
 }
 END_TEST

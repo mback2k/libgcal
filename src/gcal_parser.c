@@ -33,8 +33,8 @@ POSSIBILITY OF SUCH DAMAGE.
 #include <string.h>
 
 char scheme_href[] = "http://schemas.google.com/g/2005#kind";
-char term_href[] = "http://schemas.google.com/g/2005#event";
-
+char term_href_cal[] = "http://schemas.google.com/g/2005#event";
+char term_href_cont[] = "http://schemas.google.com/contact/2008#contact";
 /** A thin wrapper around libxml document structure
  *
  */
@@ -210,7 +210,7 @@ int xmlentry_create(struct gcal_entries *entry, char **xml_entry, int *length)
 	if (!node)
 		goto cleanup;
 	xmlSetProp(node, BAD_CAST "scheme", BAD_CAST scheme_href);
-	xmlSetProp(node, BAD_CAST "term", BAD_CAST term_href);
+	xmlSetProp(node, BAD_CAST "term", BAD_CAST term_href_cal);
 	xmlAddChild(root, node);
 
 	/* title element */
@@ -351,16 +351,80 @@ exit:
 int xmlcontact_create(struct gcal_contact *contact, char **xml_contact,
 		      int *length)
 {
-	int result = -1;
 	/* XXX: this function is pretty much a copy of 'xmlentry_create'
 	 * some code could be shared if I provided a common type between
 	 * contact X calendar.
 	 */
+	int result = -1;
+	xmlDoc *doc = NULL;
+	xmlNode *root, *node;
+	xmlNs *ns;
+	xmlChar *xml_str = NULL;
 
-	(void)contact;
-	(void)xml_contact;
-	(void)length;
+	doc = xmlNewDoc(BAD_CAST "1.0");
+	root = xmlNewNode(NULL, BAD_CAST "entry");
+
+	if (!doc || !root)
+		goto exit;
+
+	xmlSetProp(root, BAD_CAST "xmlns", BAD_CAST atom_href);
+	ns =  xmlNewNs(root, BAD_CAST gd_href, BAD_CAST "gd");
+
+	xmlDocSetRootElement(doc, root);
+
+
+	/* entry ID, only if the 'entry' is already existant (i.e. the user
+	 * of library just got one entry result from a request from
+	 * server).
+	 */
+	if (contact->id) {
+		node = xmlNewNode(NULL, "id");
+		if (!node)
+			goto cleanup;
+		xmlNodeAddContent(node, contact->id);
+		xmlAddChild(root, node);
+	}
+
+	/* category element */
+	node = xmlNewNode(NULL, "category");
+	if (!node)
+		goto cleanup;
+	xmlSetProp(node, BAD_CAST "scheme", BAD_CAST scheme_href);
+	xmlSetProp(node, BAD_CAST "term", BAD_CAST term_href_cont);
+	xmlAddChild(root, node);
+
+	/* title element */
+	node = xmlNewNode(NULL, "title");
+	if (!node)
+		goto cleanup;
+	xmlSetProp(node, BAD_CAST "type", BAD_CAST "text");
+	xmlNodeAddContent(node, contact->title);
+	xmlAddChild(root, node);
+
+	/* content element */
+	node = xmlNewNode(NULL, "content");
+	if (!node)
+		goto cleanup;
+	xmlSetProp(node, BAD_CAST "type", BAD_CAST "text");
+	xmlNodeAddContent(node, contact->content);
+	xmlAddChild(root, node);
+
+
+	xmlDocDumpMemory(doc, &xml_str, length);
+	/* xmlDocDumpMemory doesn't include the last 0 in the returned size */
+	++(*length);
+	if (xml_str)
+		if ((*xml_contact = strdup(xml_str)))
+			result = 0;
+cleanup:
+
+	if (xml_str)
+		xmlFree(xml_str);
+
+	if (doc)
+		xmlFreeDoc(doc);
+
+exit:
 
 	return result;
-
 }
