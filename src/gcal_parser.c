@@ -372,9 +372,16 @@ int xmlcontact_create(struct gcal_contact *contact, char **xml_contact,
 
 	xmlDocSetRootElement(doc, root);
 
+	/* category element */
+	node = xmlNewNode(NULL, "category");
+	if (!node)
+		goto cleanup;
+	xmlSetProp(node, BAD_CAST "scheme", BAD_CAST scheme_href);
+	xmlSetProp(node, BAD_CAST "term", BAD_CAST term_href_cont);
+	xmlAddChild(root, node);
 
-	/* entry ID, only if the 'entry' is already existant (i.e. the user
-	 * of library just got one entry result from a request from
+	/* entry ID, only if the 'contact' is already existant (i.e. the user
+	 * of library just got one contact result from a request from
 	 * server).
 	 */
 	if (contact->id) {
@@ -385,14 +392,6 @@ int xmlcontact_create(struct gcal_contact *contact, char **xml_contact,
 		xmlAddChild(root, node);
 	}
 
-	/* category element */
-	node = xmlNewNode(NULL, "category");
-	if (!node)
-		goto cleanup;
-	xmlSetProp(node, BAD_CAST "scheme", BAD_CAST scheme_href);
-	xmlSetProp(node, BAD_CAST "term", BAD_CAST term_href_cont);
-	xmlAddChild(root, node);
-
 	/* title element */
 	node = xmlNewNode(NULL, "title");
 	if (!node)
@@ -401,6 +400,24 @@ int xmlcontact_create(struct gcal_contact *contact, char **xml_contact,
 	xmlNodeAddContent(node, contact->title);
 	xmlAddChild(root, node);
 
+	/* entry edit URL, only if the 'entry' is already existant.
+	 */
+	if (contact->edit_uri) {
+		node = xmlNewNode(NULL, "link");
+		if (!node)
+			goto cleanup;
+		xmlSetProp(node, BAD_CAST "rel", BAD_CAST "edit");
+		xmlSetProp(node, BAD_CAST "type",
+			   BAD_CAST "application/atom+xml");
+		xmlSetProp(node, BAD_CAST "href",
+			   BAD_CAST contact->edit_uri);
+		xmlAddChild(root, node);
+
+	}
+
+	/* TODO: add email */
+
+	/* Here begin extra fields */
 	/* content element */
 	node = xmlNewNode(NULL, "content");
 	if (!node)
@@ -409,6 +426,9 @@ int xmlcontact_create(struct gcal_contact *contact, char **xml_contact,
 	xmlNodeAddContent(node, contact->content);
 	xmlAddChild(root, node);
 
+	/* TODO: implement missing fields (org_name, org_title, im,
+	 * phone_number, post_address).
+	 */
 
 	xmlDocDumpMemory(doc, &xml_str, length);
 	/* xmlDocDumpMemory doesn't include the last 0 in the returned size */
