@@ -98,7 +98,7 @@ START_TEST (test_gcont_extract)
 				   "gcal4tester@gmail.com",
 				   "gcalntester@gmail.com" };
 	char *contacts_name[] = { "Adenilson Cavalcanti",
-				   NULL, /* its valid not having a name */
+				   "", /* its valid not having a name */
 				   "gcalntester gcalntester" };
 
 	result = gcal_get_authentication("gcalntester", "77libgcal", ptr_gcal);

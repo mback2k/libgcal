@@ -278,8 +278,83 @@ exit:
 
 int atom_extract_contact(xmlNode *entry, struct gcal_contact *ptr_entry)
 {
-	(void)entry;
-	(void)ptr_entry;
+	int result = -1;
+	xmlDoc *doc = NULL;
+	xmlNode *copy = NULL;
 
-	return -1;
+	if (!entry || !ptr_entry)
+		goto exit;
+
+	/* XXX: this function is pretty much a copy of 'atom_extract_data'
+	 * some code could be shared if I provided a common type between
+	 * contact X calendar.
+	 */
+
+	/* Creates a doc from this element node: yeah, nasty, I should
+	 * think of a better way later...
+	 */
+	doc = xmlNewDoc("1.0");
+	if (!doc)
+		goto exit;
+
+	copy = xmlCopyNode(entry, 1);
+	if (!copy)
+		goto cleanup;
+
+	xmlDocSetRootElement(doc, copy);
+
+	/* Gets the 'id' contact field */
+	ptr_entry->id = extract_and_check(doc,
+					  "//atom:entry/atom:id/text()",
+					  NULL);
+	if (!ptr_entry->id)
+		goto cleanup;
+
+	/* Gets the 'updated' contact field */
+	ptr_entry->updated = extract_and_check(doc,
+					       "//atom:entry/"
+					       "atom:updated/text()",
+					       NULL);
+
+
+	/* Gets the 'who' contact field */
+	ptr_entry->title = extract_and_check(doc,
+					     "//atom:entry/atom:title/text()",
+					     NULL);
+	if (!ptr_entry->title)
+		goto cleanup;
+
+
+	/* Gets the 'edit url' contact field */
+	ptr_entry->edit_uri = extract_and_check(doc, "//atom:entry/"
+						"atom:link[@rel='edit']",
+						"href");
+	if (!ptr_entry->edit_uri)
+		goto cleanup;
+
+	/* Gets the email contact field */
+	ptr_entry->email = extract_and_check(doc, "//atom:entry/"
+						"gd:email",
+						"address");
+	if (!ptr_entry->email)
+		goto cleanup;
+
+
+	/* TODO: implement remaining extra fields */
+	/* Gets the 'content' contact field */
+	ptr_entry->content = extract_and_check(doc,
+					       "//atom:entry/"
+					       "atom:content/text()",
+					       NULL);
+
+	result = 0;
+
+cleanup:
+
+	/* Dumps the doc to stdout */
+	/* xmlSaveFormatFileEnc("-", doc, "UTF-8", 1); */
+	xmlFreeDoc(doc);
+
+exit:
+	return result;
 }
