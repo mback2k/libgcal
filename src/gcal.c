@@ -60,44 +60,6 @@ POSSIBILITY OF SUCH DAMAGE.
 #include "gcal.h"
 #include "gcal_parser.h"
 
-static const char GCAL_URL[] = "https://www.google.com/accounts/ClientLogin";
-static const char GCAL_LIST[] = "http://www.google.com/calendar/feeds/"
-	"default/allcalendars/full";
-/* Google calendar URL for posting new events */
-static const char GCAL_EDIT_URL[] = "http://www.google.com/calendar/feeds"
-	"/default/private/full";
-/* Google contacts URL for posting new contacts */
-static const char GCONTACT_EDIT_START[] = "http://www.google.com/m8/feeds/"
-	"contacts/";
-static const char GCONTACT_EDIT_END[] = "%40gmail.com/full";
-
-/* Google calendar query URL */
-static const char GCAL_EVENT_START[] = "http://www.google.com/calendar/feeds/";
-static const char GCAL_EVENT_END[] = "@gmail.com/private/full";
-
-/* Google contact query URL */
-static const char GCONTACT_START[] = "http://www.google.com/m8/feeds/contacts/";
-static const char GCONTACT_END[] = "%40gmail.com/base";
-
-/* Google 'pages' results in a range pages of 25 entries. But for downloading
- * all results its requried to set a 'good enough' upper limit of range of
- * entries. A hack to make 'gcal_dump' work.
- */
-static const char GCAL_UPPER[] = "?max-results=999999999";
-
-static const int GCAL_DEFAULT_ANSWER = 200;
-static const int GCAL_REDIRECT_ANSWER = 302;
-static const int GCAL_EDIT_ANSWER = 201;
-
-static const char EMAIL_FIELD[] = "Email=";
-static const char EMAIL_ADDRESS[] = "@gmail.com";
-static const char PASSWD_FIELD[] = "Passwd=";
-static const char SERVICE_FIELD[] = "service=";
-static const char CLIENT_SOURCE[] = "source=libgcal";
-static const char HEADER_AUTH[] = "Auth=";
-static const char HEADER_GET[] = "Authorization: GoogleLogin auth=";
-
-
 static void reset_buffer(struct gcal_resource *ptr)
 {
 	if (ptr->buffer)
