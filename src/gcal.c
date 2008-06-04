@@ -569,16 +569,15 @@ void gcal_destroy_entries(struct gcal_entries *entries, size_t length)
 /* This internal function makes possible to share code between 'add'
  * and 'edit' events.
  */
-static int post_event(struct gcal_entries *entries,
-		      struct gcal_resource *ptr_gcal,
-		      const char *url_post)
+int post_event(char *data2post, struct gcal_resource *ptr_gcal,
+	       const char *url_post)
 {
 	int result = -1;
 	int length = 0;
-	char *h_auth = NULL, *h_length = NULL, *xml_entry = NULL, *tmp;
+	char *h_auth = NULL, *h_length = NULL, *tmp;
 	const char header[] = "Content-length: ";
 
-	if (!entries || !ptr_gcal)
+	if (!data2post || !ptr_gcal)
 		goto exit;
 
 	if (!ptr_gcal->auth)
@@ -587,20 +586,14 @@ static int post_event(struct gcal_entries *entries,
 	/* Must cleanup HTTP buffer between requests */
 	clean_buffer(ptr_gcal);
 
-	/* mount XML entry */
-	result = xmlentry_create(entries, &xml_entry, &length);
-	if (result == -1)
-		goto cleanup;
-
-
 	/* Mounts content length and  authentication header strings */
-	length = strlen(xml_entry) + strlen(header) + 1;
+	length = strlen(data2post) + strlen(header) + 1;
 	h_length = (char *) malloc(length) ;
 	if (!h_length)
 		goto exit;
 	strncpy(h_length, header, sizeof(header));
 	tmp = h_length + sizeof(header) - 1;
-	snprintf(tmp, length - (sizeof(header) + 1), "%d", strlen(xml_entry));
+	snprintf(tmp, length - (sizeof(header) + 1), "%d", strlen(data2post));
 
 
 	length = strlen(ptr_gcal->auth) + sizeof(HEADER_GET) + 1;
@@ -615,7 +608,7 @@ static int post_event(struct gcal_entries *entries,
 			   "Content-Type: application/atom+xml",
 			   h_length,
 			   h_auth,
-			   xml_entry, GCAL_REDIRECT_ANSWER);
+			   data2post, GCAL_REDIRECT_ANSWER);
 	if (result == -1)
 		goto cleanup;
 
@@ -634,21 +627,19 @@ static int post_event(struct gcal_entries *entries,
 			   "Content-Type: application/atom+xml",
 			   h_length,
 			   h_auth,
-			   xml_entry, GCAL_EDIT_ANSWER);
+			   data2post, GCAL_EDIT_ANSWER);
 
 	if (result == -1) {
 		fprintf(stderr, "result = %s\n", ptr_gcal->buffer);
 		fprintf(stderr, "\nurl = %s\nh_length = %s\nh_auth = %s"
-			"\nxml_entry =%s%d\n",
-			ptr_gcal->url, h_length, h_auth, xml_entry,
-			strlen(xml_entry));
+			"\ndata2post =%s%d\n",
+			ptr_gcal->url, h_length, h_auth, data2post,
+			strlen(data2post));
 		goto cleanup;
 	}
 
 cleanup:
 
-	if (xml_entry)
-		free(xml_entry);
 	if (h_length)
 		free(h_length);
 	if (h_auth)
@@ -661,11 +652,20 @@ exit:
 int gcal_create_event(struct gcal_entries *entries,
 		      struct gcal_resource *ptr_gcal)
 {
-	int result = -1;
+	int result = -1, length;
+	char *xml_entry = NULL;
+
 	if ((!entries) || (!ptr_gcal))
 		return result;
 
-	result = post_event(entries, ptr_gcal, GCAL_EDIT_URL);
+	result = xmlentry_create(entries, &xml_entry, &length);
+	if (result == -1)
+		return result;
+
+	result = post_event(xml_entry, ptr_gcal, GCAL_EDIT_URL);
+	if (xml_entry)
+		free(xml_entry);
+
 	return result;
 }
 
@@ -731,11 +731,21 @@ int gcal_edit_event(struct gcal_entries *entry,
 	 * - provide public interface for that.
 	 *
 	 */
-	int result = -1;
+	int result = -1, length;
+	char *xml_entry = NULL;
+
 	if ((!entry) || (!ptr_gcal))
 		return result;
 
-	result = post_event(entry, ptr_gcal, entry->edit_uri);
+	result = xmlentry_create(entry, &xml_entry, &length);
+	if (result == -1)
+		return result;
+
+	result = post_event(xml_entry, ptr_gcal, entry->edit_uri);
+
+	if (xml_entry)
+		free(xml_entry);
+
 	return result;
 
 }

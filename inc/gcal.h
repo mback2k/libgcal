@@ -195,6 +195,24 @@ void gcal_destroy_entry(struct gcal_entries *entry);
 void gcal_destroy_entries(struct gcal_entries *entries, size_t length);
 
 
+/** Posts a string to a server URL (what a generic description...).
+ *
+ * Used by \ref gcal_create_event and \ref gcal_create_contact.
+ *
+ * @param data2post A pointer to string, it will be the body to be posted.
+ *
+ * @param ptr_gcal Pointer to a \ref gcal_resource structure, which has
+ *                 previously got the authentication using
+ *                 \ref gcal_get_authentication.
+ *
+ * @param url_post The URL of server, see \ref GCAL_EDIT_URL.
+ *
+ * @return -1 on error, 0 on success.
+ */
+int post_event(char *data2post, struct gcal_resource *ptr_gcal,
+	       const char *url_post);
+
+
 /** Creates an new calendar event.
  *
  * You need to first succeed to get an authorization token using
