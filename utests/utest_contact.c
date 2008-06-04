@@ -187,6 +187,16 @@ START_TEST (test_contact_add)
 	result = gcal_create_contact(&contact, ptr_gcal);
 	fail_if(result == -1, "Failed creating a new contact!");
 
+	/* I commented this test because it prints too much error
+	 * information to stderr. I must add a logging of some sort
+	 * to library soon.
+	 */
+	/* Trying to insert another contact with same email
+	 * should trigger HTTP 409 Conflict code.
+	 */
+/* 	result = gcal_create_contact(&contact, ptr_gcal); */
+/* 	fail_if(result != -1, "Adding the same contact must conflict!"); */
+
 
 }
 END_TEST
