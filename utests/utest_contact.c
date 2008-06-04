@@ -30,7 +30,7 @@ static void teardown(void)
 }
 
 
-START_TEST (test_gcont_dump)
+START_TEST (test_contact_dump)
 {
 	int result;
 	result = gcal_get_authentication("gcal4tester", "66libgcal", ptr_gcal);
@@ -44,7 +44,7 @@ START_TEST (test_gcont_dump)
 END_TEST
 
 
-START_TEST (test_gcont_authenticate)
+START_TEST (test_contact_authenticate)
 {
 
 	int result;
@@ -59,7 +59,7 @@ START_TEST (test_gcont_authenticate)
 END_TEST
 
 
-START_TEST (test_gcont_entries)
+START_TEST (test_contact_entries)
 {
 	/* obs: this test is a copy of utest_gcal.c:test_gcal_entries */
 	int result, i;
@@ -90,7 +90,7 @@ START_TEST (test_gcont_entries)
 END_TEST
 
 
-START_TEST (test_gcont_extract)
+START_TEST (test_contact_extract)
 {
 	int result;
 	size_t count, i;
@@ -101,6 +101,7 @@ START_TEST (test_gcont_extract)
 	char *contacts_name[] = { "Adenilson Cavalcanti",
 				   "", /* its valid not having a name */
 				   "gcalntester gcalntester" };
+	size_t contacts_count = 3;
 
 	result = gcal_get_authentication("gcalntester", "77libgcal", ptr_gcal);
 	fail_if(result == -1, "Authentication should work");
@@ -112,7 +113,7 @@ START_TEST (test_gcont_extract)
 	fail_if(contacts == NULL, "Failed extracting the contacts vector!");
 
 	if (contacts != NULL)
-		for (i = 0; i < count; ++i) {
+		for (i = 0; (i < count) && (i < contacts_count); ++i) {
 			fail_if(strcmp(contacts[i].email, contacts_email[i]),
 				"extracted data differs from expected: emails");
 
@@ -198,10 +199,10 @@ TCase *gcontact_tcase_create(void)
 	tc = tcase_create("gcontact");
 	tcase_add_checked_fixture(tc, setup, teardown);
 	tcase_set_timeout (tc, timeout_seconds);
-	tcase_add_test(tc, test_gcont_authenticate);
-	tcase_add_test(tc, test_gcont_dump);
-	tcase_add_test(tc, test_gcont_entries);
-	tcase_add_test(tc, test_gcont_extract);
+	tcase_add_test(tc, test_contact_authenticate);
+	tcase_add_test(tc, test_contact_dump);
+	tcase_add_test(tc, test_contact_entries);
+	tcase_add_test(tc, test_contact_extract);
 	tcase_add_test(tc, test_contact_xml);
 	tcase_add_test(tc, test_contact_add);
 	return tc;
