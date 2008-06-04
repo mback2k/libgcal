@@ -573,7 +573,7 @@ int post_event(char *data2post, struct gcal_resource *ptr_gcal,
 	       const char *url_post)
 {
 	int result = -1;
-	int length = 0;
+	int length = 0, answer_code;
 	char *h_auth = NULL, *h_length = NULL, *tmp;
 	const char header[] = "Content-length: ";
 
@@ -603,14 +603,29 @@ int post_event(char *data2post, struct gcal_resource *ptr_gcal,
 	snprintf(h_auth, length - 1, "%s%s", HEADER_GET, ptr_gcal->auth);
 
 
-	/* Post the entry data */
-	result = http_post(ptr_gcal, url_post,
-			   "Content-Type: application/atom+xml",
-			   h_length,
-			   h_auth,
-			   data2post, GCAL_REDIRECT_ANSWER);
-	if (result == -1)
-		goto cleanup;
+	/* Post the data */
+	if (!(strcmp(ptr_gcal->service, "cp"))) {
+		/* For contacts, there is *not* redirection. */
+		result = http_post(ptr_gcal, url_post,
+				   "Content-Type: application/atom+xml",
+				   h_length,
+				   h_auth,
+				   data2post, GCAL_EDIT_ANSWER);
+		if (!result) {
+
+			result = 0;
+			goto cleanup;
+		}
+	} else if (!(strcmp(ptr_gcal->service, "cl"))) {
+		/* For calendar, it *must* be redirection */
+		result = http_post(ptr_gcal, url_post,
+				   "Content-Type: application/atom+xml",
+				   h_length,
+				   h_auth,
+				   data2post, GCAL_REDIRECT_ANSWER);
+		if (result == -1)
+			goto cleanup;
+	}
 
 	if (ptr_gcal->url) {
 		free(ptr_gcal->url);
