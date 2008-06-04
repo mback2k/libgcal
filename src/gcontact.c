@@ -36,6 +36,9 @@ POSSIBILITY OF SUCH DAMAGE.
  *
  * \todo:
  * - implement contact delete/edit
+ * - add support to show deleted contacts using 'showdeleted' query parameter
+ * - support get/add/edit contact's photos
+ * - for some firewalls, X-HTTP-Method-Override: DELETE can be required
  *
  */
 #include <string.h>
