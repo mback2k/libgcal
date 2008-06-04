@@ -186,9 +186,9 @@ static int check_request_error(CURL *curl_ctx, int code,
 }
 
 
-static int http_post(struct gcal_resource *ptr_gcal, const char *url,
-		     char *header, char *header2, char *header3, char *post_data,
-		     const int expected_answer)
+int http_post(struct gcal_resource *ptr_gcal, const char *url,
+	      char *header, char *header2, char *header3,
+	      char *post_data, const int expected_answer)
 {
 	int result = -1;
 	CURLcode res;

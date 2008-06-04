@@ -194,6 +194,29 @@ void gcal_destroy_entry(struct gcal_entries *entry);
  */
 void gcal_destroy_entries(struct gcal_entries *entries, size_t length);
 
+/** Posts data to a server URL and checks its result.
+ *
+ * I'm not sure if this one should be here, since it is a more an internal
+ * function (but I need to share it with 'contacts' too).
+ *
+ * @param ptr_gcal Pointer to a \ref gcal_resource structure, which has
+ *                 previously got the authentication using
+ *                 \ref gcal_get_authentication.
+ *
+ * @param url The server URL.
+ * @param header First header part.
+ * @param header2 Second header part (can be NULL).
+ * @param header3 Third header part (can be NULL).
+ * @param post_data The data to post (can be NULL).
+ * @param expected_answer The expected answer code, see GCAL_DEFAULT_ANSWER and
+ * friends.
+ *
+ * @return -1 on error, 0 on success.
+ */
+int http_post(struct gcal_resource *ptr_gcal, const char *url,
+	      char *header, char *header2, char *header3,
+	      char *post_data, const int expected_answer);
+
 
 /** Posts a string to a server URL (what a generic description...).
  *
@@ -211,7 +234,6 @@ void gcal_destroy_entries(struct gcal_entries *entries, size_t length);
  */
 int post_event(char *data2post, struct gcal_resource *ptr_gcal,
 	       const char *url_post);
-
 
 /** Creates an new calendar event.
  *
