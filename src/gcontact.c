@@ -170,9 +170,33 @@ exit:
 int gcal_delete_contact(struct gcal_contact *contact,
 			struct gcal_resource *ptr_gcal)
 {
+	int result = -1, length;
+	char *h_auth;
 
-	(void)contact;
-	(void)ptr_gcal;
+	if (!contact || !ptr_gcal)
+		goto exit;
 
-	return -1;
+	/* Must cleanup HTTP buffer between requests */
+	clean_buffer(ptr_gcal);
+
+	/* TODO: add X-HTTP header */
+	length = strlen(ptr_gcal->auth) + sizeof(HEADER_GET) + 1;
+	h_auth = (char *) malloc(length);
+	if (!h_auth)
+		goto exit;
+	snprintf(h_auth, length - 1, "%s%s", HEADER_GET, ptr_gcal->auth);
+
+	curl_easy_setopt(ptr_gcal->curl, CURLOPT_CUSTOMREQUEST, "DELETE");
+	result = http_post(ptr_gcal, contact->edit_uri,
+			   "Content-Type: application/atom+xml",
+			   NULL,
+			   h_auth,
+			   NULL, GCAL_DEFAULT_ANSWER);
+
+	if (h_auth)
+		free(h_auth);
+
+exit:
+
+	return result;
 }
