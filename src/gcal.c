@@ -111,7 +111,7 @@ void gcal_set_service(struct gcal_resource *ptr_gcal, service option)
 	}
 }
 
-static void clean_buffer(struct gcal_resource *gcal_obj)
+void clean_buffer(struct gcal_resource *gcal_obj)
 {
 	memset(gcal_obj->buffer, 0, gcal_obj->length);
 }

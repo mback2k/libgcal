@@ -78,6 +78,16 @@ struct gcal_entries {
  */
 void gcal_destroy(struct gcal_resource *gcal_obj);
 
+
+/** Internal use function, cleans up the internal buffer.
+ *
+ * \todo move it to a distinct internal module.
+ *
+ * @param gcal_obj Library resource structure pointer.
+ */
+void clean_buffer(struct gcal_resource *gcal_obj);
+
+
 /** Library structure constructor, the user can only have pointers to the
  * library \ref gcal_resource structure.
  *
@@ -199,6 +209,7 @@ void gcal_destroy_entries(struct gcal_entries *entries, size_t length);
  * I'm not sure if this one should be here, since it is a more an internal
  * function (but I need to share it with 'contacts' too).
  *
+ * \todo move it to a distinct internal module.
  * @param ptr_gcal Pointer to a \ref gcal_resource structure, which has
  *                 previously got the authentication using
  *                 \ref gcal_get_authentication.
@@ -221,6 +232,8 @@ int http_post(struct gcal_resource *ptr_gcal, const char *url,
 /** Posts a string to a server URL (what a generic description...).
  *
  * Used by \ref gcal_create_event and \ref gcal_create_contact.
+ *
+ * \todo move it to a distinct internal module.
  *
  * @param data2post A pointer to string, it will be the body to be posted.
  *
