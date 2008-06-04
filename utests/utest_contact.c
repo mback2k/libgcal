@@ -202,6 +202,41 @@ START_TEST (test_contact_add)
 END_TEST
 
 
+START_TEST (test_contact_delete)
+{
+	/* This test assumes that 'test_contact_add' worked fine:
+	 * I'm going to delete that contact.
+	 */
+	char *title = "John Doe";
+	char *email = "john.doe@foo.bar.com";
+	struct gcal_contact *contacts;
+	int count = 0, i, result, entry_index = -1;
+
+	result = gcal_get_authentication("gcalntester", "77libgcal", ptr_gcal);
+	fail_if(result == -1, "Authentication should work.");
+
+	result = gcal_dump(ptr_gcal);
+	fail_if(result != 0, "Failed dumping contacts");
+
+	contacts = gcal_get_contacts(ptr_gcal, &count);
+	fail_if(contacts == NULL, "Failed extracting contacts vector!");
+
+	for (i = 0; i < count; ++i)
+		if (!(strcmp(contacts[i].email, email) &&
+		      (!(strcmp(contacts[i].title, title))))) {
+			entry_index = i;
+			break;
+		    }
+	fail_if(entry_index == -1, "Cannot locate the newly added contact!");
+
+	result = gcal_delete_contact((contacts + entry_index), ptr_gcal);
+	fail_if(result == -1, "Failed deleting contact!");
+
+	gcal_destroy_contacts(contacts, count);
+}
+END_TEST
+
+
 TCase *gcontact_tcase_create(void)
 {
 	TCase *tc = NULL;
@@ -215,6 +250,7 @@ TCase *gcontact_tcase_create(void)
 	tcase_add_test(tc, test_contact_extract);
 	tcase_add_test(tc, test_contact_xml);
 	tcase_add_test(tc, test_contact_add);
+	tcase_add_test(tc, test_contact_delete);
 	return tc;
 }
 

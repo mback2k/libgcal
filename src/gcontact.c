@@ -163,3 +163,13 @@ exit:
 	return result;
 
 }
+
+int gcal_delete_contact(struct gcal_contact *contact,
+			struct gcal_resource *ptr_gcal)
+{
+
+	(void)contact;
+	(void)ptr_gcal;
+
+	return -1;
+}
