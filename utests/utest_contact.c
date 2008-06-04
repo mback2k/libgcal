@@ -95,12 +95,12 @@ START_TEST (test_contact_extract)
 	int result;
 	size_t count, i;
 	struct gcal_contact *contacts;
-	char *contacts_email[] = { "cavalcantii@gmail.com",
-				   "gcal4tester@gmail.com",
-				   "gcalntester@gmail.com" };
-	char *contacts_name[] = { "Adenilson Cavalcanti",
-				   "", /* its valid not having a name */
-				   "gcalntester gcalntester" };
+	char *contacts_email[] = { "gcal4tester@gmail.com",
+				   "gcalntester@gmail.com",
+				   "cavalcantii@gmail.com" };
+	char *contacts_name[] = { "", /* its valid not having a name */
+				  "gcalntester gcalntester",
+				  "Adenilson Cavalcanti" };
 	size_t contacts_count = 3;
 
 	result = gcal_get_authentication("gcalntester", "77libgcal", ptr_gcal);
@@ -222,12 +222,14 @@ START_TEST (test_contact_delete)
 	fail_if(contacts == NULL, "Failed extracting contacts vector!");
 
 	for (i = 0; i < count; ++i)
-		if (!(strcmp(contacts[i].email, email) &&
-		      (!(strcmp(contacts[i].title, title))))) {
+		if ((!(strcmp(contacts[i].email, email))) &&
+		    (!(strcmp(contacts[i].title, title)))) {
 			entry_index = i;
 			break;
 		    }
 	fail_if(entry_index == -1, "Cannot locate the newly added contact!");
+	fprintf(stderr, "index = %d\tname = %s\n", entry_index,
+		contacts[entry_index].title);
 
 	result = gcal_delete_contact((contacts + entry_index), ptr_gcal);
 	fail_if(result == -1, "Failed deleting contact!");
