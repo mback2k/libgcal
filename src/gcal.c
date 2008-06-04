@@ -63,8 +63,13 @@ POSSIBILITY OF SUCH DAMAGE.
 static const char GCAL_URL[] = "https://www.google.com/accounts/ClientLogin";
 static const char GCAL_LIST[] = "http://www.google.com/calendar/feeds/"
 	"default/allcalendars/full";
+/* Google calendar URL for posting new events */
 static const char GCAL_EDIT_URL[] = "http://www.google.com/calendar/feeds"
 	"/default/private/full";
+/* Google contacts URL for posting new contacts */
+static const char GCONTACT_EDIT_START[] = "http://www.google.com/m8/feeds/"
+	"contacts/";
+static const char GCONTACT_EDIT_END[] = "%40gmail.com/full";
 
 /* Google calendar query URL */
 static const char GCAL_EVENT_START[] = "http://www.google.com/calendar/feeds/";
