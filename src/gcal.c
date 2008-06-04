@@ -540,7 +540,7 @@ int post_event(char *data2post, struct gcal_resource *ptr_gcal,
 	       const char *url_post)
 {
 	int result = -1;
-	int length = 0, answer_code;
+	int length = 0;
 	char *h_auth = NULL, *h_length = NULL, *tmp;
 	const char header[] = "Content-length: ";
 

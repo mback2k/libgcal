@@ -39,6 +39,7 @@ POSSIBILITY OF SUCH DAMAGE.
  * - implement contact add/delete/edit
  *
  */
+#include <string.h>
 #include "internal_gcal.h"
 #include "gcontact.h"
 #include "gcal_parser.h"
@@ -132,10 +133,34 @@ void gcal_destroy_contacts(struct gcal_contact *contacts, size_t length)
 int gcal_create_contact(struct gcal_contact *contact,
 			struct gcal_resource *ptr_gcal)
 {
-	int result = -1;
-	(void)contact;
-	(void)ptr_gcal;
+	int result = -1, length;
+	char *xml_contact = NULL, *buffer;
 
+	if ((!contact) || (!ptr_gcal))
+		return result;
 
+	result = xmlcontact_create(contact, &xml_contact, &length);
+	if (result == -1)
+		goto exit;
+
+	/* Mounts URL */
+	length = sizeof(GCONTACT_START) + sizeof(GCONTACT_END) +
+		strlen(ptr_gcal->user) + 1;
+	buffer = (char *) malloc(length);
+	if (!buffer)
+		goto cleanup;
+	snprintf(buffer, length - 1, "%s%s%s", GCONTACT_START,
+		 ptr_gcal->user, GCONTACT_END);
+
+	result = post_event(xml_contact, ptr_gcal, buffer);
+
+cleanup:
+	if (xml_contact)
+		free(xml_contact);
+	if (buffer)
+		free(buffer);
+
+exit:
 	return result;
+
 }
