@@ -228,8 +228,8 @@ START_TEST (test_contact_delete)
 			break;
 		    }
 	fail_if(entry_index == -1, "Cannot locate the newly added contact!");
-	fprintf(stderr, "index = %d\tname = %s\n", entry_index,
-		contacts[entry_index].title);
+/* 	fprintf(stderr, "index = %d\tname = %s\n", entry_index, */
+/* 		contacts[entry_index].title); */
 
 	result = gcal_delete_contact((contacts + entry_index), ptr_gcal);
 	fail_if(result == -1, "Failed deleting contact!");
