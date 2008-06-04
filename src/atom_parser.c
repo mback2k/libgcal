@@ -26,6 +26,19 @@ CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
 ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 */
+/**
+ * @file   atom_parser.c
+ * @author Adenilson Cavalcanti <adenilson.silva@indt.org.br>
+ * @date   Fri Mar 28 08:07:43 2008
+ *
+ * @brief  This is the Atom XML feed parser, it provides functions
+ * to get the number of events, extract data from those events and
+ * so on.
+ *
+ * It depends on libxml2.
+ *
+ */
+
 #include "atom_parser.h"
 #include "xml_aux.h"
 #include <string.h>

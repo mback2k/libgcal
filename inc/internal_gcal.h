@@ -31,8 +31,8 @@ POSSIBILITY OF SUCH DAMAGE.
  * @author Adenilson Cavalcanti
  * @date   Fri May 30 16:46:00 2008
  *
- * @brief  Internal gcal resource structure definition. The user shalt not
- * mess with it.
+ * @brief  Internal gcal resource structure and constants definition.
+ * The user shalt not mess with it.
  *
  * I got to move it to a distinct file to share it between gcal.c and
  * gcontact.h.
@@ -42,7 +42,11 @@ POSSIBILITY OF SUCH DAMAGE.
 #define __INTERNAL_GCAL__
 
 #include <curl/curl.h>
-#include "gcal_parser.h"
+#include <libxml/parser.h>
+
+/** Abstract type to represent a DOM xml tree (a thin layer over xmlDoc).
+ */
+typedef xmlDoc dom_document;
 
 static const char GCAL_URL[] = "https://www.google.com/accounts/ClientLogin";
 static const char GCAL_LIST[] = "http://www.google.com/calendar/feeds/"

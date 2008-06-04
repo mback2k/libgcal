@@ -205,7 +205,7 @@ void gcal_destroy_entries(struct gcal_entries *entries, size_t length);
  *                 previously got the authentication using
  *                 \ref gcal_get_authentication.
  *
- * @param url_post The URL of server, see \ref GCAL_EDIT_URL.
+ * @param url_post The URL of server (one for calendar and other for contacts).
  *
  * @return -1 on error, 0 on success.
  */

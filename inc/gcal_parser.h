@@ -40,13 +40,9 @@ POSSIBILITY OF SUCH DAMAGE.
  */
 
 #include <libxml/parser.h>
+#include "internal_gcal.h"
 #include "gcal.h"
 #include "gcontact.h"
-
-/** Abstract type to represent a DOM xml tree (a thin layer over xmlDoc).
- */
-typedef xmlDoc dom_document;
-
 
 /** Parses the returned HTML page and extracts the redirection URL
  * that has the Atom feed.

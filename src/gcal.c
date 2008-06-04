@@ -533,7 +533,7 @@ void gcal_destroy_entries(struct gcal_entries *entries, size_t length)
 	free(entries);
 }
 
-/* This internal function makes possible to share code between 'add'
+/* This function makes possible to share code between 'add'
  * and 'edit' events.
  */
 int post_event(char *data2post, struct gcal_resource *ptr_gcal,

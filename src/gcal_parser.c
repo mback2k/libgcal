@@ -26,6 +26,18 @@ CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
 ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 */
+
+/**
+ * @file   gcal_parser.h
+ * @author Adenilson Cavalcanti da Silva <adenilson.silva@indt.org.br>
+ * @date   Mon Mar 31 11:17:02 2008
+ *
+ * @brief  A thin layer over \ref atom_parser.h, so I can plug another
+ * XML parser to libgcal if required.
+ * It creates a DOM document from libgcal atom stream and provides functions
+ * wrappers to extract data.
+ */
+
 #include "gcal_parser.h"
 #include "atom_parser.h"
 #include "xml_aux.h"

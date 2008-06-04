@@ -35,8 +35,7 @@ POSSIBILITY OF SUCH DAMAGE.
  * @brief  Base file for google contacts service access library.
  *
  * \todo:
- * - move HTTP code common to gcalendar to a distinct module
- * - implement contact add/delete/edit
+ * - implement contact delete/edit
  *
  */
 #include <string.h>

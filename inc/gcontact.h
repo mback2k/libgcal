@@ -101,7 +101,7 @@ void gcal_destroy_contact(struct gcal_contact *contact);
 
 
 /** Cleanup the memory of a vector of calendar entries created using
- * \ref gcal_get_entries.
+ * \ref gcal_get_contacts.
  *
  * @param contacts A pointer to a vector of \ref gcal_entries structure.
  *

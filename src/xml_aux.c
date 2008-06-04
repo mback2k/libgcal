@@ -26,6 +26,21 @@ CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
 ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 */
+
+/**
+ * @file   xml_aux.h
+ * @author Adenilson Cavalcanti da Silva <adenilson.silva@indt.org.br>
+ * @date   Fri Mar 28 14:31:21 2008
+ *
+ * @brief  Auxiliary code to parse XML using XPath, iIt depends on libxml.
+ *
+ * I started with 'xpath1.c' libxml example written by Aleksey Sanin
+ * (which uses MIT license).
+ * In the end my code turn out to be rather different from him, but
+ * I decided to keep the same function names.
+ *
+ */
+
 #include "xml_aux.h"
 
 int register_namespaces(xmlXPathContext *xpathCtx, const xmlChar *name_space,
