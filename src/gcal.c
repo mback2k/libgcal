@@ -267,6 +267,47 @@ exit:
 
 }
 
+/* Not used for while */
+static int http_put(struct gcal_resource *ptr_gcal, const char *url,
+	     char *header, char *header2, char *header3,
+	     char *post_data, const int expected_answer)
+{
+	int result = -1;
+	CURLcode res;
+	struct curl_slist *response_headers = NULL;
+	CURL *curl_ctx;
+	if (!ptr_gcal)
+		goto exit;
+
+	curl_ctx = ptr_gcal->curl;
+	result = common_upload(ptr_gcal, header, header2, header3,
+			       &response_headers);
+	if (result)
+		goto exit;
+
+	curl_easy_setopt(curl_ctx, CURLOPT_URL, url);
+	if (post_data) {
+		curl_easy_setopt(curl_ctx, CURLOPT_POSTFIELDS, post_data);
+		curl_easy_setopt(curl_ctx, CURLOPT_POSTFIELDSIZE,
+				 strlen(post_data));
+	}
+	else
+		curl_easy_setopt(curl_ctx, CURLOPT_POSTFIELDSIZE, 0);
+
+	/* Tells curl that I want to PUT */
+	curl_easy_setopt(curl_ctx, CURLOPT_UPLOAD, 1);
+
+	res = curl_easy_perform(curl_ctx);
+	result = check_request_error(ptr_gcal->curl, res, expected_answer);
+
+	/* cleanup */
+	curl_slist_free_all(response_headers);
+
+exit:
+	return result;
+
+}
+
 
 int gcal_get_authentication(char *user, char *password,
 			    struct gcal_resource *ptr_gcal)
