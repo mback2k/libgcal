@@ -61,6 +61,16 @@ PKG_CHECK_MODULES(LIBXML, libxml-2.0,, \
 AC_SUBST(LIBXML_CFLAGS)
 AC_SUBST(LIBXML_LIBS)
 
+# if configuring with debug code for CURL
+AC_ARG_ENABLE(curldebug, AS_HELP_STRING([--disable-curldebug],[Disable CURL debug]),,[enable_curldebug=no])
+if test "x$enable_curldebug" = "xyes"; then
+   	AC_DEFINE(GCAL_DEBUG_CURL, [], [Define if curl debug code is active])
+	echo "curl debug mode... yes"
+else
+	echo "curl debug mode... no"
+fi
+
+AM_CONDITIONAL(GCAL_DEBUG_CURL, test "x$enable_curldebug" = "xyes")
 
 # enable configure options and automake conditionals useful for developers
 # look at m4/auxdevel.m4 for detailed documentation

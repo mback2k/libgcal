@@ -10,9 +10,15 @@ include_HEADERS = $(headerdir)/internal_gcal.h \
 		$(headerdir)/gcal.h $(headerdir)/atom_parser.h \
 		$(headerdir)/xml_aux.h $(headerdir)/gcal_parser.h \
 		$(headerdir)/gcontact.h
+if GCAL_DEBUG_CURL
+include_HEADERS += $(headerdir)/curl_debug_gcal.h
+endif
 libgcal_la_SOURCES = $(csourcedir)/gcal.c $(csourcedir)/atom_parser.c \
 		$(csourcedir)/xml_aux.c $(csourcedir)/gcal_parser.c \
 		$(csourcedir)/gcontact.c
+if GCAL_DEBUG_CURL
+libgcal_la_SOURCES += $(csourcedir)/curl_debug_gcal.c
+endif
 libgcal_la_CPPFLAGS = -I$(headerdir)
 libgcal_la_CFLAGS = $(AM_CFLAGS) $(LIBCURL_CFLAGS) $(LIBXML_CFLAGS)
 libgcal_la_LIBADD = $(LIBCURL_LIBS) $(LIBXML_LIBS)
