@@ -62,7 +62,7 @@ AC_SUBST(LIBXML_CFLAGS)
 AC_SUBST(LIBXML_LIBS)
 
 # if configuring with debug code for CURL
-AC_ARG_ENABLE(curldebug, AS_HELP_STRING([--disable-curldebug],[Disable CURL debug]),,[enable_curldebug=no])
+AC_ARG_ENABLE(curldebug, AS_HELP_STRING([--enable-curldebug],[Enable CURL debug, printing requests and data]),,[enable_curldebug=no])
 if test "x$enable_curldebug" = "xyes"; then
    	AC_DEFINE(GCAL_DEBUG_CURL, [], [Define if curl debug code is active])
 	echo "curl debug mode... yes"
