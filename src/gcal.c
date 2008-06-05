@@ -50,7 +50,12 @@ POSSIBILITY OF SUCH DAMAGE.
  * - provide option to use another XML parser (maybe expat?)
  */
 
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#else
 #define _GNU_SOURCE
+#endif
+
 #include <string.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -59,6 +64,10 @@ POSSIBILITY OF SUCH DAMAGE.
 #include "internal_gcal.h"
 #include "gcal.h"
 #include "gcal_parser.h"
+
+#ifdef GCAL_DEBUG_CURL
+#include "curl_debug_gcal.h"
+#endif
 
 static void reset_buffer(struct gcal_resource *ptr)
 {
@@ -194,6 +203,15 @@ int http_post(struct gcal_resource *ptr_gcal, const char *url,
 	CURLcode res;
 	CURL *curl_ctx = ptr_gcal->curl;
 	struct curl_slist *response_headers = NULL;
+
+#ifdef GCAL_DEBUG_CURL
+	struct data_curl_debug flag;
+	flag.trace_ascii = 1;
+	curl_easy_setopt(ptr_gcal->curl, CURLOPT_DEBUGFUNCTION,
+			 curl_debug_gcal_trace);
+	curl_easy_setopt(ptr_gcal->curl, CURLOPT_DEBUGDATA, &flag);
+	curl_easy_setopt(ptr_gcal->curl, CURLOPT_VERBOSE, 1);
+#endif
 
 	if (header)
 		response_headers = curl_slist_append(response_headers, header);
