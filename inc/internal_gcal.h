@@ -68,7 +68,7 @@ static const char GCONTACT_START[] = "http://www.google.com/m8/feeds/contacts/";
 static const char GCONTACT_END[] = "%40gmail.com/base";
 
 /* Google 'pages' results in a range pages of 25 entries. But for downloading
- * all results its requried to set a 'good enough' upper limit of range of
+ * all results its requirement to set a 'good enough' upper limit of range of
  * entries. A hack to make 'gcal_dump' work.
  */
 static const char GCAL_UPPER[] = "?max-results=999999999";

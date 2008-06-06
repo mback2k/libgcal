@@ -35,7 +35,6 @@ POSSIBILITY OF SUCH DAMAGE.
  *
  * \todo:
  * High priority
- * - enable user edit events: requires changes in 'create' to get the edit_uri
  * - enable user do queries: by string and date range
  * - batch operation (add/edit/delete): will require some new public functions
  * - handle http_proxy
@@ -891,12 +890,7 @@ exit:
 int gcal_edit_event(struct gcal_entries *entry,
 		    struct gcal_resource *ptr_gcal)
 {
-	/* TODO:
-	 * - Add a function to parse the ptr_gcal->buffer and convert it
-	 * to a gcal_entry.
-	 * - provide public interface for that.
-	 *
-	 */
+
 	int result = -1, length;
 	char *xml_entry = NULL;
 
