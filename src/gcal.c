@@ -200,7 +200,7 @@ static int common_upload(struct gcal_resource *ptr_gcal,
 {
 	int result = -1;
 	CURL *curl_ctx = ptr_gcal->curl;
-	struct curl_slist *response_headers = *curl_headers;
+	struct curl_slist *response_headers = NULL;
 
 #ifdef GCAL_DEBUG_CURL
 	struct data_curl_debug flag;
@@ -220,6 +220,8 @@ static int common_upload(struct gcal_resource *ptr_gcal,
 
 	if (!response_headers)
 		return result;
+
+	*curl_headers = response_headers;
 
 	curl_easy_setopt(curl_ctx, CURLOPT_HTTPHEADER, response_headers);
 	curl_easy_setopt(curl_ctx, CURLOPT_WRITEFUNCTION, write_cb);
