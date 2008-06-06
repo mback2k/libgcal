@@ -288,6 +288,9 @@ static int http_put(struct gcal_resource *ptr_gcal, const char *url,
 		goto exit;
 
 	curl_easy_setopt(curl_ctx, CURLOPT_URL, url);
+	/* Tells curl that I want to PUT */
+	curl_easy_setopt(ptr_gcal->curl, CURLOPT_CUSTOMREQUEST, "PUT");
+
 	if (post_data) {
 		curl_easy_setopt(curl_ctx, CURLOPT_POSTFIELDS, post_data);
 		curl_easy_setopt(curl_ctx, CURLOPT_POSTFIELDSIZE,
@@ -296,8 +299,7 @@ static int http_put(struct gcal_resource *ptr_gcal, const char *url,
 	else
 		curl_easy_setopt(curl_ctx, CURLOPT_POSTFIELDSIZE, 0);
 
-	/* Tells curl that I want to PUT */
-	curl_easy_setopt(curl_ctx, CURLOPT_UPLOAD, 1);
+
 
 	res = curl_easy_perform(curl_ctx);
 	result = check_request_error(ptr_gcal->curl, res, expected_answer);
