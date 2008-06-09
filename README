@@ -3,7 +3,8 @@ adenilson.silva@indt.org.br
 
 == About ==
 
-   This is library to access google calendar events, its purpose is
+   This is a library to access google calendar events (and contacts),
+   its purpose is
 
    - provide easy access to available events
 
@@ -28,12 +29,15 @@ adenilson.silva@indt.org.br
 
  - delete event
 
+ - edit event
+
+ - calendar: auth/dump/parse/add/delete
+
 
 === Missing ===
 
-- edit event.
 
-- select range of entries
+ - select range of entries
 
 
 === Dependencies ===
