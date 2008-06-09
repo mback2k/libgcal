@@ -270,8 +270,8 @@ exit:
 
 /* Not used for while */
 static int http_put(struct gcal_resource *ptr_gcal, const char *url,
-	     char *header, char *header2, char *header3,
-	     char *post_data, const int expected_answer)
+		    char *header, char *header2, char *header3,
+		    char *post_data, const int expected_answer)
 {
 	int result = -1;
 	CURLcode res;
@@ -620,18 +620,28 @@ void gcal_destroy_entries(struct gcal_entries *entries, size_t length)
 /* This function makes possible to share code between 'add'
  * and 'edit' events.
  */
-int post_event(char *data2post, struct gcal_resource *ptr_gcal,
-	       const char *url_post)
+int up_entry(char *data2post, struct gcal_resource *ptr_gcal,
+	     const char *url_post, HTTP_CMD up_mode, int expected_code)
 {
 	int result = -1;
 	int length = 0;
 	char *h_auth = NULL, *h_length = NULL, *tmp;
 	const char header[] = "Content-length: ";
+	int (*up_callback)(struct gcal_resource *ptr_gcal, const char *url,
+			   char *header, char *header2, char *header3,
+			   char *post_data, const int expected_answer);
 
 	if (!data2post || !ptr_gcal)
 		goto exit;
 
 	if (!ptr_gcal->auth)
+		goto exit;
+
+	if (up_mode == POST)
+		up_callback = http_post;
+	else if (up_mode == PUT)
+		up_callback = http_put;
+	else
 		goto exit;
 
 	/* Must cleanup HTTP buffer between requests */
@@ -657,11 +667,11 @@ int post_event(char *data2post, struct gcal_resource *ptr_gcal,
 	/* Post the data */
 	if (!(strcmp(ptr_gcal->service, "cp"))) {
 		/* For contacts, there is *not* redirection. */
-		result = http_post(ptr_gcal, url_post,
-				   "Content-Type: application/atom+xml",
-				   h_length,
-				   h_auth,
-				   data2post, GCAL_EDIT_ANSWER);
+		result = up_callback(ptr_gcal, url_post,
+				     "Content-Type: application/atom+xml",
+				     h_length,
+				     h_auth,
+				     data2post, expected_code);
 		if (!result) {
 
 			result = 0;
@@ -669,11 +679,11 @@ int post_event(char *data2post, struct gcal_resource *ptr_gcal,
 		}
 	} else if (!(strcmp(ptr_gcal->service, "cl"))) {
 		/* For calendar, it *must* be redirection */
-		result = http_post(ptr_gcal, url_post,
-				   "Content-Type: application/atom+xml",
-				   h_length,
-				   h_auth,
-				   data2post, GCAL_REDIRECT_ANSWER);
+		result = up_callback(ptr_gcal, url_post,
+				     "Content-Type: application/atom+xml",
+				     h_length,
+				     h_auth,
+				     data2post, GCAL_REDIRECT_ANSWER);
 		if (result == -1)
 			goto cleanup;
 	}
@@ -689,11 +699,11 @@ int post_event(char *data2post, struct gcal_resource *ptr_gcal,
 	clean_buffer(ptr_gcal);
 
 	/* Add gsessionid to post URL */
-	result = http_post(ptr_gcal, ptr_gcal->url,
-			   "Content-Type: application/atom+xml",
-			   h_length,
-			   h_auth,
-			   data2post, GCAL_EDIT_ANSWER);
+	result = up_callback(ptr_gcal, ptr_gcal->url,
+			     "Content-Type: application/atom+xml",
+			     h_length,
+			     h_auth,
+			     data2post, expected_code);
 
 	if (result == -1) {
 		fprintf(stderr, "result = %s\n", ptr_gcal->buffer);
@@ -728,7 +738,8 @@ int gcal_create_event(struct gcal_entries *entries,
 	if (result == -1)
 		return result;
 
-	result = post_event(xml_entry, ptr_gcal, GCAL_EDIT_URL);
+	result = up_entry(xml_entry, ptr_gcal, GCAL_EDIT_URL, POST,
+		GCAL_EDIT_ANSWER);
 	if (xml_entry)
 		free(xml_entry);
 
@@ -788,105 +799,6 @@ exit:
 
 }
 
-/* XXX: this a copy of 'post_event', changing only the upload
- * function (here I'm using 'http_put'). I must refactor this
- * to share the code common between then.
- */
-static int put_event(char *data2post, struct gcal_resource *ptr_gcal,
-	       const char *url_post)
-{
-	int result = -1;
-	int length = 0;
-	char *h_auth = NULL, *h_length = NULL, *tmp;
-	const char header[] = "Content-length: ";
-
-	if (!data2post || !ptr_gcal)
-		goto exit;
-
-	if (!ptr_gcal->auth)
-		goto exit;
-
-	/* Must cleanup HTTP buffer between requests */
-	clean_buffer(ptr_gcal);
-
-	/* Mounts content length and  authentication header strings */
-	length = strlen(data2post) + strlen(header) + 1;
-	h_length = (char *) malloc(length) ;
-	if (!h_length)
-		goto exit;
-	strncpy(h_length, header, sizeof(header));
-	tmp = h_length + sizeof(header) - 1;
-	snprintf(tmp, length - (sizeof(header) + 1), "%d", strlen(data2post));
-
-
-	length = strlen(ptr_gcal->auth) + sizeof(HEADER_GET) + 1;
-	h_auth = (char *) malloc(length);
-	if (!h_auth)
-		goto exit;
-	snprintf(h_auth, length - 1, "%s%s", HEADER_GET, ptr_gcal->auth);
-
-
-	/* Post the data */
-	if (!(strcmp(ptr_gcal->service, "cp"))) {
-		/* For contacts, there is *not* redirection. */
-		result = http_put(ptr_gcal, url_post,
-				   "Content-Type: application/atom+xml",
-				   h_length,
-				   h_auth,
-				   data2post, GCAL_EDIT_ANSWER);
-		if (!result) {
-
-			result = 0;
-			goto cleanup;
-		}
-	} else if (!(strcmp(ptr_gcal->service, "cl"))) {
-		/* For calendar, it *must* be redirection */
-		result = http_put(ptr_gcal, url_post,
-				   "Content-Type: application/atom+xml",
-				   h_length,
-				   h_auth,
-				   data2post, GCAL_REDIRECT_ANSWER);
-		if (result == -1)
-			goto cleanup;
-	}
-
-	if (ptr_gcal->url) {
-		free(ptr_gcal->url);
-		ptr_gcal->url = NULL;
-	}
-
-	if (get_the_url(ptr_gcal->buffer, ptr_gcal->length, &ptr_gcal->url))
-		goto cleanup;
-
-	clean_buffer(ptr_gcal);
-
-	/* Add gsessionid to post URL */
-	result = http_put(ptr_gcal, ptr_gcal->url,
-			   "Content-Type: application/atom+xml",
-			   h_length,
-			   h_auth,
-			   data2post, GCAL_DEFAULT_ANSWER);
-
-	if (result == -1) {
-		fprintf(stderr, "result = %s\n", ptr_gcal->buffer);
-		fprintf(stderr, "\nurl = %s\nh_length = %s\nh_auth = %s"
-			"\ndata2post =%s%d\n",
-			ptr_gcal->url, h_length, h_auth, data2post,
-			strlen(data2post));
-		goto cleanup;
-	}
-
-cleanup:
-
-	if (h_length)
-		free(h_length);
-	if (h_auth)
-		free(h_auth);
-
-exit:
-	return result;
-}
-
 int gcal_edit_event(struct gcal_entries *entry,
 		    struct gcal_resource *ptr_gcal)
 {
@@ -901,7 +813,8 @@ int gcal_edit_event(struct gcal_entries *entry,
 	if (result == -1)
 		return result;
 
-	result = put_event(xml_entry, ptr_gcal, entry->edit_uri);
+	result = up_entry(xml_entry, ptr_gcal, entry->edit_uri, PUT,
+			  GCAL_DEFAULT_ANSWER);
 
 	if (xml_entry)
 		free(xml_entry);

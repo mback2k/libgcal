@@ -154,7 +154,8 @@ int gcal_create_contact(struct gcal_contact *contact,
 	snprintf(buffer, length - 1, "%s%s%s", GCONTACT_START,
 		 ptr_gcal->user, GCONTACT_END);
 
-	result = post_event(xml_contact, ptr_gcal, buffer);
+	result = up_entry(xml_contact, ptr_gcal, buffer, POST,
+			  GCAL_EDIT_ANSWER);
 
 cleanup:
 	if (xml_contact)

@@ -45,6 +45,13 @@ POSSIBILITY OF SUCH DAMAGE.
 /** Google service that user will contact */
 typedef enum { GCALENDAR, GCONTACT } service;
 
+/* Upload (being POST or PUT) definition option.
+ *
+ * Its used to set behavior in \ref 'upload_entry' function.
+ */
+typedef enum { POST, PUT } HTTP_CMD;
+
+
 /** Library structure. It holds resources (curl, buffer, etc).
  */
 struct gcal_resource;
@@ -229,11 +236,11 @@ int http_post(struct gcal_resource *ptr_gcal, const char *url,
 	      char *post_data, const int expected_answer);
 
 
-/** Posts a string to a server URL (what a generic description...).
+/** Uploads an entry (calendar or contact) to a server URL
  *
- * Used by \ref gcal_create_event and \ref gcal_create_contact.
+ * Used by \ref gcal_create_event, \ref gcal_create_contact,
+ * \ref gcal_edit_entry.
  *
- * \todo move it to a distinct internal module.
  *
  * @param data2post A pointer to string, it will be the body to be posted.
  *
@@ -245,8 +252,8 @@ int http_post(struct gcal_resource *ptr_gcal, const char *url,
  *
  * @return -1 on error, 0 on success.
  */
-int post_event(char *data2post, struct gcal_resource *ptr_gcal,
-	       const char *url_post);
+int up_entry(char *data2post, struct gcal_resource *ptr_gcal,
+	     const char *url_post, HTTP_CMD up_mode, int expected_code);
 
 /** Creates an new calendar event.
  *
