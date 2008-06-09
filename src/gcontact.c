@@ -201,3 +201,27 @@ exit:
 
 	return result;
 }
+
+int gcal_edit_contact(struct gcal_contact *contact,
+		      struct gcal_resource *ptr_gcal)
+{
+
+	int result = -1, length;
+	char *xml_contact = NULL;
+
+	if ((!contact) || (!ptr_gcal))
+		return result;
+
+	result = xmlcontact_create(contact, &xml_contact, &length);
+	if (result == -1)
+		return result;
+
+	result = up_entry(xml_contact, ptr_gcal, contact->edit_uri, PUT,
+			  GCAL_DEFAULT_ANSWER);
+
+	if (xml_contact)
+		free(xml_contact);
+
+	return result;
+
+}

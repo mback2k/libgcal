@@ -12,6 +12,7 @@
 #include "gcal_parser.h"
 #include <string.h>
 #include <stdio.h>
+#include <unistd.h>
 
 static struct gcal_resource *ptr_gcal = NULL;
 
@@ -101,7 +102,7 @@ START_TEST (test_contact_extract)
 	char *contacts_name[] = { "", /* its valid not having a name */
 				  "gcalntester gcalntester",
 				  "Adenilson Cavalcanti" };
-	size_t contacts_count = 3;
+	size_t contacts_count = 3, found_count = 0;;
 
 	result = gcal_get_authentication("gcalntester", "77libgcal", ptr_gcal);
 	fail_if(result == -1, "Authentication should work");
@@ -112,16 +113,18 @@ START_TEST (test_contact_extract)
 	contacts = gcal_get_contacts(ptr_gcal, &count);
 	fail_if(contacts == NULL, "Failed extracting the contacts vector!");
 
-	if (contacts != NULL)
-		for (i = 0; (i < count) && (i < contacts_count); ++i) {
-			fail_if(strcmp(contacts[i].email, contacts_email[i]),
-				"extracted data differs from expected: emails");
-
-			fail_if(strcmp(contacts[i].title, contacts_name[i]),
-				"extracted data differs from expected: name");
-
+	for (i = 0; i < count; ++i)
+		if ((!(strcmp(contacts[i].email,
+			      contacts_email[found_count]))) &&
+		    (!(strcmp(contacts[i].title,
+			      contacts_name[found_count])))) {
+			++found_count;
+			if (found_count == contacts_count)
+				break;
 		}
 
+
+	fail_if(found_count != contacts_count, "Cannot find all 3 contacts!");
 
 	gcal_destroy_contacts(contacts, count);
 }
@@ -239,10 +242,64 @@ START_TEST (test_contact_delete)
 END_TEST
 
 
+START_TEST (test_contact_edit)
+{
+	int result, entry_index = -1;
+	struct gcal_contact contact;
+	struct gcal_contact *contacts;
+	size_t count = 0, i = 0;
+
+
+	contact.title = "Johny Doe";
+	contact.email = "johny.doe@foo.bar.com";
+	contact.id = contact.updated = contact.edit_uri = NULL;
+	/* extra fields */
+	contact.content = "A very interesting person";
+	contact.org_name = "Foo software";
+	contact.org_title = "Software engineer";
+	contact.im = "johny";
+	contact.phone_number = "+9977554422119900";
+	contact.post_address = "Unknown Av. St., n. 69, Someplace";
+
+	result = gcal_get_authentication("gcalntester", "77libgcal", ptr_gcal);
+	fail_if(result == -1, "Authentication should work.");
+
+	result = gcal_create_contact(&contact, ptr_gcal);
+	fail_if(result == -1, "Failed creating a new contact!");
+
+	result = gcal_dump(ptr_gcal);
+	fail_if(result != 0, "Failed dumping contacts");
+
+	contacts = gcal_get_contacts(ptr_gcal, &count);
+	fail_if(contacts == NULL, "Failed extracting contacts vector!");
+	for (i = 0; i < count; ++i) {
+		if ((!(strcmp(contacts[i].email, contact.email))) &&
+		    (!(strcmp(contacts[i].title, contact.title)))) {
+			entry_index = i;
+			break;
+		    }
+	}
+
+	fail_if(entry_index == -1, "Cannot locate the newly added contact!");
+
+	free(contacts[entry_index].title);
+	contacts[entry_index].title = strdup("Johny 'the mad' Doe");
+	result = gcal_edit_contact((contacts + entry_index), ptr_gcal);
+	fail_if(result == -1, "Failed editing contact!");
+
+	/* I must delete the contact later */
+	result = gcal_delete_contact((contacts + entry_index), ptr_gcal);
+	fail_if(result == -1, "Failed deleting contact!");
+
+	gcal_destroy_contacts(contacts, count);
+}
+END_TEST
+
+
 TCase *gcontact_tcase_create(void)
 {
 	TCase *tc = NULL;
-	int timeout_seconds = 30;
+	int timeout_seconds = 50;
 	tc = tcase_create("gcontact");
 	tcase_add_checked_fixture(tc, setup, teardown);
 	tcase_set_timeout (tc, timeout_seconds);
@@ -253,6 +310,7 @@ TCase *gcontact_tcase_create(void)
 	tcase_add_test(tc, test_contact_xml);
 	tcase_add_test(tc, test_contact_add);
 	tcase_add_test(tc, test_contact_delete);
+	tcase_add_test(tc, test_contact_edit);
 	return tc;
 }
 
