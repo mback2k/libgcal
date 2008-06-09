@@ -621,15 +621,15 @@ void gcal_destroy_entries(struct gcal_entries *entries, size_t length)
  * and 'edit' events.
  */
 int up_entry(char *data2post, struct gcal_resource *ptr_gcal,
-	     const char *url_post, HTTP_CMD up_mode, int expected_code)
+	     const char *url_server, HTTP_CMD up_mode, int expected_code)
 {
 	int result = -1;
 	int length = 0;
 	char *h_auth = NULL, *h_length = NULL, *tmp;
 	const char header[] = "Content-length: ";
-	int (*up_callback)(struct gcal_resource *ptr_gcal, const char *url,
-			   char *header, char *header2, char *header3,
-			   char *post_data, const int expected_answer);
+	int (*up_callback)(struct gcal_resource *, const char *,
+			   char *, char *, char *,
+			   char *, const int);
 
 	if (!data2post || !ptr_gcal)
 		goto exit;
@@ -667,7 +667,7 @@ int up_entry(char *data2post, struct gcal_resource *ptr_gcal,
 	/* Post the data */
 	if (!(strcmp(ptr_gcal->service, "cp"))) {
 		/* For contacts, there is *not* redirection. */
-		result = up_callback(ptr_gcal, url_post,
+		result = up_callback(ptr_gcal, url_server,
 				     "Content-Type: application/atom+xml",
 				     h_length,
 				     h_auth,
@@ -679,7 +679,7 @@ int up_entry(char *data2post, struct gcal_resource *ptr_gcal,
 		}
 	} else if (!(strcmp(ptr_gcal->service, "cl"))) {
 		/* For calendar, it *must* be redirection */
-		result = up_callback(ptr_gcal, url_post,
+		result = up_callback(ptr_gcal, url_server,
 				     "Content-Type: application/atom+xml",
 				     h_length,
 				     h_auth,

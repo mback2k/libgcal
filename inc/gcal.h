@@ -45,11 +45,15 @@ POSSIBILITY OF SUCH DAMAGE.
 /** Google service that user will contact */
 typedef enum { GCALENDAR, GCONTACT } service;
 
-/* Upload (being POST or PUT) definition option.
+/** Upload (being POST or PUT) definition option.
  *
- * Its used to set behavior in \ref 'upload_entry' function.
+ * Its used to set behavior in \ref up_entry function.
  */
-typedef enum { POST, PUT } HTTP_CMD;
+typedef enum {
+	/** Code for HTTP POST. */
+	POST,
+	/** Code for HTTP PUT */
+	PUT } HTTP_CMD;
 
 
 /** Library structure. It holds resources (curl, buffer, etc).
@@ -239,7 +243,7 @@ int http_post(struct gcal_resource *ptr_gcal, const char *url,
 /** Uploads an entry (calendar or contact) to a server URL
  *
  * Used by \ref gcal_create_event, \ref gcal_create_contact,
- * \ref gcal_edit_entry.
+ * \ref gcal_edit_event.
  *
  *
  * @param data2post A pointer to string, it will be the body to be posted.
@@ -248,12 +252,20 @@ int http_post(struct gcal_resource *ptr_gcal, const char *url,
  *                 previously got the authentication using
  *                 \ref gcal_get_authentication.
  *
- * @param url_post The URL of server (one for calendar and other for contacts).
+ * @param url_server The URL of server (one for calendar and other for
+ * contacts).
+ *
+ * @param up_mode If the upload of data will be using PUT or POST (internally
+ * it uses 'http_put' and \ref 'http_post').
+ *
+ * @param expected_code The expected return code from server (200, 201, etc.)
+ * See GCAL_DEFAULT_ANSWER and friends.
  *
  * @return -1 on error, 0 on success.
  */
 int up_entry(char *data2post, struct gcal_resource *ptr_gcal,
-	     const char *url_post, HTTP_CMD up_mode, int expected_code);
+	     const char *url_server, HTTP_CMD up_mode, int expected_code);
+
 
 /** Creates an new calendar event.
  *
