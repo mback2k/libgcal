@@ -187,7 +187,7 @@ START_TEST (test_contact_add)
 	result = gcal_get_authentication("gcalntester", "77libgcal", ptr_gcal);
 	fail_if(result == -1, "Authentication should work.");
 
-	result = gcal_create_contact(&contact, ptr_gcal);
+	result = gcal_create_contact(&contact, ptr_gcal, NULL);
 	fail_if(result == -1, "Failed creating a new contact!");
 
 	/* I commented this test because it prints too much error
@@ -244,11 +244,8 @@ END_TEST
 
 START_TEST (test_contact_edit)
 {
-	int result, entry_index = -1;
-	struct gcal_contact contact;
-	struct gcal_contact *contacts;
-	size_t count = 0, i = 0;
-
+	int result;
+	struct gcal_contact contact, contact_new, updated;
 
 	contact.title = "Johny Doe";
 	contact.email = "johny.doe@foo.bar.com";
@@ -261,37 +258,29 @@ START_TEST (test_contact_edit)
 	contact.phone_number = "+9977554422119900";
 	contact.post_address = "Unknown Av. St., n. 69, Someplace";
 
+	/* Authenticate and add a new contact */
 	result = gcal_get_authentication("gcalntester", "77libgcal", ptr_gcal);
 	fail_if(result == -1, "Authentication should work.");
 
-	result = gcal_create_contact(&contact, ptr_gcal);
+	result = gcal_create_contact(&contact, ptr_gcal, &contact_new);
 	fail_if(result == -1, "Failed creating a new contact!");
 
-	result = gcal_dump(ptr_gcal);
-	fail_if(result != 0, "Failed dumping contacts");
-
-	contacts = gcal_get_contacts(ptr_gcal, &count);
-	fail_if(contacts == NULL, "Failed extracting contacts vector!");
-	for (i = 0; i < count; ++i) {
-		if ((!(strcmp(contacts[i].email, contact.email))) &&
-		    (!(strcmp(contacts[i].title, contact.title)))) {
-			entry_index = i;
-			break;
-		    }
-	}
-
-	fail_if(entry_index == -1, "Cannot locate the newly added contact!");
-
-	free(contacts[entry_index].title);
-	contacts[entry_index].title = strdup("Johny 'the mad' Doe");
-	result = gcal_edit_contact((contacts + entry_index), ptr_gcal);
+	/* Edit this guy */
+	free(contact_new.title);
+	contact_new.title = strdup("Johny 'the mad' Doe");
+	result = gcal_edit_contact(&contact_new, ptr_gcal, &updated);
 	fail_if(result == -1, "Failed editing contact!");
 
-	/* I must delete the contact later */
-	result = gcal_delete_contact((contacts + entry_index), ptr_gcal);
+	/* Delete the contact: pay attention that each edit changes
+	 * the "edit_url" field!
+	 */
+	result = gcal_delete_contact(&updated, ptr_gcal);
 	fail_if(result == -1, "Failed deleting contact!");
 
-	gcal_destroy_contacts(contacts, count);
+	/* Do memory clean up */
+	gcal_destroy_contact(&contact_new);
+	gcal_destroy_contact(&updated);
+
 }
 END_TEST
 

@@ -122,10 +122,16 @@ void gcal_destroy_contacts(struct gcal_contact *contacts, size_t length);
  *                 previously got the authentication using
  *                 \ref gcal_get_authentication.
  *
- * @return -1 on error, 0 on success.
+ * @param updated Pass a pointer to a \ref gcal_contact structure if you
+ * wish to access the newly created contact (i.e. access fields like
+ * edit_uri and id). If you don't need it, just pass NULL.
+ *
+ * @return -1 on error, 0 on success, -2 if operation went correctly but
+ * cannot return 'updated' entry.
  */
 int gcal_create_contact(struct gcal_contact *contact,
-			struct gcal_resource *ptr_gcal);
+			struct gcal_resource *ptr_gcal,
+			struct gcal_contact *updated);
 
 
 /** Deletes a contact.
@@ -159,10 +165,15 @@ int gcal_delete_contact(struct gcal_contact *contact,
  *                 previously got the authentication using
  *                 \ref gcal_get_authentication.
  *
- * @return -1 on error, 0 on success.
+ * @param updated Pass a pointer to a \ref gcal_contact structure if you
+ * wish to access the newly created contact (i.e. access fields like
+ * edit_uri and id). If you don't need it, just pass NULL.
+ *
+ * @return -1 on error, 0 on success, -2 if operation went correctly but
+ * cannot return 'updated' entry.
  */
 int gcal_edit_contact(struct gcal_contact *contact,
-		      struct gcal_resource *ptr_gcal);
-
+		      struct gcal_resource *ptr_gcal,
+		      struct gcal_contact *updated);
 
 #endif

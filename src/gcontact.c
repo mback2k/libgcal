@@ -133,7 +133,8 @@ void gcal_destroy_contacts(struct gcal_contact *contacts, size_t length)
 }
 
 int gcal_create_contact(struct gcal_contact *contact,
-			struct gcal_resource *ptr_gcal)
+			struct gcal_resource *ptr_gcal,
+			struct gcal_contact *updated)
 {
 	int result = -1, length;
 	char *xml_contact = NULL, *buffer;
@@ -156,6 +157,26 @@ int gcal_create_contact(struct gcal_contact *contact,
 
 	result = up_entry(xml_contact, ptr_gcal, buffer, POST,
 			  GCAL_EDIT_ANSWER);
+
+	/* Parse buffer and create the new contact object */
+	if (!updated)
+		goto cleanup;
+	result = -2;
+	ptr_gcal->document = build_dom_document(ptr_gcal->buffer);
+	if (!ptr_gcal->document)
+		goto cleanup;
+
+	/* There is only one 'entry' in the buffer */
+	result = extract_all_contacts(ptr_gcal->document, updated, 1);
+	if (result == -1)
+		goto xmlclean;
+
+	result = 0;
+
+
+xmlclean:
+	clean_dom_document(ptr_gcal->document);
+	ptr_gcal->document = NULL;
 
 cleanup:
 	if (xml_contact)
@@ -203,25 +224,49 @@ exit:
 }
 
 int gcal_edit_contact(struct gcal_contact *contact,
-		      struct gcal_resource *ptr_gcal)
+		      struct gcal_resource *ptr_gcal,
+		      struct gcal_contact *updated)
 {
 
 	int result = -1, length;
 	char *xml_contact = NULL;
 
 	if ((!contact) || (!ptr_gcal))
-		return result;
+		goto exit;
 
 	result = xmlcontact_create(contact, &xml_contact, &length);
 	if (result == -1)
-		return result;
+		goto exit;
 
 	result = up_entry(xml_contact, ptr_gcal, contact->edit_uri, PUT,
 			  GCAL_DEFAULT_ANSWER);
 
+	/* Parse buffer and create the new contact object */
+	if (!updated)
+		goto cleanup;
+	result = -2;
+	ptr_gcal->document = build_dom_document(ptr_gcal->buffer);
+	if (!ptr_gcal->document)
+		goto cleanup;
+
+	/* There is only one 'entry' in the buffer */
+	result = extract_all_contacts(ptr_gcal->document, updated, 1);
+	if (result == -1)
+		goto xmlclean;
+
+	result = 0;
+
+
+xmlclean:
+	clean_dom_document(ptr_gcal->document);
+	ptr_gcal->document = NULL;
+
+cleanup:
+
 	if (xml_contact)
 		free(xml_contact);
 
+exit:
 	return result;
 
 }
