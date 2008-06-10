@@ -278,10 +278,16 @@ int up_entry(char *data2post, struct gcal_resource *ptr_gcal,
  *                 previously got the authentication using
  *                 \ref gcal_get_authentication.
  *
- * @return -1 on error, 0 on success.
+ * @param updated Pass a pointer to a \ref gcal_entries structure if you
+ * wish to access the newly created contact (i.e. access fields like
+ * edit_uri and id). If you don't need it, just pass NULL.
+ *
+ * @return -1 on error, 0 on success, -2 if operation went correctly but
+ * cannot return 'updated' entry.
  */
 int gcal_create_event(struct gcal_entries *entries,
-		      struct gcal_resource *ptr_gcal);
+		      struct gcal_resource *ptr_gcal,
+		      struct gcal_entries *updated);
 
 /** Deletes a calendar event.
  *
@@ -310,10 +316,16 @@ int gcal_delete_event(struct gcal_entries *entry,
  *                 previously got the authentication using
  *                 \ref gcal_get_authentication.
  *
- * @return -1 on error, 0 on success.
+ * @param updated Pass a pointer to a \ref gcal_entries structure if you
+ * wish to access the newly created contact (i.e. access fields like
+ * edit_uri and id). If you don't need it, just pass NULL.
+ *
+ * @return -1 on error, 0 on success, -2 if operation went correctly but
+ * cannot return 'updated' entry.
  */
 int gcal_edit_event(struct gcal_entries *entry,
-		    struct gcal_resource *ptr_gcal);
+		    struct gcal_resource *ptr_gcal,
+		    struct gcal_entries *updated);
 
 
 

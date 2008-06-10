@@ -726,7 +726,8 @@ exit:
 }
 
 int gcal_create_event(struct gcal_entries *entries,
-		      struct gcal_resource *ptr_gcal)
+		      struct gcal_resource *ptr_gcal,
+		      struct gcal_entries *updated)
 {
 	int result = -1, length;
 	char *xml_entry = NULL;
@@ -736,13 +737,35 @@ int gcal_create_event(struct gcal_entries *entries,
 
 	result = xmlentry_create(entries, &xml_entry, &length);
 	if (result == -1)
-		return result;
+		goto exit;
 
 	result = up_entry(xml_entry, ptr_gcal, GCAL_EDIT_URL, POST,
 		GCAL_EDIT_ANSWER);
+
+	/* Parse buffer and create the new contact object */
+	if (!updated)
+		goto cleanup;
+	result = -2;
+	ptr_gcal->document = build_dom_document(ptr_gcal->buffer);
+	if (!ptr_gcal->document)
+		goto cleanup;
+
+	/* There is only one 'entry' in the buffer */
+	result = extract_all_entries(ptr_gcal->document, updated, 1);
+	if (result == -1)
+		goto xmlclean;
+
+	result = 0;
+
+xmlclean:
+	clean_dom_document(ptr_gcal->document);
+	ptr_gcal->document = NULL;
+
+cleanup:
 	if (xml_entry)
 		free(xml_entry);
 
+exit:
 	return result;
 }
 
@@ -800,27 +823,48 @@ exit:
 }
 
 int gcal_edit_event(struct gcal_entries *entry,
-		    struct gcal_resource *ptr_gcal)
+		    struct gcal_resource *ptr_gcal,
+		    struct gcal_entries *updated)
 {
 
 	int result = -1, length;
 	char *xml_entry = NULL;
 
 	if ((!entry) || (!ptr_gcal))
-		return result;
+		goto exit;
 
 	result = xmlentry_create(entry, &xml_entry, &length);
 	if (result == -1)
-		return result;
+		goto exit;
 
 	result = up_entry(xml_entry, ptr_gcal, entry->edit_uri, PUT,
 			  GCAL_DEFAULT_ANSWER);
 
+	/* Parse buffer and create the new contact object */
+	if (!updated)
+		goto cleanup;
+	result = -2;
+	ptr_gcal->document = build_dom_document(ptr_gcal->buffer);
+	if (!ptr_gcal->document)
+		goto cleanup;
+
+	/* There is only one 'entry' in the buffer */
+	result = extract_all_entries(ptr_gcal->document, updated, 1);
+	if (result == -1)
+		goto xmlclean;
+
+	result = 0;
+
+xmlclean:
+	clean_dom_document(ptr_gcal->document);
+	ptr_gcal->document = NULL;
+
+cleanup:
 	if (xml_entry)
 		free(xml_entry);
 
+exit:
 	return result;
-
 }
 
 char *gcal_access_buffer(struct gcal_resource *ptr_gcal)

@@ -94,7 +94,7 @@ START_TEST (test_edit_add)
 	result = gcal_get_authentication("gcalntester", "77libgcal", ptr_gcal);
 	fail_if(result == -1, "Authentication should work.");
 
-	result = gcal_create_event(&event, ptr_gcal);
+	result = gcal_create_event(&event, ptr_gcal, NULL);
 	fail_if(result == -1, "Failed creating a new event!");
 
 
@@ -124,7 +124,7 @@ START_TEST (test_edit_delete)
 	result = gcal_get_authentication("gcalntester", "77libgcal", ptr_gcal);
 	fail_if(result == -1, "Authentication should work.");
 
-	result = gcal_create_event(&event, ptr_gcal);
+	result = gcal_create_event(&event, ptr_gcal, NULL);
 	fail_if(result == -1, "Failed creating a new event!");
 
 	result = gcal_dump(ptr_gcal);
@@ -194,7 +194,7 @@ START_TEST (test_edit_stress)
 
 			event.dt_start = start_buffer;
 			event.dt_end = end_buffer;
-			result = gcal_create_event(&event, ptr_gcal);
+			result = gcal_create_event(&event, ptr_gcal, NULL);
 			fail_if(result == -1, "Failed creating a new event!"
 				" Loop is i = %d\tj = %d", i, j);
 		}
@@ -224,10 +224,8 @@ END_TEST
 START_TEST (test_edit_edit)
 {
 
-	int result, i, entry_index = -1;
-	struct gcal_entries event;
-	struct gcal_entries *entries;
-	char *tmp_ptr;
+	int result;
+	struct gcal_entries event, new_event, updated_event;
 
 	event.title = "An editable event";
 	event.content = "This event will be included and edited";
@@ -244,35 +242,19 @@ START_TEST (test_edit_edit)
 	result = gcal_get_authentication("gcalntester", "77libgcal", ptr_gcal);
 	fail_if(result == -1, "Authentication should work.");
 
-	result = gcal_create_event(&event, ptr_gcal);
+	result = gcal_create_event(&event, ptr_gcal, &new_event);
 	fail_if(result == -1, "Failed creating a new event!");
 
-	result = gcal_dump(ptr_gcal);
-	fail_if(result == -1, "Failed dumping events");
-
-	entries = gcal_get_entries(ptr_gcal, &result);
-	fail_if(entries == NULL, "Failed extracting entries");
-
-	for (i = 0; i < result; ++i)
-		if (!strcmp(entries[i].title, event.title)) {
-			entry_index = i;
-			break;
-		}
-	fail_if(entry_index == -1, "Cannot locate the newly added event!");
-
-	/* Ouch, what horrible hack! */
-	tmp_ptr = entries[entry_index].title;
-
-	entries[entry_index].title = "An editable event: edited now!";
-	result = gcal_edit_event((entries + entry_index), ptr_gcal);
-
-	/* Ouch, what horrible hack! */
-	entries[entry_index].title = tmp_ptr;
-
+	free(new_event.title);
+	new_event.title = strdup("An editable event: edited now!");
+	result = gcal_edit_event(&new_event, ptr_gcal, &updated_event);
 	fail_if(result == -1, "Failed editing event!");
 
+	/* TODO: delete the event from server */
+
 	/* Cleanup */
-	gcal_destroy_entries(entries, result);
+	gcal_destroy_entry(&new_event);
+	gcal_destroy_entry(&updated_event);
 }
 END_TEST
 
