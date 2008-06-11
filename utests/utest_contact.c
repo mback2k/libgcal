@@ -19,9 +19,7 @@ static struct gcal_resource *ptr_gcal = NULL;
 static void setup(void)
 {
 	/* here goes any common data allocation */
-	ptr_gcal = gcal_initialize();
-	/* here we set libgcal to handle contacts */
-	gcal_set_service(ptr_gcal, GCONTACT);
+	ptr_gcal = gcal_initialize(GCONTACT);
 }
 
 static void teardown(void)

@@ -76,7 +76,7 @@ static void reset_buffer(struct gcal_resource *ptr)
 	ptr->buffer = (char *) calloc(ptr->length, sizeof(char));
 }
 
-struct gcal_resource *gcal_initialize(void)
+struct gcal_resource *gcal_initialize(gservice mode)
 {
 
 	struct gcal_resource *ptr;
@@ -101,19 +101,19 @@ struct gcal_resource *gcal_initialize(void)
 	}
 
 	/* Initializes to google calendar as default */
-	gcal_set_service(ptr, GCALENDAR);
+	gcal_set_service(ptr, mode);
 
 exit:
 	return ptr;
 }
 
-void gcal_set_service(struct gcal_resource *ptr_gcal, service option)
+void gcal_set_service(struct gcal_resource *ptr_gcal, gservice mode)
 {
 
 	if (ptr_gcal) {
-		if (option == GCALENDAR)
+		if (mode == GCALENDAR)
 			strcpy(ptr_gcal->service, "cl");
-		else if (option == GCONTACT)
+		else if (mode == GCONTACT)
 			strcpy(ptr_gcal->service, "cp");
 
 	}

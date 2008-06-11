@@ -16,7 +16,7 @@ struct gcal_resource *ptr_gcal = NULL;
 static void setup(void)
 {
 	/* here goes any common data allocation */
-	ptr_gcal = gcal_initialize();
+	ptr_gcal = gcal_initialize(GCALENDAR);
 }
 
 static void teardown(void)
@@ -125,7 +125,7 @@ START_TEST (test_gcal_naive)
 	struct gcal_resource *local_gcal;
 	struct gcal_entries *entries;
 
-	local_gcal = gcal_initialize();
+	local_gcal = gcal_initialize(GCALENDAR);
 	result = gcal_get_authentication("username", "a_password", local_gcal);
 	fail_if((signed)result != -1, "Authentication must fail!");
 

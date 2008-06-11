@@ -43,7 +43,7 @@ POSSIBILITY OF SUCH DAMAGE.
 #include <stdlib.h>
 
 /** Google service that user will contact */
-typedef enum { GCALENDAR, GCONTACT } service;
+typedef enum { GCALENDAR, GCONTACT } gservice;
 
 /** Upload (being POST or PUT) definition option.
  *
@@ -105,10 +105,12 @@ void clean_buffer(struct gcal_resource *gcal_obj);
  * Concerning google service type, it defaults to google calendar. You can
  * change it using \ref gcal_set_service.
  *
+ * @param gservice Service that libgcal will handle (for while, GCALENDAR
+ * and GCONTACT).
+ *
  * @return A pointer to a newly created object or NULL.
  */
-struct gcal_resource *gcal_initialize(void);
-
+struct gcal_resource *gcal_initialize(gservice mode);
 
 /** Sets the google service that user wants to authenticate.
  *
@@ -118,7 +120,7 @@ struct gcal_resource *gcal_initialize(void);
  *
  * @param option Service type, see \ref service.
  */
-void gcal_set_service(struct gcal_resource *ptr_gcal, service option);
+void gcal_set_service(struct gcal_resource *ptr_gcal, gservice mode);
 
 
 /** Gets from google an authentication token, using the 'ClientLogin' service.
