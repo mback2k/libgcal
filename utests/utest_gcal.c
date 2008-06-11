@@ -29,16 +29,16 @@ START_TEST (test_gcal_authenticate)
 {
 
 	int result;
-	result = gcal_get_authentication("gcal4tester", "66libgcal", ptr_gcal);
+	result = gcal_get_authentication(ptr_gcal, "gcal4tester", "66libgcal");
 	fail_if(result != 0, "Authentication should work");
 
-	result = gcal_get_authentication("gcal4tester", "fail_fail", ptr_gcal);
+	result = gcal_get_authentication(ptr_gcal, "gcal4tester", "fail_fail");
 	fail_if(result == 0, "Authentication must fail");
 
 	/* Calling again, it must free internal pointer with previous
 	 * authentication.
 	 */
-	result = gcal_get_authentication("gcal4tester", "66libgcal", ptr_gcal);
+	result = gcal_get_authentication(ptr_gcal, "gcal4tester", "66libgcal");
 	fail_if(result == -1, "Authentication should work");
 
 }
@@ -72,7 +72,7 @@ END_TEST
 START_TEST (test_gcal_dump)
 {
 	int result;
-	result = gcal_get_authentication("gcal4tester", "66libgcal", ptr_gcal);
+	result = gcal_get_authentication(ptr_gcal, "gcal4tester", "66libgcal");
 	if (result)
 		fail_if(1, "Authentication should work");
 
@@ -92,7 +92,7 @@ START_TEST (test_gcal_entries)
 				   "2008-03-10T12:56:43.000Z",
 				   "2008-03-06T15:32:25.000Z" };
 
-	result = gcal_get_authentication("gcal4tester", "66libgcal", ptr_gcal);
+	result = gcal_get_authentication(ptr_gcal, "gcal4tester", "66libgcal");
 	if (result)
 		fail_if(1, "Authentication should work");
 
@@ -126,7 +126,7 @@ START_TEST (test_gcal_naive)
 	struct gcal_entries *entries;
 
 	local_gcal = gcal_initialize(GCALENDAR);
-	result = gcal_get_authentication("username", "a_password", local_gcal);
+	result = gcal_get_authentication(local_gcal, "username", "a_password");
 	fail_if((signed)result != -1, "Authentication must fail!");
 
 	result = gcal_dump(local_gcal);

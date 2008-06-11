@@ -32,7 +32,7 @@ static void teardown(void)
 START_TEST (test_contact_dump)
 {
 	int result;
-	result = gcal_get_authentication("gcal4tester", "66libgcal", ptr_gcal);
+	result = gcal_get_authentication(ptr_gcal, "gcal4tester", "66libgcal");
 	if (result)
 		fail_if(1, "Authentication should work");
 
@@ -48,10 +48,10 @@ START_TEST (test_contact_authenticate)
 
 	int result;
 
-	result = gcal_get_authentication("gcal4tester", "66libgcal", ptr_gcal);
+	result = gcal_get_authentication(ptr_gcal, "gcal4tester", "66libgcal");
 	fail_if(result != 0, "Authentication should work");
 
-	result = gcal_get_authentication("gcal4tester", "fail_fail", ptr_gcal);
+	result = gcal_get_authentication(ptr_gcal, "gcal4tester", "fail_fail");
 	fail_if(result == 0, "Authentication must fail");
 
 }
@@ -68,7 +68,7 @@ START_TEST (test_contact_entries)
 	char *ptr;
 	int contacts_count = 3;
 
-	result = gcal_get_authentication("gcalntester", "77libgcal", ptr_gcal);
+	result = gcal_get_authentication(ptr_gcal, "gcalntester", "77libgcal");
 	if (result)
 		fail_if(1, "Authentication should work");
 
@@ -102,7 +102,7 @@ START_TEST (test_contact_extract)
 				  "Adenilson Cavalcanti" };
 	size_t contacts_count = 3, found_count = 0;;
 
-	result = gcal_get_authentication("gcalntester", "77libgcal", ptr_gcal);
+	result = gcal_get_authentication(ptr_gcal, "gcalntester", "77libgcal");
 	fail_if(result == -1, "Authentication should work");
 
 	result = gcal_dump(ptr_gcal);
@@ -182,10 +182,10 @@ START_TEST (test_contact_add)
 	contact.phone_number = "+9977554422119900";
 	contact.post_address = "Unknown Av. St., n. 69, Someplace";
 
-	result = gcal_get_authentication("gcalntester", "77libgcal", ptr_gcal);
+	result = gcal_get_authentication(ptr_gcal, "gcalntester", "77libgcal");
 	fail_if(result == -1, "Authentication should work.");
 
-	result = gcal_create_contact(&contact, ptr_gcal, NULL);
+	result = gcal_create_contact(ptr_gcal, &contact, NULL);
 	fail_if(result == -1, "Failed creating a new contact!");
 
 	/* I commented this test because it prints too much error
@@ -213,7 +213,7 @@ START_TEST (test_contact_delete)
 	struct gcal_contact *contacts;
 	int count = 0, i, result, entry_index = -1;
 
-	result = gcal_get_authentication("gcalntester", "77libgcal", ptr_gcal);
+	result = gcal_get_authentication(ptr_gcal, "gcalntester", "77libgcal");
 	fail_if(result == -1, "Authentication should work.");
 
 	result = gcal_dump(ptr_gcal);
@@ -232,7 +232,7 @@ START_TEST (test_contact_delete)
 /* 	fprintf(stderr, "index = %d\tname = %s\n", entry_index, */
 /* 		contacts[entry_index].title); */
 
-	result = gcal_delete_contact((contacts + entry_index), ptr_gcal);
+	result = gcal_delete_contact(ptr_gcal, (contacts + entry_index));
 	fail_if(result == -1, "Failed deleting contact!");
 
 	gcal_destroy_contacts(contacts, count);
@@ -257,22 +257,22 @@ START_TEST (test_contact_edit)
 	contact.post_address = "Unknown Av. St., n. 69, Someplace";
 
 	/* Authenticate and add a new contact */
-	result = gcal_get_authentication("gcalntester", "77libgcal", ptr_gcal);
+	result = gcal_get_authentication(ptr_gcal, "gcalntester", "77libgcal");
 	fail_if(result == -1, "Authentication should work.");
 
-	result = gcal_create_contact(&contact, ptr_gcal, &contact_new);
+	result = gcal_create_contact(ptr_gcal, &contact, &contact_new);
 	fail_if(result == -1, "Failed creating a new contact!");
 
 	/* Edit this guy */
 	free(contact_new.title);
 	contact_new.title = strdup("Johny 'the mad' Doe");
-	result = gcal_edit_contact(&contact_new, ptr_gcal, &updated);
+	result = gcal_edit_contact(ptr_gcal, &contact_new, &updated);
 	fail_if(result == -1, "Failed editing contact!");
 
 	/* Delete the contact: pay attention that each edit changes
 	 * the "edit_url" field!
 	 */
-	result = gcal_delete_contact(&updated, ptr_gcal);
+	result = gcal_delete_contact(ptr_gcal, &updated);
 	fail_if(result == -1, "Failed deleting contact!");
 
 	/* Do memory clean up */

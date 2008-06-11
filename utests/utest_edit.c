@@ -91,10 +91,10 @@ START_TEST (test_edit_add)
 	 */
 	event.status = "confirmed";
 
-	result = gcal_get_authentication("gcalntester", "77libgcal", ptr_gcal);
+	result = gcal_get_authentication(ptr_gcal, "gcalntester", "77libgcal");
 	fail_if(result == -1, "Authentication should work.");
 
-	result = gcal_create_event(&event, ptr_gcal, NULL);
+	result = gcal_create_event(ptr_gcal, &event, NULL);
 	fail_if(result == -1, "Failed creating a new event!");
 
 
@@ -121,10 +121,10 @@ START_TEST (test_edit_delete)
 	 */
 	event.status = "confirmed";
 
-	result = gcal_get_authentication("gcalntester", "77libgcal", ptr_gcal);
+	result = gcal_get_authentication(ptr_gcal, "gcalntester", "77libgcal");
 	fail_if(result == -1, "Authentication should work.");
 
-	result = gcal_create_event(&event, ptr_gcal, NULL);
+	result = gcal_create_event(ptr_gcal, &event, NULL);
 	fail_if(result == -1, "Failed creating a new event!");
 
 	result = gcal_dump(ptr_gcal);
@@ -140,7 +140,7 @@ START_TEST (test_edit_delete)
 		}
 	fail_if(entry_index == -1, "Cannot locate the newly added event!");
 
-	result = gcal_delete_event((entries + entry_index), ptr_gcal);
+	result = gcal_delete_event(ptr_gcal, (entries + entry_index));
 	fail_if(result == -1, "Failed deleting event!");
 
 	/* Cleanup */
@@ -172,7 +172,7 @@ START_TEST (test_edit_stress)
 	 */
 	event.status = "confirmed";
 
-	result = gcal_get_authentication("gcalntester", "77libgcal", ptr_gcal);
+	result = gcal_get_authentication(ptr_gcal, "gcalntester", "77libgcal");
 	fail_if(result == -1, "Authentication should work.");
 
 
@@ -194,7 +194,7 @@ START_TEST (test_edit_stress)
 
 			event.dt_start = start_buffer;
 			event.dt_end = end_buffer;
-			result = gcal_create_event(&event, ptr_gcal, NULL);
+			result = gcal_create_event(ptr_gcal, &event, NULL);
 			fail_if(result == -1, "Failed creating a new event!"
 				" Loop is i = %d\tj = %d", i, j);
 		}
@@ -213,7 +213,7 @@ START_TEST (test_edit_stress)
 	fail_if(entries == NULL, "Failed extracting entries");
 	for (i = 0; i < total; ++i)
 		if (!strcmp(entries[i].title, event.title)) {
-			result = gcal_delete_event(&entries[i], ptr_gcal);
+			result = gcal_delete_event(ptr_gcal, &entries[i]);
 			fail_if(result == -1, "Failed deleting event!");
 		}
 
@@ -239,15 +239,15 @@ START_TEST (test_edit_edit)
 	 */
 	event.status = "confirmed";
 
-	result = gcal_get_authentication("gcalntester", "77libgcal", ptr_gcal);
+	result = gcal_get_authentication(ptr_gcal, "gcalntester", "77libgcal");
 	fail_if(result == -1, "Authentication should work.");
 
-	result = gcal_create_event(&event, ptr_gcal, &new_event);
+	result = gcal_create_event(ptr_gcal, &event, &new_event);
 	fail_if(result == -1, "Failed creating a new event!");
 
 	free(new_event.title);
 	new_event.title = strdup("An editable event: edited now!");
-	result = gcal_edit_event(&new_event, ptr_gcal, &updated_event);
+	result = gcal_edit_event(ptr_gcal, &new_event, &updated_event);
 	fail_if(result == -1, "Failed editing event!");
 
 	/* TODO: delete the event from server */

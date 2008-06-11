@@ -127,15 +127,17 @@ void gcal_set_service(struct gcal_resource *ptr_gcal, gservice mode);
  *
  * Use it before getting/setting google calendar events.
  *
+ * @param ptr_gcal Pointer to a library resource structure \ref gcal_resource
+ *
  * @param user The user google login account.
+ *
  * @param password User password in plain text
  *                 \todo think in a way to encrypt password
- * @param ptr_gcal Pointer to a library resource structure \ref gcal_resource
  *
  * @return Returns 0 on success, -1 otherwise.
  */
-int gcal_get_authentication(char *user, char *password,
-			    struct gcal_resource *ptr_gcal);
+int gcal_get_authentication(struct gcal_resource *ptr_gcal,
+			    char *user, char *password);
 
 
 /** Dumps events from default calendar to internal buffer.
@@ -274,11 +276,11 @@ int up_entry(char *data2post, struct gcal_resource *ptr_gcal,
  * You need to first succeed to get an authorization token using
  * \ref gcal_get_authentication.
  *
- * @param entries A pointer to an calendar entry event (see \ref gcal_entries).
- *
  * @param ptr_gcal Pointer to a \ref gcal_resource structure, which has
  *                 previously got the authentication using
  *                 \ref gcal_get_authentication.
+ *
+ * @param entries A pointer to an calendar entry event (see \ref gcal_entries).
  *
  * @param updated Pass a pointer to a \ref gcal_entries structure if you
  * wish to access the newly created contact (i.e. access fields like
@@ -287,8 +289,8 @@ int up_entry(char *data2post, struct gcal_resource *ptr_gcal,
  * @return -1 on error, 0 on success, -2 if operation went correctly but
  * cannot return 'updated' entry.
  */
-int gcal_create_event(struct gcal_entries *entries,
-		      struct gcal_resource *ptr_gcal,
+int gcal_create_event(struct gcal_resource *ptr_gcal,
+		      struct gcal_entries *entries,
 		      struct gcal_entries *updated);
 
 /** Deletes a calendar event.
@@ -296,15 +298,16 @@ int gcal_create_event(struct gcal_entries *entries,
  * You need to first succeed to get an authorization token using
  * \ref gcal_get_authentication.
  *
- * @param entry A pointer to one calendar entry event (see \ref gcal_entries).
  * @param ptr_gcal Pointer to a \ref gcal_resource structure, which has
  *                 previously got the authentication using
  *                 \ref gcal_get_authentication.
  *
+ * @param entry A pointer to one calendar entry event (see \ref gcal_entries).
+ *
  * @return -1 on error, 0 on success.
  */
-int gcal_delete_event(struct gcal_entries *entry,
-		      struct gcal_resource *ptr_gcal);
+int gcal_delete_event(struct gcal_resource *ptr_gcal,
+		      struct gcal_entries *entry);
 
 
 /** Edits a calendar event.
@@ -312,11 +315,12 @@ int gcal_delete_event(struct gcal_entries *entry,
  * It requires the presence of field 'edit_uri' in entry pointer structure
  * (see \ref gcal_entries).
  *
- * @param entry A pointer to an calendar entry event.
  *
  * @param ptr_gcal Pointer to a \ref gcal_resource structure, which has
  *                 previously got the authentication using
  *                 \ref gcal_get_authentication.
+ *
+ * @param entry A pointer to an calendar entry event.
  *
  * @param updated Pass a pointer to a \ref gcal_entries structure if you
  * wish to access the newly created contact (i.e. access fields like
@@ -325,8 +329,8 @@ int gcal_delete_event(struct gcal_entries *entry,
  * @return -1 on error, 0 on success, -2 if operation went correctly but
  * cannot return 'updated' entry.
  */
-int gcal_edit_event(struct gcal_entries *entry,
-		    struct gcal_resource *ptr_gcal,
+int gcal_edit_event(struct gcal_resource *ptr_gcal,
+		    struct gcal_entries *entry,
 		    struct gcal_entries *updated);
 
 

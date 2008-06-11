@@ -116,11 +116,11 @@ void gcal_destroy_contacts(struct gcal_contact *contacts, size_t length);
  * \ref gcal_get_authentication with mode set using
  * \ref gcal_set_service to GCONTACT.
  *
- * @param contact A pointer to a libgcal \ref gcal_contact structure.
- *
  * @param ptr_gcal Pointer to a \ref gcal_resource structure, which has
  *                 previously got the authentication using
  *                 \ref gcal_get_authentication.
+ *
+ * @param contact A pointer to a libgcal \ref gcal_contact structure.
  *
  * @param updated Pass a pointer to a \ref gcal_contact structure if you
  * wish to access the newly created contact (i.e. access fields like
@@ -129,8 +129,8 @@ void gcal_destroy_contacts(struct gcal_contact *contacts, size_t length);
  * @return -1 on error, 0 on success, -2 if operation went correctly but
  * cannot return 'updated' entry.
  */
-int gcal_create_contact(struct gcal_contact *contact,
-			struct gcal_resource *ptr_gcal,
+int gcal_create_contact(struct gcal_resource *ptr_gcal,
+			struct gcal_contact *contact,
 			struct gcal_contact *updated);
 
 
@@ -140,16 +140,16 @@ int gcal_create_contact(struct gcal_contact *contact,
  * \ref gcal_get_authentication with mode set using
  * \ref gcal_set_service to GCONTACT.
  *
- * @param contact A pointer to a libgcal \ref gcal_contact structure.
- *
  * @param ptr_gcal Pointer to a \ref gcal_resource structure, which has
  *                 previously got the authentication using
  *                 \ref gcal_get_authentication.
  *
+ * @param contact A pointer to a libgcal \ref gcal_contact structure.
+ *
  * @return -1 on error, 0 on success.
  */
-int gcal_delete_contact(struct gcal_contact *contact,
-			struct gcal_resource *ptr_gcal);
+int gcal_delete_contact(struct gcal_resource *ptr_gcal,
+			struct gcal_contact *contact);
 
 
 
@@ -172,8 +172,8 @@ int gcal_delete_contact(struct gcal_contact *contact,
  * @return -1 on error, 0 on success, -2 if operation went correctly but
  * cannot return 'updated' entry.
  */
-int gcal_edit_contact(struct gcal_contact *contact,
-		      struct gcal_resource *ptr_gcal,
+int gcal_edit_contact(struct gcal_resource *ptr_gcal,
+		      struct gcal_contact *contact,
 		      struct gcal_contact *updated);
 
 #endif

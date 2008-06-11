@@ -132,8 +132,8 @@ void gcal_destroy_contacts(struct gcal_contact *contacts, size_t length)
 	free(contacts);
 }
 
-int gcal_create_contact(struct gcal_contact *contact,
-			struct gcal_resource *ptr_gcal,
+int gcal_create_contact(struct gcal_resource *ptr_gcal,
+			struct gcal_contact *contact,
 			struct gcal_contact *updated)
 {
 	int result = -1, length;
@@ -189,8 +189,8 @@ exit:
 
 }
 
-int gcal_delete_contact(struct gcal_contact *contact,
-			struct gcal_resource *ptr_gcal)
+int gcal_delete_contact(struct gcal_resource *ptr_gcal,
+			struct gcal_contact *contact)
 {
 	int result = -1, length;
 	char *h_auth;
@@ -223,8 +223,8 @@ exit:
 	return result;
 }
 
-int gcal_edit_contact(struct gcal_contact *contact,
-		      struct gcal_resource *ptr_gcal,
+int gcal_edit_contact(struct gcal_resource *ptr_gcal,
+		      struct gcal_contact *contact,
 		      struct gcal_contact *updated)
 {
 

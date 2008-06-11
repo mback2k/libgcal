@@ -311,9 +311,8 @@ exit:
 
 }
 
-
-int gcal_get_authentication(char *user, char *password,
-			    struct gcal_resource *ptr_gcal)
+int gcal_get_authentication(struct gcal_resource *ptr_gcal,
+			    char *user, char *password)
 {
 
 	int post_len = 0;
@@ -725,8 +724,8 @@ exit:
 	return result;
 }
 
-int gcal_create_event(struct gcal_entries *entries,
-		      struct gcal_resource *ptr_gcal,
+int gcal_create_event(struct gcal_resource *ptr_gcal,
+		      struct gcal_entries *entries,
 		      struct gcal_entries *updated)
 {
 	int result = -1, length;
@@ -769,8 +768,8 @@ exit:
 	return result;
 }
 
-int gcal_delete_event(struct gcal_entries *entry,
-		      struct gcal_resource *ptr_gcal)
+int gcal_delete_event(struct gcal_resource *ptr_gcal,
+		      struct gcal_entries *entry)
 {
 	int result = -1, length;
 	char *h_auth;
@@ -822,8 +821,8 @@ exit:
 
 }
 
-int gcal_edit_event(struct gcal_entries *entry,
-		    struct gcal_resource *ptr_gcal,
+int gcal_edit_event(struct gcal_resource *ptr_gcal,
+		    struct gcal_entries *entry,
 		    struct gcal_entries *updated)
 {
 
