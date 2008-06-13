@@ -108,7 +108,7 @@ START_TEST (test_debug_logfile)
 	fail_if(fd == -1, "Cannot open log file!");
 	result = read_file(fd, &file_content, &length);
 	fail_if(result, "Failed reading log file!");
-	fail_if((!(strstr(file_content, error_line))), "Cannot file HTTP error"
+	fail_if((!(strstr(file_content, error_line))), "Cannot find HTTP error"
 		"message!");
 
 	free(file_content);
