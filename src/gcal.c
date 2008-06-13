@@ -98,6 +98,7 @@ struct gcal_resource *gcal_initialize(gservice mode)
 	if (!(ptr->buffer) || (!(ptr->curl))) {
 		gcal_destroy(ptr);
 		ptr = NULL;
+		goto exit;
 	}
 
 	/* Initializes to google calendar as default */
@@ -426,8 +427,8 @@ static int get_follow_redirection(struct gcal_resource *ptr_gcal,
 		}
 	} else {
 		/* No valid service, just exit. */
-			result = -1;
-			goto cleanup;
+		result = -1;
+		goto cleanup;
 	}
 
 	/* It will extract and follow the first 'REF' link in the stream */
@@ -480,6 +481,8 @@ int gcal_dump(struct gcal_resource *ptr_gcal)
 	else if (!(strcmp(ptr_gcal->service, "cp")))
 		length = sizeof(GCONTACT_START) + sizeof(GCONTACT_END) +
 			sizeof(GCAL_UPPER) + strlen(ptr_gcal->user) + 1;
+	else
+		goto exit;
 
 	buffer = (char *)malloc(length);
 	if (!buffer)
@@ -491,6 +494,8 @@ int gcal_dump(struct gcal_resource *ptr_gcal)
 	else if (!(strcmp(ptr_gcal->service, "cp")))
 		snprintf(buffer, length - 1, "%s%s%s%s", GCONTACT_START,
 			 ptr_gcal->user, GCONTACT_END, GCAL_UPPER);
+	else
+		goto exit;
 
 	result =  get_follow_redirection(ptr_gcal, buffer);
 
@@ -685,7 +690,9 @@ int up_entry(char *data2post, struct gcal_resource *ptr_gcal,
 				     data2post, GCAL_REDIRECT_ANSWER);
 		if (result == -1)
 			goto cleanup;
-	}
+	} else
+		goto cleanup;
+
 
 	if (ptr_gcal->url) {
 		free(ptr_gcal->url);
