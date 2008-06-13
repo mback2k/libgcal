@@ -203,6 +203,16 @@ int gcal_entries_number(struct gcal_resource *ptr_gcal);
 struct gcal_entries *gcal_get_entries(struct gcal_resource *ptr_gcal,
 				      size_t *length);
 
+
+/** Always use this to set calendar event structure to a sane state.
+ *
+ * You were warned...
+ *
+ * @param entry A pointer to a \ref gcal_entries.
+ */
+void gcal_init_entry(struct gcal_entries *entry);
+
+
 /** Cleanup memory of 1 entry structure pointer.
  *
  *

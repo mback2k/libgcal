@@ -604,6 +604,18 @@ static void clean_string(char *ptr_str)
 		free(ptr_str);
 }
 
+void gcal_init_entry(struct gcal_entries *entry)
+{
+	if (!entry)
+		return;
+
+	entry->title = entry->id = entry->edit_uri = NULL;
+	entry->content = entry->dt_recurrent = entry->dt_start = NULL;
+	entry->dt_end = entry->where = entry->status = NULL;
+	entry->updated = NULL;
+
+}
+
 void gcal_destroy_entry(struct gcal_entries *entry)
 {
 	if (!entry)

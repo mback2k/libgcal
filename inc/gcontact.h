@@ -99,6 +99,13 @@ struct gcal_contact *gcal_get_contacts(struct gcal_resource *ptr_gcal,
 void gcal_destroy_contact(struct gcal_contact *contact);
 
 
+/** Always use this to set contact structure to a sane state.
+ *
+ * You were warned...
+ *
+ * @param contact A pointer to a \ref gcal_contact.
+ */
+void gcal_init_contact(struct gcal_contact *contact);
 
 /** Cleanup the memory of a vector of calendar entries created using
  * \ref gcal_get_contacts.

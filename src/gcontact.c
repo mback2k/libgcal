@@ -97,6 +97,17 @@ static void clean_string(char *ptr_str)
 		free(ptr_str);
 }
 
+void gcal_init_contact(struct gcal_contact *contact)
+{
+	if (!contact)
+		return;
+
+	contact->id = contact->updated = contact->title = NULL;
+	contact->edit_uri = contact->email = contact->content = NULL;
+	contact->org_name = contact->org_title = contact->im = NULL;
+	contact->phone_number = contact->post_address = NULL;
+}
+
 void gcal_destroy_contact(struct gcal_contact *contact)
 {
 	if (!contact)
