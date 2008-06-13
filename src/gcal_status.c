@@ -41,5 +41,5 @@ POSSIBILITY OF SUCH DAMAGE.
 
 int gcal_status_httpcode(struct gcal_resource *ptr_gcal)
 {
-	return 	(int)ptr_gcal->http_code;
+	return (int)ptr_gcal->http_code;
 }
