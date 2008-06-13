@@ -81,10 +81,8 @@ struct gcal_resource *gcal_initialize(gservice mode)
 
 	struct gcal_resource *ptr;
 	ptr = (struct gcal_resource *) malloc(sizeof(struct gcal_resource));
-	if (!ptr) {
-		fprintf(stderr, "%s\n", "gcal_initialize: failed malloc\n");
+	if (!ptr)
 		goto exit;
-	}
 
 	ptr->has_xml = 0;
 	ptr->document = NULL;
@@ -98,6 +96,7 @@ struct gcal_resource *gcal_initialize(gservice mode)
 	ptr->curl_msg = NULL;
 	ptr->http_code = 0;
 	ptr->internal_status = 0;
+	ptr->fout_log = NULL;
 
 	if (!(ptr->buffer) || (!(ptr->curl))) {
 		gcal_destroy(ptr);
@@ -148,6 +147,8 @@ void gcal_destroy(struct gcal_resource *gcal_obj)
 		clean_dom_document(gcal_obj->document);
 	if (gcal_obj->curl_msg)
 		free(gcal_obj->curl_msg);
+	if (gcal_obj->fout_log)
+		fclose(gcal_obj->fout_log);
 }
 
 
@@ -171,7 +172,9 @@ static size_t write_cb(void *ptr, size_t count, size_t chunk_size, void *data)
 					       gcal_ptr->length);
 
 		    if (!gcal_ptr->buffer) {
-			    fprintf(stderr, "write_cb: Failed relloc\n");
+			    if (gcal_ptr->fout_log)
+				    fprintf(gcal_ptr->fout_log,
+					    "write_cb: Failed relloc\n");
 			    goto exit;
 		    }
 
@@ -192,10 +195,11 @@ static int check_request_error(struct gcal_resource *ptr_gcal, int code,
 	curl_easy_getinfo(curl_ctx, CURLINFO_HTTP_CODE,
 			  &(ptr_gcal->http_code));
 	if (code || (ptr_gcal->http_code != expected_answer)) {
-		fprintf(stderr, "%s\n%s%s\n%s%d\n",
-			"check_request_error: failed request.",
-			"Curl code: ", curl_easy_strerror(code),
-			"HTTP code: ", (int)ptr_gcal->http_code);
+		if (ptr_gcal->fout_log)
+			fprintf(ptr_gcal->fout_log, "%s\n%s%s\n%s%d\n",
+				"check_request_error: failed request.",
+				"Curl code: ", curl_easy_strerror(code),
+				"HTTP code: ", (int)ptr_gcal->http_code);
 		result = -1;
 	}
 
@@ -720,11 +724,15 @@ int up_entry(char *data2post, struct gcal_resource *ptr_gcal,
 			     data2post, expected_code);
 
 	if (result == -1) {
-		fprintf(stderr, "result = %s\n", ptr_gcal->buffer);
-		fprintf(stderr, "\nurl = %s\nh_length = %s\nh_auth = %s"
-			"\ndata2post =%s%d\n",
-			ptr_gcal->url, h_length, h_auth, data2post,
-			strlen(data2post));
+		if (ptr_gcal->fout_log) {
+			fprintf(ptr_gcal->fout_log,
+				"result = %s\n", ptr_gcal->buffer);
+			fprintf(ptr_gcal->fout_log,
+				"\nurl = %s\nh_length = %s\nh_auth = %s"
+				"\ndata2post =%s%d\n",
+				ptr_gcal->url, h_length, h_auth, data2post,
+				strlen(data2post));
+		}
 		goto cleanup;
 	}
 

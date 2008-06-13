@@ -46,8 +46,14 @@ int gcal_status_httpcode(struct gcal_resource *ptr_gcal)
 
 int gcal_status_setlog(struct gcal_resource *ptr_gcal, char *filepath)
 {
-	(void)ptr_gcal;
-	(void)filepath;
+	int result = -1;
 
-	return -1;
+	if (ptr_gcal->fout_log)
+		fclose(ptr_gcal->fout_log);
+
+	ptr_gcal->fout_log = fopen(filepath, "w");
+	if (ptr_gcal->fout_log)
+		result = 0;
+
+	return result;
 }

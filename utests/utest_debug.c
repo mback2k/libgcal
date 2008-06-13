@@ -89,7 +89,7 @@ START_TEST (test_debug_logfile)
 {
 	int result, length;
 	char *file_path = "/tmp/libgcal.log";
-	char *error_line = "code = 403";
+	char *error_line = "code: 403";
 	char *file_content = NULL;
 	int fd;
 
@@ -108,12 +108,12 @@ START_TEST (test_debug_logfile)
 	fail_if(fd == -1, "Cannot open log file!");
 	result = read_file(fd, &file_content, &length);
 	fail_if(result, "Failed reading log file!");
+
 	fail_if((!(strstr(file_content, error_line))), "Cannot find HTTP error"
-		"message!");
+		" message!");
 
 	free(file_content);
 	close(fd);
-
 }
 END_TEST
 

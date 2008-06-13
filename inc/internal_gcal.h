@@ -114,6 +114,8 @@ struct gcal_resource {
 	char *curl_msg;
 	/** Internal status from last request */
 	int internal_status;
+	/** Handler to internal logging file */
+	FILE *fout_log;
 
 };
 
