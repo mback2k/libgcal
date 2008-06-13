@@ -41,6 +41,14 @@ POSSIBILITY OF SUCH DAMAGE.
 
 #include "gcal.h"
 
+/** Returns HTTP status of a gcal object.
+ *
+ * Use it to check for status of object after last HTTP request.
+ *
+ * @param ptr_gcal Pointer to a library resource structure \ref gcal_resource.
+ *
+ * @return The HTTP code (can be 200, 201, 301, etc).
+ */
 int gcal_status_httpcode(struct gcal_resource *ptr_gcal);
 
 #endif
