@@ -51,4 +51,7 @@ POSSIBILITY OF SUCH DAMAGE.
  */
 int gcal_status_httpcode(struct gcal_resource *ptr_gcal);
 
+
+int gcal_status_setlog(struct gcal_resource *ptr_gcal, char *filepath);
+
 #endif

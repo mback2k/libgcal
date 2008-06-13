@@ -131,6 +131,8 @@ void clean_buffer(struct gcal_resource *gcal_obj)
 
 void gcal_destroy(struct gcal_resource *gcal_obj)
 {
+	if (!gcal_obj)
+		return;
 
 	if (gcal_obj->buffer)
 		free(gcal_obj->buffer);

@@ -43,3 +43,11 @@ int gcal_status_httpcode(struct gcal_resource *ptr_gcal)
 {
 	return (int)ptr_gcal->http_code;
 }
+
+int gcal_status_setlog(struct gcal_resource *ptr_gcal, char *filepath)
+{
+	(void)ptr_gcal;
+	(void)filepath;
+
+	return -1;
+}
