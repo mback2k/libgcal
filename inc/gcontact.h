@@ -153,7 +153,7 @@ int gcal_delete_contact(struct gcal_resource *ptr_gcal,
 
 
 
-/** Creates a new contact.
+/** Modify an existing contact.
  *
  * You need to first succeed to get an authorization token using
  * \ref gcal_get_authentication with mode set using
