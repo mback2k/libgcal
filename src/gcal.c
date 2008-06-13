@@ -94,6 +94,9 @@ struct gcal_resource *gcal_initialize(gservice mode)
 	ptr->buffer = NULL;
 	reset_buffer(ptr);
 	ptr->curl = curl_easy_init();
+	ptr->http_code = 0;
+	ptr->curl_msg = NULL;
+	ptr->internal_status = 0;
 
 	if (!(ptr->buffer) || (!(ptr->curl))) {
 		gcal_destroy(ptr);
@@ -140,7 +143,8 @@ void gcal_destroy(struct gcal_resource *gcal_obj)
 		free(gcal_obj->user);
 	if (gcal_obj->document)
 		clean_dom_document(gcal_obj->document);
-
+	if (gcal_obj->curl_msg)
+		free(gcal_obj->curl_msg);
 }
 
 
@@ -153,7 +157,7 @@ static size_t write_cb(void *ptr, size_t count, size_t chunk_size, void *data)
 
 	if (size > (gcal_ptr->length - current_length - 1)) {
 		    gcal_ptr->length = current_length + size + 1;
-		    /* FIXME: is it save to continue reallocing more memory?
+		    /* TODO: is it save to continue reallocing more memory?
 		     * what happens if the gcalendar list is *really* big?
 		     * how big can it be? Maybe I should use another write
 		     * callback

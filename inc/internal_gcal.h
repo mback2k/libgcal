@@ -108,6 +108,12 @@ struct gcal_resource {
 	char has_xml;
 	/** Google service choose, see \ref service  */
 	char service[3];
+	/** HTTP code status from last request */
+	int http_code;
+	/** CURL error messages */
+	char *curl_msg;
+	/** Internal status from last request */
+	int internal_status;
 
 };
 
