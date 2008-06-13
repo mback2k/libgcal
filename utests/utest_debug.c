@@ -34,10 +34,16 @@ START_TEST (test_debug_authenticate)
 	int result, code;
 
 	result = gcal_get_authentication(ptr_gcal, "gcal4tester", "66libgcal");
-	fail_if(result != 0, "Authentication should work");
+	fail_if(result != 0, "Authentication should work!");
 
 	code = gcal_status_httpcode(ptr_gcal);
 	fail_if(code != 200, "Reported HTTP code should be 200!");
+
+	result = gcal_get_authentication(ptr_gcal, "gcal4tester", "failfail");
+	fail_if(result == 0, "Authentication must fail!");
+
+	code = gcal_status_httpcode(ptr_gcal);
+	fail_if(code != 403, "Reported HTTP code should be 403!");
 
 }
 END_TEST
