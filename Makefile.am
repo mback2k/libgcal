@@ -9,13 +9,13 @@ lib_LTLIBRARIES = libgcal.la
 include_HEADERS = $(headerdir)/internal_gcal.h \
 		$(headerdir)/gcal.h $(headerdir)/atom_parser.h \
 		$(headerdir)/xml_aux.h $(headerdir)/gcal_parser.h \
-		$(headerdir)/gcontact.h
+		$(headerdir)/gcontact.h $(headerdir)/gcal_status.h
 if GCAL_DEBUG_CURL
 include_HEADERS += $(headerdir)/curl_debug_gcal.h
 endif
 libgcal_la_SOURCES = $(csourcedir)/gcal.c $(csourcedir)/atom_parser.c \
 		$(csourcedir)/xml_aux.c $(csourcedir)/gcal_parser.c \
-		$(csourcedir)/gcontact.c
+		$(csourcedir)/gcontact.c $(csourcedir)/gcal_status.c
 if GCAL_DEBUG_CURL
 libgcal_la_SOURCES += $(csourcedir)/curl_debug_gcal.c
 endif
@@ -33,6 +33,7 @@ utest_SOURCES = $(utestdir)/utest_gcal.h $(utestdir)/utest_gcal.c \
 		$(utestdir)/utest_xpath.h $(utestdir)/utest_xpath.c \
 		$(utestdir)/utest_edit.h $(utestdir)/utest_edit.c \
 		$(utestdir)/utest_contact.h $(utestdir)/utest_contact.c \
+		$(utestdir)/utest_debug.h $(utestdir)/utest_debug.c \
 		$(utestdir)/utest.c
 
 utest_CPPFLAGS = $(CHECK_FLAGS) $(AM_CPPFLAGS) -I$(csourcedir) -I$(headerdir) \
