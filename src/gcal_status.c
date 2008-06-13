@@ -37,12 +37,9 @@ POSSIBILITY OF SUCH DAMAGE.
  */
 
 #include "gcal_status.h"
+#include "internal_gcal.h"
 
 int gcal_status_httpcode(struct gcal_resource *ptr_gcal)
 {
-
-	/* TODO: write the code */
-	(void)ptr_gcal;
-
-	return -1;
+	return 	(int)ptr_gcal->http_code;
 }

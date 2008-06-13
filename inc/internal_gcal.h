@@ -109,7 +109,7 @@ struct gcal_resource {
 	/** Google service choose, see \ref service  */
 	char service[3];
 	/** HTTP code status from last request */
-	int http_code;
+	long http_code;
 	/** CURL error messages */
 	char *curl_msg;
 	/** Internal status from last request */

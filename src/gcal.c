@@ -96,6 +96,7 @@ struct gcal_resource *gcal_initialize(gservice mode)
 	ptr->curl = curl_easy_init();
 	ptr->http_code = 0;
 	ptr->curl_msg = NULL;
+	ptr->http_code = 0;
 	ptr->internal_status = 0;
 
 	if (!(ptr->buffer) || (!(ptr->curl))) {
@@ -180,18 +181,19 @@ exit:
 	return size;
 }
 
-static int check_request_error(CURL *curl_ctx, int code,
+static int check_request_error(struct gcal_resource *ptr_gcal, int code,
 			       int expected_answer)
 {
-	long request_stat;
 	int result = 0;
+	CURL *curl_ctx = ptr_gcal->curl;
 
-	curl_easy_getinfo(curl_ctx, CURLINFO_HTTP_CODE, &request_stat);
-	if (code || (request_stat != expected_answer)) {
+	curl_easy_getinfo(curl_ctx, CURLINFO_HTTP_CODE,
+			  &(ptr_gcal->http_code));
+	if (code || (ptr_gcal->http_code != expected_answer)) {
 		fprintf(stderr, "%s\n%s%s\n%s%d\n",
 			"check_request_error: failed request.",
 			"Curl code: ", curl_easy_strerror(code),
-			"HTTP code: ", (int)request_stat);
+			"HTTP code: ", (int)ptr_gcal->http_code);
 		result = -1;
 	}
 
@@ -263,7 +265,7 @@ int http_post(struct gcal_resource *ptr_gcal, const char *url,
 		curl_easy_setopt(curl_ctx, CURLOPT_POSTFIELDSIZE, 0);
 
 	res = curl_easy_perform(curl_ctx);
-	result = check_request_error(ptr_gcal->curl, res, expected_answer);
+	result = check_request_error(ptr_gcal, res, expected_answer);
 
 	/* cleanup */
 	curl_slist_free_all(response_headers);
@@ -306,7 +308,7 @@ static int http_put(struct gcal_resource *ptr_gcal, const char *url,
 
 
 	res = curl_easy_perform(curl_ctx);
-	result = check_request_error(ptr_gcal->curl, res, expected_answer);
+	result = check_request_error(ptr_gcal, res, expected_answer);
 
 	/* cleanup */
 	curl_slist_free_all(response_headers);
@@ -417,14 +419,14 @@ static int get_follow_redirection(struct gcal_resource *ptr_gcal,
 
 	if (!(strcmp(ptr_gcal->service, "cp"))) {
 		/* For contacts, there is *not* redirection. */
-		if (!(result = check_request_error(ptr_gcal->curl, result,
+		if (!(result = check_request_error(ptr_gcal, result,
 						   GCAL_DEFAULT_ANSWER))) {
 			result = 0;
 			goto cleanup;
 		}
 	} else if (!(strcmp(ptr_gcal->service, "cl"))) {
 		/* For calendar, it *must* be redirection */
-		if (check_request_error(ptr_gcal->curl, result,
+		if (check_request_error(ptr_gcal, result,
 					GCAL_REDIRECT_ANSWER)) {
 			result = -1;
 			goto cleanup;
@@ -449,7 +451,7 @@ static int get_follow_redirection(struct gcal_resource *ptr_gcal,
 	clean_buffer(ptr_gcal);
 	curl_easy_setopt(ptr_gcal->curl, CURLOPT_URL, ptr_gcal->url);
 	result = curl_easy_perform(ptr_gcal->curl);
-	if ((result = check_request_error(ptr_gcal->curl, result,
+	if ((result = check_request_error(ptr_gcal, result,
 					  GCAL_DEFAULT_ANSWER))) {
 		result = -1;
 		goto cleanup;

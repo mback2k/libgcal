@@ -8,7 +8,7 @@
  *
  */
 
-
+#include <stdio.h>
 #include "utest_debug.h"
 #include "gcal.h"
 #include "gcontact.h"
@@ -35,9 +35,9 @@ START_TEST (test_debug_authenticate)
 
 	result = gcal_get_authentication(ptr_gcal, "gcal4tester", "66libgcal");
 	fail_if(result != 0, "Authentication should work");
-	code = gcal_status_httpcode(ptr_gcal);
-	fail_if(result != 200, "Reported HTTP code should be 200!");
 
+	code = gcal_status_httpcode(ptr_gcal);
+	fail_if(code != 200, "Reported HTTP code should be 200!");
 
 }
 END_TEST
