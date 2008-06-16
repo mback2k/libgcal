@@ -604,7 +604,7 @@ static void clean_string(char *ptr_str)
 		free(ptr_str);
 }
 
-void gcal_init_entry(struct gcal_event *entry)
+void gcal_init_event(struct gcal_event *entry)
 {
 	if (!entry)
 		return;

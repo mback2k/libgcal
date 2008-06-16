@@ -210,7 +210,7 @@ struct gcal_event *gcal_get_entries(struct gcal_resource *ptr_gcal,
  *
  * @param entry A pointer to a \ref gcal_event.
  */
-void gcal_init_entry(struct gcal_event *entry);
+void gcal_init_event(struct gcal_event *entry);
 
 
 /** Cleanup memory of 1 entry structure pointer.
