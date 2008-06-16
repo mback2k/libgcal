@@ -474,17 +474,11 @@ exit:
 	return result;
 }
 
-int gcal_dump(struct gcal_resource *ptr_gcal)
-{
-	int result = -1;
-	char *buffer = NULL;
-	int length = 0;
 
-	if (!ptr_gcal)
-		goto exit;
-	/* Failed to get authentication token */
-	if (!ptr_gcal->auth)
-		goto exit;
+static char *mount_query_url(struct gcal_resource *ptr_gcal)
+{
+	char *result = NULL;
+	int length;
 
 	/* TODO: put the google service type string in an array. */
 	if (!(strcmp(ptr_gcal->service, "cl")))
@@ -496,17 +490,35 @@ int gcal_dump(struct gcal_resource *ptr_gcal)
 	else
 		goto exit;
 
-	buffer = (char *)malloc(length);
-	if (!buffer)
+	result = (char *)malloc(length);
+	if (!result)
 		goto exit;
 
 	if (!(strcmp(ptr_gcal->service, "cl")))
-		snprintf(buffer, length - 1, "%s%s%s%s", GCAL_EVENT_START,
+		snprintf(result, length - 1, "%s%s%s%s", GCAL_EVENT_START,
 			 ptr_gcal->user, GCAL_EVENT_END, GCAL_UPPER);
 	else if (!(strcmp(ptr_gcal->service, "cp")))
-		snprintf(buffer, length - 1, "%s%s%s%s", GCONTACT_START,
+		snprintf(result, length - 1, "%s%s%s%s", GCONTACT_START,
 			 ptr_gcal->user, GCONTACT_END, GCAL_UPPER);
-	else
+
+exit:
+
+	return result;
+}
+
+int gcal_dump(struct gcal_resource *ptr_gcal)
+{
+	int result = -1;
+	char *buffer = NULL;
+
+	if (!ptr_gcal)
+		goto exit;
+	/* Failed to get authentication token */
+	if (!ptr_gcal->auth)
+		goto exit;
+
+	buffer = mount_query_url(ptr_gcal);
+	if (!buffer)
 		goto exit;
 
 	result =  get_follow_redirection(ptr_gcal, buffer);
