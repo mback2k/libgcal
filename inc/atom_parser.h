@@ -93,11 +93,11 @@ xmlXPathObject *atom_get_entries(xmlDoc *document);
  *
  * @param entry Pointer to a libxml node.
  *
- * @param ptr_entry Pointer to a libgcal entry (see \ref gcal_entries).
+ * @param ptr_entry Pointer to a libgcal entry (see \ref gcal_event).
  *
  * @return 0 on sucess, -1 otherwise.
  */
-int atom_extract_data(xmlNode *entry, struct gcal_entries *ptr_entry);
+int atom_extract_data(xmlNode *entry, struct gcal_event *ptr_entry);
 
 
 /** Extract contact information from Atom entry (name, e-mail, etc).

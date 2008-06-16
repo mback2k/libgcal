@@ -91,13 +91,13 @@ int get_entries_number(dom_document *doc);
 
 /** Receiving a DOM document of the Atom stream, it will extract all the event
  * entries and parse then, storing each entry field in a vector of
- * \ref gcal_entries.
+ * \ref gcal_event.
  *
  * It depends on \ref atom_extract_data and \ref atom_get_entries.
  *
  * @param doc A document pointer with the Atom stream.
  *
- * @param data_extract A pointer to a pre-allocated vector \ref gcal_entries.
+ * @param data_extract A pointer to a pre-allocated vector \ref gcal_event.
  *
  * @param length Its length, should be the same as the number of entries. See
  * also \ref get_entries_number.
@@ -105,7 +105,7 @@ int get_entries_number(dom_document *doc);
  * @return 0 on success, -1 on error.
  */
 int extract_all_entries(dom_document *doc,
-			struct gcal_entries *data_extract, int length);
+			struct gcal_event *data_extract, int length);
 
 
 /** Creates the XML for a new calendar entry.
@@ -113,7 +113,7 @@ int extract_all_entries(dom_document *doc,
  * It depends on \ref xmlentry_init_resources and
  * \ref xmlentry_destroy_resources.
  *
- * @param entry A pointer to an calendar entry event (see \ref gcal_entries).
+ * @param entry A pointer to an calendar entry event (see \ref gcal_event).
  *
  * @param xml_entry Pointer to pointer string (you must free its memory!).
  *
@@ -121,7 +121,7 @@ int extract_all_entries(dom_document *doc,
  *
  * @return 0 on sucess, -1 on error.
  */
-int xmlentry_create(struct gcal_entries *entry, char **xml_entry, int *length);
+int xmlentry_create(struct gcal_event *entry, char **xml_entry, int *length);
 
 
 /** Receiving a DOM document of the Atom stream, it will extract all the

@@ -180,7 +180,7 @@ exit:
 	return result;
 }
 
-int atom_extract_data(xmlNode *entry, struct gcal_entries *ptr_entry)
+int atom_extract_data(xmlNode *entry, struct gcal_event *ptr_entry)
 {
 	int result = -1;
 	xmlDoc *doc = NULL;

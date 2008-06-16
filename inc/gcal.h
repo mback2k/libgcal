@@ -1,30 +1,30 @@
 /*
-Copyright (c) 2008 Instituto Nokia de Tecnologia
-All rights reserved.
+  Copyright (c) 2008 Instituto Nokia de Tecnologia
+  All rights reserved.
 
-Redistribution and use in source and binary forms, with or without modification,
-are permitted provided that the following conditions are met:
+  Redistribution and use in source and binary forms, with or without modification,
+  are permitted provided that the following conditions are met:
 
-    * Redistributions of source code must retain the above copyright notice,
-    this list of conditions and the following disclaimer.
-    * Redistributions in binary form must reproduce the above copyright notice,
-    this list of conditions and the following disclaimer in the documentation
-    and/or other materials provided with the distribution.
-    * Neither the name of the INdT nor the names of its contributors
-    may be used to endorse or promote products derived from this software
-    without specific prior written permission.
+  * Redistributions of source code must retain the above copyright notice,
+  this list of conditions and the following disclaimer.
+  * Redistributions in binary form must reproduce the above copyright notice,
+  this list of conditions and the following disclaimer in the documentation
+  and/or other materials provided with the distribution.
+  * Neither the name of the INdT nor the names of its contributors
+  may be used to endorse or promote products derived from this software
+  without specific prior written permission.
 
-THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
-AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
-IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
-ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
-LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
-CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
-SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
-INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
-CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
-ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
-POSSIBILITY OF SUCH DAMAGE.
+  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+  AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+  IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+  ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
+  LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+  CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+  SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+  INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+  CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+  ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+  POSSIBILITY OF SUCH DAMAGE.
 */
 /**
  * @file   gcal.h
@@ -62,7 +62,7 @@ struct gcal_resource;
 
 /** Library structure, represents each calendar event entry.
  */
-struct gcal_entries {
+struct gcal_event {
 	/** The 'what' field */
 	char *title;
 	/** element ID */
@@ -178,7 +178,7 @@ int gcal_calendar_list(struct gcal_resource *ptr_gcal);
  *
  * @return -1 on error, any number >= 0 otherwise.
  */
-int gcal_entries_number(struct gcal_resource *ptr_gcal);
+int gcal_entry_number(struct gcal_resource *ptr_gcal);
 
 
 /** Extracts from the atom stream the calendar event entries (you should
@@ -200,34 +200,34 @@ int gcal_entries_number(struct gcal_resource *ptr_gcal);
  *
  * @return A pointer on sucess, NULL otherwise.
  */
-struct gcal_entries *gcal_get_entries(struct gcal_resource *ptr_gcal,
-				      size_t *length);
+struct gcal_event *gcal_get_entries(struct gcal_resource *ptr_gcal,
+				    size_t *length);
 
 
 /** Always use this to set calendar event structure to a sane state.
  *
  * You were warned...
  *
- * @param entry A pointer to a \ref gcal_entries.
+ * @param entry A pointer to a \ref gcal_event.
  */
-void gcal_init_entry(struct gcal_entries *entry);
+void gcal_init_entry(struct gcal_event *entry);
 
 
 /** Cleanup memory of 1 entry structure pointer.
  *
  *
- * @param entry A pointer to a \ref gcal_entries.
+ * @param entry A pointer to a \ref gcal_event.
  */
-void gcal_destroy_entry(struct gcal_entries *entry);
+void gcal_destroy_entry(struct gcal_event *entry);
 
 /** Cleanup the memory of a vector of calendar entries created using
  * \ref gcal_get_entries.
  *
- * @param entries A pointer to a vector of \ref gcal_entries structure.
+ * @param entries A pointer to a vector of \ref gcal_event structure.
  *
  * @param length The vector length.
  */
-void gcal_destroy_entries(struct gcal_entries *entries, size_t length);
+void gcal_destroy_entries(struct gcal_event *entries, size_t length);
 
 /** Posts data to a server URL and checks its result.
  *
@@ -290,9 +290,9 @@ int up_entry(char *data2post, struct gcal_resource *ptr_gcal,
  *                 previously got the authentication using
  *                 \ref gcal_get_authentication.
  *
- * @param entries A pointer to an calendar entry event (see \ref gcal_entries).
+ * @param entries A pointer to an calendar entry event (see \ref gcal_event).
  *
- * @param updated Pass a pointer to a \ref gcal_entries structure if you
+ * @param updated Pass a pointer to a \ref gcal_event structure if you
  * wish to access the newly created contact (i.e. access fields like
  * edit_uri and id). If you don't need it, just pass NULL.
  *
@@ -300,8 +300,8 @@ int up_entry(char *data2post, struct gcal_resource *ptr_gcal,
  * cannot return 'updated' entry.
  */
 int gcal_create_event(struct gcal_resource *ptr_gcal,
-		      struct gcal_entries *entries,
-		      struct gcal_entries *updated);
+		      struct gcal_event *entries,
+		      struct gcal_event *updated);
 
 /** Deletes a calendar event.
  *
@@ -312,18 +312,18 @@ int gcal_create_event(struct gcal_resource *ptr_gcal,
  *                 previously got the authentication using
  *                 \ref gcal_get_authentication.
  *
- * @param entry A pointer to one calendar entry event (see \ref gcal_entries).
+ * @param entry A pointer to one calendar entry event (see \ref gcal_event).
  *
  * @return -1 on error, 0 on success.
  */
 int gcal_delete_event(struct gcal_resource *ptr_gcal,
-		      struct gcal_entries *entry);
+		      struct gcal_event *entry);
 
 
 /** Edits a calendar event.
  *
  * It requires the presence of field 'edit_uri' in entry pointer structure
- * (see \ref gcal_entries).
+ * (see \ref gcal_event).
  *
  *
  * @param ptr_gcal Pointer to a \ref gcal_resource structure, which has
@@ -332,7 +332,7 @@ int gcal_delete_event(struct gcal_resource *ptr_gcal,
  *
  * @param entry A pointer to an calendar entry event.
  *
- * @param updated Pass a pointer to a \ref gcal_entries structure if you
+ * @param updated Pass a pointer to a \ref gcal_event structure if you
  * wish to access the newly created contact (i.e. access fields like
  * edit_uri and id). If you don't need it, just pass NULL.
  *
@@ -340,8 +340,8 @@ int gcal_delete_event(struct gcal_resource *ptr_gcal,
  * cannot return 'updated' entry.
  */
 int gcal_edit_event(struct gcal_resource *ptr_gcal,
-		    struct gcal_entries *entry,
-		    struct gcal_entries *updated);
+		    struct gcal_event *entry,
+		    struct gcal_event *updated);
 
 
 

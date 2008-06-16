@@ -60,7 +60,7 @@ END_TEST
 
 START_TEST (test_contact_entries)
 {
-	/* obs: this test is a copy of utest_gcal.c:test_gcal_entries */
+	/* obs: this test is a copy of utest_gcal.c:test_gcal_event */
 	int result, i;
 	char *contacts_emails[] = { "cavalcantii@gmail.com",
 				   "gcal4tester@gmail.com",
@@ -75,7 +75,7 @@ START_TEST (test_contact_entries)
 	result = gcal_dump(ptr_gcal);
 	fail_if(result != 0, "Failed dumping contacts");
 
-	result = gcal_entries_number(ptr_gcal);
+	result = gcal_entry_number(ptr_gcal);
 	fail_if(result != 3, "Got wrong number of contacts");
 
 	for (i = 0; i < contacts_count; ++i)

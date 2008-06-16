@@ -149,7 +149,7 @@ exit:
 }
 
 int extract_all_entries(dom_document *doc,
-			struct gcal_entries *data_extract, int length)
+			struct gcal_event *data_extract, int length)
 {
 
 	int result = -1, i;
@@ -185,7 +185,7 @@ exit:
 	return result;
 }
 
-int xmlentry_create(struct gcal_entries *entry, char **xml_entry, int *length)
+int xmlentry_create(struct gcal_event *entry, char **xml_entry, int *length)
 {
 	int result = -1;
 	xmlDoc *doc = NULL;

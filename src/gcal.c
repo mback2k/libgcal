@@ -529,7 +529,7 @@ int gcal_calendar_list(struct gcal_resource *ptr_gcal)
 	return result;
 }
 
-int gcal_entries_number(struct gcal_resource *ptr_gcal)
+int gcal_entry_number(struct gcal_resource *ptr_gcal)
 {
 	int result = -1;
 
@@ -554,12 +554,12 @@ exit:
 	return result;
 }
 
-struct gcal_entries *gcal_get_entries(struct gcal_resource *ptr_gcal,
-				      size_t *length)
+struct gcal_event *gcal_get_entries(struct gcal_resource *ptr_gcal,
+				    size_t *length)
 {
 
 	int result = -1;
-	struct gcal_entries *ptr_res = NULL;
+	struct gcal_event *ptr_res = NULL;
 
 	if (!ptr_gcal)
 		goto exit;
@@ -577,7 +577,7 @@ struct gcal_entries *gcal_get_entries(struct gcal_resource *ptr_gcal,
 	if (result == -1)
 		goto cleanup;
 
-	ptr_res = malloc(sizeof(struct gcal_entries) * result);
+	ptr_res = malloc(sizeof(struct gcal_event) * result);
 	if (!ptr_res)
 		goto cleanup;
 
@@ -604,7 +604,7 @@ static void clean_string(char *ptr_str)
 		free(ptr_str);
 }
 
-void gcal_init_entry(struct gcal_entries *entry)
+void gcal_init_entry(struct gcal_event *entry)
 {
 	if (!entry)
 		return;
@@ -616,7 +616,7 @@ void gcal_init_entry(struct gcal_entries *entry)
 
 }
 
-void gcal_destroy_entry(struct gcal_entries *entry)
+void gcal_destroy_entry(struct gcal_event *entry)
 {
 	if (!entry)
 		return;
@@ -633,7 +633,7 @@ void gcal_destroy_entry(struct gcal_entries *entry)
 	clean_string(entry->updated);
 }
 
-void gcal_destroy_entries(struct gcal_entries *entries, size_t length)
+void gcal_destroy_entries(struct gcal_event *entries, size_t length)
 {
 	size_t i = 0;
 	if (!entries)
@@ -760,8 +760,8 @@ exit:
 }
 
 int gcal_create_event(struct gcal_resource *ptr_gcal,
-		      struct gcal_entries *entries,
-		      struct gcal_entries *updated)
+		      struct gcal_event *entries,
+		      struct gcal_event *updated)
 {
 	int result = -1, length;
 	char *xml_entry = NULL;
@@ -804,7 +804,7 @@ exit:
 }
 
 int gcal_delete_event(struct gcal_resource *ptr_gcal,
-		      struct gcal_entries *entry)
+		      struct gcal_event *entry)
 {
 	int result = -1, length;
 	char *h_auth;
@@ -857,8 +857,8 @@ exit:
 }
 
 int gcal_edit_event(struct gcal_resource *ptr_gcal,
-		    struct gcal_entries *entry,
-		    struct gcal_entries *updated)
+		    struct gcal_event *entry,
+		    struct gcal_event *updated)
 {
 
 	int result = -1, length;

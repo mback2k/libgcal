@@ -81,8 +81,8 @@ START_TEST (test_get_entries)
 	xmlXPathObject *xpath_obj = NULL;
 	xmlDoc *doc = NULL;
 	xmlNodeSet *nodes;
-	struct gcal_entries known_value;
-	struct gcal_entries extracted;
+	struct gcal_event known_value;
+	struct gcal_event extracted;
 	int res;
 
 	res = build_doc_tree(&doc, xml_data);

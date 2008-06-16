@@ -83,10 +83,10 @@ START_TEST (test_gcal_dump)
 END_TEST
 
 
-START_TEST (test_gcal_entries)
+START_TEST (test_gcal_event)
 {
 	int result, i;
-	struct gcal_entries *entries;
+	struct gcal_event *entries;
 	char *entries_update[] = { "2008-03-26T20:20:51.000Z",
 				   "2008-03-26T12:30:06.000Z",
 				   "2008-03-10T12:56:43.000Z",
@@ -99,7 +99,7 @@ START_TEST (test_gcal_entries)
 	result = gcal_dump(ptr_gcal);
 	fail_if(result != 0, "Failed dumping events");
 
-	result = gcal_entries_number(ptr_gcal);
+	result = gcal_entry_number(ptr_gcal);
 	fail_if(result != 4, "Got wrong number of entries");
 
 	entries = gcal_get_entries(ptr_gcal, &result);
@@ -123,7 +123,7 @@ START_TEST (test_gcal_naive)
 	 */
 	size_t result, i;
 	struct gcal_resource *local_gcal;
-	struct gcal_entries *entries;
+	struct gcal_event *entries;
 
 	local_gcal = gcal_initialize(GCALENDAR);
 	result = gcal_get_authentication(local_gcal, "username", "a_password");
@@ -158,7 +158,7 @@ TCase *gcal_tcase_create(void)
 	tcase_add_test(tc, test_gcal_authenticate);
 	tcase_add_test(tc, test_url_parse);
 	tcase_add_test(tc, test_gcal_dump);
-	tcase_add_test(tc, test_gcal_entries);
+	tcase_add_test(tc, test_gcal_event);
 	tcase_add_test(tc, test_gcal_naive);
 	return tc;
 }
