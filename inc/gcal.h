@@ -105,7 +105,7 @@ void clean_buffer(struct gcal_resource *gcal_obj);
  * Concerning google service type, it defaults to google calendar. You can
  * change it using \ref gcal_set_service.
  *
- * @param gservice Service that libgcal will handle (for while, GCALENDAR
+ * @param mode Service that libgcal will handle (for while, GCALENDAR
  * and GCONTACT).
  *
  * @return A pointer to a newly created object or NULL.
@@ -118,7 +118,7 @@ struct gcal_resource *gcal_initialize(gservice mode);
  *
  * @param ptr_gcal Pointer to a library resource structure \ref gcal_resource.
  *
- * @param option Service type, see \ref service.
+ * @param mode Service type, see \ref gservice.
  */
 void gcal_set_service(struct gcal_resource *ptr_gcal, gservice mode);
 

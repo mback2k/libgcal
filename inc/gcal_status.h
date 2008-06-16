@@ -52,6 +52,16 @@ POSSIBILITY OF SUCH DAMAGE.
 int gcal_status_httpcode(struct gcal_resource *ptr_gcal);
 
 
+/** Sets a file name to use as logging.
+ *
+ * Use it to enable file logging in libgcal
+ *
+ * @param ptr_gcal Pointer to a library resource structure \ref gcal_resource.
+ *
+ * @param filepath The file path (e.g.: "/tmp/libgcal.log")
+ *
+ * @return 0 for sucess, -1 otherwise.
+ */
 int gcal_status_setlog(struct gcal_resource *ptr_gcal, char *filepath);
 
 #endif

@@ -106,7 +106,7 @@ struct gcal_resource {
 	dom_document *document;
 	/** A flag to control if the buffer has XML atom stream */
 	char has_xml;
-	/** Google service choose, see \ref service  */
+	/** Google service choose, currently Calendar and contacts  */
 	char service[3];
 	/** HTTP code status from last request */
 	long http_code;
