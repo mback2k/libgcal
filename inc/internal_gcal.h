@@ -61,7 +61,7 @@ static const char GCONTACT_EDIT_END[] = "%40gmail.com/full";
 
 /* Google calendar query URL */
 static const char GCAL_EVENT_START[] = "http://www.google.com/calendar/feeds/";
-static const char GCAL_EVENT_END[] = "@gmail.com/private/full";
+static const char GCAL_EVENT_END[] = "%40gmail.com/private/full";
 
 /* Google contact query URL */
 static const char GCONTACT_START[] = "http://www.google.com/m8/feeds/contacts/";
