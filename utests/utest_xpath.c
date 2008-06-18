@@ -25,26 +25,35 @@ char *xml_data = NULL;
 int read_file(int fd, char **buffer, size_t *length);
 char *find_file_path(char *file_name);
 
-static void setup(void)
+
+static int find_load_file(char *path, char **file_content)
 {
-	int fd, res;
+  	int fd, res;
 	size_t len = 0;
-	char *file_name = "/utests/4entries_location.xml";
+	char *file_name = path;
 	char *tmp;
 
 	tmp = find_file_path(file_name);
 	fd = open(tmp, O_RDONLY);
 	if (fd == -1) {
-		printf("cannot open file 4entries_location.xml: Path = %s.\n",
+		printf("cannot open XML file: Path = %s.\n",
 			tmp);
-		return;
+		return -1;
 	}
 
-	res = read_file(fd, &xml_data, &len);
+	res = read_file(fd, file_content, &len);
 	fail_if(res, "failed reading the file!\n");
 
 	free(tmp);
 	close(fd);
+
+	return 0;
+}
+
+static void setup(void)
+{
+	if (find_load_file("/utests/4entries_location.xml", &xml_data))
+		exit(1);
 }
 
 static void teardown(void)
@@ -138,6 +147,43 @@ START_TEST (test_get_entries)
 }
 END_TEST
 
+START_TEST (test_get_recurrence)
+{
+	xmlXPathObject *xpath_obj = NULL;
+	xmlDoc *doc = NULL;
+	xmlNodeSet *nodes;
+	char recurrence_str[] = "DTSTART;TZID=America/Manaus:20080618T143000";
+	struct gcal_event extracted;
+	char *file_contents = NULL;
+	int res;
+
+	if (find_load_file("/utests/3entries_recurrence.xml", &file_contents))
+		fail_if(1, "Cannot load test XML file!");
+
+	res = build_doc_tree(&doc, file_contents);
+	fail_if(res == -1, "failed to build document tree!");
+
+	xpath_obj = atom_get_entries(doc);
+	fail_if(xpath_obj == NULL, "failed to get entry node list!");
+
+	nodes = xpath_obj->nodesetval;
+	res = atom_extract_data(nodes->nodeTab[0], &extracted);
+	fail_if(res == -1, "failed to extract data from node!");
+
+	fail_if(!strstr(extracted.dt_recurrent, recurrence_str),
+		"failed recurrence field extraction!");
+
+	free(file_contents);
+	if (xpath_obj)
+		xmlXPathFreeObject(xpath_obj);
+
+	gcal_destroy_entry(&extracted);
+	clean_doc_tree(&doc);
+
+}
+END_TEST
+
+
 TCase *xpath_tcase_create(void)
 {
 	TCase *tc = NULL;
@@ -145,6 +191,7 @@ TCase *xpath_tcase_create(void)
 	tcase_add_checked_fixture(tc, setup, teardown);
 	tcase_add_test(tc, test_entry_list);
 	tcase_add_test(tc, test_get_entries);
+	tcase_add_test(tc, test_get_recurrence);
 	return tc;
 
 }
