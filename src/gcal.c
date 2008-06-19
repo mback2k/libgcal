@@ -1015,7 +1015,7 @@ int gcal_query_updated(struct gcal_resource *ptr_gcal, char *timestamp)
 	char *query_timestamp = NULL;
 	char query_updated_param[] = "updated-min=";
 	char *buffer = NULL;
-	char *ptr, *hour_const = "06:00:00.000Z";
+	char *ptr, *hour_const = NULL;
 	size_t length = 0;
 
 	if (!ptr_gcal)
@@ -1035,38 +1035,33 @@ int gcal_query_updated(struct gcal_resource *ptr_gcal, char *timestamp)
 		if (result)
 			goto cleanup;
 
-		/* Change the hour to 06:00AM, ending would be something
-		 * like: 10:45:14.063Z
+		/* Change the hour to 06:00AM plus the timezone when
+		 * available.
 		 */
 		ptr = query_timestamp + strlen(query_timestamp);
-		ptr -= strlen(hour_const);
-		while ((*ptr++ = *hour_const++))
-			;
+		if (ptr_gcal->timezone) {
+			hour_const = "06:00:00.000";
+			ptr -= strlen(hour_const) + strlen(ptr_gcal->timezone);
+		}
+		else {
+			/* TODO: unit test this! */
+			hour_const = "06:00:00.000Z";
+			ptr -= strlen(hour_const);
+		}
 
+		while (*hour_const)
+			*ptr++ = *hour_const++;
 
-	} else if (0) { /* get current timestamp */
-		query_timestamp = (char *)malloc(TIMESTAMP_MAX_SIZE);
-		if (!query_timestamp)
-			goto cleanup;
-		result = get_mili_timestamp(query_timestamp, TIMESTAMP_MAX_SIZE,
-					    ptr_gcal->timezone);
-		if (result)
-			goto cleanup;
 	} else if (timestamp)
 		query_timestamp = strdup(timestamp);
 
-	/* TODO: its returning all events (even deleted ones) that
-	 * matches the 'updated-min' pattern. I will need to investigate
-	 * in the protocol what is happing. My theory is that I must
-	 * append another parameter (like 'show-deleted=false' or something).
-	 */
 	strcpy(buffer, query_updated_param);
 	strncat(buffer, query_timestamp, strlen(query_timestamp));
 	query_url = mount_query_url(ptr_gcal, buffer, NULL);
 	if (!query_url)
 		goto cleanup;
 
-	result =  get_follow_redirection(ptr_gcal, query_url);
+	result = get_follow_redirection(ptr_gcal, query_url);
 	if (!result)
 		ptr_gcal->has_xml = 1;
 
@@ -1080,4 +1075,21 @@ cleanup:
 exit:
 	return result;
 
+}
+
+int gcal_set_timezone(struct gcal_resource *ptr_gcal, char *atimezone)
+{
+	int result = -1;
+	if ((!ptr_gcal) || (!atimezone))
+		goto exit;
+
+	if (ptr_gcal->timezone)
+		free(ptr_gcal->timezone);
+
+	ptr_gcal->timezone = strdup(atimezone);
+	if (ptr_gcal->timezone)
+		result = 0;
+
+exit:
+	return result;
 }

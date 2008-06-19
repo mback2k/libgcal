@@ -42,35 +42,38 @@ START_TEST (test_query_updated)
 	 */
 	event.status = "confirmed";
 
-	result = gcal_get_authentication(ptr_gcal, "gcal4tester", "66libgcal");
+	result = gcal_get_authentication(ptr_gcal, "gcalntester", "77libgcal");
 	fail_if(result == -1, "Authentication should work.");
 	result = gcal_create_event(ptr_gcal, &event, &edit);
 	fail_if(result == -1, "Failed creating a new event!");
 
-	/* This must fail, since this user doesn't have calendar events
-	 * last updated right now.
+	/* This must return no results, since this user doesn't have
+	 * calendar events last updated *right now*.
 	 */
-	sleep(10);
 	result = get_mili_timestamp(current_timestamp,
-					       sizeof(current_timestamp),
-					       NULL);
+				    sizeof(current_timestamp),
+				    "-04:00");
 	if (result == -1) {
 		msg = "Cannot create timestamp!";
 		goto cleanup;
 	}
 	result = gcal_query_updated(ptr_gcal, current_timestamp);
+
 	if (result == -1) {
 		msg = "Failed querying!";
 		goto cleanup;
 	}
 
 	entries = gcal_get_entries(ptr_gcal, &length);
-	if (entries != NULL) {
+	if (length != 0) {
 		msg = "Query returned inconsistent results!";
 		goto cleanup;
 	}
 
-	/* A query with NULL will use current day, starting by 06:00AM */
+	/* A query with NULL will use current day, starting by 06:00AM plus
+	 * the timezone.
+	 */
+	result = gcal_set_timezone(ptr_gcal, "-04:00");
 	result = gcal_query_updated(ptr_gcal, NULL);
 	if (result == -1) {
 		msg = "Failed querying!";
@@ -86,8 +89,6 @@ START_TEST (test_query_updated)
 	for (i = 0; i < length; ++i)
 		if (!(strcmp(entries[i].title, event.title))) {
 			flag = 0;
-			fprintf(stderr, "title is = %s\tlength = %d\n",
-				entries[i].title, length);
 			goto cleanup;
 		}
 

@@ -390,4 +390,20 @@ int get_mili_timestamp(char *timestamp, size_t length, char *atimezone);
  */
 int gcal_query_updated(struct gcal_resource *ptr_gcal, char *timestamp);
 
+/** Set a timezone, following the RFC 3339 format +/-hh:mm.
+ *
+ * The structure copy the string with the timezone.
+ *
+ * @param ptr_gcal  Pointer to a \ref gcal_resource structure, which has
+ *                 previously got the authentication using
+ *                 \ref gcal_get_authentication.
+ *
+ * @param atimezone A pointer to string with the timezone (e.g. for Helsinki
+ * which is +2GMT it would be "+02:00").
+ *
+ * @return -1 on error, 0 on success.
+ */
+int gcal_set_timezone(struct gcal_resource *ptr_gcal, char *atimezone);
+
+
 #endif
