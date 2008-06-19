@@ -159,7 +159,7 @@ void gcal_destroy(struct gcal_resource *gcal_obj)
 	if (gcal_obj->timezone)
 		free(gcal_obj->timezone);
 	if (gcal_obj->location)
-		free(gcal_obj->location)
+		free(gcal_obj->location);
 
 	/* TODO: free the pointer itself! */
 }
@@ -1017,7 +1017,8 @@ int gcal_query_updated(struct gcal_resource *ptr_gcal, char *timestamp)
 	char *query_url = NULL;
 	char *query_timestamp = NULL;
 	char query_updated_param[] = "updated-min=";
-	char *buffer = NULL;
+	char query_zone_param[] = "ctz=";
+	char *buffer1 = NULL, *buffer2 = NULL;
 	char *ptr, *hour_const = NULL;
 	size_t length = 0;
 
@@ -1025,8 +1026,8 @@ int gcal_query_updated(struct gcal_resource *ptr_gcal, char *timestamp)
 		goto exit;
 
 	length = TIMESTAMP_MAX_SIZE + sizeof(query_updated_param) + 1;
-	buffer = (char *) malloc(length);
-	if (!buffer)
+	buffer1 = (char *) malloc(length);
+	if (!buffer1)
 		goto exit;
 
 	if (!timestamp) {
@@ -1057,9 +1058,27 @@ int gcal_query_updated(struct gcal_resource *ptr_gcal, char *timestamp)
 	} else if (timestamp)
 		query_timestamp = strdup(timestamp);
 
-	strcpy(buffer, query_updated_param);
-	strncat(buffer, query_timestamp, strlen(query_timestamp));
-	query_url = mount_query_url(ptr_gcal, buffer, NULL);
+	strcpy(buffer1, query_updated_param);
+	strncat(buffer1, query_timestamp, strlen(query_timestamp));
+
+	if (ptr_gcal->location) {
+		length = strlen(ptr_gcal->location) +
+			sizeof(query_zone_param) + 1;
+		buffer2 = (char *) malloc(length);
+
+		strcpy(buffer2, query_zone_param);
+		strcat(buffer2, ptr_gcal->location);
+	}
+
+	/* TODO: add another parameter to filter out the damned
+	 * "eventStatus value="http://schemas.google.com/g/2005#event.canceled"
+	 * events
+	 */
+
+	/* TODO: implement URL encoding i.e. RFC1738 using
+	 * 'curl_easy_escape'.
+	 */
+	query_url = mount_query_url(ptr_gcal, buffer1, buffer2, NULL);
 	if (!query_url)
 		goto cleanup;
 
@@ -1071,8 +1090,12 @@ cleanup:
 
 	if (query_timestamp)
 		free(query_timestamp);
-	if (buffer)
-		free(buffer);
+	if (buffer1)
+		free(buffer1);
+	if (buffer2)
+		free(buffer2);
+	if (query_url)
+		free(query_url);
 
 exit:
 	return result;
