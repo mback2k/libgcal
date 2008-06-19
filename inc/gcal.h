@@ -359,6 +359,20 @@ int gcal_edit_event(struct gcal_resource *ptr_gcal,
  */
 char *gcal_access_buffer(struct gcal_resource *ptr_gcal);
 
+/** Function to get the current timestamp (RFC3339) with milisecond
+ * precision.
+ *
+ * @param timestamp A pointer to a buffer to where to write the timestamp.
+ *
+ * @param length The buffer length.
+ *
+ * @param atimezone A timezone string in format: +/-hh:mm:ss. It will be
+ * appended to the output timestamp.
+ *
+ * @return 0 for success, -1 for failure.
+ */
+int get_mili_timestamp(char *timestamp, size_t length, char *atimezone);
+
 
 /** Returns all entries (being calendar or contacts) that are newer
  * than a timestamp.
@@ -375,6 +389,5 @@ char *gcal_access_buffer(struct gcal_resource *ptr_gcal);
  * @return -1 on error, 0 on success.
  */
 int gcal_query_updated(struct gcal_resource *ptr_gcal, char *timestamp);
-
 
 #endif

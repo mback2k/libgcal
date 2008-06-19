@@ -2,6 +2,10 @@
 #include "utest_query.h"
 #include "gcal.h"
 #include <string.h>
+#include <stdio.h>
+#include <unistd.h>
+#include <stdlib.h>
+#include <time.h>
 
 static struct gcal_resource *ptr_gcal = NULL;
 
@@ -19,11 +23,11 @@ static void teardown(void)
 
 START_TEST (test_query_updated)
 {
-	int result;
+	int result, flag = 1;
 	size_t length, i;
 	struct gcal_event event, edit;
 	struct gcal_event *entries = NULL;
-	char *msg = NULL;
+	char *msg = NULL, current_timestamp[30];
 
 	gcal_init_event(&event);
 	gcal_init_event(&edit);
@@ -44,9 +48,17 @@ START_TEST (test_query_updated)
 	fail_if(result == -1, "Failed creating a new event!");
 
 	/* This must fail, since this user doesn't have calendar events
-	 * for 2020!
+	 * last updated right now.
 	 */
-	result = gcal_query_updated(ptr_gcal, "2020-06-18T00:12:00");
+	sleep(10);
+	result = get_mili_timestamp(current_timestamp,
+					       sizeof(current_timestamp),
+					       NULL);
+	if (result == -1) {
+		msg = "Cannot create timestamp!";
+		goto cleanup;
+	}
+	result = gcal_query_updated(ptr_gcal, current_timestamp);
 	if (result == -1) {
 		msg = "Failed querying!";
 		goto cleanup;
@@ -72,8 +84,12 @@ START_TEST (test_query_updated)
 	}
 
 	for (i = 0; i < length; ++i)
-		if (!(strcmp(entries[i].title, event.title)))
+		if (!(strcmp(entries[i].title, event.title))) {
+			flag = 0;
+			fprintf(stderr, "title is = %s\tlength = %d\n",
+				entries[i].title, length);
 			goto cleanup;
+		}
 
 	msg = "Cannot find newly added event!";
 
@@ -82,7 +98,7 @@ cleanup:
 	result = gcal_delete_event(ptr_gcal, &edit);
 	gcal_destroy_entries(entries, length);
 	gcal_destroy_entry(&edit);
-	fail_if(1, msg);
+	fail_if(flag, msg);
 
 }
 END_TEST
@@ -91,7 +107,7 @@ TCase *gcal_query_tcase_create(void)
 {
 
 	TCase *tc = NULL;
-	int timeout_seconds = 50;
+	int timeout_seconds = 90;
 	tc = tcase_create("gqueries");
 
 	tcase_add_checked_fixture(tc, setup, teardown);

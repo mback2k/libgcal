@@ -98,6 +98,7 @@ struct gcal_resource *gcal_initialize(gservice mode)
 	ptr->internal_status = 0;
 	ptr->fout_log = NULL;
 	ptr->max_results = strdup(GCAL_UPPER);
+	ptr->timezone = NULL;
 
 	if (!(ptr->buffer) || (!(ptr->curl)) || (!ptr->max_results)) {
 		if (ptr->max_results)
@@ -154,6 +155,10 @@ void gcal_destroy(struct gcal_resource *gcal_obj)
 		fclose(gcal_obj->fout_log);
 	if (gcal_obj->max_results)
 		free(gcal_obj->max_results);
+	if (gcal_obj->timezone)
+		free(gcal_obj->timezone);
+
+	/* TODO: free the pointer itself! */
 }
 
 
@@ -172,6 +177,9 @@ static size_t write_cb(void *ptr, size_t count, size_t chunk_size, void *data)
 		     * callback
 		     * when requesting the Atom feed (one that will treat the
 		     * the stream as its being read and not store it in memory).
+		     */
+		    /* TODO: use a helper pointer to keep track of previous
+		     * allocated memory (to free in case of failure.
 		     */
 		    gcal_ptr->buffer = realloc(gcal_ptr->buffer,
 					       gcal_ptr->length);
@@ -480,10 +488,13 @@ exit:
 }
 
 
-static char *mount_query_url(struct gcal_resource *ptr_gcal)
+static char *mount_query_url(struct gcal_resource *ptr_gcal,
+			     const char *parameters, ...)
 {
-	char *result = NULL;
+	va_list ap;
+	char *result = NULL, *query_param = NULL, *ptr_tmp = NULL;
 	int length;
+	char query_separator[] = "&";
 
 	/* TODO: put the google service type string in an array. */
 	if (!(strcmp(ptr_gcal->service, "cl")))
@@ -501,6 +512,9 @@ static char *mount_query_url(struct gcal_resource *ptr_gcal)
 	if (!result)
 		goto exit;
 
+	/* This is a basic query URL: must have the google service address
+	 * plus the number of max-results returned.
+	 */
 	if (!(strcmp(ptr_gcal->service, "cl")))
 		snprintf(result, length - 1, "%s%s%s%s", GCAL_EVENT_START,
 			 ptr_gcal->user, GCAL_EVENT_END, ptr_gcal->max_results);
@@ -509,8 +523,40 @@ static char *mount_query_url(struct gcal_resource *ptr_gcal)
 			 ptr_gcal->user, GCONTACT_END, ptr_gcal->max_results);
 
 
-exit:
+	/* For extra query parameters, add "&param_1&param_2&...&param_n" */
+	if (parameters) {
+		length += strlen(parameters) + sizeof(query_separator);
+		ptr_tmp = realloc(result, length);
+		if (!ptr_tmp)
+			goto cleanup;
+		result = ptr_tmp;
+		strncat(result, query_separator, sizeof(query_separator));
+		strncat(result, parameters, strlen(parameters));
 
+		va_start(ap, parameters);
+		while ((query_param = va_arg(ap, char *))) {
+			length += strlen(query_param) + sizeof(query_separator);
+			ptr_tmp = realloc(result, length);
+			if (!ptr_tmp)
+				goto cleanup;
+			result = ptr_tmp;
+
+			strncat(result, query_separator,
+				sizeof(query_separator));
+			strncat(result, query_param, strlen(query_param));
+		}
+
+	}
+
+	goto exit;
+
+cleanup:
+	if (result)
+		free(result);
+	result = NULL;
+
+exit:
+	va_end(ap);
 	return result;
 }
 
@@ -525,7 +571,7 @@ int gcal_dump(struct gcal_resource *ptr_gcal)
 	if (!ptr_gcal->auth)
 		goto exit;
 
-	buffer = mount_query_url(ptr_gcal);
+	buffer = mount_query_url(ptr_gcal, NULL);
 	if (!buffer)
 		goto exit;
 
@@ -932,12 +978,106 @@ char *gcal_access_buffer(struct gcal_resource *ptr_gcal)
 
 }
 
+
+int get_mili_timestamp(char *timestamp, size_t length, char *atimezone)
+{
+	struct tm *loctime;
+	time_t curtime;
+	struct timeval detail_time;
+	char buffer[12];
+
+	if (!timestamp || length < TIMESTAMP_SIZE)
+		return -1;
+
+	curtime = time(NULL);
+	loctime = localtime(&curtime);
+	gettimeofday(&detail_time, NULL);
+
+	strftime(timestamp, length - 1, "%FT%T", loctime);
+	snprintf(buffer, sizeof(buffer) - 1, ".%03d",
+		 (int)detail_time.tv_usec/1000);
+
+	strncat(timestamp, buffer, length);
+	if (atimezone)
+		strncat(timestamp, atimezone, length);
+	else
+		strncat(timestamp, "Z", length);
+
+
+	return 0;
+}
+
+
 int gcal_query_updated(struct gcal_resource *ptr_gcal, char *timestamp)
 {
+	int result = -1;
+	char *query_url = NULL;
+	char *query_timestamp = NULL;
+	char query_updated_param[] = "updated-min=";
+	char *buffer = NULL;
+	char *ptr, *hour_const = "06:00:00.000Z";
+	size_t length = 0;
 
-	(void)ptr_gcal;
-	(void)timestamp;
+	if (!ptr_gcal)
+		goto exit;
 
-	return -1;
+	length = TIMESTAMP_MAX_SIZE + sizeof(query_updated_param) + 1;
+	buffer = (char *) malloc(length);
+	if (!buffer)
+		goto exit;
+
+	if (!timestamp) {
+		query_timestamp = (char *)malloc(TIMESTAMP_MAX_SIZE);
+		if (!query_timestamp)
+			goto cleanup;
+		result = get_mili_timestamp(query_timestamp, TIMESTAMP_MAX_SIZE,
+					    ptr_gcal->timezone);
+		if (result)
+			goto cleanup;
+
+		/* Change the hour to 06:00AM, ending would be something
+		 * like: 10:45:14.063Z
+		 */
+		ptr = query_timestamp + strlen(query_timestamp);
+		ptr -= strlen(hour_const);
+		while ((*ptr++ = *hour_const++))
+			;
+
+
+	} else if (0) { /* get current timestamp */
+		query_timestamp = (char *)malloc(TIMESTAMP_MAX_SIZE);
+		if (!query_timestamp)
+			goto cleanup;
+		result = get_mili_timestamp(query_timestamp, TIMESTAMP_MAX_SIZE,
+					    ptr_gcal->timezone);
+		if (result)
+			goto cleanup;
+	} else if (timestamp)
+		query_timestamp = strdup(timestamp);
+
+	/* TODO: its returning all events (even deleted ones) that
+	 * matches the 'updated-min' pattern. I will need to investigate
+	 * in the protocol what is happing. My theory is that I must
+	 * append another parameter (like 'show-deleted=false' or something).
+	 */
+	strcpy(buffer, query_updated_param);
+	strncat(buffer, query_timestamp, strlen(query_timestamp));
+	query_url = mount_query_url(ptr_gcal, buffer, NULL);
+	if (!query_url)
+		goto cleanup;
+
+	result =  get_follow_redirection(ptr_gcal, query_url);
+	if (!result)
+		ptr_gcal->has_xml = 1;
+
+cleanup:
+
+	if (query_timestamp)
+		free(query_timestamp);
+	if (buffer)
+		free(buffer);
+
+exit:
+	return result;
 
 }
