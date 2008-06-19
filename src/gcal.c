@@ -931,3 +931,13 @@ char *gcal_access_buffer(struct gcal_resource *ptr_gcal)
 	return result;
 
 }
+
+int gcal_query_updated(struct gcal_resource *ptr_gcal, char *timestamp)
+{
+
+	(void)ptr_gcal;
+	(void)timestamp;
+
+	return -1;
+
+}

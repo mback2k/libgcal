@@ -21,6 +21,7 @@
 #include "utest_edit.h"
 #include "utest_contact.h"
 #include "utest_debug.h"
+#include "utest_query.h"
 
 static Suite *core_suite(void)
 {
@@ -40,6 +41,8 @@ static Suite *core_suite(void)
 			suite_add_tcase(s, gcontact_tcase_create());
 		else if (!(strcmp(test_var, "debug")))
 			suite_add_tcase(s, gcaldebug_tcase_create());
+		else if (!(strcmp(test_var, "query")))
+			suite_add_tcase(s, gcal_query_tcase_create());
 		else
 			goto all;
 
@@ -52,6 +55,7 @@ all:
 	suite_add_tcase(s, edit_tcase_create());
 	suite_add_tcase(s, gcontact_tcase_create());
 	suite_add_tcase(s, gcaldebug_tcase_create());
+	suite_add_tcase(s, gcal_query_tcase_create());
 exit:
 	return s;
 }

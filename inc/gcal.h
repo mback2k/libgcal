@@ -360,4 +360,21 @@ int gcal_edit_event(struct gcal_resource *ptr_gcal,
 char *gcal_access_buffer(struct gcal_resource *ptr_gcal);
 
 
+/** Returns all entries (being calendar or contacts) that are newer
+ * than a timestamp.
+ *
+ * Use it to get updated entries.
+ *
+ * @param ptr_gcal  Pointer to a \ref gcal_resource structure, which has
+ *                 previously got the authentication using
+ *                 \ref gcal_get_authentication.
+ *
+ * @param timestamp A timestamp in RFC 3339 format yyyy-mm-ddThh:mm:ss
+ *(if NULL, this function will use current day, with time set to 06:00AM).
+ *
+ * @return -1 on error, 0 on success.
+ */
+int gcal_query_updated(struct gcal_resource *ptr_gcal, char *timestamp);
+
+
 #endif
