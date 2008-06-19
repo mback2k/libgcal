@@ -22,7 +22,8 @@ START_TEST (test_query_updated)
 	int result;
 	size_t length, i;
 	struct gcal_event event, edit;
-	struct gcal_event *entries;
+	struct gcal_event *entries = NULL;
+	char *msg = NULL;
 
 	gcal_init_event(&event);
 	gcal_init_event(&edit);
@@ -46,26 +47,42 @@ START_TEST (test_query_updated)
 	 * for 2020!
 	 */
 	result = gcal_query_updated(ptr_gcal, "2020-06-18T00:12:00");
-	fail_if(result == -1, "Failed querying!");
+	if (result == -1) {
+		msg = "Failed querying!";
+		goto cleanup;
+	}
+
 	entries = gcal_get_entries(ptr_gcal, &length);
-	fail_if(entries != NULL, "Query returned inconsistent results!");
+	if (entries != NULL) {
+		msg = "Query returned inconsistent results!";
+		goto cleanup;
+	}
 
 	/* A query with NULL will use current day, starting by 06:00AM */
 	result = gcal_query_updated(ptr_gcal, NULL);
-	fail_if(result == -1, "Failed querying!");
+	if (result == -1) {
+		msg = "Failed querying!";
+		goto cleanup;
+	}
+
 	entries = gcal_get_entries(ptr_gcal, &length);
-	fail_if(entries == NULL, "Query returned inconsistent results!");
+	if(entries == NULL) {
+		msg = "Query returned inconsistent results!";
+		goto cleanup;
+	}
 
 	for (i = 0; i < length; ++i)
 		if (!(strcmp(entries[i].title, event.title)))
 			goto cleanup;
-	fail_if(1, "Cannot find newly added event!");
+
+	msg = "Cannot find newly added event!";
 
 
 cleanup:
 	result = gcal_delete_event(ptr_gcal, &edit);
 	gcal_destroy_entries(entries, length);
 	gcal_destroy_entry(&edit);
+	fail_if(1, msg);
 
 }
 END_TEST
