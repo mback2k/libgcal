@@ -130,6 +130,11 @@ struct gcal_resource {
 	char *max_results;
 	/** User defined timezone in RFC 3339 format: -/+hh:mm:ss */
 	char *timezone;
+	/** User defined location (used to define in which timezone the
+	 * results will be returned). The format is
+	 * "Continent/City_without_spaces", e.g. "America/Los_Angeles".
+	 */
+	char *location;
 
 };
 

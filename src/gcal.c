@@ -99,6 +99,7 @@ struct gcal_resource *gcal_initialize(gservice mode)
 	ptr->fout_log = NULL;
 	ptr->max_results = strdup(GCAL_UPPER);
 	ptr->timezone = NULL;
+	ptr->location = NULL;
 
 	if (!(ptr->buffer) || (!(ptr->curl)) || (!ptr->max_results)) {
 		if (ptr->max_results)
@@ -157,6 +158,8 @@ void gcal_destroy(struct gcal_resource *gcal_obj)
 		free(gcal_obj->max_results);
 	if (gcal_obj->timezone)
 		free(gcal_obj->timezone);
+	if (gcal_obj->location)
+		free(gcal_obj->location)
 
 	/* TODO: free the pointer itself! */
 }
@@ -1091,4 +1094,22 @@ int gcal_set_timezone(struct gcal_resource *ptr_gcal, char *atimezone)
 
 exit:
 	return result;
+}
+
+int gcal_set_location(struct gcal_resource *ptr_gcal, char *location)
+{
+	int result = -1;
+	if ((!ptr_gcal) || (!location))
+		goto exit;
+
+	if (ptr_gcal->location)
+		free(ptr_gcal->location);
+
+	ptr_gcal->location = strdup(location);
+	if (ptr_gcal->location)
+		result = 0;
+
+exit:
+	return result;
+
 }

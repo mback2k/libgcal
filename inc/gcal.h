@@ -394,7 +394,7 @@ int gcal_query_updated(struct gcal_resource *ptr_gcal, char *timestamp);
  *
  * The structure copy the string with the timezone.
  *
- * @param ptr_gcal  Pointer to a \ref gcal_resource structure, which has
+ * @param ptr_gcal Pointer to a \ref gcal_resource structure, which has
  *                 previously got the authentication using
  *                 \ref gcal_get_authentication.
  *
@@ -405,5 +405,22 @@ int gcal_query_updated(struct gcal_resource *ptr_gcal, char *timestamp);
  */
 int gcal_set_timezone(struct gcal_resource *ptr_gcal, char *atimezone);
 
+/** Define the location that results should be returned for queries.
+ *
+ * Use it to set your current location, otherwise the configured city for
+ * the user account is used.
+ * The structure copy the string with the timezone.
+ *
+ * @param ptr_gcal Pointer to a \ref gcal_resource structure, which has
+ *                 previously got the authentication using
+ *                 \ref gcal_get_authentication.
+ *
+ * @param location A pointer to string with the location (e.g. "America/Manaus",
+ * "Europe/Helsinki", "America/Los_Angeles'). It must not has empty spaces on
+ * it.
+ *
+ * @return -1 on error, 0 on success.
+ */
+int gcal_set_location(struct gcal_resource *ptr_gcal, char *location);
 
 #endif
