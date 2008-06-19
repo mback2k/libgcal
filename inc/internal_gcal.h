@@ -116,6 +116,8 @@ struct gcal_resource {
 	int internal_status;
 	/** Handler to internal logging file */
 	FILE *fout_log;
+	/** Max number of results (google pages its query results) */
+	char *max_results;
 
 };
 

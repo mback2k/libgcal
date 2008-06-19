@@ -97,8 +97,11 @@ struct gcal_resource *gcal_initialize(gservice mode)
 	ptr->http_code = 0;
 	ptr->internal_status = 0;
 	ptr->fout_log = NULL;
+	ptr->max_results = strdup(GCAL_UPPER);
 
-	if (!(ptr->buffer) || (!(ptr->curl))) {
+	if (!(ptr->buffer) || (!(ptr->curl)) || (!ptr->max_results)) {
+		if (ptr->max_results)
+			free(ptr->max_results);
 		gcal_destroy(ptr);
 		ptr = NULL;
 		goto exit;
@@ -149,6 +152,8 @@ void gcal_destroy(struct gcal_resource *gcal_obj)
 		free(gcal_obj->curl_msg);
 	if (gcal_obj->fout_log)
 		fclose(gcal_obj->fout_log);
+	if (gcal_obj->max_results)
+		free(gcal_obj->max_results);
 }
 
 
@@ -483,10 +488,12 @@ static char *mount_query_url(struct gcal_resource *ptr_gcal)
 	/* TODO: put the google service type string in an array. */
 	if (!(strcmp(ptr_gcal->service, "cl")))
 		length = sizeof(GCAL_EVENT_START) + sizeof(GCAL_EVENT_END) +
-			sizeof(GCAL_UPPER) + strlen(ptr_gcal->user) + 1;
+			strlen(ptr_gcal->max_results) + strlen(ptr_gcal->user)
+			+ 1;
 	else if (!(strcmp(ptr_gcal->service, "cp")))
 		length = sizeof(GCONTACT_START) + sizeof(GCONTACT_END) +
-			sizeof(GCAL_UPPER) + strlen(ptr_gcal->user) + 1;
+			strlen(ptr_gcal->max_results) + strlen(ptr_gcal->user)
+			+ 1;
 	else
 		goto exit;
 
@@ -496,10 +503,11 @@ static char *mount_query_url(struct gcal_resource *ptr_gcal)
 
 	if (!(strcmp(ptr_gcal->service, "cl")))
 		snprintf(result, length - 1, "%s%s%s%s", GCAL_EVENT_START,
-			 ptr_gcal->user, GCAL_EVENT_END, GCAL_UPPER);
+			 ptr_gcal->user, GCAL_EVENT_END, ptr_gcal->max_results);
 	else if (!(strcmp(ptr_gcal->service, "cp")))
 		snprintf(result, length - 1, "%s%s%s%s", GCONTACT_START,
-			 ptr_gcal->user, GCONTACT_END, GCAL_UPPER);
+			 ptr_gcal->user, GCONTACT_END, ptr_gcal->max_results);
+
 
 exit:
 
