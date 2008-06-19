@@ -104,6 +104,35 @@ cleanup:
 }
 END_TEST
 
+START_TEST (test_query_nulltz)
+{
+	int result, flag = 1;
+	char *msg = NULL;
+	size_t length;
+	struct gcal_event *entries = NULL;
+
+	result = gcal_get_authentication(ptr_gcal, "gcalntester", "77libgcal");
+	fail_if(result == -1, "Authentication should work.");
+
+	result = gcal_query_updated(ptr_gcal, NULL);
+	if (result == -1) {
+		msg = "Failed querying!";
+		goto cleanup;
+	}
+
+	entries = gcal_get_entries(ptr_gcal, &length);
+	if(entries == NULL) {
+		msg = "Query returned inconsistent results!";
+		goto cleanup;
+	}
+
+	flag = 0;
+
+cleanup:
+	fail_if(flag, msg);
+}
+END_TEST
+
 TCase *gcal_query_tcase_create(void)
 {
 
@@ -114,6 +143,6 @@ TCase *gcal_query_tcase_create(void)
 	tcase_add_checked_fixture(tc, setup, teardown);
 	tcase_set_timeout (tc, timeout_seconds);
 	tcase_add_test(tc, test_query_updated);
-
+	tcase_add_test(tc, test_query_nulltz);
 	return tc;
 }

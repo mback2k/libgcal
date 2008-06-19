@@ -1044,7 +1044,6 @@ int gcal_query_updated(struct gcal_resource *ptr_gcal, char *timestamp)
 			ptr -= strlen(hour_const) + strlen(ptr_gcal->timezone);
 		}
 		else {
-			/* TODO: unit test this! */
 			hour_const = "06:00:00.000Z";
 			ptr -= strlen(hour_const);
 		}
