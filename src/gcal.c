@@ -1011,6 +1011,10 @@ int get_mili_timestamp(char *timestamp, size_t length, char *atimezone)
 }
 
 
+/* TODO: move most of this code to a generic 'query' function, since
+ * quering for updated entries is just a query with a set of
+ * parameters.
+ */
 int gcal_query_updated(struct gcal_resource *ptr_gcal, char *timestamp)
 {
 	int result = -1;
