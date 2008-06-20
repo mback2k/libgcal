@@ -72,7 +72,7 @@ START_TEST (test_query_updated)
 
 	entries = gcal_get_entries(ptr_gcal, &length);
 	if (length != 0) {
-		msg = "Query returned inconsistent results!";
+		msg = "Query returned results!";
 		goto cleanup;
 	}
 
@@ -186,7 +186,7 @@ START_TEST (test_query_contact)
 	struct gcal_contact contact, updated;
 	struct gcal_resource *gcal = NULL;
 	size_t count;
-	struct gcal_contact *contacts;
+	struct gcal_contact *contacts = NULL;
 	char *msg = NULL;
 
 	gcal_init_contact(&contact);
@@ -229,6 +229,74 @@ cleanup:
 
 	gcal_delete_contact(gcal, &updated);
 	gcal_destroy_contact(&updated);
+	gcal_destroy_contacts(contacts, count);
+	gcal_destroy(gcal);
+
+	fail_if(flag, msg);
+}
+END_TEST
+
+
+START_TEST (test_query_delcontact)
+{
+	int result, flag = 0;
+	struct gcal_contact contact;
+	struct gcal_contact *contacts = NULL;
+	struct gcal_resource *gcal = NULL;
+	size_t count = 0;
+	char *msg = NULL;
+
+	gcal_init_contact(&contact);
+
+	contact.title = "John Doe Query";
+	contact.email = "john.doe.query@foo.bar.com";
+
+	gcal = gcal_initialize(GCONTACT);
+	fail_if(gcal == NULL, "Failed to create gcal resource!");
+
+	result = gcal_get_authentication(gcal, "gcalntester", "77libgcal");
+	fail_if(result == -1, "Authentication should work.");
+
+	/* Setting for deleted contacts should display at least
+	 * one contact (the one added by 'test_query_contact'
+	 * unit test).
+	 */
+	gcal_deleted(gcal, SHOW);
+	result = gcal_query_updated(gcal, NULL);
+	if (result == -1) {
+		msg = "Failed querying for updated contacts!";
+		flag = 1;
+		goto cleanup;
+	}
+
+	contacts = gcal_get_contacts(gcal, &count);
+	if((count < 1) || (contacts == NULL)) {
+		msg = "Query didn't return deleted contacts!";
+		flag = 1;
+		goto cleanup;
+	}
+
+	/* Default will not show deleted contacts */
+	gcal_destroy_contacts(contacts, count);
+	gcal_deleted(gcal, HIDE);
+	result = gcal_query_updated(gcal, NULL);
+	if (result == -1) {
+		msg = "Failed querying for updated contacts!";
+		flag = 1;
+		goto cleanup;
+	}
+
+	contacts = gcal_get_contacts(gcal, &count);
+	if(count > 1) {
+		msg = "Query returned inconsistent results!";
+		flag = 1;
+		goto cleanup;
+	}
+
+
+cleanup:
+
+	gcal_destroy_contacts(contacts, count);
 	gcal_destroy(gcal);
 
 	fail_if(flag, msg);
@@ -249,5 +317,6 @@ TCase *gcal_query_tcase_create(void)
 	tcase_add_test(tc, test_query_nulltz);
 	tcase_add_test(tc, test_query_locationtz);
 	tcase_add_test(tc, test_query_contact);
+	tcase_add_test(tc, test_query_delcontact);
 	return tc;
 }

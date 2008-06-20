@@ -135,6 +135,10 @@ struct gcal_resource {
 	 * "Continent/City_without_spaces", e.g. "America/Los_Angeles".
 	 */
 	char *location;
+	/** Control if deleted entries will be returned or not (only
+	 * valid for google contacts.
+	 */
+	int deleted;
 
 };
 

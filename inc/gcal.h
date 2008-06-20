@@ -42,8 +42,16 @@
 /* For size_t */
 #include <stdlib.h>
 
-/** Google service that user will contact */
+/** Set gcal Google service mode */
 typedef enum { GCALENDAR, GCONTACT } gservice;
+
+/** Flag to control if deleted entries will be retrieved or not
+ * (for while, google only implements that for 'contacts').
+ * Calendar deleted entries will *always* be returned with
+ * 'eventStatus' set to 'cancelled'.
+ *
+ */
+typedef enum { HIDE, SHOW } display_deleted_entries;
 
 /** Upload (being POST or PUT) definition option.
  *
@@ -422,5 +430,19 @@ int gcal_set_timezone(struct gcal_resource *ptr_gcal, char *atimezone);
  * @return -1 on error, 0 on success.
  */
 int gcal_set_location(struct gcal_resource *ptr_gcal, char *location);
+
+/** Use this to set if deleted entries should be returned or not. Pay attention
+ * that this is implemented only for google contacts (google calendar entries
+ * doesn't have this query parameter).
+ *
+ * @param ptr_gcal Pointer to a \ref gcal_resource structure, which has
+ *                 previously got the authentication using
+ *                 \ref gcal_get_authentication.
+ *
+ * @param opt Option parameter, enable (SHOW) or not (HIDE) retrieving of
+ * deleted entries (see \ref display_deleted_entries).
+ */
+void gcal_deleted(struct gcal_resource *ptr_gcal, display_deleted_entries opt);
+
 
 #endif

@@ -100,6 +100,7 @@ struct gcal_resource *gcal_initialize(gservice mode)
 	ptr->max_results = strdup(GCAL_UPPER);
 	ptr->timezone = NULL;
 	ptr->location = NULL;
+	ptr->deleted = HIDE;
 
 	if (!(ptr->buffer) || (!(ptr->curl)) || (!ptr->max_results)) {
 		if (ptr->max_results)
@@ -1022,7 +1023,7 @@ int gcal_query_updated(struct gcal_resource *ptr_gcal, char *timestamp)
 	char *query_timestamp = NULL;
 	char query_updated_param[] = "updated-min=";
 	char query_zone_param[] = "ctz=";
-	char *buffer1 = NULL, *buffer2 = NULL;
+	char *buffer1 = NULL, *buffer2 = NULL, *buffer3 = NULL;
 	char *ptr, *hour_const = NULL;
 	size_t length = 0;
 
@@ -1065,24 +1066,43 @@ int gcal_query_updated(struct gcal_resource *ptr_gcal, char *timestamp)
 	strcpy(buffer1, query_updated_param);
 	strncat(buffer1, query_timestamp, strlen(query_timestamp));
 
+	/* 'showdeleted' is only valid for google contacts */
+	if ((ptr_gcal->deleted == SHOW) &&
+	    (!(strcmp(ptr_gcal->service, "cp")))) {
+		ptr = strdup("showdeleted=true");
+		if (!ptr)
+			goto cleanup;
+
+		/* Set the query string to the available buffer parameter */
+		if (!buffer2)
+			buffer2 = ptr;
+		else if (!buffer3)
+			buffer3 = ptr;
+	}
+
+	/* Add location to query (if set) */
 	if (ptr_gcal->location) {
 		length = strlen(ptr_gcal->location) +
 			sizeof(query_zone_param) + 1;
-		buffer2 = (char *) malloc(length);
+		ptr = (char *) malloc(length);
+		if (!ptr)
+			goto cleanup;
 
-		strcpy(buffer2, query_zone_param);
-		strcat(buffer2, ptr_gcal->location);
+		strcpy(ptr, query_zone_param);
+		strcat(ptr, ptr_gcal->location);
+
+		/* Set the query string to the available buffer parameter */
+		if (!buffer2)
+			buffer2 = ptr;
+		else if (!buffer3)
+			buffer3 = ptr;
+
 	}
-
-	/* TODO: add another parameter to filter out the damned
-	 * "eventStatus value="http://schemas.google.com/g/2005#event.canceled"
-	 * events
-	 */
 
 	/* TODO: implement URL encoding i.e. RFC1738 using
 	 * 'curl_easy_escape'.
 	 */
-	query_url = mount_query_url(ptr_gcal, buffer1, buffer2, NULL);
+	query_url = mount_query_url(ptr_gcal, buffer1, buffer2, buffer3, NULL);
 	if (!query_url)
 		goto cleanup;
 
@@ -1098,6 +1118,8 @@ cleanup:
 		free(buffer1);
 	if (buffer2)
 		free(buffer2);
+	if (buffer3)
+		free(buffer3);
 	if (query_url)
 		free(query_url);
 
@@ -1138,5 +1160,20 @@ int gcal_set_location(struct gcal_resource *ptr_gcal, char *location)
 
 exit:
 	return result;
+
+}
+
+void gcal_deleted(struct gcal_resource *ptr_gcal, display_deleted_entries opt)
+{
+	if (!ptr_gcal)
+		return;
+
+	if (opt == SHOW)
+		ptr_gcal->deleted = SHOW;
+	else if (opt == HIDE)
+		ptr_gcal->deleted = HIDE;
+	else if (ptr_gcal->fout_log)
+		fprintf(ptr_gcal->fout_log, "gcal_deleted: invalid option:%d\n",
+			opt);
 
 }
