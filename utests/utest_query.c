@@ -22,6 +22,11 @@ static void teardown(void)
 	gcal_destroy(ptr_gcal);
 }
 
+/* ATTENTION: this test will only succeed if *no* calendar operations
+ * were done in this day.
+ * This simulates the case where no new changes were done in the calendar
+ * and we are asking for then (i.e. think in a sync operation).
+ */
 START_TEST (test_query_updated)
 {
 	int result, flag = 1;
@@ -135,6 +140,11 @@ cleanup:
 }
 END_TEST
 
+/* ATTENTION: this test will only succeed if *no* calendar operations
+ * were done in this day.
+ * This simulates the case where no new changes were done in the calendar
+ * and we are asking for then (i.e. think in a sync operation).
+ */
 START_TEST (test_query_locationtz)
 {
 	int result, flag = 1;
