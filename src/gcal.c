@@ -162,7 +162,7 @@ void gcal_destroy(struct gcal_resource *gcal_obj)
 	if (gcal_obj->location)
 		free(gcal_obj->location);
 
-	/* TODO: free the pointer itself! */
+	free(gcal_obj);
 }
 
 
@@ -172,29 +172,27 @@ static size_t write_cb(void *ptr, size_t count, size_t chunk_size, void *data)
 	size_t size = count * chunk_size;
 	struct gcal_resource *gcal_ptr = (struct gcal_resource *) data;
 	int current_length = strnlen(gcal_ptr->buffer, gcal_ptr->length);
+	char *ptr_tmp;
 
 	if (size > (gcal_ptr->length - current_length - 1)) {
-		    gcal_ptr->length = current_length + size + 1;
-		    /* TODO: is it save to continue reallocing more memory?
-		     * what happens if the gcalendar list is *really* big?
-		     * how big can it be? Maybe I should use another write
-		     * callback
-		     * when requesting the Atom feed (one that will treat the
-		     * the stream as its being read and not store it in memory).
-		     */
-		    /* TODO: use a helper pointer to keep track of previous
-		     * allocated memory (to free in case of failure.
-		     */
-		    gcal_ptr->buffer = realloc(gcal_ptr->buffer,
-					       gcal_ptr->length);
+		gcal_ptr->length = current_length + size + 1;
+		/* TODO: is it save to continue reallocing more memory?
+		 * what happens if the gcalendar list is *really* big?
+		 * how big can it be? Maybe I should use another write
+		 * callback
+		 * when requesting the Atom feed (one that will treat the
+		 * the stream as its being read and not store it in memory).
+		 */
+		ptr_tmp = realloc(gcal_ptr->buffer, gcal_ptr->length);
 
-		    if (!gcal_ptr->buffer) {
-			    if (gcal_ptr->fout_log)
-				    fprintf(gcal_ptr->fout_log,
-					    "write_cb: Failed relloc\n");
-			    goto exit;
-		    }
+		if (!ptr_tmp) {
+			if (gcal_ptr->fout_log)
+				fprintf(gcal_ptr->fout_log,
+					"write_cb: Failed relloc!\n");
+			goto exit;
+		}
 
+		gcal_ptr->buffer = ptr_tmp;
 	}
 
 	strncat(gcal_ptr->buffer, (char *)ptr, size);
@@ -844,7 +842,7 @@ int gcal_create_event(struct gcal_resource *ptr_gcal,
 		goto exit;
 
 	result = up_entry(xml_entry, ptr_gcal, GCAL_EDIT_URL, POST,
-		GCAL_EDIT_ANSWER);
+			  GCAL_EDIT_ANSWER);
 
 	/* Parse buffer and create the new contact object */
 	if (!updated)
