@@ -1,6 +1,7 @@
 
 #include "utest_query.h"
 #include "gcal.h"
+#include "gcontact.h"
 #include <string.h>
 #include <stdio.h>
 #include <unistd.h>
@@ -168,6 +169,63 @@ cleanup:
 }
 END_TEST
 
+
+START_TEST (test_query_contact)
+{
+	int result, flag = 0;
+	struct gcal_contact contact, updated;
+	struct gcal_resource *gcal = NULL;
+	size_t count;
+	struct gcal_contact *contacts;
+	char *msg = NULL;
+
+	gcal_init_contact(&contact);
+	gcal_init_contact(&updated);
+
+	contact.title = "John Doe Query";
+	contact.email = "john.doe.query@foo.bar.com";
+
+	gcal = gcal_initialize(GCONTACT);
+	fail_if(gcal == NULL, "Failed to create gcal resource!");
+
+	result = gcal_get_authentication(gcal, "gcalntester", "77libgcal");
+	fail_if(result == -1, "Authentication should work.");
+
+	result = gcal_create_contact(gcal, &contact, &updated);
+	fail_if(result == -1, "Failed creating a new contact!");
+
+	result = gcal_query_updated(gcal, NULL);
+	if (result == -1) {
+		msg = "Failed querying for updated contacts!";
+		flag = 1;
+		goto cleanup;
+	}
+
+	contacts = gcal_get_contacts(gcal, &count);
+	if(contacts == NULL) {
+		msg = "Failed extracting the contacts vector!";
+		flag = 1;
+		goto cleanup;
+	}
+
+	/* Google contacts *dont* display deleted contacts by default */
+	if(count > 1) {
+		msg = "Query returned inconsistent results!";
+		flag = 1;
+		goto cleanup;
+	}
+
+cleanup:
+
+	gcal_delete_contact(gcal, &updated);
+	gcal_destroy_contact(&updated);
+	gcal_destroy(gcal);
+
+	fail_if(flag, msg);
+}
+END_TEST
+
+
 TCase *gcal_query_tcase_create(void)
 {
 
@@ -180,5 +238,6 @@ TCase *gcal_query_tcase_create(void)
 	tcase_add_test(tc, test_query_updated);
 	tcase_add_test(tc, test_query_nulltz);
 	tcase_add_test(tc, test_query_locationtz);
+	tcase_add_test(tc, test_query_contact);
 	return tc;
 }
