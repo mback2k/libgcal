@@ -1060,8 +1060,11 @@ int gcal_query_updated(struct gcal_resource *ptr_gcal, char *timestamp)
 		while (*hour_const)
 			*ptr++ = *hour_const++;
 
-	} else if (timestamp)
+	} else if (timestamp) {
 		query_timestamp = strdup(timestamp);
+		if (!query_timestamp)
+			goto cleanup;
+	}
 
 	strcpy(buffer1, query_updated_param);
 	strncat(buffer1, query_timestamp, strlen(query_timestamp));
