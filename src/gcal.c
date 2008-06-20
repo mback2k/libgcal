@@ -45,7 +45,6 @@ POSSIBILITY OF SUCH DAMAGE.
  * - enable user delete calendars
  * - think a way to securely store passwords
  * - more utests
- * - should we use a logging of some sort?
  * - provide option to use another XML parser (maybe expat?)
  */
 
@@ -296,7 +295,6 @@ exit:
 
 }
 
-/* Not used for while */
 static int http_put(struct gcal_resource *ptr_gcal, const char *url,
 		    char *header, char *header2, char *header3,
 		    char *post_data, const int expected_answer)
