@@ -174,6 +174,11 @@ START_TEST (test_query_locationtz)
 
 cleanup:
 	gcal_destroy_entries(entries, length);
+	/* Dirt trick to make sure that cleanup code for
+	 * timezone+location is executed 8-)
+	 */
+	if (flag)
+		gcal_destroy(ptr_gcal);
 	fail_if(flag, msg);
 
 }
