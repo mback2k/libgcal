@@ -64,4 +64,14 @@ int gcal_status_httpcode(struct gcal_resource *ptr_gcal);
  */
 int gcal_status_setlog(struct gcal_resource *ptr_gcal, char *filepath);
 
+
+/** Returns internal error messages from gcal object.
+ *
+ * Use it to check for information of object after last HTTP request.
+ *
+ * @param ptr_gcal Pointer to a library resource structure \ref gcal_resource.
+ *
+ * @return NULL if everything is ok, pointer to string with error message.
+ */
+const char *gcal_status_msg(struct gcal_resource *ptr_gcal);
 #endif

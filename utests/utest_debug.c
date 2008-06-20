@@ -75,6 +75,7 @@ START_TEST (test_debug_authenticate)
 
 	code = gcal_status_httpcode(ptr_gcal);
 	fail_if(code != 200, "Reported HTTP code should be 200!");
+	fail_if(gcal_status_msg(ptr_gcal) != NULL, "There should be no msg!");
 
 	result = gcal_get_authentication(ptr_gcal, "gcal4tester", "failfail");
 	fail_if(result == 0, "Authentication must fail!");

@@ -41,6 +41,9 @@ POSSIBILITY OF SUCH DAMAGE.
 
 int gcal_status_httpcode(struct gcal_resource *ptr_gcal)
 {
+	if (!ptr_gcal)
+		return -1;
+
 	return (int)ptr_gcal->http_code;
 }
 
@@ -56,4 +59,12 @@ int gcal_status_setlog(struct gcal_resource *ptr_gcal, char *filepath)
 		result = 0;
 
 	return result;
+}
+
+const char *gcal_status_msg(struct gcal_resource *ptr_gcal)
+{
+	if (!ptr_gcal)
+		return NULL;
+
+	return ptr_gcal->curl_msg;
 }

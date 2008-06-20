@@ -209,10 +209,16 @@ static int check_request_error(struct gcal_resource *ptr_gcal, int code,
 	curl_easy_getinfo(curl_ctx, CURLINFO_HTTP_CODE,
 			  &(ptr_gcal->http_code));
 	if (code || (ptr_gcal->http_code != expected_answer)) {
+
+		if (ptr_gcal->curl_msg)
+			free(ptr_gcal->curl_msg);
+
+		ptr_gcal->curl_msg = strdup(curl_easy_strerror(code));
+
 		if (ptr_gcal->fout_log)
 			fprintf(ptr_gcal->fout_log, "%s\n%s%s\n%s%d\n",
 				"check_request_error: failed request.",
-				"Curl code: ", curl_easy_strerror(code),
+				"Curl code: ", ptr_gcal->curl_msg,
 				"HTTP code: ", (int)ptr_gcal->http_code);
 		result = -1;
 	}
