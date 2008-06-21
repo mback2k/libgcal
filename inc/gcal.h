@@ -447,22 +447,19 @@ void gcal_deleted(struct gcal_resource *ptr_gcal, display_deleted_entries opt);
 
 /** Generic query function, use it to do a query to google services.
  *
- * Since its a variadic function, you can supply 'n' query parameters in
- * the string format "param_1", "param_2", ..., "param_n", NULL.
+ * You can pass a query with multiple parameters, but in just one string.
  *
- * The only restriction is that the last parameter being NULL.
  *
  * @param ptr_gcal Pointer to a \ref gcal_resource structure, which has
  *                 previously got the authentication using
  *                 \ref gcal_get_authentication.
  *
- * @param parameters A set of query strings (the last one must be NULL) e.g.
- * gcal_query(gcal, "q=John", "ctz=America/Los_Angeles", "author=Joe", NULL);
+ * @param parameters A string with the query e.g.
+ * gcal_query(gcal, "q=John&ctz=America/Los_Angeles&author=Joe");
 
  *
  * @return -1 on error, 0 on success.
  */
-int gcal_query(struct gcal_resource *ptr_gcal, const char *parameters, ...);
-
+int gcal_query(struct gcal_resource *ptr_gcal, const char *parameters);
 
 #endif

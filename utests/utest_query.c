@@ -315,8 +315,8 @@ START_TEST (test_query_generic)
 	struct gcal_contact *contacts = NULL;
 	struct gcal_resource *gcal = NULL;
 	size_t count = 0;
-	char *msg = NULL, *contact = "Cavalcanti", *query="q=";
-	char buffer[50];
+	char *msg = NULL;
+	char *query="?q=\"Adenilson Cavalcanti\"";
 
 	gcal = gcal_initialize(GCONTACT);
 	fail_if(gcal == NULL, "Failed to create gcal resource!");
@@ -324,8 +324,7 @@ START_TEST (test_query_generic)
 	result = gcal_get_authentication(gcal, "gcalntester", "77libgcal");
 	fail_if(result == -1, "Authentication should work.");
 
-	snprintf(buffer, sizeof(buffer) - 1, "%s%s", query, contact);
-	result = gcal_query(gcal, buffer, NULL);
+	result = gcal_query(gcal, query);
 	if (result == -1) {
 		msg = "Failed using generic query!";
 		flag = 1;
@@ -333,13 +332,13 @@ START_TEST (test_query_generic)
 	}
 
 	contacts = gcal_get_contacts(gcal, &count);
-	if((count < 1) || (contacts == NULL)) {
-		msg = "Query didn't return searched contact!";
+	if((count != 1) || (contacts == NULL)) {
+		msg = "Query returned more contacts!";
 		flag = 1;
 		goto cleanup;
 	}
 
-	if(!(strcmp(contacts[0].title, contact))) {
+	if(!(strcmp(contacts[0].title, "Cavalcanti"))) {
 		msg = "Query could not find contact!";
 		flag = 1;
 		goto cleanup;

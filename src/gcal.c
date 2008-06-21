@@ -1183,10 +1183,26 @@ void gcal_deleted(struct gcal_resource *ptr_gcal, display_deleted_entries opt)
 
 }
 
-int gcal_query(struct gcal_resource *ptr_gcal, const char *parameters, ...)
+int gcal_query(struct gcal_resource *ptr_gcal, const char *parameters)
 {
-	(void)ptr_gcal;
-	(void)parameters;
+	char *query_url = NULL;
+	int result = -1;
 
-	return -1;
+	if ((!ptr_gcal) && (!parameters))
+		goto exit;
+
+	query_url = mount_query_url(ptr_gcal, parameters, NULL);
+	if (!query_url)
+		goto exit;
+
+	fprintf(stderr, "\n\n%s\n\n", query_url);
+	result = get_follow_redirection(ptr_gcal, query_url);
+	if (!result)
+		ptr_gcal->has_xml = 1;
+
+	if (query_url)
+		free(query_url);
+exit:
+
+	return result;
 }
