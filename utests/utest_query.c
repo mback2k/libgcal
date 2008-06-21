@@ -308,6 +308,53 @@ cleanup:
 }
 END_TEST
 
+START_TEST (test_query_generic)
+{
+
+	int result, flag = 0;
+	struct gcal_contact *contacts = NULL;
+	struct gcal_resource *gcal = NULL;
+	size_t count = 0;
+	char *msg = NULL, *contact = "Cavalcanti", *query="q=";
+	char buffer[50];
+
+	gcal = gcal_initialize(GCONTACT);
+	fail_if(gcal == NULL, "Failed to create gcal resource!");
+
+	result = gcal_get_authentication(gcal, "gcalntester", "77libgcal");
+	fail_if(result == -1, "Authentication should work.");
+
+	snprintf(buffer, sizeof(buffer) - 1, "%s%s", query, contact);
+	result = gcal_query(gcal, buffer, NULL);
+	if (result == -1) {
+		msg = "Failed using generic query!";
+		flag = 1;
+		goto cleanup;
+	}
+
+	contacts = gcal_get_contacts(gcal, &count);
+	if((count < 1) || (contacts == NULL)) {
+		msg = "Query didn't return searched contact!";
+		flag = 1;
+		goto cleanup;
+	}
+
+	if(!(strcmp(contacts[0].title, contact))) {
+		msg = "Query could not find contact!";
+		flag = 1;
+		goto cleanup;
+	}
+
+cleanup:
+
+	gcal_destroy_contacts(contacts, count);
+	gcal_destroy(gcal);
+
+	fail_if(flag, msg);
+
+
+}
+END_TEST
 
 TCase *gcal_query_tcase_create(void)
 {
@@ -323,5 +370,6 @@ TCase *gcal_query_tcase_create(void)
 	tcase_add_test(tc, test_query_locationtz);
 	tcase_add_test(tc, test_query_contact);
 	tcase_add_test(tc, test_query_delcontact);
+	tcase_add_test(tc, test_query_generic);
 	return tc;
 }

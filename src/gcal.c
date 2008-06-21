@@ -1182,3 +1182,11 @@ void gcal_deleted(struct gcal_resource *ptr_gcal, display_deleted_entries opt)
 			opt);
 
 }
+
+int gcal_query(struct gcal_resource *ptr_gcal, const char *parameters, ...)
+{
+	(void)ptr_gcal;
+	(void)parameters;
+
+	return -1;
+}
