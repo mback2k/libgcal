@@ -35,7 +35,7 @@ POSSIBILITY OF SUCH DAMAGE.
  *
  * \todo:
  * High priority
- * - enable user do queries: by string and date range
+ * - enable user do queries: by string
  * - batch operation (add/edit/delete): will require some new public functions
  * - handle http_proxy
  *
