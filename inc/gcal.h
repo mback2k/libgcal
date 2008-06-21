@@ -449,6 +449,7 @@ void gcal_deleted(struct gcal_resource *ptr_gcal, display_deleted_entries opt);
  *
  * You can pass a query with multiple parameters, but in just one string.
  *
+ * \todo This function is failing with HTTP 403, I must fix that.
  *
  * @param ptr_gcal Pointer to a \ref gcal_resource structure, which has
  *                 previously got the authentication using

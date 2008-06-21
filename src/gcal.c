@@ -1195,7 +1195,6 @@ int gcal_query(struct gcal_resource *ptr_gcal, const char *parameters)
 	if (!query_url)
 		goto exit;
 
-	fprintf(stderr, "\n\n%s\n\n", query_url);
 	result = get_follow_redirection(ptr_gcal, query_url);
 	if (!result)
 		ptr_gcal->has_xml = 1;
