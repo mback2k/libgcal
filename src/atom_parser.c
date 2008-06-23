@@ -41,6 +41,7 @@ POSSIBILITY OF SUCH DAMAGE.
 
 #include "atom_parser.h"
 #include "xml_aux.h"
+#include "internal_gcal.h"
 #include <string.h>
 
 int build_doc_tree(xmlDoc **document, char *xml_data)
@@ -203,17 +204,17 @@ int atom_extract_data(xmlNode *entry, struct gcal_event *ptr_entry)
 	xmlDocSetRootElement(doc, copy);
 
 	/* Gets the 'what' calendar field */
-	ptr_entry->title = extract_and_check(doc,
+	ptr_entry->common.title = extract_and_check(doc,
 					     "//atom:entry/atom:title/text()",
 					     NULL);
-	if (!ptr_entry->title)
+	if (!ptr_entry->common.title)
 		goto cleanup;
 
 	/* Gets the 'id' calendar field */
-	ptr_entry->id = extract_and_check(doc,
+	ptr_entry->common.id = extract_and_check(doc,
 					  "//atom:entry/atom:id/text()",
 					  NULL);
-	if (!ptr_entry->id)
+	if (!ptr_entry->common.id)
 		goto cleanup;
 
 	/* Gets the 'edit url' calendar field
@@ -222,10 +223,10 @@ int atom_extract_data(xmlNode *entry, struct gcal_event *ptr_entry)
 	 * should work with the XPath expression:
 	 * '//atom:entry/atom:link[@rel='edit']/@href'
 	 */
-	ptr_entry->edit_uri = extract_and_check(doc, "//atom:entry/"
+	ptr_entry->common.edit_uri = extract_and_check(doc, "//atom:entry/"
 						"atom:link[@rel='edit']",
 						"href");
-	if (!ptr_entry->edit_uri)
+	if (!ptr_entry->common.edit_uri)
 		goto cleanup;
 
 	/* Gets the 'content' calendar field */
@@ -270,11 +271,11 @@ int atom_extract_data(xmlNode *entry, struct gcal_event *ptr_entry)
 
 
 	/* Gets the 'updated' calendar field */
-	ptr_entry->updated = extract_and_check(doc,
+	ptr_entry->common.updated = extract_and_check(doc,
 					       "//atom:entry/"
 					       "atom:updated/text()",
 					       NULL);
-	if (!ptr_entry->id)
+	if (!ptr_entry->common.updated)
 		goto cleanup;
 
 	result = 0;

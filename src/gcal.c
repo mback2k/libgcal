@@ -717,10 +717,11 @@ void gcal_init_event(struct gcal_event *entry)
 	if (!entry)
 		return;
 
-	entry->title = entry->id = entry->edit_uri = NULL;
+	entry->common.title = entry->common.id = entry->common.edit_uri = NULL;
+	entry->common.updated = NULL;
 	entry->content = entry->dt_recurrent = entry->dt_start = NULL;
 	entry->dt_end = entry->where = entry->status = NULL;
-	entry->updated = NULL;
+
 
 }
 
@@ -729,16 +730,18 @@ void gcal_destroy_entry(struct gcal_event *entry)
 	if (!entry)
 		return;
 
-	clean_string(entry->title);
-	clean_string(entry->id);
-	clean_string(entry->edit_uri);
+	clean_string(entry->common.title);
+	clean_string(entry->common.id);
+	clean_string(entry->common.edit_uri);
+	clean_string(entry->common.updated);
+
 	clean_string(entry->content);
 	clean_string(entry->dt_recurrent);
 	clean_string(entry->dt_start);
 	clean_string(entry->dt_end);
 	clean_string(entry->where);
 	clean_string(entry->status);
-	clean_string(entry->updated);
+
 }
 
 void gcal_destroy_entries(struct gcal_event *entries, size_t length)
@@ -930,7 +933,7 @@ int gcal_delete_event(gcal gcalobj,
 	snprintf(h_auth, length - 1, "%s%s", HEADER_GET, gcalobj->auth);
 
 	curl_easy_setopt(gcalobj->curl, CURLOPT_CUSTOMREQUEST, "DELETE");
-	result = http_post(gcalobj, entry->edit_uri,
+	result = http_post(gcalobj, entry->common.edit_uri,
 			   "Content-Type: application/atom+xml",
 			   NULL,
 			   h_auth,
@@ -979,7 +982,7 @@ int gcal_edit_event(gcal gcalobj,
 	if (result == -1)
 		goto exit;
 
-	result = up_entry(xml_entry, gcalobj, entry->edit_uri, PUT,
+	result = up_entry(xml_entry, gcalobj, entry->common.edit_uri, PUT,
 			  GCAL_DEFAULT_ANSWER);
 
 	/* Parse buffer and create the new contact object */

@@ -156,6 +156,25 @@ struct gcal_entry {
 	char *edit_uri;
 };
 
+/** Library structure, represents each calendar event entry.
+ */
+struct gcal_event {
+	/** Has the common entry data fields (id, updated, title, edit_uri) */
+	struct gcal_entry common;
+	/* Here starts calendar event unique fields */
+	/** The event description */
+	char *content;
+	/** If the event is recurrent */
+	char *dt_recurrent;
+	/** When/start time */
+	char *dt_start;
+	/** When/end time */
+	char *dt_end;
+	/** Location of event */
+	char *where;
+	/** Event status */
+	char *status;
+};
 
 
 #endif

@@ -49,13 +49,13 @@ START_TEST (test_edit_xml)
 	char *xml = NULL;
 	int result, length;
 
-	event.title = "A new event";
+	event.common.title = "A new event";
 	event.content = "Here goes the description of my new event";
 	event.dt_start = "2008-04-08T08:00:00.000Z";
 	event.dt_end = "2008-04-08T09:00:00.000Z";
 	event.where = "someplace";
-	event.id = NULL;
-	event.edit_uri = NULL;
+	event.common.id = NULL;
+	event.common.edit_uri = NULL;
 
 	/* TODO: think in a better way to describe the status, maybe use
 	 * a set of strings.
@@ -78,13 +78,13 @@ START_TEST (test_edit_add)
 	int result;
 	struct gcal_event event;
 
-	event.title = "A new event";
+	event.common.title = "A new event";
 	event.content = "Here goes the description of my new event";
 	event.dt_start = "2008-05-10T08:00:00.000Z";
 	event.dt_end = "2008-05-10T09:00:00.000Z";
 	event.where = "someplace";
-	event.id = NULL;
-	event.edit_uri = NULL;
+	event.common.id = NULL;
+	event.common.edit_uri = NULL;
 
 	/* TODO: think in a better way to describe the status, maybe use
 	 * a set of strings.
@@ -108,13 +108,13 @@ START_TEST (test_edit_delete)
 	struct gcal_event event;
 	struct gcal_event *entries;
 
-	event.title = "A soon to be deleted event";
+	event.common.title = "A soon to be deleted event";
 	event.content = "This event will be included and deleted soon";
 	event.dt_start = "2008-05-07T08:00:00.000Z";
 	event.dt_end = "2008-05-07T09:00:00.000Z";
 	event.where = "nevermind";
-	event.id = NULL;
-	event.edit_uri = NULL;
+	event.common.id = NULL;
+	event.common.edit_uri = NULL;
 
 	/* TODO: think in a better way to describe the status, maybe use
 	 * a set of strings.
@@ -134,7 +134,7 @@ START_TEST (test_edit_delete)
 	fail_if(entries == NULL, "Failed extracting entries");
 
 	for (i = 0; i < result; ++i)
-		if (!strcmp(entries[i].title, event.title)) {
+		if (!strcmp(entries[i].common.title, event.common.title)) {
 			entry_index = i;
 			break;
 		}
@@ -159,13 +159,13 @@ START_TEST (test_edit_stress)
 	char number_buffer1[4], number_buffer2[4];
 	struct gcal_event *entries;
 
-	event.title = "A new event: stress test";
+	event.common.title = "A new event: stress test";
 	event.content = "Here goes the description of my new event";
 	format_start = "2008-05-%sT%s:00:00.000Z";
 	format_end = "2008-05-%sT%s:00:00.000Z";
 	event.where = "someplace";
-	event.id = NULL;
-	event.edit_uri = NULL;
+	event.common.id = NULL;
+	event.common.edit_uri = NULL;
 
 	/* TODO: think in a better way to describe the status, maybe use
 	 * a set of strings.
@@ -212,7 +212,7 @@ START_TEST (test_edit_stress)
 	entries = gcal_get_entries(ptr_gcal, &total);
 	fail_if(entries == NULL, "Failed extracting entries");
 	for (i = 0; i < total; ++i)
-		if (!strcmp(entries[i].title, event.title)) {
+		if (!strcmp(entries[i].common.title, event.common.title)) {
 			result = gcal_delete_event(ptr_gcal, &entries[i]);
 			fail_if(result == -1, "Failed deleting event!");
 		}
@@ -227,13 +227,13 @@ START_TEST (test_edit_edit)
 	int result;
 	struct gcal_event event, new_event, updated_event;
 
-	event.title = "An editable event";
+	event.common.title = "An editable event";
 	event.content = "This event will be included and edited";
 	event.dt_start = "2008-05-07T08:00:00.000Z";
 	event.dt_end = "2008-05-07T09:00:00.000Z";
 	event.where = "nevermind";
-	event.id = NULL;
-	event.edit_uri = NULL;
+	event.common.id = NULL;
+	event.common.edit_uri = NULL;
 	/* TODO: think in a better way to describe the status, maybe use
 	 * a set of strings.
 	 */
@@ -245,8 +245,8 @@ START_TEST (test_edit_edit)
 	result = gcal_create_event(ptr_gcal, &event, &new_event);
 	fail_if(result == -1, "Failed creating a new event!");
 
-	free(new_event.title);
-	new_event.title = strdup("An editable event: edited now!");
+	free(new_event.common.title);
+	new_event.common.title = strdup("An editable event: edited now!");
 	result = gcal_edit_event(ptr_gcal, &new_event, &updated_event);
 	fail_if(result == -1, "Failed editing event!");
 

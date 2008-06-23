@@ -12,6 +12,7 @@
 #include "atom_parser.h"
 #include "xml_aux.h"
 #include "gcal.h"
+#include "internal_gcal.h"
 #include <string.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -106,9 +107,9 @@ START_TEST (test_get_entries)
 	res = atom_extract_data(nodes->nodeTab[0], &extracted);
 	fail_if(res == -1, "failed to extract data from node!");
 
-	known_value.title = "an event with location";
-	known_value.id  = "http://www.google.com/calendar/feeds/gcal4tester%40gmail.com/private/full/saq81ktu4iqv7r20b8ctv70q7s";
-	known_value.edit_uri  = "http://www.google.com/calendar/feeds/gcal4tester%40gmail.com/private/full/saq81ktu4iqv7r20b8ctv70q7s/63342246051";
+	known_value.common.title = "an event with location";
+	known_value.common.id  = "http://www.google.com/calendar/feeds/gcal4tester%40gmail.com/private/full/saq81ktu4iqv7r20b8ctv70q7s";
+	known_value.common.edit_uri  = "http://www.google.com/calendar/feeds/gcal4tester%40gmail.com/private/full/saq81ktu4iqv7r20b8ctv70q7s/63342246051";
 	known_value.content  = "I should be there";
 	/* The event is not recurrent: for empty fields, I use a empty string */
 	known_value.dt_recurrent  = "";
@@ -116,13 +117,13 @@ START_TEST (test_get_entries)
 	known_value.dt_end = "2008-03-26T19:00:00.000-05:00";
 	known_value.where = "my house";
 	known_value.status = "http://schemas.google.com/g/2005#event.confirmed";
-	known_value.updated = "2008-03-26T20:20:51.000Z";
+	known_value.common.updated = "2008-03-26T20:20:51.000Z";
 
-	fail_if(strcmp(known_value.title, extracted.title),
+	fail_if(strcmp(known_value.common.title, extracted.common.title),
 		"failed field extraction");
-	fail_if(strcmp(known_value.id, extracted.id),
+	fail_if(strcmp(known_value.common.id, extracted.common.id),
 		"failed field extraction");
-	fail_if(strcmp(known_value.edit_uri, extracted.edit_uri),
+	fail_if(strcmp(known_value.common.edit_uri, extracted.common.edit_uri),
 		"failed field extraction");
 	fail_if(strcmp(known_value.content, extracted.content),
 		"failed field extraction");
@@ -136,7 +137,7 @@ START_TEST (test_get_entries)
 		"failed field extraction");
 	fail_if(strcmp(known_value.status, extracted.status),
 		"failed field extraction");
-	fail_if(strcmp(known_value.updated, extracted.updated),
+	fail_if(strcmp(known_value.common.updated, extracted.common.updated),
 		"failed field extraction");
 
 	if (xpath_obj)

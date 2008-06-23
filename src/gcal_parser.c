@@ -41,6 +41,7 @@ POSSIBILITY OF SUCH DAMAGE.
 #include "gcal_parser.h"
 #include "atom_parser.h"
 #include "xml_aux.h"
+
 #include <libxml/tree.h>
 #include <string.h>
 
@@ -209,11 +210,11 @@ int xmlentry_create(struct gcal_event *entry, char **xml_entry, int *length)
 	 * of library just got one entry result from a request from
 	 * server).
 	 */
-	if (entry->id) {
+	if (entry->common.id) {
 		node = xmlNewNode(NULL, "id");
 		if (!node)
 			goto cleanup;
-		xmlNodeAddContent(node, entry->id);
+		xmlNodeAddContent(node, entry->common.id);
 		xmlAddChild(root, node);
 	}
 
@@ -230,7 +231,7 @@ int xmlentry_create(struct gcal_event *entry, char **xml_entry, int *length)
 	if (!node)
 		goto cleanup;
 	xmlSetProp(node, BAD_CAST "type", BAD_CAST "text");
-	xmlNodeAddContent(node, entry->title);
+	xmlNodeAddContent(node, entry->common.title);
 	xmlAddChild(root, node);
 
 	/* content element */
@@ -243,7 +244,7 @@ int xmlentry_create(struct gcal_event *entry, char **xml_entry, int *length)
 
 	/* entry edit URL, only if the 'entry' is already existant.
 	 */
-	if (entry->edit_uri) {
+	if (entry->common.edit_uri) {
 		node = xmlNewNode(NULL, "link");
 		if (!node)
 			goto cleanup;
@@ -251,7 +252,7 @@ int xmlentry_create(struct gcal_event *entry, char **xml_entry, int *length)
 		xmlSetProp(node, BAD_CAST "type",
 			   BAD_CAST "application/atom+xml");
 		xmlSetProp(node, BAD_CAST "href",
-			   BAD_CAST entry->edit_uri);
+			   BAD_CAST entry->common.edit_uri);
 		xmlAddChild(root, node);
 
 	}

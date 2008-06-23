@@ -107,7 +107,7 @@ START_TEST (test_gcal_event)
 
 	if (entries != NULL)
 		for (i = 0; i < result; ++i)
-			fail_if(strcmp(entries[i].updated, entries_update[i]),
+			fail_if(strcmp(entries[i].common.updated, entries_update[i]),
 				"extracted data differs from expected");
 	/* Cleanup */
 	gcal_destroy_entries(entries, result);
@@ -137,8 +137,8 @@ START_TEST (test_gcal_naive)
 
 	if (entries)
 		for (i = 0; i < result; ++i)
-			printf("%s\t%s\n", entries[i].title,
-			       entries[i].updated);
+			printf("%s\t%s\n", entries[i].common.title,
+			       entries[i].common.updated);
 	/* Cleanup */
 	gcal_destroy_entries(entries, result);
 	gcal_destroy(local_gcal);

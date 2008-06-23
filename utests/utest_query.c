@@ -3,6 +3,7 @@
 #include "gcal.h"
 #include "gcontact.h"
 #include "gcal_status.h"
+#include "internal_gcal.h"
 #include <string.h>
 #include <stdio.h>
 #include <unistd.h>
@@ -39,7 +40,7 @@ START_TEST (test_query_updated)
 	gcal_init_event(&event);
 	gcal_init_event(&edit);
 
-	event.title = "A test for updated query";
+	event.common.title = "A test for updated query";
 	event.content = "I will insert a new event and query just for it";
 	event.dt_start = "2008-06-18T20:00:00-04:00";
 	event.dt_end = "2008-06-18T21:00:00-04:00";
@@ -94,7 +95,7 @@ START_TEST (test_query_updated)
 	}
 
 	for (i = 0; i < length; ++i)
-		if (!(strcmp(entries[i].title, event.title))) {
+		if (!(strcmp(entries[i].common.title, event.common.title))) {
 			flag = 0;
 			goto cleanup;
 		}
