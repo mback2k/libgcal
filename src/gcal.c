@@ -67,7 +67,7 @@ POSSIBILITY OF SUCH DAMAGE.
 #include "curl_debug_gcal.h"
 #endif
 
-static void reset_buffer(struct gcal_resource *ptr)
+static void reset_buffer(gcal ptr)
 {
 	if (ptr->buffer)
 		free(ptr->buffer);
@@ -75,11 +75,11 @@ static void reset_buffer(struct gcal_resource *ptr)
 	ptr->buffer = (char *) calloc(ptr->length, sizeof(char));
 }
 
-struct gcal_resource *gcal_initialize(gservice mode)
+gcal gcal_initialize(gservice mode)
 {
 
-	struct gcal_resource *ptr;
-	ptr = (struct gcal_resource *) malloc(sizeof(struct gcal_resource));
+	gcal ptr;
+	ptr = (gcal ) malloc(sizeof(struct gcal_resource));
 	if (!ptr)
 		goto exit;
 
@@ -116,24 +116,24 @@ exit:
 	return ptr;
 }
 
-void gcal_set_service(struct gcal_resource *ptr_gcal, gservice mode)
+void gcal_set_service(gcal gcalobj, gservice mode)
 {
 
-	if (ptr_gcal) {
+	if (gcalobj) {
 		if (mode == GCALENDAR)
-			strcpy(ptr_gcal->service, "cl");
+			strcpy(gcalobj->service, "cl");
 		else if (mode == GCONTACT)
-			strcpy(ptr_gcal->service, "cp");
+			strcpy(gcalobj->service, "cp");
 
 	}
 }
 
-void clean_buffer(struct gcal_resource *gcal_obj)
+void clean_buffer(gcal gcal_obj)
 {
 	memset(gcal_obj->buffer, 0, gcal_obj->length);
 }
 
-void gcal_destroy(struct gcal_resource *gcal_obj)
+void gcal_destroy(gcal gcal_obj)
 {
 	if (!gcal_obj)
 		return;
@@ -169,7 +169,7 @@ static size_t write_cb(void *ptr, size_t count, size_t chunk_size, void *data)
 {
 
 	size_t size = count * chunk_size;
-	struct gcal_resource *gcal_ptr = (struct gcal_resource *) data;
+	gcal gcal_ptr = (gcal ) data;
 	int current_length = strnlen(gcal_ptr->buffer, gcal_ptr->length);
 	char *ptr_tmp;
 
@@ -200,47 +200,47 @@ exit:
 	return size;
 }
 
-static int check_request_error(struct gcal_resource *ptr_gcal, int code,
+static int check_request_error(gcal gcalobj, int code,
 			       int expected_answer)
 {
 	int result = 0;
-	CURL *curl_ctx = ptr_gcal->curl;
+	CURL *curl_ctx = gcalobj->curl;
 
 	curl_easy_getinfo(curl_ctx, CURLINFO_HTTP_CODE,
-			  &(ptr_gcal->http_code));
-	if (code || (ptr_gcal->http_code != expected_answer)) {
+			  &(gcalobj->http_code));
+	if (code || (gcalobj->http_code != expected_answer)) {
 
-		if (ptr_gcal->curl_msg)
-			free(ptr_gcal->curl_msg);
+		if (gcalobj->curl_msg)
+			free(gcalobj->curl_msg);
 
-		ptr_gcal->curl_msg = strdup(curl_easy_strerror(code));
+		gcalobj->curl_msg = strdup(curl_easy_strerror(code));
 
-		if (ptr_gcal->fout_log)
-			fprintf(ptr_gcal->fout_log, "%s\n%s%s\n%s%d\n",
+		if (gcalobj->fout_log)
+			fprintf(gcalobj->fout_log, "%s\n%s%s\n%s%d\n",
 				"check_request_error: failed request.",
-				"Curl code: ", ptr_gcal->curl_msg,
-				"HTTP code: ", (int)ptr_gcal->http_code);
+				"Curl code: ", gcalobj->curl_msg,
+				"HTTP code: ", (int)gcalobj->http_code);
 		result = -1;
 	}
 
 	return result;
 }
 
-static int common_upload(struct gcal_resource *ptr_gcal,
+static int common_upload(gcal gcalobj,
 			 char *header, char *header2, char *header3,
 			 struct curl_slist **curl_headers)
 {
 	int result = -1;
-	CURL *curl_ctx = ptr_gcal->curl;
+	CURL *curl_ctx = gcalobj->curl;
 	struct curl_slist *response_headers = NULL;
 
 #ifdef GCAL_DEBUG_CURL
 	struct data_curl_debug flag;
 	flag.trace_ascii = 1;
-	curl_easy_setopt(ptr_gcal->curl, CURLOPT_DEBUGFUNCTION,
+	curl_easy_setopt(gcalobj->curl, CURLOPT_DEBUGFUNCTION,
 			 curl_debug_gcal_trace);
-	curl_easy_setopt(ptr_gcal->curl, CURLOPT_DEBUGDATA, &flag);
-	curl_easy_setopt(ptr_gcal->curl, CURLOPT_VERBOSE, 1);
+	curl_easy_setopt(gcalobj->curl, CURLOPT_DEBUGDATA, &flag);
+	curl_easy_setopt(gcalobj->curl, CURLOPT_VERBOSE, 1);
 #endif
 
 	if (header)
@@ -257,12 +257,12 @@ static int common_upload(struct gcal_resource *ptr_gcal,
 
 	curl_easy_setopt(curl_ctx, CURLOPT_HTTPHEADER, response_headers);
 	curl_easy_setopt(curl_ctx, CURLOPT_WRITEFUNCTION, write_cb);
-	curl_easy_setopt(curl_ctx, CURLOPT_WRITEDATA, (void *)ptr_gcal);
+	curl_easy_setopt(curl_ctx, CURLOPT_WRITEDATA, (void *)gcalobj);
 
 	return result = 0;
 }
 
-int http_post(struct gcal_resource *ptr_gcal, const char *url,
+int http_post(gcal gcalobj, const char *url,
 	      char *header, char *header2, char *header3,
 	      char *post_data, const int expected_answer)
 {
@@ -270,11 +270,11 @@ int http_post(struct gcal_resource *ptr_gcal, const char *url,
 	CURLcode res;
 	struct curl_slist *response_headers = NULL;
 	CURL *curl_ctx;
-	if (!ptr_gcal)
+	if (!gcalobj)
 		goto exit;
 
-	curl_ctx = ptr_gcal->curl;
-	result = common_upload(ptr_gcal, header, header2, header3,
+	curl_ctx = gcalobj->curl;
+	result = common_upload(gcalobj, header, header2, header3,
 			       &response_headers);
 	if (result)
 		goto exit;
@@ -291,7 +291,7 @@ int http_post(struct gcal_resource *ptr_gcal, const char *url,
 		curl_easy_setopt(curl_ctx, CURLOPT_POSTFIELDSIZE, 0);
 
 	res = curl_easy_perform(curl_ctx);
-	result = check_request_error(ptr_gcal, res, expected_answer);
+	result = check_request_error(gcalobj, res, expected_answer);
 
 	/* cleanup */
 	curl_slist_free_all(response_headers);
@@ -301,7 +301,7 @@ exit:
 
 }
 
-static int http_put(struct gcal_resource *ptr_gcal, const char *url,
+static int http_put(gcal gcalobj, const char *url,
 		    char *header, char *header2, char *header3,
 		    char *post_data, const int expected_answer)
 {
@@ -309,18 +309,18 @@ static int http_put(struct gcal_resource *ptr_gcal, const char *url,
 	CURLcode res;
 	struct curl_slist *response_headers = NULL;
 	CURL *curl_ctx;
-	if (!ptr_gcal)
+	if (!gcalobj)
 		goto exit;
 
-	curl_ctx = ptr_gcal->curl;
-	result = common_upload(ptr_gcal, header, header2, header3,
+	curl_ctx = gcalobj->curl;
+	result = common_upload(gcalobj, header, header2, header3,
 			       &response_headers);
 	if (result)
 		goto exit;
 
 	curl_easy_setopt(curl_ctx, CURLOPT_URL, url);
 	/* Tells curl that I want to PUT */
-	curl_easy_setopt(ptr_gcal->curl, CURLOPT_CUSTOMREQUEST, "PUT");
+	curl_easy_setopt(gcalobj->curl, CURLOPT_CUSTOMREQUEST, "PUT");
 
 	if (post_data) {
 		curl_easy_setopt(curl_ctx, CURLOPT_POSTFIELDS, post_data);
@@ -333,7 +333,7 @@ static int http_put(struct gcal_resource *ptr_gcal, const char *url,
 
 
 	res = curl_easy_perform(curl_ctx);
-	result = check_request_error(ptr_gcal, res, expected_answer);
+	result = check_request_error(gcalobj, res, expected_answer);
 
 	/* cleanup */
 	curl_slist_free_all(response_headers);
@@ -343,7 +343,7 @@ exit:
 
 }
 
-int gcal_get_authentication(struct gcal_resource *ptr_gcal,
+int gcal_get_authentication(gcal gcalobj,
 			    char *user, char *password)
 {
 
@@ -356,16 +356,16 @@ int gcal_get_authentication(struct gcal_resource *ptr_gcal,
 		goto exit;
 
 	/* Must cleanup HTTP buffer between requests */
-	clean_buffer(ptr_gcal);
+	clean_buffer(gcalobj);
 
-	ptr_gcal->user = strdup(user);
+	gcalobj->user = strdup(user);
 	post_len = strlen(user) + strlen(password) +
 		sizeof(EMAIL_FIELD) + sizeof(EMAIL_ADDRESS) +
 		sizeof(PASSWD_FIELD) + sizeof(SERVICE_FIELD) +
-		strlen(ptr_gcal->service) + sizeof(CLIENT_SOURCE)
+		strlen(gcalobj->service) + sizeof(CLIENT_SOURCE)
 		+ 4; /* thanks to 3 '&' between fields + null character */
 	post = (char *) malloc(post_len);
-	if (!post || !ptr_gcal->user)
+	if (!post || !gcalobj->user)
 		goto exit;
 
 	snprintf(post, post_len - 1,
@@ -375,10 +375,10 @@ int gcal_get_authentication(struct gcal_resource *ptr_gcal,
 		 "%s",
 		 EMAIL_FIELD, user, EMAIL_ADDRESS,
 		 PASSWD_FIELD, password,
-		 SERVICE_FIELD, ptr_gcal->service,
+		 SERVICE_FIELD, gcalobj->service,
 		 CLIENT_SOURCE);
 
-	result = http_post(ptr_gcal, GCAL_URL,
+	result = http_post(gcalobj, GCAL_URL,
 			   "Content-Type: application/x-www-form-urlencoded",
 			   NULL, NULL, post, GCAL_DEFAULT_ANSWER);
 	if (result)
@@ -392,15 +392,15 @@ int gcal_get_authentication(struct gcal_resource *ptr_gcal,
 	 * without the '\r\n' in the end of string.
 	 * TODO: move this to a distinct function and write utests.
 	 */
-	if (ptr_gcal->auth)
-		free(ptr_gcal->auth);
+	if (gcalobj->auth)
+		free(gcalobj->auth);
 
-	ptr_gcal->auth = strstr(ptr_gcal->buffer, HEADER_AUTH);
-	ptr_gcal->auth = strdup(ptr_gcal->auth + strlen(HEADER_AUTH));
-	if (!ptr_gcal->auth)
+	gcalobj->auth = strstr(gcalobj->buffer, HEADER_AUTH);
+	gcalobj->auth = strdup(gcalobj->auth + strlen(HEADER_AUTH));
+	if (!gcalobj->auth)
 		goto cleanup;
 
-	tmp = strstr(ptr_gcal->auth, "\n");
+	tmp = strstr(gcalobj->auth, "\n");
 	if (tmp)
 		*tmp = '\0';
 
@@ -415,7 +415,7 @@ exit:
 
 }
 
-static int get_follow_redirection(struct gcal_resource *ptr_gcal,
+static int get_follow_redirection(gcal gcalobj,
 				  const char *url)
 {
 	struct curl_slist *response_headers = NULL;
@@ -424,34 +424,34 @@ static int get_follow_redirection(struct gcal_resource *ptr_gcal,
 	char *tmp_buffer = NULL;
 
 	/* Must cleanup HTTP buffer between requests */
-	clean_buffer(ptr_gcal);
+	clean_buffer(gcalobj);
 
-	length = strlen(ptr_gcal->auth) + sizeof(HEADER_GET) + 1;
+	length = strlen(gcalobj->auth) + sizeof(HEADER_GET) + 1;
 	tmp_buffer = (char *) malloc(length);
 	if (!tmp_buffer)
 		goto exit;
-	snprintf(tmp_buffer, length - 1, "%s%s", HEADER_GET, ptr_gcal->auth);
+	snprintf(tmp_buffer, length - 1, "%s%s", HEADER_GET, gcalobj->auth);
 
 	response_headers = curl_slist_append(response_headers, tmp_buffer);
 
-	curl_easy_setopt(ptr_gcal->curl, CURLOPT_HTTPGET, 1);
-	curl_easy_setopt(ptr_gcal->curl, CURLOPT_HTTPHEADER, response_headers);
-	curl_easy_setopt(ptr_gcal->curl, CURLOPT_URL, url);
-	curl_easy_setopt(ptr_gcal->curl, CURLOPT_WRITEFUNCTION, write_cb);
-	curl_easy_setopt(ptr_gcal->curl, CURLOPT_WRITEDATA, (void *)ptr_gcal);
+	curl_easy_setopt(gcalobj->curl, CURLOPT_HTTPGET, 1);
+	curl_easy_setopt(gcalobj->curl, CURLOPT_HTTPHEADER, response_headers);
+	curl_easy_setopt(gcalobj->curl, CURLOPT_URL, url);
+	curl_easy_setopt(gcalobj->curl, CURLOPT_WRITEFUNCTION, write_cb);
+	curl_easy_setopt(gcalobj->curl, CURLOPT_WRITEDATA, (void *)gcalobj);
 
-	result = curl_easy_perform(ptr_gcal->curl);
+	result = curl_easy_perform(gcalobj->curl);
 
-	if (!(strcmp(ptr_gcal->service, "cp"))) {
+	if (!(strcmp(gcalobj->service, "cp"))) {
 		/* For contacts, there is *not* redirection. */
-		if (!(result = check_request_error(ptr_gcal, result,
+		if (!(result = check_request_error(gcalobj, result,
 						   GCAL_DEFAULT_ANSWER))) {
 			result = 0;
 			goto cleanup;
 		}
-	} else if (!(strcmp(ptr_gcal->service, "cl"))) {
+	} else if (!(strcmp(gcalobj->service, "cl"))) {
 		/* For calendar, it *must* be redirection */
-		if (check_request_error(ptr_gcal, result,
+		if (check_request_error(gcalobj, result,
 					GCAL_REDIRECT_ANSWER)) {
 			result = -1;
 			goto cleanup;
@@ -463,20 +463,20 @@ static int get_follow_redirection(struct gcal_resource *ptr_gcal,
 	}
 
 	/* It will extract and follow the first 'REF' link in the stream */
-	if (ptr_gcal->url) {
-		free(ptr_gcal->url);
-		ptr_gcal->url = NULL;
+	if (gcalobj->url) {
+		free(gcalobj->url);
+		gcalobj->url = NULL;
 	}
 
-	if (get_the_url(ptr_gcal->buffer, ptr_gcal->length, &ptr_gcal->url)) {
+	if (get_the_url(gcalobj->buffer, gcalobj->length, &gcalobj->url)) {
 		result = -1;
 		goto cleanup;
 	}
 
-	clean_buffer(ptr_gcal);
-	curl_easy_setopt(ptr_gcal->curl, CURLOPT_URL, ptr_gcal->url);
-	result = curl_easy_perform(ptr_gcal->curl);
-	if ((result = check_request_error(ptr_gcal, result,
+	clean_buffer(gcalobj);
+	curl_easy_setopt(gcalobj->curl, CURLOPT_URL, gcalobj->url);
+	result = curl_easy_perform(gcalobj->curl);
+	if ((result = check_request_error(gcalobj, result,
 					  GCAL_DEFAULT_ANSWER))) {
 		result = -1;
 		goto cleanup;
@@ -494,7 +494,7 @@ exit:
 }
 
 
-static char *mount_query_url(struct gcal_resource *ptr_gcal,
+static char *mount_query_url(gcal gcalobj,
 			     const char *parameters, ...)
 {
 	va_list ap;
@@ -504,32 +504,32 @@ static char *mount_query_url(struct gcal_resource *ptr_gcal,
 	char query_init[] = "?";
 
 	/* TODO: put the google service type string in an array. */
-	if (!(strcmp(ptr_gcal->service, "cl"))) {
-		if (ptr_gcal->max_results)
+	if (!(strcmp(gcalobj->service, "cl"))) {
+		if (gcalobj->max_results)
 			length = sizeof(GCAL_EVENT_START) +
 				sizeof(GCAL_EVENT_END) +
 				sizeof(query_init) +
-				strlen(ptr_gcal->max_results) +
-				strlen(ptr_gcal->user) + 1;
+				strlen(gcalobj->max_results) +
+				strlen(gcalobj->user) + 1;
 		else
 			length = sizeof(GCAL_EVENT_START) +
 				sizeof(GCAL_EVENT_END) +
 				sizeof(query_init) +
-				strlen(ptr_gcal->user) + 1;
+				strlen(gcalobj->user) + 1;
 
 	}
-	else if (!(strcmp(ptr_gcal->service, "cp"))) {
-		if (ptr_gcal->max_results)
+	else if (!(strcmp(gcalobj->service, "cp"))) {
+		if (gcalobj->max_results)
 			length = sizeof(GCONTACT_START) +
 				sizeof(GCONTACT_END) +
 				sizeof(query_init) +
-				strlen(ptr_gcal->max_results) +
-				strlen(ptr_gcal->user) + 1;
+				strlen(gcalobj->max_results) +
+				strlen(gcalobj->user) + 1;
 		else
 			length = sizeof(GCONTACT_START) +
 				sizeof(GCONTACT_END) +
 				sizeof(query_init) +
-				strlen(ptr_gcal->user) + 1;
+				strlen(gcalobj->user) + 1;
 
 	} else
 		goto exit;
@@ -538,29 +538,29 @@ static char *mount_query_url(struct gcal_resource *ptr_gcal,
 	if (!result)
 		goto exit;
 
-	if (!(strcmp(ptr_gcal->service, "cl"))) {
+	if (!(strcmp(gcalobj->service, "cl"))) {
 		/* This is a basic query URL: must have the google service
 		 * address plus the number of max-results returned.
 		 */
-		if (ptr_gcal->max_results)
+		if (gcalobj->max_results)
 			snprintf(result, length - 1, "%s%s%s%s%s",
-				 GCAL_EVENT_START, ptr_gcal->user,
+				 GCAL_EVENT_START, gcalobj->user,
 				 GCAL_EVENT_END, query_init,
-				 ptr_gcal->max_results);
+				 gcalobj->max_results);
 		else
 			snprintf(result, length - 1, "%s%s%s%s",
-				 GCAL_EVENT_START, ptr_gcal->user,
+				 GCAL_EVENT_START, gcalobj->user,
 				 GCAL_EVENT_END, query_init);
 
-	} else if (!(strcmp(ptr_gcal->service, "cp"))) {
-		if (ptr_gcal->max_results)
+	} else if (!(strcmp(gcalobj->service, "cp"))) {
+		if (gcalobj->max_results)
 			snprintf(result, length - 1, "%s%s%s%s%s",
-				 GCONTACT_START, ptr_gcal->user,
+				 GCONTACT_START, gcalobj->user,
 				 GCONTACT_END, query_init,
-				 ptr_gcal->max_results);
+				 gcalobj->max_results);
 		else
 			snprintf(result, length - 1, "%s%s%s%s",
-				 GCONTACT_START, ptr_gcal->user,
+				 GCONTACT_START, gcalobj->user,
 				 GCONTACT_END, query_init);
 
 	}
@@ -602,25 +602,25 @@ exit:
 	return result;
 }
 
-int gcal_dump(struct gcal_resource *ptr_gcal)
+int gcal_dump(gcal gcalobj)
 {
 	int result = -1;
 	char *buffer = NULL;
 
-	if (!ptr_gcal)
+	if (!gcalobj)
 		goto exit;
 	/* Failed to get authentication token */
-	if (!ptr_gcal->auth)
+	if (!gcalobj->auth)
 		goto exit;
 
-	buffer = mount_query_url(ptr_gcal, NULL);
+	buffer = mount_query_url(gcalobj, NULL);
 	if (!buffer)
 		goto exit;
 
-	result =  get_follow_redirection(ptr_gcal, buffer);
+	result =  get_follow_redirection(gcalobj, buffer);
 
 	if (!result)
-		ptr_gcal->has_xml = 1;
+		gcalobj->has_xml = 1;
 
 	free(buffer);
 exit:
@@ -628,60 +628,60 @@ exit:
 	return result;
 }
 
-int gcal_calendar_list(struct gcal_resource *ptr_gcal)
+int gcal_calendar_list(gcal gcalobj)
 {
 	int result;
-	result =  get_follow_redirection(ptr_gcal, GCAL_LIST);
+	result =  get_follow_redirection(gcalobj, GCAL_LIST);
 	/* TODO: parse the Atom feed */
 
 	return result;
 }
 
-int gcal_entry_number(struct gcal_resource *ptr_gcal)
+int gcal_entry_number(gcal gcalobj)
 {
 	int result = -1;
 
-	if (!ptr_gcal)
+	if (!gcalobj)
 		goto exit;
 	/* Failed to get authentication token */
-	if (!ptr_gcal->auth)
+	if (!gcalobj->auth)
 		goto exit;
 
-	if (!ptr_gcal->buffer || !ptr_gcal->has_xml)
+	if (!gcalobj->buffer || !gcalobj->has_xml)
 		goto exit;
 
-	ptr_gcal->document = build_dom_document(ptr_gcal->buffer);
-	if (!ptr_gcal->document)
+	gcalobj->document = build_dom_document(gcalobj->buffer);
+	if (!gcalobj->document)
 		goto exit;
 
-	result = get_entries_number(ptr_gcal->document);
-	clean_dom_document(ptr_gcal->document);
-	ptr_gcal->document = NULL;
+	result = get_entries_number(gcalobj->document);
+	clean_dom_document(gcalobj->document);
+	gcalobj->document = NULL;
 
 exit:
 	return result;
 }
 
-struct gcal_event *gcal_get_entries(struct gcal_resource *ptr_gcal,
+struct gcal_event *gcal_get_entries(gcal gcalobj,
 				    size_t *length)
 {
 
 	int result = -1;
 	struct gcal_event *ptr_res = NULL;
 
-	if (!ptr_gcal)
+	if (!gcalobj)
 		goto exit;
 
-	if (!ptr_gcal->buffer || !ptr_gcal->has_xml)
+	if (!gcalobj->buffer || !gcalobj->has_xml)
 		goto exit;
 
 	/* create a doc and free atom xml buffer
 	 */
-	ptr_gcal->document = build_dom_document(ptr_gcal->buffer);
-	if (!ptr_gcal->document)
+	gcalobj->document = build_dom_document(gcalobj->buffer);
+	if (!gcalobj->document)
 		goto exit;
 
-	result = get_entries_number(ptr_gcal->document);
+	result = get_entries_number(gcalobj->document);
 	if (result == -1)
 		goto cleanup;
 
@@ -690,15 +690,15 @@ struct gcal_event *gcal_get_entries(struct gcal_resource *ptr_gcal,
 		goto cleanup;
 
 	*length = result;
-	result = extract_all_entries(ptr_gcal->document, ptr_res, result);
+	result = extract_all_entries(gcalobj->document, ptr_res, result);
 	if (result == -1) {
 		free(ptr_res);
 		ptr_res = NULL;
 	}
 
 cleanup:
-	clean_dom_document(ptr_gcal->document);
-	ptr_gcal->document = NULL;
+	clean_dom_document(gcalobj->document);
+	gcalobj->document = NULL;
 
 exit:
 
@@ -756,21 +756,21 @@ void gcal_destroy_entries(struct gcal_event *entries, size_t length)
 /* This function makes possible to share code between 'add'
  * and 'edit' events.
  */
-int up_entry(char *data2post, struct gcal_resource *ptr_gcal,
+int up_entry(char *data2post, gcal gcalobj,
 	     const char *url_server, HTTP_CMD up_mode, int expected_code)
 {
 	int result = -1;
 	int length = 0;
 	char *h_auth = NULL, *h_length = NULL, *tmp;
 	const char header[] = "Content-length: ";
-	int (*up_callback)(struct gcal_resource *, const char *,
+	int (*up_callback)(gcal , const char *,
 			   char *, char *, char *,
 			   char *, const int);
 
-	if (!data2post || !ptr_gcal)
+	if (!data2post || !gcalobj)
 		goto exit;
 
-	if (!ptr_gcal->auth)
+	if (!gcalobj->auth)
 		goto exit;
 
 	if (up_mode == POST)
@@ -781,7 +781,7 @@ int up_entry(char *data2post, struct gcal_resource *ptr_gcal,
 		goto exit;
 
 	/* Must cleanup HTTP buffer between requests */
-	clean_buffer(ptr_gcal);
+	clean_buffer(gcalobj);
 
 	/* Mounts content length and  authentication header strings */
 	length = strlen(data2post) + strlen(header) + 1;
@@ -793,17 +793,17 @@ int up_entry(char *data2post, struct gcal_resource *ptr_gcal,
 	snprintf(tmp, length - (sizeof(header) + 1), "%d", strlen(data2post));
 
 
-	length = strlen(ptr_gcal->auth) + sizeof(HEADER_GET) + 1;
+	length = strlen(gcalobj->auth) + sizeof(HEADER_GET) + 1;
 	h_auth = (char *) malloc(length);
 	if (!h_auth)
 		goto exit;
-	snprintf(h_auth, length - 1, "%s%s", HEADER_GET, ptr_gcal->auth);
+	snprintf(h_auth, length - 1, "%s%s", HEADER_GET, gcalobj->auth);
 
 
 	/* Post the data */
-	if (!(strcmp(ptr_gcal->service, "cp"))) {
+	if (!(strcmp(gcalobj->service, "cp"))) {
 		/* For contacts, there is *not* redirection. */
-		result = up_callback(ptr_gcal, url_server,
+		result = up_callback(gcalobj, url_server,
 				     "Content-Type: application/atom+xml",
 				     h_length,
 				     h_auth,
@@ -813,9 +813,9 @@ int up_entry(char *data2post, struct gcal_resource *ptr_gcal,
 			result = 0;
 			goto cleanup;
 		}
-	} else if (!(strcmp(ptr_gcal->service, "cl"))) {
+	} else if (!(strcmp(gcalobj->service, "cl"))) {
 		/* For calendar, it *must* be redirection */
-		result = up_callback(ptr_gcal, url_server,
+		result = up_callback(gcalobj, url_server,
 				     "Content-Type: application/atom+xml",
 				     h_length,
 				     h_auth,
@@ -826,31 +826,31 @@ int up_entry(char *data2post, struct gcal_resource *ptr_gcal,
 		goto cleanup;
 
 
-	if (ptr_gcal->url) {
-		free(ptr_gcal->url);
-		ptr_gcal->url = NULL;
+	if (gcalobj->url) {
+		free(gcalobj->url);
+		gcalobj->url = NULL;
 	}
 
-	if (get_the_url(ptr_gcal->buffer, ptr_gcal->length, &ptr_gcal->url))
+	if (get_the_url(gcalobj->buffer, gcalobj->length, &gcalobj->url))
 		goto cleanup;
 
-	clean_buffer(ptr_gcal);
+	clean_buffer(gcalobj);
 
 	/* Add gsessionid to post URL */
-	result = up_callback(ptr_gcal, ptr_gcal->url,
+	result = up_callback(gcalobj, gcalobj->url,
 			     "Content-Type: application/atom+xml",
 			     h_length,
 			     h_auth,
 			     data2post, expected_code);
 
 	if (result == -1) {
-		if (ptr_gcal->fout_log) {
-			fprintf(ptr_gcal->fout_log,
-				"result = %s\n", ptr_gcal->buffer);
-			fprintf(ptr_gcal->fout_log,
+		if (gcalobj->fout_log) {
+			fprintf(gcalobj->fout_log,
+				"result = %s\n", gcalobj->buffer);
+			fprintf(gcalobj->fout_log,
 				"\nurl = %s\nh_length = %s\nh_auth = %s"
 				"\ndata2post =%s%d\n",
-				ptr_gcal->url, h_length, h_auth, data2post,
+				gcalobj->url, h_length, h_auth, data2post,
 				strlen(data2post));
 		}
 		goto cleanup;
@@ -867,41 +867,41 @@ exit:
 	return result;
 }
 
-int gcal_create_event(struct gcal_resource *ptr_gcal,
+int gcal_create_event(gcal gcalobj,
 		      struct gcal_event *entries,
 		      struct gcal_event *updated)
 {
 	int result = -1, length;
 	char *xml_entry = NULL;
 
-	if ((!entries) || (!ptr_gcal))
+	if ((!entries) || (!gcalobj))
 		return result;
 
 	result = xmlentry_create(entries, &xml_entry, &length);
 	if (result == -1)
 		goto exit;
 
-	result = up_entry(xml_entry, ptr_gcal, GCAL_EDIT_URL, POST,
+	result = up_entry(xml_entry, gcalobj, GCAL_EDIT_URL, POST,
 			  GCAL_EDIT_ANSWER);
 
 	/* Parse buffer and create the new contact object */
 	if (!updated)
 		goto cleanup;
 	result = -2;
-	ptr_gcal->document = build_dom_document(ptr_gcal->buffer);
-	if (!ptr_gcal->document)
+	gcalobj->document = build_dom_document(gcalobj->buffer);
+	if (!gcalobj->document)
 		goto cleanup;
 
 	/* There is only one 'entry' in the buffer */
-	result = extract_all_entries(ptr_gcal->document, updated, 1);
+	result = extract_all_entries(gcalobj->document, updated, 1);
 	if (result == -1)
 		goto xmlclean;
 
 	result = 0;
 
 xmlclean:
-	clean_dom_document(ptr_gcal->document);
-	ptr_gcal->document = NULL;
+	clean_dom_document(gcalobj->document);
+	gcalobj->document = NULL;
 
 cleanup:
 	if (xml_entry)
@@ -911,26 +911,26 @@ exit:
 	return result;
 }
 
-int gcal_delete_event(struct gcal_resource *ptr_gcal,
+int gcal_delete_event(gcal gcalobj,
 		      struct gcal_event *entry)
 {
 	int result = -1, length;
 	char *h_auth;
 
-	if (!entry || !ptr_gcal)
+	if (!entry || !gcalobj)
 		goto exit;
 
 	/* Must cleanup HTTP buffer between requests */
-	clean_buffer(ptr_gcal);
+	clean_buffer(gcalobj);
 
-	length = strlen(ptr_gcal->auth) + sizeof(HEADER_GET) + 1;
+	length = strlen(gcalobj->auth) + sizeof(HEADER_GET) + 1;
 	h_auth = (char *) malloc(length);
 	if (!h_auth)
 		goto exit;
-	snprintf(h_auth, length - 1, "%s%s", HEADER_GET, ptr_gcal->auth);
+	snprintf(h_auth, length - 1, "%s%s", HEADER_GET, gcalobj->auth);
 
-	curl_easy_setopt(ptr_gcal->curl, CURLOPT_CUSTOMREQUEST, "DELETE");
-	result = http_post(ptr_gcal, entry->edit_uri,
+	curl_easy_setopt(gcalobj->curl, CURLOPT_CUSTOMREQUEST, "DELETE");
+	result = http_post(gcalobj, entry->edit_uri,
 			   "Content-Type: application/atom+xml",
 			   NULL,
 			   h_auth,
@@ -940,14 +940,14 @@ int gcal_delete_event(struct gcal_resource *ptr_gcal,
 	if (result == -1)
 		goto cleanup;
 
-	if (ptr_gcal->url) {
-		free(ptr_gcal->url);
-		ptr_gcal->url = NULL;
+	if (gcalobj->url) {
+		free(gcalobj->url);
+		gcalobj->url = NULL;
 	}
-	if (get_the_url(ptr_gcal->buffer, ptr_gcal->length, &ptr_gcal->url))
+	if (get_the_url(gcalobj->buffer, gcalobj->length, &gcalobj->url))
 		goto cleanup;
 
-	result = http_post(ptr_gcal, ptr_gcal->url,
+	result = http_post(gcalobj, gcalobj->url,
 			   "Content-Type: application/atom+xml",
 			   NULL,
 			   h_auth,
@@ -964,7 +964,7 @@ exit:
 
 }
 
-int gcal_edit_event(struct gcal_resource *ptr_gcal,
+int gcal_edit_event(gcal gcalobj,
 		    struct gcal_event *entry,
 		    struct gcal_event *updated)
 {
@@ -972,34 +972,34 @@ int gcal_edit_event(struct gcal_resource *ptr_gcal,
 	int result = -1, length;
 	char *xml_entry = NULL;
 
-	if ((!entry) || (!ptr_gcal))
+	if ((!entry) || (!gcalobj))
 		goto exit;
 
 	result = xmlentry_create(entry, &xml_entry, &length);
 	if (result == -1)
 		goto exit;
 
-	result = up_entry(xml_entry, ptr_gcal, entry->edit_uri, PUT,
+	result = up_entry(xml_entry, gcalobj, entry->edit_uri, PUT,
 			  GCAL_DEFAULT_ANSWER);
 
 	/* Parse buffer and create the new contact object */
 	if (!updated)
 		goto cleanup;
 	result = -2;
-	ptr_gcal->document = build_dom_document(ptr_gcal->buffer);
-	if (!ptr_gcal->document)
+	gcalobj->document = build_dom_document(gcalobj->buffer);
+	if (!gcalobj->document)
 		goto cleanup;
 
 	/* There is only one 'entry' in the buffer */
-	result = extract_all_entries(ptr_gcal->document, updated, 1);
+	result = extract_all_entries(gcalobj->document, updated, 1);
 	if (result == -1)
 		goto xmlclean;
 
 	result = 0;
 
 xmlclean:
-	clean_dom_document(ptr_gcal->document);
-	ptr_gcal->document = NULL;
+	clean_dom_document(gcalobj->document);
+	gcalobj->document = NULL;
 
 cleanup:
 	if (xml_entry)
@@ -1009,12 +1009,12 @@ exit:
 	return result;
 }
 
-char *gcal_access_buffer(struct gcal_resource *ptr_gcal)
+char *gcal_access_buffer(gcal gcalobj)
 {
 	char *result = NULL;
-	if (ptr_gcal)
-		if (ptr_gcal->buffer)
-			result = ptr_gcal->buffer;
+	if (gcalobj)
+		if (gcalobj->buffer)
+			result = gcalobj->buffer;
 
 	return result;
 
@@ -1054,7 +1054,7 @@ int get_mili_timestamp(char *timestamp, size_t length, char *atimezone)
  * quering for updated entries is just a query with a set of
  * parameters.
  */
-int gcal_query_updated(struct gcal_resource *ptr_gcal, char *timestamp)
+int gcal_query_updated(gcal gcalobj, char *timestamp)
 {
 	int result = -1;
 	char *query_url = NULL;
@@ -1065,7 +1065,7 @@ int gcal_query_updated(struct gcal_resource *ptr_gcal, char *timestamp)
 	char *ptr, *hour_const = NULL;
 	size_t length = 0;
 
-	if (!ptr_gcal)
+	if (!gcalobj)
 		goto exit;
 
 	length = TIMESTAMP_MAX_SIZE + sizeof(query_updated_param) + 1;
@@ -1078,7 +1078,7 @@ int gcal_query_updated(struct gcal_resource *ptr_gcal, char *timestamp)
 		if (!query_timestamp)
 			goto cleanup;
 		result = get_mili_timestamp(query_timestamp, TIMESTAMP_MAX_SIZE,
-					    ptr_gcal->timezone);
+					    gcalobj->timezone);
 		if (result)
 			goto cleanup;
 
@@ -1086,9 +1086,9 @@ int gcal_query_updated(struct gcal_resource *ptr_gcal, char *timestamp)
 		 * available.
 		 */
 		ptr = query_timestamp + strlen(query_timestamp);
-		if (ptr_gcal->timezone) {
+		if (gcalobj->timezone) {
 			hour_const = "06:00:00.000";
-			ptr -= strlen(hour_const) + strlen(ptr_gcal->timezone);
+			ptr -= strlen(hour_const) + strlen(gcalobj->timezone);
 		}
 		else {
 			hour_const = "06:00:00.000Z";
@@ -1108,8 +1108,8 @@ int gcal_query_updated(struct gcal_resource *ptr_gcal, char *timestamp)
 	strncat(buffer1, query_timestamp, strlen(query_timestamp));
 
 	/* 'showdeleted' is only valid for google contacts */
-	if ((ptr_gcal->deleted == SHOW) &&
-	    (!(strcmp(ptr_gcal->service, "cp")))) {
+	if ((gcalobj->deleted == SHOW) &&
+	    (!(strcmp(gcalobj->service, "cp")))) {
 		ptr = strdup("showdeleted=true");
 		if (!ptr)
 			goto cleanup;
@@ -1122,15 +1122,15 @@ int gcal_query_updated(struct gcal_resource *ptr_gcal, char *timestamp)
 	}
 
 	/* Add location to query (if set) */
-	if (ptr_gcal->location) {
-		length = strlen(ptr_gcal->location) +
+	if (gcalobj->location) {
+		length = strlen(gcalobj->location) +
 			sizeof(query_zone_param) + 1;
 		ptr = (char *) malloc(length);
 		if (!ptr)
 			goto cleanup;
 
 		strcpy(ptr, query_zone_param);
-		strcat(ptr, ptr_gcal->location);
+		strcat(ptr, gcalobj->location);
 
 		/* Set the query string to the available buffer parameter */
 		if (!buffer2)
@@ -1143,13 +1143,13 @@ int gcal_query_updated(struct gcal_resource *ptr_gcal, char *timestamp)
 	/* TODO: implement URL encoding i.e. RFC1738 using
 	 * 'curl_easy_escape'.
 	 */
-	query_url = mount_query_url(ptr_gcal, buffer1, buffer2, buffer3, NULL);
+	query_url = mount_query_url(gcalobj, buffer1, buffer2, buffer3, NULL);
 	if (!query_url)
 		goto cleanup;
 
-	result = get_follow_redirection(ptr_gcal, query_url);
+	result = get_follow_redirection(gcalobj, query_url);
 	if (!result)
-		ptr_gcal->has_xml = 1;
+		gcalobj->has_xml = 1;
 
 cleanup:
 
@@ -1169,34 +1169,34 @@ exit:
 
 }
 
-int gcal_set_timezone(struct gcal_resource *ptr_gcal, char *atimezone)
+int gcal_set_timezone(gcal gcalobj, char *atimezone)
 {
 	int result = -1;
-	if ((!ptr_gcal) || (!atimezone))
+	if ((!gcalobj) || (!atimezone))
 		goto exit;
 
-	if (ptr_gcal->timezone)
-		free(ptr_gcal->timezone);
+	if (gcalobj->timezone)
+		free(gcalobj->timezone);
 
-	ptr_gcal->timezone = strdup(atimezone);
-	if (ptr_gcal->timezone)
+	gcalobj->timezone = strdup(atimezone);
+	if (gcalobj->timezone)
 		result = 0;
 
 exit:
 	return result;
 }
 
-int gcal_set_location(struct gcal_resource *ptr_gcal, char *location)
+int gcal_set_location(gcal gcalobj, char *location)
 {
 	int result = -1;
-	if ((!ptr_gcal) || (!location))
+	if ((!gcalobj) || (!location))
 		goto exit;
 
-	if (ptr_gcal->location)
-		free(ptr_gcal->location);
+	if (gcalobj->location)
+		free(gcalobj->location);
 
-	ptr_gcal->location = strdup(location);
-	if (ptr_gcal->location)
+	gcalobj->location = strdup(location);
+	if (gcalobj->location)
 		result = 0;
 
 exit:
@@ -1204,42 +1204,42 @@ exit:
 
 }
 
-void gcal_deleted(struct gcal_resource *ptr_gcal, display_deleted_entries opt)
+void gcal_deleted(gcal gcalobj, display_deleted_entries opt)
 {
-	if (!ptr_gcal)
+	if (!gcalobj)
 		return;
 
 	if (opt == SHOW)
-		ptr_gcal->deleted = SHOW;
+		gcalobj->deleted = SHOW;
 	else if (opt == HIDE)
-		ptr_gcal->deleted = HIDE;
-	else if (ptr_gcal->fout_log)
-		fprintf(ptr_gcal->fout_log, "gcal_deleted: invalid option:%d\n",
+		gcalobj->deleted = HIDE;
+	else if (gcalobj->fout_log)
+		fprintf(gcalobj->fout_log, "gcal_deleted: invalid option:%d\n",
 			opt);
 
 }
 
-int gcal_query(struct gcal_resource *ptr_gcal, const char *parameters)
+int gcal_query(gcal gcalobj, const char *parameters)
 {
 	char *query_url = NULL, *ptr_tmp;
 	int result = -1;
 
-	if ((!ptr_gcal) && (!parameters))
+	if ((!gcalobj) && (!parameters))
 		goto exit;
 
 	/* Swaps the max-results internal member for NULL. This makes
 	 * possible a generic query with user defined max-results.
 	 */
-	ptr_tmp = ptr_gcal->max_results;
-	ptr_gcal->max_results = NULL;
-	query_url = mount_query_url(ptr_gcal, parameters, NULL);
-	ptr_gcal->max_results = ptr_tmp;
+	ptr_tmp = gcalobj->max_results;
+	gcalobj->max_results = NULL;
+	query_url = mount_query_url(gcalobj, parameters, NULL);
+	gcalobj->max_results = ptr_tmp;
 	if (!query_url)
 		goto exit;
 
-	result = get_follow_redirection(ptr_gcal, query_url);
+	result = get_follow_redirection(gcalobj, query_url);
 	if (!result)
-		ptr_gcal->has_xml = 1;
+		gcalobj->has_xml = 1;
 
 	if (query_url)
 		free(query_url);

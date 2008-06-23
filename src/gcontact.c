@@ -45,25 +45,25 @@ POSSIBILITY OF SUCH DAMAGE.
 #include "gcal_parser.h"
 
 
-struct gcal_contact *gcal_get_contacts(struct gcal_resource *ptr_gcal,
+struct gcal_contact *gcal_get_contacts(struct gcal_resource *gcalobj,
 				       size_t *length)
 
 {
 	int result = -1;
 	struct gcal_contact *ptr_res = NULL;
 
-	if (!ptr_gcal)
+	if (!gcalobj)
 		goto exit;
 
-	if (!ptr_gcal->buffer || !ptr_gcal->has_xml)
+	if (!gcalobj->buffer || !gcalobj->has_xml)
 		goto exit;
 
-	ptr_gcal->document = build_dom_document(ptr_gcal->buffer);
-	if (!ptr_gcal->document)
+	gcalobj->document = build_dom_document(gcalobj->buffer);
+	if (!gcalobj->document)
 		goto exit;
 
 
-	result = get_entries_number(ptr_gcal->document);
+	result = get_entries_number(gcalobj->document);
 	if (result == -1)
 		goto cleanup;
 
@@ -72,7 +72,7 @@ struct gcal_contact *gcal_get_contacts(struct gcal_resource *ptr_gcal,
 		goto cleanup;
 
 	*length = result;
-	result = extract_all_contacts(ptr_gcal->document, ptr_res, result);
+	result = extract_all_contacts(gcalobj->document, ptr_res, result);
 	if (result == -1) {
 		free(ptr_res);
 		ptr_res = NULL;
@@ -81,8 +81,8 @@ struct gcal_contact *gcal_get_contacts(struct gcal_resource *ptr_gcal,
 	goto exit;
 
 cleanup:
-	clean_dom_document(ptr_gcal->document);
-	ptr_gcal->document = NULL;
+	clean_dom_document(gcalobj->document);
+	gcalobj->document = NULL;
 
 exit:
 
@@ -141,14 +141,14 @@ void gcal_destroy_contacts(struct gcal_contact *contacts, size_t length)
 	free(contacts);
 }
 
-int gcal_create_contact(struct gcal_resource *ptr_gcal,
+int gcal_create_contact(gcal gcalobj,
 			struct gcal_contact *contact,
 			struct gcal_contact *updated)
 {
 	int result = -1, length;
 	char *xml_contact = NULL, *buffer;
 
-	if ((!contact) || (!ptr_gcal))
+	if ((!contact) || (!gcalobj))
 		return result;
 
 	result = xmlcontact_create(contact, &xml_contact, &length);
@@ -157,26 +157,26 @@ int gcal_create_contact(struct gcal_resource *ptr_gcal,
 
 	/* Mounts URL */
 	length = sizeof(GCONTACT_START) + sizeof(GCONTACT_END) +
-		strlen(ptr_gcal->user) + 1;
+		strlen(gcalobj->user) + 1;
 	buffer = (char *) malloc(length);
 	if (!buffer)
 		goto cleanup;
 	snprintf(buffer, length - 1, "%s%s%s", GCONTACT_START,
-		 ptr_gcal->user, GCONTACT_END);
+		 gcalobj->user, GCONTACT_END);
 
-	result = up_entry(xml_contact, ptr_gcal, buffer, POST,
+	result = up_entry(xml_contact, gcalobj, buffer, POST,
 			  GCAL_EDIT_ANSWER);
 
 	/* Parse buffer and create the new contact object */
 	if (!updated)
 		goto cleanup;
 	result = -2;
-	ptr_gcal->document = build_dom_document(ptr_gcal->buffer);
-	if (!ptr_gcal->document)
+	gcalobj->document = build_dom_document(gcalobj->buffer);
+	if (!gcalobj->document)
 		goto cleanup;
 
 	/* There is only one 'entry' in the buffer */
-	result = extract_all_contacts(ptr_gcal->document, updated, 1);
+	result = extract_all_contacts(gcalobj->document, updated, 1);
 	if (result == -1)
 		goto xmlclean;
 
@@ -184,8 +184,8 @@ int gcal_create_contact(struct gcal_resource *ptr_gcal,
 
 
 xmlclean:
-	clean_dom_document(ptr_gcal->document);
-	ptr_gcal->document = NULL;
+	clean_dom_document(gcalobj->document);
+	gcalobj->document = NULL;
 
 cleanup:
 	if (xml_contact)
@@ -198,27 +198,27 @@ exit:
 
 }
 
-int gcal_delete_contact(struct gcal_resource *ptr_gcal,
+int gcal_delete_contact(gcal gcalobj,
 			struct gcal_contact *contact)
 {
 	int result = -1, length;
 	char *h_auth;
 
-	if (!contact || !ptr_gcal)
+	if (!contact || !gcalobj)
 		goto exit;
 
 	/* Must cleanup HTTP buffer between requests */
-	clean_buffer(ptr_gcal);
+	clean_buffer(gcalobj);
 
 	/* TODO: add X-HTTP header */
-	length = strlen(ptr_gcal->auth) + sizeof(HEADER_GET) + 1;
+	length = strlen(gcalobj->auth) + sizeof(HEADER_GET) + 1;
 	h_auth = (char *) malloc(length);
 	if (!h_auth)
 		goto exit;
-	snprintf(h_auth, length - 1, "%s%s", HEADER_GET, ptr_gcal->auth);
+	snprintf(h_auth, length - 1, "%s%s", HEADER_GET, gcalobj->auth);
 
-	curl_easy_setopt(ptr_gcal->curl, CURLOPT_CUSTOMREQUEST, "DELETE");
-	result = http_post(ptr_gcal, contact->edit_uri,
+	curl_easy_setopt(gcalobj->curl, CURLOPT_CUSTOMREQUEST, "DELETE");
+	result = http_post(gcalobj, contact->edit_uri,
 			   "Content-Type: application/atom+xml",
 			   NULL,
 			   h_auth,
@@ -232,7 +232,7 @@ exit:
 	return result;
 }
 
-int gcal_edit_contact(struct gcal_resource *ptr_gcal,
+int gcal_edit_contact(gcal gcalobj,
 		      struct gcal_contact *contact,
 		      struct gcal_contact *updated)
 {
@@ -240,26 +240,26 @@ int gcal_edit_contact(struct gcal_resource *ptr_gcal,
 	int result = -1, length;
 	char *xml_contact = NULL;
 
-	if ((!contact) || (!ptr_gcal))
+	if ((!contact) || (!gcalobj))
 		goto exit;
 
 	result = xmlcontact_create(contact, &xml_contact, &length);
 	if (result == -1)
 		goto exit;
 
-	result = up_entry(xml_contact, ptr_gcal, contact->edit_uri, PUT,
+	result = up_entry(xml_contact, gcalobj, contact->edit_uri, PUT,
 			  GCAL_DEFAULT_ANSWER);
 
 	/* Parse buffer and create the new contact object */
 	if (!updated)
 		goto cleanup;
 	result = -2;
-	ptr_gcal->document = build_dom_document(ptr_gcal->buffer);
-	if (!ptr_gcal->document)
+	gcalobj->document = build_dom_document(gcalobj->buffer);
+	if (!gcalobj->document)
 		goto cleanup;
 
 	/* There is only one 'entry' in the buffer */
-	result = extract_all_contacts(ptr_gcal->document, updated, 1);
+	result = extract_all_contacts(gcalobj->document, updated, 1);
 	if (result == -1)
 		goto xmlclean;
 
@@ -267,8 +267,8 @@ int gcal_edit_contact(struct gcal_resource *ptr_gcal,
 
 
 xmlclean:
-	clean_dom_document(ptr_gcal->document);
-	ptr_gcal->document = NULL;
+	clean_dom_document(gcalobj->document);
+	gcalobj->document = NULL;
 
 cleanup:
 

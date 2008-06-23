@@ -68,6 +68,11 @@ typedef enum {
  */
 struct gcal_resource;
 
+/** Since user cannot create an static instance of it, it entitles itself
+ * to be a completely abstract data type. See \ref gcal_resource.
+ */
+typedef struct gcal_resource * gcal;
+
 /** Library structure, represents each calendar event entry.
  */
 struct gcal_event {
@@ -95,7 +100,7 @@ struct gcal_event {
 
 /** Library structure destructor (use it free its internal resources properly).
  */
-void gcal_destroy(struct gcal_resource *gcal_obj);
+void gcal_destroy(gcal gcal_obj);
 
 
 /** Internal use function, cleans up the internal buffer.
@@ -104,7 +109,7 @@ void gcal_destroy(struct gcal_resource *gcal_obj);
  *
  * @param gcal_obj Library resource structure pointer.
  */
-void clean_buffer(struct gcal_resource *gcal_obj);
+void clean_buffer(gcal gcal_obj);
 
 
 /** Library structure constructor, the user can only have pointers to the
@@ -118,24 +123,24 @@ void clean_buffer(struct gcal_resource *gcal_obj);
  *
  * @return A pointer to a newly created object or NULL.
  */
-struct gcal_resource *gcal_initialize(gservice mode);
+gcal gcal_initialize(gservice mode);
 
 /** Sets the google service that user wants to authenticate.
  *
  * For while, only calendar (cl) and contacts (cp) are supported.
  *
- * @param ptr_gcal Pointer to a library resource structure \ref gcal_resource.
+ * @param gcalobj Pointer to a library resource structure \ref gcal_resource.
  *
  * @param mode Service type, see \ref gservice.
  */
-void gcal_set_service(struct gcal_resource *ptr_gcal, gservice mode);
+void gcal_set_service(gcal gcalobj, gservice mode);
 
 
 /** Gets from google an authentication token, using the 'ClientLogin' service.
  *
  * Use it before getting/setting google calendar events.
  *
- * @param ptr_gcal Pointer to a library resource structure \ref gcal_resource
+ * @param gcalobj Pointer to a library resource structure \ref gcal_resource
  *
  * @param user The user google login account.
  *
@@ -144,7 +149,7 @@ void gcal_set_service(struct gcal_resource *ptr_gcal, gservice mode);
  *
  * @return Returns 0 on success, -1 otherwise.
  */
-int gcal_get_authentication(struct gcal_resource *ptr_gcal,
+int gcal_get_authentication(gcal gcalobj,
 			    char *user, char *password);
 
 
@@ -152,13 +157,13 @@ int gcal_get_authentication(struct gcal_resource *ptr_gcal,
  * \todo Let the library user select which calendar he/she wants
  * to get the events. See \ref gcal_calendar_list.
  *
- * @param ptr_gcal Pointer to a \ref gcal_resource structure, which has
+ * @param gcalobj Pointer to a \ref gcal_resource structure, which has
  *                 previously got the authentication using
  *                 \ref gcal_get_authentication.
  *
  * @return Returns 0 on success, -1 otherwise.
  */
-int gcal_dump(struct gcal_resource *ptr_gcal);
+int gcal_dump(gcal gcalobj);
 
 /** Get a list of users calendars (gcalendar supports multiple calendars
  * besides the default calendar).
@@ -168,25 +173,25 @@ int gcal_dump(struct gcal_resource *ptr_gcal);
  *
  * \todo Parse the Atom feed and provide easy access to the calendar lists.
  *
- * @param ptr_gcal Pointer to a \ref gcal_resource structure, which has
+ * @param gcalobj Pointer to a \ref gcal_resource structure, which has
  *                 previously got the authentication using
  *                 \ref gcal_get_authentication.
  *
  * @return Returns 0 on success, -1 otherwise.
  */
-int gcal_calendar_list(struct gcal_resource *ptr_gcal);
+int gcal_calendar_list(gcal gcalobj);
 
 
 /** Return the number of event entries a calendar has (you should
  * had got the atom stream before, using \ref gcal_dump).
  *
- * @param ptr_gcal Pointer to a \ref gcal_resource structure, which has
+ * @param gcalobj Pointer to a \ref gcal_resource structure, which has
  *                 previously got the authentication using
  *                 \ref gcal_get_authentication.
  *
  * @return -1 on error, any number >= 0 otherwise.
  */
-int gcal_entry_number(struct gcal_resource *ptr_gcal);
+int gcal_entry_number(gcal gcalobj);
 
 
 /** Extracts from the atom stream the calendar event entries (you should
@@ -200,7 +205,7 @@ int gcal_entry_number(struct gcal_resource *ptr_gcal);
  * it will free its internal buffer to save memory.
  *
  *
- * @param ptr_gcal Pointer to a \ref gcal_resource structure, which has
+ * @param gcalobj Pointer to a \ref gcal_resource structure, which has
  *                 previously got the authentication using
  *                 \ref gcal_get_authentication.
  *
@@ -208,7 +213,7 @@ int gcal_entry_number(struct gcal_resource *ptr_gcal);
  *
  * @return A pointer on sucess, NULL otherwise.
  */
-struct gcal_event *gcal_get_entries(struct gcal_resource *ptr_gcal,
+struct gcal_event *gcal_get_entries(gcal gcalobj,
 				    size_t *length);
 
 
@@ -243,7 +248,7 @@ void gcal_destroy_entries(struct gcal_event *entries, size_t length);
  * function (but I need to share it with 'contacts' too).
  *
  * \todo move it to a distinct internal module.
- * @param ptr_gcal Pointer to a \ref gcal_resource structure, which has
+ * @param gcalobj Pointer to a \ref gcal_resource structure, which has
  *                 previously got the authentication using
  *                 \ref gcal_get_authentication.
  *
@@ -257,7 +262,7 @@ void gcal_destroy_entries(struct gcal_event *entries, size_t length);
  *
  * @return -1 on error, 0 on success.
  */
-int http_post(struct gcal_resource *ptr_gcal, const char *url,
+int http_post(gcal gcalobj, const char *url,
 	      char *header, char *header2, char *header3,
 	      char *post_data, const int expected_answer);
 
@@ -270,7 +275,7 @@ int http_post(struct gcal_resource *ptr_gcal, const char *url,
  *
  * @param data2post A pointer to string, it will be the body to be posted.
  *
- * @param ptr_gcal Pointer to a \ref gcal_resource structure, which has
+ * @param gcalobj Pointer to a \ref gcal_resource structure, which has
  *                 previously got the authentication using
  *                 \ref gcal_get_authentication.
  *
@@ -285,7 +290,7 @@ int http_post(struct gcal_resource *ptr_gcal, const char *url,
  *
  * @return -1 on error, 0 on success.
  */
-int up_entry(char *data2post, struct gcal_resource *ptr_gcal,
+int up_entry(char *data2post, gcal gcalobj,
 	     const char *url_server, HTTP_CMD up_mode, int expected_code);
 
 
@@ -294,7 +299,7 @@ int up_entry(char *data2post, struct gcal_resource *ptr_gcal,
  * You need to first succeed to get an authorization token using
  * \ref gcal_get_authentication.
  *
- * @param ptr_gcal Pointer to a \ref gcal_resource structure, which has
+ * @param gcalobj Pointer to a \ref gcal_resource structure, which has
  *                 previously got the authentication using
  *                 \ref gcal_get_authentication.
  *
@@ -307,7 +312,7 @@ int up_entry(char *data2post, struct gcal_resource *ptr_gcal,
  * @return -1 on error, 0 on success, -2 if operation went correctly but
  * cannot return 'updated' entry.
  */
-int gcal_create_event(struct gcal_resource *ptr_gcal,
+int gcal_create_event(gcal gcalobj,
 		      struct gcal_event *entries,
 		      struct gcal_event *updated);
 
@@ -316,7 +321,7 @@ int gcal_create_event(struct gcal_resource *ptr_gcal,
  * You need to first succeed to get an authorization token using
  * \ref gcal_get_authentication.
  *
- * @param ptr_gcal Pointer to a \ref gcal_resource structure, which has
+ * @param gcalobj Pointer to a \ref gcal_resource structure, which has
  *                 previously got the authentication using
  *                 \ref gcal_get_authentication.
  *
@@ -324,7 +329,7 @@ int gcal_create_event(struct gcal_resource *ptr_gcal,
  *
  * @return -1 on error, 0 on success.
  */
-int gcal_delete_event(struct gcal_resource *ptr_gcal,
+int gcal_delete_event(gcal gcalobj,
 		      struct gcal_event *entry);
 
 
@@ -334,7 +339,7 @@ int gcal_delete_event(struct gcal_resource *ptr_gcal,
  * (see \ref gcal_event).
  *
  *
- * @param ptr_gcal Pointer to a \ref gcal_resource structure, which has
+ * @param gcalobj Pointer to a \ref gcal_resource structure, which has
  *                 previously got the authentication using
  *                 \ref gcal_get_authentication.
  *
@@ -347,7 +352,7 @@ int gcal_delete_event(struct gcal_resource *ptr_gcal,
  * @return -1 on error, 0 on success, -2 if operation went correctly but
  * cannot return 'updated' entry.
  */
-int gcal_edit_event(struct gcal_resource *ptr_gcal,
+int gcal_edit_event(gcal gcalobj,
 		    struct gcal_event *entry,
 		    struct gcal_event *updated);
 
@@ -359,13 +364,13 @@ int gcal_edit_event(struct gcal_resource *ptr_gcal,
  * the gcal_resource pointer with \ref gcal_destroy the memory pointed will
  * be freed.
  *
- * @param ptr_gcal Pointer to a \ref gcal_resource structure, which has
+ * @param gcalobj Pointer to a \ref gcal_resource structure, which has
  *                 previously got the authentication using
  *                 \ref gcal_get_authentication.
  *
  * @return A pointer to internal gcal_resource buffer.
  */
-char *gcal_access_buffer(struct gcal_resource *ptr_gcal);
+char *gcal_access_buffer(gcal gcalobj);
 
 /** Function to get the current timestamp (RFC3339) with milisecond
  * precision.
@@ -387,7 +392,7 @@ int get_mili_timestamp(char *timestamp, size_t length, char *atimezone);
  *
  * Use it to get updated entries.
  *
- * @param ptr_gcal  Pointer to a \ref gcal_resource structure, which has
+ * @param gcalobj  Pointer to a \ref gcal_resource structure, which has
  *                 previously got the authentication using
  *                 \ref gcal_get_authentication.
  *
@@ -396,13 +401,13 @@ int get_mili_timestamp(char *timestamp, size_t length, char *atimezone);
  *
  * @return -1 on error, 0 on success.
  */
-int gcal_query_updated(struct gcal_resource *ptr_gcal, char *timestamp);
+int gcal_query_updated(gcal gcalobj, char *timestamp);
 
 /** Set a timezone, following the RFC 3339 format +/-hh:mm.
  *
  * The structure copy the string with the timezone.
  *
- * @param ptr_gcal Pointer to a \ref gcal_resource structure, which has
+ * @param gcalobj Pointer to a \ref gcal_resource structure, which has
  *                 previously got the authentication using
  *                 \ref gcal_get_authentication.
  *
@@ -411,7 +416,7 @@ int gcal_query_updated(struct gcal_resource *ptr_gcal, char *timestamp);
  *
  * @return -1 on error, 0 on success.
  */
-int gcal_set_timezone(struct gcal_resource *ptr_gcal, char *atimezone);
+int gcal_set_timezone(gcal gcalobj, char *atimezone);
 
 /** Define the location that results should be returned for queries.
  *
@@ -419,7 +424,7 @@ int gcal_set_timezone(struct gcal_resource *ptr_gcal, char *atimezone);
  * the user account is used.
  * The structure copy the string with the timezone.
  *
- * @param ptr_gcal Pointer to a \ref gcal_resource structure, which has
+ * @param gcalobj Pointer to a \ref gcal_resource structure, which has
  *                 previously got the authentication using
  *                 \ref gcal_get_authentication.
  *
@@ -429,20 +434,20 @@ int gcal_set_timezone(struct gcal_resource *ptr_gcal, char *atimezone);
  *
  * @return -1 on error, 0 on success.
  */
-int gcal_set_location(struct gcal_resource *ptr_gcal, char *location);
+int gcal_set_location(gcal gcalobj, char *location);
 
 /** Use this to set if deleted entries should be returned or not. Pay attention
  * that this is implemented only for google contacts (google calendar entries
  * doesn't have this query parameter).
  *
- * @param ptr_gcal Pointer to a \ref gcal_resource structure, which has
+ * @param gcalobj Pointer to a \ref gcal_resource structure, which has
  *                 previously got the authentication using
  *                 \ref gcal_get_authentication.
  *
  * @param opt Option parameter, enable (SHOW) or not (HIDE) retrieving of
  * deleted entries (see \ref display_deleted_entries).
  */
-void gcal_deleted(struct gcal_resource *ptr_gcal, display_deleted_entries opt);
+void gcal_deleted(gcal gcalobj, display_deleted_entries opt);
 
 
 /** Generic query function, use it to do a query to google services.
@@ -452,7 +457,7 @@ void gcal_deleted(struct gcal_resource *ptr_gcal, display_deleted_entries opt);
  * ATTENTION: querying by name will not work, since its not implemented in
  * google contacts. It will give HTTP 403 error.
  *
- * @param ptr_gcal Pointer to a \ref gcal_resource structure, which has
+ * @param gcalobj Pointer to a \ref gcal_resource structure, which has
  *                 previously got the authentication using
  *                 \ref gcal_get_authentication.
  *
@@ -465,6 +470,6 @@ void gcal_deleted(struct gcal_resource *ptr_gcal, display_deleted_entries opt);
  *
  * @return -1 on error, 0 on success.
  */
-int gcal_query(struct gcal_resource *ptr_gcal, const char *parameters);
+int gcal_query(gcal gcalobj, const char *parameters);
 
 #endif
