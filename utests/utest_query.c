@@ -14,7 +14,7 @@ static struct gcal_resource *ptr_gcal = NULL;
 static void setup(void)
 {
 	/* here goes any common data allocation */
-	ptr_gcal = gcal_initialize(GCALENDAR);
+	ptr_gcal = gcal_construct(GCALENDAR);
 }
 
 static void teardown(void)
@@ -201,7 +201,7 @@ START_TEST (test_query_contact)
 	contact.title = "John Doe Query";
 	contact.email = "john.doe.query@foo.bar.com";
 
-	obj_gcal = gcal_initialize(GCONTACT);
+	obj_gcal = gcal_construct(GCONTACT);
 	fail_if(obj_gcal == NULL, "Failed to create gcal resource!");
 
 	result = gcal_get_authentication(obj_gcal, "gcalntester", "77libgcal");
@@ -257,7 +257,7 @@ START_TEST (test_query_delcontact)
 	contact.title = "John Doe Query";
 	contact.email = "john.doe.query@foo.bar.com";
 
-	obj_gcal = gcal_initialize(GCONTACT);
+	obj_gcal = gcal_construct(GCONTACT);
 	fail_if(obj_gcal == NULL, "Failed to create gcal resource!");
 
 	result = gcal_get_authentication(obj_gcal, "gcalntester", "77libgcal");
@@ -320,7 +320,7 @@ START_TEST (test_query_generic)
 	char *query="updated-min=2008-06-20T06:00:00Z&"
 	  "alt=atom&max-results=500&showdeleted=true";
 
-	obj_gcal = gcal_initialize(GCONTACT);
+	obj_gcal = gcal_construct(GCONTACT);
 	fail_if(obj_gcal == NULL, "Failed to create gcal resource!");
 
 	result = gcal_get_authentication(obj_gcal, "gcalntester", "77libgcal");

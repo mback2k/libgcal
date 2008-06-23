@@ -75,7 +75,7 @@ static void reset_buffer(gcal ptr)
 	ptr->buffer = (char *) calloc(ptr->length, sizeof(char));
 }
 
-gcal gcal_initialize(gservice mode)
+gcal gcal_construct(gservice mode)
 {
 
 	gcal ptr;

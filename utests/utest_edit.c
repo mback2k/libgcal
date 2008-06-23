@@ -18,7 +18,7 @@ static struct gcal_resource *ptr_gcal = NULL;
 static void setup(void)
 {
 	/* here goes any common data allocation */
-	ptr_gcal = gcal_initialize(GCALENDAR);
+	ptr_gcal = gcal_construct(GCALENDAR);
 
 }
 

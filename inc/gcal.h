@@ -123,7 +123,7 @@ void clean_buffer(gcal gcal_obj);
  *
  * @return A pointer to a newly created object or NULL.
  */
-gcal gcal_initialize(gservice mode);
+gcal gcal_construct(gservice mode);
 
 /** Sets the google service that user wants to authenticate.
  *
