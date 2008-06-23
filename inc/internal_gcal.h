@@ -142,4 +142,20 @@ struct gcal_resource {
 
 };
 
+/** This structure has the common data fields between google services
+ * (calendar and contacts).
+ */
+struct gcal_entry {
+	/** element ID */
+	char *id;
+	/** Time when the event was updated. */
+	char *updated;
+	/** The 'what' field */
+	char *title;
+	/** The edit URL */
+	char *edit_uri;
+};
+
+
+
 #endif
