@@ -501,33 +501,69 @@ static char *mount_query_url(struct gcal_resource *ptr_gcal,
 	char *result = NULL, *query_param = NULL, *ptr_tmp = NULL;
 	int length;
 	char query_separator[] = "&";
+	char query_init[] = "?";
 
 	/* TODO: put the google service type string in an array. */
-	if (!(strcmp(ptr_gcal->service, "cl")))
-		length = sizeof(GCAL_EVENT_START) + sizeof(GCAL_EVENT_END) +
-			strlen(ptr_gcal->max_results) + strlen(ptr_gcal->user)
-			+ 1;
-	else if (!(strcmp(ptr_gcal->service, "cp")))
-		length = sizeof(GCONTACT_START) + sizeof(GCONTACT_END) +
-			strlen(ptr_gcal->max_results) + strlen(ptr_gcal->user)
-			+ 1;
-	else
+	if (!(strcmp(ptr_gcal->service, "cl"))) {
+		if (ptr_gcal->max_results)
+			length = sizeof(GCAL_EVENT_START) +
+				sizeof(GCAL_EVENT_END) +
+				sizeof(query_init) +
+				strlen(ptr_gcal->max_results) +
+				strlen(ptr_gcal->user) + 1;
+		else
+			length = sizeof(GCAL_EVENT_START) +
+				sizeof(GCAL_EVENT_END) +
+				sizeof(query_init) +
+				strlen(ptr_gcal->user) + 1;
+
+	}
+	else if (!(strcmp(ptr_gcal->service, "cp"))) {
+		if (ptr_gcal->max_results)
+			length = sizeof(GCONTACT_START) +
+				sizeof(GCONTACT_END) +
+				sizeof(query_init) +
+				strlen(ptr_gcal->max_results) +
+				strlen(ptr_gcal->user) + 1;
+		else
+			length = sizeof(GCONTACT_START) +
+				sizeof(GCONTACT_END) +
+				sizeof(query_init) +
+				strlen(ptr_gcal->user) + 1;
+
+	} else
 		goto exit;
 
 	result = (char *)malloc(length);
 	if (!result)
 		goto exit;
 
-	/* This is a basic query URL: must have the google service address
-	 * plus the number of max-results returned.
-	 */
-	if (!(strcmp(ptr_gcal->service, "cl")))
-		snprintf(result, length - 1, "%s%s%s%s", GCAL_EVENT_START,
-			 ptr_gcal->user, GCAL_EVENT_END, ptr_gcal->max_results);
-	else if (!(strcmp(ptr_gcal->service, "cp")))
-		snprintf(result, length - 1, "%s%s%s%s", GCONTACT_START,
-			 ptr_gcal->user, GCONTACT_END, ptr_gcal->max_results);
+	if (!(strcmp(ptr_gcal->service, "cl"))) {
+		/* This is a basic query URL: must have the google service
+		 * address plus the number of max-results returned.
+		 */
+		if (ptr_gcal->max_results)
+			snprintf(result, length - 1, "%s%s%s%s%s",
+				 GCAL_EVENT_START, ptr_gcal->user,
+				 GCAL_EVENT_END, query_init,
+				 ptr_gcal->max_results);
+		else
+			snprintf(result, length - 1, "%s%s%s%s",
+				 GCAL_EVENT_START, ptr_gcal->user,
+				 GCAL_EVENT_END, query_init);
 
+	} else if (!(strcmp(ptr_gcal->service, "cp"))) {
+		if (ptr_gcal->max_results)
+			snprintf(result, length - 1, "%s%s%s%s%s",
+				 GCONTACT_START, ptr_gcal->user,
+				 GCONTACT_END, query_init,
+				 ptr_gcal->max_results);
+		else
+			snprintf(result, length - 1, "%s%s%s%s",
+				 GCONTACT_START, ptr_gcal->user,
+				 GCONTACT_END, query_init);
+
+	}
 
 	/* For extra query parameters, add "&param_1&param_2&...&param_n" */
 	if (parameters) {
@@ -1185,13 +1221,19 @@ void gcal_deleted(struct gcal_resource *ptr_gcal, display_deleted_entries opt)
 
 int gcal_query(struct gcal_resource *ptr_gcal, const char *parameters)
 {
-	char *query_url = NULL;
+	char *query_url = NULL, *ptr_tmp;
 	int result = -1;
 
 	if ((!ptr_gcal) && (!parameters))
 		goto exit;
 
+	/* Swaps the max-results internal member for NULL. This makes
+	 * possible a generic query with user defined max-results.
+	 */
+	ptr_tmp = ptr_gcal->max_results;
+	ptr_gcal->max_results = NULL;
 	query_url = mount_query_url(ptr_gcal, parameters, NULL);
+	ptr_gcal->max_results = ptr_tmp;
 	if (!query_url)
 		goto exit;
 

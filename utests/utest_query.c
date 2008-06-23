@@ -2,6 +2,7 @@
 #include "utest_query.h"
 #include "gcal.h"
 #include "gcontact.h"
+#include "gcal_status.h"
 #include <string.h>
 #include <stdio.h>
 #include <unistd.h>
@@ -316,7 +317,8 @@ START_TEST (test_query_generic)
 	struct gcal_resource *gcal = NULL;
 	size_t count = 0;
 	char *msg = NULL;
-	char *query="?q=\"Adenilson Cavalcanti\"";
+	char *query="updated-min=2008-06-20T06:00:00Z&"
+	  "alt=atom&max-results=500&showdeleted=true";
 
 	gcal = gcal_initialize(GCONTACT);
 	fail_if(gcal == NULL, "Failed to create gcal resource!");
@@ -325,21 +327,15 @@ START_TEST (test_query_generic)
 	fail_if(result == -1, "Authentication should work.");
 
 	result = gcal_query(gcal, query);
-	if (result == -1) {
+	if ((result == -1) || (gcal_status_httpcode(gcal) != 200)) {
 		msg = "Failed using generic query!";
 		flag = 1;
 		goto cleanup;
 	}
 
 	contacts = gcal_get_contacts(gcal, &count);
-	if((count != 1) || (contacts == NULL)) {
+	if((count < 1) || (contacts == NULL)) {
 		msg = "Query returned more contacts!";
-		flag = 1;
-		goto cleanup;
-	}
-
-	if(!(strcmp(contacts[0].title, "Cavalcanti"))) {
-		msg = "Query could not find contact!";
 		flag = 1;
 		goto cleanup;
 	}

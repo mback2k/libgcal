@@ -449,15 +449,19 @@ void gcal_deleted(struct gcal_resource *ptr_gcal, display_deleted_entries opt);
  *
  * You can pass a query with multiple parameters, but in just one string.
  *
- * \todo This function is failing with HTTP 403, I must fix that.
+ * ATTENTION: querying by name will not work, since its not implemented in
+ * google contacts. It will give HTTP 403 error.
  *
  * @param ptr_gcal Pointer to a \ref gcal_resource structure, which has
  *                 previously got the authentication using
  *                 \ref gcal_get_authentication.
  *
- * @param parameters A string with the query e.g.
- * gcal_query(gcal, "q=John&ctz=America/Los_Angeles&author=Joe");
-
+ * @param parameters A string with the query e.g. for calendar
+ * gcal_query(gcal, "ctz=America/Los_Angeles&author=Joe");
+ *
+ * And for contacts:
+ * gcal_query(gcal, "updated-min=2008-06-20T06:00:00Z&"
+ *                  "alt=atom&max-results=500&showdeleted=true");
  *
  * @return -1 on error, 0 on success.
  */
