@@ -114,7 +114,7 @@ START_TEST (test_contact_extract)
 	for (i = 0; i < count; ++i)
 		if ((!(strcmp(contacts[i].email,
 			      contacts_email[found_count]))) &&
-		    (!(strcmp(contacts[i].title,
+		    (!(strcmp(contacts[i].common.title,
 			      contacts_name[found_count])))) {
 			++found_count;
 			if (found_count == contacts_count)
@@ -136,9 +136,9 @@ START_TEST (test_contact_xml)
 	char *xml = NULL, *ptr;
 
 
-	contact.title = "John Doe";
+	contact.common.title = "John Doe";
 	contact.email = "john.doe@foo.bar.com";
-	contact.id = contact.updated = contact.edit_uri = NULL;
+	contact.common.id = contact.common.updated = contact.common.edit_uri = NULL;
 	/* extra fields */
 	contact.content = "A very interesting person";
 	contact.org_name = "Foo software";
@@ -153,8 +153,8 @@ START_TEST (test_contact_xml)
 
 	/* fprintf(stderr, "at: %s is nice\n", xml); */
 
-	ptr = strstr(xml, contact.title);
-	fail_if(ptr == NULL, "XML lacks a field: %s\n", contact.title);
+	ptr = strstr(xml, contact.common.title);
+	fail_if(ptr == NULL, "XML lacks a field: %s\n", contact.common.title);
 	ptr = strstr(xml, contact.email);
 	fail_if(ptr == NULL, "XML lacks a field: %s\n", contact.email);
 	ptr = strstr(xml, contact.post_address);
@@ -171,9 +171,9 @@ START_TEST (test_contact_add)
 	int result;
 	struct gcal_contact contact;
 
-	contact.title = "John Doe";
+	contact.common.title = "John Doe";
 	contact.email = "john.doe@foo.bar.com";
-	contact.id = contact.updated = contact.edit_uri = NULL;
+	contact.common.id = contact.common.updated = contact.common.edit_uri = NULL;
 	/* extra fields */
 	contact.content = "A very interesting person";
 	contact.org_name = "Foo software";
@@ -224,13 +224,13 @@ START_TEST (test_contact_delete)
 
 	for (i = 0; i < count; ++i)
 		if ((!(strcmp(contacts[i].email, email))) &&
-		    (!(strcmp(contacts[i].title, title)))) {
+		    (!(strcmp(contacts[i].common.title, title)))) {
 			entry_index = i;
 			break;
 		    }
 	fail_if(entry_index == -1, "Cannot locate the newly added contact!");
 /* 	fprintf(stderr, "index = %d\tname = %s\n", entry_index, */
-/* 		contacts[entry_index].title); */
+/* 		contacts[entry_index].common.title); */
 
 	result = gcal_delete_contact(ptr_gcal, (contacts + entry_index));
 	fail_if(result == -1, "Failed deleting contact!");
@@ -245,9 +245,9 @@ START_TEST (test_contact_edit)
 	int result;
 	struct gcal_contact contact, contact_new, updated;
 
-	contact.title = "Johny Doe";
+	contact.common.title = "Johny Doe";
 	contact.email = "johny.doe@foo.bar.com";
-	contact.id = contact.updated = contact.edit_uri = NULL;
+	contact.common.id = contact.common.updated = contact.common.edit_uri = NULL;
 	/* extra fields */
 	contact.content = "A very interesting person";
 	contact.org_name = "Foo software";
@@ -264,8 +264,8 @@ START_TEST (test_contact_edit)
 	fail_if(result == -1, "Failed creating a new contact!");
 
 	/* Edit this guy */
-	free(contact_new.title);
-	contact_new.title = strdup("Johny 'the mad' Doe");
+	free(contact_new.common.title);
+	contact_new.common.title = strdup("Johny 'the mad' Doe");
 	result = gcal_edit_contact(ptr_gcal, &contact_new, &updated);
 	fail_if(result == -1, "Failed editing contact!");
 

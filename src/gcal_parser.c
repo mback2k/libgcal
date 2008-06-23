@@ -398,11 +398,11 @@ int xmlcontact_create(struct gcal_contact *contact, char **xml_contact,
 	 * of library just got one contact result from a request from
 	 * server).
 	 */
-	if (contact->id) {
+	if (contact->common.id) {
 		node = xmlNewNode(NULL, "id");
 		if (!node)
 			goto cleanup;
-		xmlNodeAddContent(node, contact->id);
+		xmlNodeAddContent(node, contact->common.id);
 		xmlAddChild(root, node);
 	}
 
@@ -411,12 +411,12 @@ int xmlcontact_create(struct gcal_contact *contact, char **xml_contact,
 	if (!node)
 		goto cleanup;
 	xmlSetProp(node, BAD_CAST "type", BAD_CAST "text");
-	xmlNodeAddContent(node, contact->title);
+	xmlNodeAddContent(node, contact->common.title);
 	xmlAddChild(root, node);
 
 	/* entry edit URL, only if the 'entry' is already existant.
 	 */
-	if (contact->edit_uri) {
+	if (contact->common.edit_uri) {
 		node = xmlNewNode(NULL, "link");
 		if (!node)
 			goto cleanup;
@@ -424,7 +424,7 @@ int xmlcontact_create(struct gcal_contact *contact, char **xml_contact,
 		xmlSetProp(node, BAD_CAST "type",
 			   BAD_CAST "application/atom+xml");
 		xmlSetProp(node, BAD_CAST "href",
-			   BAD_CAST contact->edit_uri);
+			   BAD_CAST contact->common.edit_uri);
 		xmlAddChild(root, node);
 
 	}

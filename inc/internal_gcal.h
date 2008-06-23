@@ -176,5 +176,28 @@ struct gcal_event {
 	char *status;
 };
 
+/** Contact data type */
+struct gcal_contact {
+	/** Has the common entry data fields (id, updated, title, edit_uri) */
+	struct gcal_entry common;
+	/* Here starts google contact unique fields */
+	/** Contact email */
+	char *email;
+
+	/* Here starts the extra fields */
+	/** Notes about contact */
+	char *content;
+	/** Company name */
+	char *org_name;
+	/** Job title */
+	char *org_title;
+	/** IM contact */
+	char *im;
+	/** Phone number */
+	char *phone_number;
+	/** Address */
+	char *post_address;
+
+};
 
 #endif

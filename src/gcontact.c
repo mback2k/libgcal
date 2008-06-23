@@ -101,8 +101,9 @@ void gcal_init_contact(struct gcal_contact *contact)
 	if (!contact)
 		return;
 
-	contact->id = contact->updated = contact->title = NULL;
-	contact->edit_uri = contact->email = contact->content = NULL;
+	contact->common.id = contact->common.updated = NULL;
+	contact->common.title = contact->common.edit_uri = NULL;
+	contact->email = contact->content = NULL;
 	contact->org_name = contact->org_title = contact->im = NULL;
 	contact->phone_number = contact->post_address = NULL;
 }
@@ -112,10 +113,10 @@ void gcal_destroy_contact(struct gcal_contact *contact)
 	if (!contact)
 		return;
 
-	clean_string(contact->id);
-	clean_string(contact->updated);
-	clean_string(contact->title);
-	clean_string(contact->edit_uri);
+	clean_string(contact->common.id);
+	clean_string(contact->common.updated);
+	clean_string(contact->common.title);
+	clean_string(contact->common.edit_uri);
 	clean_string(contact->email);
 
 	/* Extra fields */
@@ -218,7 +219,7 @@ int gcal_delete_contact(gcal gcalobj,
 	snprintf(h_auth, length - 1, "%s%s", HEADER_GET, gcalobj->auth);
 
 	curl_easy_setopt(gcalobj->curl, CURLOPT_CUSTOMREQUEST, "DELETE");
-	result = http_post(gcalobj, contact->edit_uri,
+	result = http_post(gcalobj, contact->common.edit_uri,
 			   "Content-Type: application/atom+xml",
 			   NULL,
 			   h_auth,
@@ -247,7 +248,7 @@ int gcal_edit_contact(gcal gcalobj,
 	if (result == -1)
 		goto exit;
 
-	result = up_entry(xml_contact, gcalobj, contact->edit_uri, PUT,
+	result = up_entry(xml_contact, gcalobj, contact->common.edit_uri, PUT,
 			  GCAL_DEFAULT_ANSWER);
 
 	/* Parse buffer and create the new contact object */

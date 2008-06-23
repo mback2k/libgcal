@@ -199,7 +199,7 @@ START_TEST (test_query_contact)
 	gcal_init_contact(&contact);
 	gcal_init_contact(&updated);
 
-	contact.title = "John Doe Query";
+	contact.common.title = "John Doe Query";
 	contact.email = "john.doe.query@foo.bar.com";
 
 	obj_gcal = gcal_construct(GCONTACT);
@@ -255,7 +255,7 @@ START_TEST (test_query_delcontact)
 
 	gcal_init_contact(&contact);
 
-	contact.title = "John Doe Query";
+	contact.common.title = "John Doe Query";
 	contact.email = "john.doe.query@foo.bar.com";
 
 	obj_gcal = gcal_construct(GCONTACT);

@@ -318,32 +318,32 @@ int atom_extract_contact(xmlNode *entry, struct gcal_contact *ptr_entry)
 	xmlDocSetRootElement(doc, copy);
 
 	/* Gets the 'id' contact field */
-	ptr_entry->id = extract_and_check(doc,
+	ptr_entry->common.id = extract_and_check(doc,
 					  "//atom:entry/atom:id/text()",
 					  NULL);
-	if (!ptr_entry->id)
+	if (!ptr_entry->common.id)
 		goto cleanup;
 
 	/* Gets the 'updated' contact field */
-	ptr_entry->updated = extract_and_check(doc,
+	ptr_entry->common.updated = extract_and_check(doc,
 					       "//atom:entry/"
 					       "atom:updated/text()",
 					       NULL);
 
 
 	/* Gets the 'who' contact field */
-	ptr_entry->title = extract_and_check(doc,
+	ptr_entry->common.title = extract_and_check(doc,
 					     "//atom:entry/atom:title/text()",
 					     NULL);
-	if (!ptr_entry->title)
+	if (!ptr_entry->common.title)
 		goto cleanup;
 
 
 	/* Gets the 'edit url' contact field */
-	ptr_entry->edit_uri = extract_and_check(doc, "//atom:entry/"
+	ptr_entry->common.edit_uri = extract_and_check(doc, "//atom:entry/"
 						"atom:link[@rel='edit']",
 						"href");
-	if (!ptr_entry->edit_uri)
+	if (!ptr_entry->common.edit_uri)
 		goto cleanup;
 
 	/* Gets the email contact field */

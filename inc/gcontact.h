@@ -44,34 +44,7 @@ POSSIBILITY OF SUCH DAMAGE.
 #include "gcal.h"
 
 /** Contact data type */
-struct gcal_contact {
-	/** element ID */
-	char *id;
-	/** Time when the event was updated. */
-	char *updated;
-	/** The contact name */
-	char *title;
-	/** The edit URL */
-	char *edit_uri;
-	/* Here starts google contact unique fields */
-	/** Contact email */
-	char *email;
-
-	/* Here starts the extra fields */
-	/** Notes about contact */
-	char *content;
-	/** Company name */
-	char *org_name;
-	/** Job title */
-	char *org_title;
-	/** IM contact */
-	char *im;
-	/** Phone number */
-	char *phone_number;
-	/** Address */
-	char *post_address;
-
-};
+struct gcal_contact;
 
 /** Extracts from the atom stream the contact entries  (you should
  * had got the atom stream before, using \ref gcal_dump).
