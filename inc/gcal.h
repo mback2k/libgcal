@@ -76,12 +76,16 @@ typedef struct gcal_resource * gcal;
 /** Library structure, represents each calendar event entry.
  */
 struct gcal_event {
-	/** The 'what' field */
-	char *title;
 	/** element ID */
 	char *id;
+	/** Time when the event was updated. */
+	char *updated;
+	/** The 'what' field */
+	char *title;
 	/** The edit URL */
 	char *edit_uri;
+	/* Here starts calendar event unique fields */
+
 	/** The event description */
 	char *content;
 	/** If the event is recurrent */
@@ -94,8 +98,6 @@ struct gcal_event {
 	char *where;
 	/** Event status */
 	char *status;
-	/** Time when the event was updated. */
-	char *updated;
 };
 
 /** Library structure destructor (use it free its internal resources properly).

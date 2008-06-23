@@ -53,11 +53,11 @@ struct gcal_contact {
 	char *title;
 	/** The edit URL */
 	char *edit_uri;
+	/* Here starts google contact unique fields */
 	/** Contact email */
 	char *email;
 
 	/* Here starts the extra fields */
-
 	/** Notes about contact */
 	char *content;
 	/** Company name */
