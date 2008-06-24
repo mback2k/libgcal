@@ -1265,3 +1265,120 @@ gcal_event gcal_get_events(gcal gcalobj, size_t *length)
 exit:
 	return events_array;
 }
+
+char *gcal_get_id(struct gcal_entry *entry)
+{
+	if (entry)
+		return entry->id;
+
+	return NULL;
+}
+
+char *gcal_get_updated(struct gcal_entry *entry)
+{
+	if (entry)
+		return entry->updated;
+
+	return NULL;
+
+}
+
+char *gcal_get_title(struct gcal_entry *entry)
+{
+	if (entry)
+		return entry->title;
+
+	return NULL;
+
+}
+
+char *gcal_get_url(struct gcal_entry *entry)
+{
+	if (entry)
+		return entry->edit_uri;
+
+	return NULL;
+}
+
+/* Calendar accessors start here */
+char *gcal_get_calendar_id(struct gcal_event *event, size_t _index)
+{
+	if (!event)
+		return NULL;
+
+	return gcal_get_id(&(event[_index]).common);
+}
+
+char *gcal_get_calendar_updated(struct gcal_event *event, size_t _index)
+{
+	if (!event)
+		return NULL;
+
+	return gcal_get_updated(&(event[_index]).common);
+}
+
+char *gcal_get_calendar_title(struct gcal_event *event, size_t _index)
+{
+	if (!event)
+		return NULL;
+
+	return gcal_get_title(&(event[_index]).common);
+}
+
+char *gcal_get_calendar_url(struct gcal_event *event, size_t _index)
+{
+	if (!event)
+		return NULL;
+
+	return gcal_get_url(&(event[_index]).common);
+}
+
+/* This are the fields unique to calendar events */
+char *gcal_get_calendar_content(struct gcal_event *event, size_t _index)
+{
+	if (!event)
+		return NULL;
+
+	return event[_index].content;
+}
+
+char *gcal_get_calendar_recurrent(struct gcal_event *event, size_t _index)
+{
+	if (!event)
+		return NULL;
+
+	return event[_index].dt_recurrent;
+}
+
+char *gcal_get_calendar_start(struct gcal_event *event, size_t _index)
+{
+	if (!event)
+		return NULL;
+
+	return event[_index].dt_start;
+}
+
+char *gcal_get_calendar_end(struct gcal_event *event, size_t _index)
+{
+	if (!event)
+		return NULL;
+
+	return event[_index].dt_end;
+}
+
+char *gcal_get_calendar_where(struct gcal_event *event, size_t _index)
+{
+	if (!event)
+		return NULL;
+
+	return event[_index].where;
+}
+
+char *gcal_get_calendar_status(struct gcal_event *event, size_t _index)
+{
+	if (!event)
+		return NULL;
+
+	return event[_index].status;
+}
+

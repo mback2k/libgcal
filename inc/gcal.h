@@ -82,10 +82,14 @@ struct gcal_event;
  */
 typedef struct gcal_event * gcal_event;
 
+/** Library structure, represents common data for a google entry (being
+ * calendar or contact). It has: id, updated, title, edit_uri.
+ */
+struct gcal_entry;
+
 /** Library structure destructor (use it free its internal resources properly).
  */
 void gcal_destroy(gcal gcal_obj);
-
 
 /** Internal use function, cleans up the internal buffer.
  *
@@ -470,5 +474,30 @@ int gcal_query(gcal gcalobj, const char *parameters);
  * \ref gcal_destroy_entries.
  */
 gcal_event gcal_get_events(gcal gcalobj, size_t *length);
+
+/* Here starts accessors */
+
+/* Common fields between calendar and contacts are
+ * of type 'gcal_entry'
+ */
+char *gcal_get_id(struct gcal_entry *entry);
+char *gcal_get_updated(struct gcal_entry *entry);
+char *gcal_get_title(struct gcal_entry *entry);
+char *gcal_get_url(struct gcal_entry *entry);
+
+/* Here starts gcal_event accessors */
+char *gcal_get_calendar_id(struct gcal_event *event, size_t _index);
+char *gcal_get_calendar_updated(struct gcal_event *event, size_t _index);
+char *gcal_get_calendar_title(struct gcal_event *event, size_t _index);
+char *gcal_get_calendar_url(struct gcal_event *event, size_t _index);
+
+/* This are the fields unique to calendar events */
+char *gcal_get_calendar_content(struct gcal_event *event, size_t _index);
+char *gcal_get_calendar_recurrent(struct gcal_event *event, size_t _index);
+char *gcal_get_calendar_start(struct gcal_event *event, size_t _index);
+char *gcal_get_calendar_end(struct gcal_event *event, size_t _index);
+char *gcal_get_calendar_where(struct gcal_event *event, size_t _index);
+char *gcal_get_calendar_status(struct gcal_event *event, size_t _index);
+
 
 #endif
