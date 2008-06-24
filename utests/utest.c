@@ -22,6 +22,7 @@
 #include "utest_contact.h"
 #include "utest_debug.h"
 #include "utest_query.h"
+#include "utest_userapi.h"
 
 static Suite *core_suite(void)
 {
@@ -60,16 +61,32 @@ exit:
 	return s;
 }
 
+
+static Suite *user_api(void)
+{
+	Suite *s;
+	s = suite_create("userapi");
+	suite_add_tcase(s, gcal_userapi());
+	return s;
+}
+
 int main(void)
 {
 	int number_failed;
-	Suite *s = core_suite();
-	SRunner *sr = srunner_create(s);
+	Suite *s, *sapi;
+	SRunner *core, *userapi;
 
-	srunner_run_all(sr, CK_VERBOSE);
-	number_failed = srunner_ntests_failed(sr);
+	s = core_suite();
+	core = srunner_create(s);
+	srunner_run_all(core, CK_VERBOSE);
+	number_failed = srunner_ntests_failed(core);
+	srunner_free(core);
 
-	srunner_free(sr);
+	sapi = user_api();
+	userapi = srunner_create(sapi);
+	srunner_run_all(userapi, CK_VERBOSE);
+	number_failed = srunner_ntests_failed(userapi);
+	srunner_free(userapi);
 
 	return (number_failed == 0) ? EXIT_SUCCESS : EXIT_FAILURE;
 }
