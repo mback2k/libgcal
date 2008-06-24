@@ -73,9 +73,33 @@ void gcal_event_destroy(gcal_event event)
 int gcal_add_event(gcal gcal_obj, gcal_event event)
 {
 	int result = -1;
+	struct gcal_event updated;
+
 	if ((!gcal_obj) || (!event))
 		goto exit;
 
+	result = gcal_create_event(gcal_obj, event, &updated);
+	if (result)
+		goto exit;
+
+	/* Swap updated fields: id, edit_uri and updated */
+	if (event->common.id)
+		free(event->common.id);
+	event->common.id = updated.common.id;
+	updated.common.id = NULL;
+
+	if (event->common.updated)
+		free(event->common.updated);
+	event->common.updated = updated.common.updated;
+	updated.common.updated = NULL;
+
+	if (event->common.edit_uri)
+		free(event->common.edit_uri);
+	event->common.edit_uri = updated.common.edit_uri;
+	updated.common.edit_uri = NULL;
+
+	/* Cleanup updated event */
+	gcal_destroy_entry(&updated);
 exit:
 	return result;
 }
