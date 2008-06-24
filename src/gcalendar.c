@@ -47,6 +47,60 @@ POSSIBILITY OF SUCH DAMAGE.
 #include "gcalendar.h"
 #include "internal_gcal.h"
 
+
+gcal_event gcal_event_construct(void)
+{
+	gcal_event result = NULL;
+	result = malloc(sizeof(struct gcal_event));
+
+	if (!result)
+		return result;
+
+	gcal_init_event(result);
+	return result;
+}
+
+void gcal_event_destroy(gcal_event event)
+{
+
+	if (!event)
+		return;
+
+	gcal_destroy_entry(event);
+	free(event);
+}
+
+int gcal_add_event(gcal gcal_obj, gcal_event event)
+{
+	int result = -1;
+	if ((!gcal_obj) || (!event))
+		goto exit;
+
+exit:
+	return result;
+}
+
+int gcal_update_event(gcal gcal_obj, gcal_event event)
+{
+	int result = -1;
+	if ((!gcal_obj) || (!event))
+		goto exit;
+
+exit:
+	return result;
+
+}
+
+int gcal_erase_event(gcal gcal_obj, gcal_event event)
+{
+	int result = -1;
+	if ((!gcal_obj) || (!event))
+		goto exit;
+
+exit:
+	return result;
+}
+
 int gcal_get_events(gcal gcalobj, struct gcal_entry_array *events_array)
 {
 	int result = -1;
@@ -175,3 +229,90 @@ char *gcal_get_calendar_status(struct gcal_entry_array *events, size_t _index)
 	return event[_index].status;
 }
 
+
+/* Here starts the setters */
+int gcal_set_calendar_title(gcal_event event, char *field)
+{
+	int result = -1;
+
+	if ((!event) || (!field))
+		return result;
+
+	if (event->common.title)
+		free(event->common.title);
+
+	event->common.title = strdup(field);
+	if (event->common.title)
+		result = 0;
+
+	return result;
+}
+
+int gcal_set_calendar_content(gcal_event event, char *field)
+{
+	int result = -1;
+
+	if ((!event) || (!field))
+		return result;
+
+	if (event->content)
+		free(event->content);
+
+	event->content = strdup(field);
+	if (event->content)
+		result = 0;
+
+	return result;
+}
+
+int gcal_set_calendar_start(gcal_event event, char *field)
+{
+	int result = -1;
+
+	if ((!event) || (!field))
+		return result;
+
+	if (event->dt_start)
+		free(event->dt_start);
+
+	event->dt_start = strdup(field);
+	if (event->dt_start)
+		result = 0;
+
+	return result;
+}
+
+int gcal_set_calendar_end(gcal_event event, char *field)
+{
+	int result = -1;
+
+	if ((!event) || (!field))
+		return result;
+
+	if (event->dt_end)
+		free(event->dt_end);
+
+	event->dt_end = strdup(field);
+	if (event->dt_end)
+		result = 0;
+
+	return result;
+}
+
+int gcal_set_calendar_where(gcal_event event, char *field)
+{
+	int result = -1;
+
+	if ((!event) || (!field))
+		return result;
+
+	if (event->where)
+		free(event->where);
+
+	event->where = strdup(field);
+	if (event->where)
+		result = 0;
+
+	return result;
+
+}

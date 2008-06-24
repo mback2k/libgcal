@@ -55,6 +55,10 @@ struct gcal_entry_array {
 };
 
 
+gcal_event gcal_event_construct(void);
+
+void gcal_event_destroy(gcal_event event);
+
 /** Helper function, does all calendar events dump and parsing, returning
  * the data as an array of \ref gcal_event.
  *
@@ -79,7 +83,9 @@ int gcal_get_events(gcal gcalobj, struct gcal_entry_array *events_array);
 void gcal_cleanup_events(struct gcal_entry_array *events);
 
 
-/* Here starts accessors */
+int gcal_add_event(gcal gcal_obj, gcal_event event);
+int gcal_update_event(gcal gcal_obj, gcal_event event);
+int gcal_erase_event(gcal gcal_obj, gcal_event event);
 
 /* Here starts gcal_event accessors */
 char *gcal_get_calendar_id(struct gcal_entry_array *events, size_t _index);
@@ -96,5 +102,16 @@ char *gcal_get_calendar_end(struct gcal_entry_array *events, size_t _index);
 char *gcal_get_calendar_where(struct gcal_entry_array *events, size_t _index);
 char *gcal_get_calendar_status(struct gcal_entry_array *events, size_t _index);
 
+
+/* Here starts the setters */
+int gcal_set_calendar_title(gcal_event event, char *field);
+int gcal_set_calendar_content(gcal_event event, char *field);
+int gcal_set_calendar_start(gcal_event event, char *field);
+int gcal_set_calendar_end(gcal_event event, char *field);
+int gcal_set_calendar_where(gcal_event event, char *field);
+
+/* TODO: Not implemented */
+int gcal_set_calendar_recurrent(gcal_event event, char *field);
+int gcal_set_calendar_status(gcal_event event, char *field);
 
 #endif

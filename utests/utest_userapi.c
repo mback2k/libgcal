@@ -97,6 +97,50 @@ START_TEST (test_access_calendar)
 END_TEST
 
 
+START_TEST (test_oper_calendar_event)
+{
+	gcal gcal_obj;
+	gcal_event event;
+	int result;
+
+	/* Create a new event object */
+	event = gcal_event_construct();
+	fail_if (!event, "Cannot construct event object!");
+	gcal_set_calendar_title(event, "A new event");
+	gcal_set_calendar_content(event, "Here goes the description");
+	gcal_set_calendar_start(event, "2008-06-24T16:00:00Z");
+	gcal_set_calendar_end(event, "2008-06-24T18:00:00Z");
+	gcal_set_calendar_where(event, "A nice place for a meeting");
+
+	/* Create a gcal object and authenticate */
+	gcal_obj = gcal_construct(GCALENDAR);
+	result = gcal_get_authentication(gcal_obj, "gcalntester", "77libgcal");
+	fail_if(result == -1, "Failed getting authentication");
+
+	/* Add a new event */
+	result = gcal_add_event(gcal_obj, event);
+	fail_if(result == -1, "Failed adding a new event!");
+
+
+	/* Edit this event */
+	gcal_set_calendar_title(event, "Changing the title");
+	result = gcal_update_event(gcal_obj, event);
+	fail_if(result == -1, "Failed editing event!");
+
+	/* Delete this event (note: google doesn't really deletes
+	 * the event, but set its status to 'cancelled' and keeps
+	 * then for nearly 4 weeks).
+	 */
+	result = gcal_erase_event(gcal_obj, event);
+	fail_if(result == -1, "Failed deleting event!");
+
+	/* Cleanup */
+	gcal_event_destroy(event);
+	gcal_destroy(gcal_obj);
+}
+END_TEST
+
+
 TCase *gcal_userapi(void)
 {
 	TCase *tc = NULL;
@@ -106,5 +150,6 @@ TCase *gcal_userapi(void)
 
 	tcase_add_test(tc, test_get_calendar);
 	tcase_add_test(tc, test_access_calendar);
+	tcase_add_test(tc, test_oper_calendar_event);
 	return tc;
 }
