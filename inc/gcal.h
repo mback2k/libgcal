@@ -77,6 +77,11 @@ typedef struct gcal_resource * gcal;
  */
 struct gcal_event;
 
+/** Since user cannot create an static instance of it, it entitles itself
+ * to be a completely abstract data type. See \ref gcal_event.
+ */
+typedef struct gcal_event * gcal_event;
+
 /** Library structure destructor (use it free its internal resources properly).
  */
 void gcal_destroy(gcal gcal_obj);
@@ -450,5 +455,20 @@ void gcal_deleted(gcal gcalobj, display_deleted_entries opt);
  * @return -1 on error, 0 on success.
  */
 int gcal_query(gcal gcalobj, const char *parameters);
+
+
+/** Helper function, does all calendar events dump and parsing, returning
+ * the data as an array of \ref gcal_events.
+ *
+ * @param gcalobj A libgcal object, must be previously authenticated with
+ * \ref gcal_get_authentication.
+ *
+ * @param length Pointer to an unsigned integer, will keep track of the
+ * number of events returned.
+ *
+ * @return An array of events, see \ref gcal_event. Must be cleaned up using
+ * \ref gcal_destroy_entries.
+ */
+gcal_event gcal_get_events(gcal gcalobj, size_t *length);
 
 #endif

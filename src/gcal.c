@@ -1250,3 +1250,18 @@ exit:
 
 	return result;
 }
+
+gcal_event gcal_get_events(gcal gcalobj, size_t *length)
+{
+	gcal_event events_array = NULL;
+	int result;
+
+	result = gcal_dump(gcalobj);
+	if (result == -1)
+		goto exit;
+
+	events_array = gcal_get_entries(gcalobj, length);
+
+exit:
+	return events_array;
+}
