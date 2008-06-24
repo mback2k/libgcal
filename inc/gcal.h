@@ -87,6 +87,20 @@ typedef struct gcal_event * gcal_event;
  */
 struct gcal_entry;
 
+
+/** Structure to hold events array, use it as a parameter for
+ * \ref gcal_get_events.
+ *
+ * This structure will contain the number of retrieved entries, as also
+ * the pointer to an array of \ref gcal_event structures.
+ */
+struct gcal_entry_array {
+	/** See \ref gcal_event. */
+	struct gcal_event *entries;
+	/** The number of entries */
+	size_t length;
+};
+
 /** Library structure destructor (use it free its internal resources properly).
  */
 void gcal_destroy(gcal gcal_obj);
@@ -462,18 +476,28 @@ int gcal_query(gcal gcalobj, const char *parameters);
 
 
 /** Helper function, does all calendar events dump and parsing, returning
- * the data as an array of \ref gcal_events.
+ * the data as an array of \ref gcal_event.
  *
  * @param gcalobj A libgcal object, must be previously authenticated with
  * \ref gcal_get_authentication.
  *
- * @param length Pointer to an unsigned integer, will keep track of the
- * number of events returned.
+ * @param events_array Pointer to an events array structure. See
+ * \ref gcal_entry_array.
  *
- * @return An array of events, see \ref gcal_event. Must be cleaned up using
- * \ref gcal_destroy_entries.
+ * @return 0 on success, -1 otherwise.
  */
-gcal_event gcal_get_events(gcal gcalobj, size_t *length);
+int gcal_get_events(gcal gcalobj, struct gcal_entry_array *events_array);
+
+
+/** Use this function to cleanup an array of calendar events.
+ *
+ * See also \ref gcal_get_events.
+ *
+ * @param events A pointer to an events array structure. See
+ * \ref gcal_entry_array.
+ */
+void gcal_cleanup_events(struct gcal_entry_array *events);
+
 
 /* Here starts accessors */
 
@@ -486,18 +510,19 @@ char *gcal_get_title(struct gcal_entry *entry);
 char *gcal_get_url(struct gcal_entry *entry);
 
 /* Here starts gcal_event accessors */
-char *gcal_get_calendar_id(struct gcal_event *event, size_t _index);
-char *gcal_get_calendar_updated(struct gcal_event *event, size_t _index);
-char *gcal_get_calendar_title(struct gcal_event *event, size_t _index);
-char *gcal_get_calendar_url(struct gcal_event *event, size_t _index);
+char *gcal_get_calendar_id(struct gcal_entry_array *events, size_t _index);
+char *gcal_get_calendar_updated(struct gcal_entry_array *events, size_t _index);
+char *gcal_get_calendar_title(struct gcal_entry_array *events, size_t _index);
+char *gcal_get_calendar_url(struct gcal_entry_array *events, size_t _index);
 
 /* This are the fields unique to calendar events */
-char *gcal_get_calendar_content(struct gcal_event *event, size_t _index);
-char *gcal_get_calendar_recurrent(struct gcal_event *event, size_t _index);
-char *gcal_get_calendar_start(struct gcal_event *event, size_t _index);
-char *gcal_get_calendar_end(struct gcal_event *event, size_t _index);
-char *gcal_get_calendar_where(struct gcal_event *event, size_t _index);
-char *gcal_get_calendar_status(struct gcal_event *event, size_t _index);
+char *gcal_get_calendar_content(struct gcal_entry_array *events, size_t _index);
+char *gcal_get_calendar_recurrent(struct gcal_entry_array *events,
+				  size_t _index);
+char *gcal_get_calendar_start(struct gcal_entry_array *events, size_t _index);
+char *gcal_get_calendar_end(struct gcal_entry_array *events, size_t _index);
+char *gcal_get_calendar_where(struct gcal_entry_array *events, size_t _index);
+char *gcal_get_calendar_status(struct gcal_entry_array *events, size_t _index);
 
 
 #endif

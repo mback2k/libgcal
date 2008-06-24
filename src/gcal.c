@@ -1227,7 +1227,7 @@ int gcal_query(gcal gcalobj, const char *parameters)
 	char *query_url = NULL, *ptr_tmp;
 	int result = -1;
 
-	if ((!gcalobj) && (!parameters))
+	if ((!gcalobj) || (!parameters))
 		goto exit;
 
 	/* Swaps the max-results internal member for NULL. This makes
@@ -1251,19 +1251,30 @@ exit:
 	return result;
 }
 
-gcal_event gcal_get_events(gcal gcalobj, size_t *length)
+int gcal_get_events(gcal gcalobj, struct gcal_entry_array *events_array)
 {
-	gcal_event events_array = NULL;
-	int result;
+	int result = -1;
+	if ((!gcalobj) || (!events_array))
+		goto exit;
 
 	result = gcal_dump(gcalobj);
 	if (result == -1)
 		goto exit;
 
-	events_array = gcal_get_entries(gcalobj, length);
+	events_array->entries = gcal_get_entries(gcalobj, &events_array->length);
 
 exit:
-	return events_array;
+	return result;
+}
+
+void gcal_cleanup_events(struct gcal_entry_array *events)
+{
+	if (!events)
+		return;
+
+	gcal_destroy_entries(events->entries, events->length);
+	events->length = 0;
+	events->entries = NULL;
 }
 
 char *gcal_get_id(struct gcal_entry *entry)
@@ -1301,84 +1312,105 @@ char *gcal_get_url(struct gcal_entry *entry)
 }
 
 /* Calendar accessors start here */
-char *gcal_get_calendar_id(struct gcal_event *event, size_t _index)
+char *gcal_get_calendar_id(struct gcal_entry_array *events, size_t _index)
 {
-	if (!event)
+	struct gcal_event *event;
+	if ((!events) || (_index > (events->length - 1)))
 		return NULL;
 
+	event = events->entries;
 	return gcal_get_id(&(event[_index]).common);
 }
 
-char *gcal_get_calendar_updated(struct gcal_event *event, size_t _index)
+char *gcal_get_calendar_updated(struct gcal_entry_array *events, size_t _index)
 {
-	if (!event)
+	struct gcal_event *event;
+	if ((!events) || (_index > (events->length - 1)))
 		return NULL;
 
+	event = events->entries;
 	return gcal_get_updated(&(event[_index]).common);
 }
 
-char *gcal_get_calendar_title(struct gcal_event *event, size_t _index)
+char *gcal_get_calendar_title(struct gcal_entry_array *events, size_t _index)
 {
-	if (!event)
+	struct gcal_event *event;
+	if ((!events) || (_index > (events->length - 1)))
 		return NULL;
 
+	event = events->entries;
 	return gcal_get_title(&(event[_index]).common);
 }
 
-char *gcal_get_calendar_url(struct gcal_event *event, size_t _index)
+char *gcal_get_calendar_url(struct gcal_entry_array *events, size_t _index)
 {
-	if (!event)
+	struct gcal_event *event;
+	if ((!events) || (_index > (events->length - 1)))
 		return NULL;
 
+	event = events->entries;
 	return gcal_get_url(&(event[_index]).common);
 }
 
 /* This are the fields unique to calendar events */
-char *gcal_get_calendar_content(struct gcal_event *event, size_t _index)
+char *gcal_get_calendar_content(struct gcal_entry_array *events, size_t _index)
 {
-	if (!event)
+	struct gcal_event *event;
+	if ((!events) || (_index > (events->length - 1)))
 		return NULL;
 
+	event = events->entries;
 	return event[_index].content;
 }
 
-char *gcal_get_calendar_recurrent(struct gcal_event *event, size_t _index)
+char *gcal_get_calendar_recurrent(struct gcal_entry_array *events,
+				  size_t _index)
 {
-	if (!event)
+	struct gcal_event *event;
+	if ((!events) || (_index > (events->length - 1)))
 		return NULL;
 
+	event = events->entries;
 	return event[_index].dt_recurrent;
 }
 
-char *gcal_get_calendar_start(struct gcal_event *event, size_t _index)
+char *gcal_get_calendar_start(struct gcal_entry_array *events, size_t _index)
 {
-	if (!event)
+	struct gcal_event *event;
+	if ((!events) || (_index > (events->length - 1)))
 		return NULL;
 
+	event = events->entries;
 	return event[_index].dt_start;
 }
 
-char *gcal_get_calendar_end(struct gcal_event *event, size_t _index)
+char *gcal_get_calendar_end(struct gcal_entry_array *events, size_t _index)
 {
-	if (!event)
+	struct gcal_event *event;
+	if ((!events) || (_index > (events->length - 1)))
 		return NULL;
 
+	event = events->entries;
 	return event[_index].dt_end;
 }
 
-char *gcal_get_calendar_where(struct gcal_event *event, size_t _index)
+char *gcal_get_calendar_where(struct gcal_entry_array *events, size_t _index)
 {
-	if (!event)
+	struct gcal_event *event;
+	if ((!events) || (_index > (events->length - 1)))
 		return NULL;
 
+	event = events->entries;
 	return event[_index].where;
 }
 
-char *gcal_get_calendar_status(struct gcal_event *event, size_t _index)
+char *gcal_get_calendar_status(struct gcal_entry_array *events, size_t _index)
 {
-	if (!event)
+	struct gcal_event *event;
+	if ((!events) || (_index > (events->length - 1)))
 		return NULL;
 
+	event = events->entries;
 	return event[_index].status;
 }
 
