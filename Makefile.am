@@ -9,13 +9,15 @@ lib_LTLIBRARIES = libgcal.la
 include_HEADERS = $(headerdir)/internal_gcal.h \
 		$(headerdir)/gcal.h $(headerdir)/atom_parser.h \
 		$(headerdir)/xml_aux.h $(headerdir)/gcal_parser.h \
-		$(headerdir)/gcontact.h $(headerdir)/gcal_status.h
+		$(headerdir)/gcontact.h $(headerdir)/gcal_status.h \
+		$(headerdir)/gcalendar.h
 if GCAL_DEBUG_CURL
 include_HEADERS += $(headerdir)/curl_debug_gcal.h
 endif
 libgcal_la_SOURCES = $(csourcedir)/gcal.c $(csourcedir)/atom_parser.c \
 		$(csourcedir)/xml_aux.c $(csourcedir)/gcal_parser.c \
-		$(csourcedir)/gcontact.c $(csourcedir)/gcal_status.c
+		$(csourcedir)/gcontact.c $(csourcedir)/gcal_status.c \
+		$(csourcedir)/gcalendar.c
 if GCAL_DEBUG_CURL
 libgcal_la_SOURCES += $(csourcedir)/curl_debug_gcal.c
 endif

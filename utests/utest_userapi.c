@@ -7,7 +7,7 @@
  */
 
 #include "utest_userapi.h"
-#include "gcal.h"
+#include "gcalendar.h"
 #include "gcontact.h"
 #include <stdio.h>
 
