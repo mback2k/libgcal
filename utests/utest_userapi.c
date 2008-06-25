@@ -17,7 +17,7 @@ START_TEST (test_get_calendar)
 	struct gcal_entry_array event_array;
 	int result;
 
-	gcal = gcal_construct(GCALENDAR);
+	gcal = gcal_new(GCALENDAR);
 	fail_if(gcal == NULL, "Failed constructing gcal object!");
 
 	result = gcal_get_authentication(gcal, "gcal4tester", "66libgcal");
@@ -30,7 +30,7 @@ START_TEST (test_get_calendar)
 
 	/* Cleanup */
 	gcal_cleanup_events(&event_array);
-	gcal_destroy(gcal);
+	gcal_delete(gcal);
 
 }
 END_TEST
