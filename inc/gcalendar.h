@@ -122,29 +122,29 @@ gcal_event gcal_event_element(struct gcal_event_array *events, size_t _index);
 
 
 /* Here starts gcal_event accessors */
-char *gcal_get_calendar_id(gcal_event event);
-char *gcal_get_calendar_updated(gcal_event event);
-char *gcal_get_calendar_title(gcal_event event);
-char *gcal_get_calendar_url(gcal_event event);
+char *gcal_get_event_id(gcal_event event);
+char *gcal_get_event_updated(gcal_event event);
+char *gcal_get_event_title(gcal_event event);
+char *gcal_get_event_url(gcal_event event);
 
 /* This are the fields unique to calendar events */
-char *gcal_get_calendar_content(gcal_event event);
-char *gcal_get_calendar_recurrent(gcal_event event);
-char *gcal_get_calendar_start(gcal_event event);
-char *gcal_get_calendar_end(gcal_event event);
-char *gcal_get_calendar_where(gcal_event event);
-char *gcal_get_calendar_status(gcal_event event);
+char *gcal_get_event_content(gcal_event event);
+char *gcal_get_event_recurrent(gcal_event event);
+char *gcal_get_event_start(gcal_event event);
+char *gcal_get_event_end(gcal_event event);
+char *gcal_get_event_where(gcal_event event);
+char *gcal_get_event_status(gcal_event event);
 
 
 /* Here starts the setters */
-int gcal_set_calendar_title(gcal_event event, char *field);
-int gcal_set_calendar_content(gcal_event event, char *field);
-int gcal_set_calendar_start(gcal_event event, char *field);
-int gcal_set_calendar_end(gcal_event event, char *field);
-int gcal_set_calendar_where(gcal_event event, char *field);
+int gcal_set_event_title(gcal_event event, char *field);
+int gcal_set_event_content(gcal_event event, char *field);
+int gcal_set_event_start(gcal_event event, char *field);
+int gcal_set_event_end(gcal_event event, char *field);
+int gcal_set_event_where(gcal_event event, char *field);
 
 /* TODO: Not implemented */
-int gcal_set_calendar_recurrent(gcal_event event, char *field);
-int gcal_set_calendar_status(gcal_event event, char *field);
+int gcal_set_event_recurrent(gcal_event event, char *field);
+int gcal_set_event_status(gcal_event event, char *field);
 
 #endif
