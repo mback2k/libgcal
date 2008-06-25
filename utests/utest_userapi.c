@@ -13,24 +13,24 @@
 
 START_TEST (test_get_calendar)
 {
-	gcal gcal_obj;
+	gcal_t gcal;
 	struct gcal_entry_array event_array;
 	int result;
 
-	gcal_obj = gcal_construct(GCALENDAR);
-	fail_if(gcal_obj == NULL, "Failed constructing gcal object!");
+	gcal = gcal_construct(GCALENDAR);
+	fail_if(gcal == NULL, "Failed constructing gcal object!");
 
-	result = gcal_get_authentication(gcal_obj, "gcal4tester", "66libgcal");
+	result = gcal_get_authentication(gcal, "gcal4tester", "66libgcal");
 	fail_if(result == -1, "Cannot authenticate!");
 
-	result = gcal_get_events(gcal_obj, &event_array);
+	result = gcal_get_events(gcal, &event_array);
 	fail_if(result == -1, "Failed downloading events!");
 	fail_if(event_array.length < 1, "gcal4tester must have at least"
 		"1 event!");
 
 	/* Cleanup */
 	gcal_cleanup_events(&event_array);
-	gcal_destroy(gcal_obj);
+	gcal_destroy(gcal);
 
 }
 END_TEST
@@ -38,16 +38,16 @@ END_TEST
 
 START_TEST (test_access_calendar)
 {
-	gcal gcal_obj;
+	gcal_t gcal;
 	struct gcal_entry_array event_array;
 	gcal_event event;
 	size_t i;
 	int result;
 	char *ptr;
 
-	gcal_obj = gcal_new(GCALENDAR);
-	result = gcal_get_authentication(gcal_obj, "gcal4tester", "66libgcal");
-	result = gcal_get_events(gcal_obj, &event_array);
+	gcal = gcal_new(GCALENDAR);
+	result = gcal_get_authentication(gcal, "gcal4tester", "66libgcal");
+	result = gcal_get_events(gcal, &event_array);
 
 	/* Access events properties */
 	for (i = 0; i < event_array.length; ++i) {
@@ -111,14 +111,14 @@ START_TEST (test_access_calendar)
 
 	/* Cleanup */
 	gcal_cleanup_events(&event_array);
-	gcal_delete(gcal_obj);
+	gcal_delete(gcal);
 }
 END_TEST
 
 
 START_TEST (test_oper_calendar_event)
 {
-	gcal gcal_obj;
+	gcal_t gcal;
 	gcal_event event;
 	int result;
 
@@ -132,30 +132,30 @@ START_TEST (test_oper_calendar_event)
 	gcal_set_calendar_where(event, "A nice place for a meeting");
 
 	/* Create a gcal object and authenticate */
-	gcal_obj = gcal_new(GCALENDAR);
-	result = gcal_get_authentication(gcal_obj, "gcalntester", "77libgcal");
+	gcal = gcal_new(GCALENDAR);
+	result = gcal_get_authentication(gcal, "gcalntester", "77libgcal");
 	fail_if(result == -1, "Failed getting authentication");
 
 	/* Add a new event */
-	result = gcal_add_event(gcal_obj, event);
+	result = gcal_add_event(gcal, event);
 	fail_if(result == -1, "Failed adding a new event!");
 
 
 	/* Edit this event */
 	gcal_set_calendar_title(event, "Changing the title");
-	result = gcal_update_event(gcal_obj, event);
+	result = gcal_update_event(gcal, event);
 	fail_if(result == -1, "Failed editing event!");
 
 	/* Delete this event (note: google doesn't really deletes
 	 * the event, but set its status to 'cancelled' and keeps
 	 * then for nearly 4 weeks).
 	 */
-	result = gcal_erase_event(gcal_obj, event);
+	result = gcal_erase_event(gcal, event);
 	fail_if(result == -1, "Failed deleting event!");
 
 	/* Cleanup */
 	gcal_event_delete(event);
-	gcal_delete(gcal_obj);
+	gcal_delete(gcal);
 }
 END_TEST
 

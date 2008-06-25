@@ -67,7 +67,7 @@ POSSIBILITY OF SUCH DAMAGE.
 #include "curl_debug_gcal.h"
 #endif
 
-static void reset_buffer(gcal ptr)
+static void reset_buffer(struct gcal_resource *ptr)
 {
 	if (ptr->buffer)
 		free(ptr->buffer);
@@ -75,11 +75,11 @@ static void reset_buffer(gcal ptr)
 	ptr->buffer = (char *) calloc(ptr->length, sizeof(char));
 }
 
-gcal gcal_construct(gservice mode)
+struct gcal_resource *gcal_construct(gservice mode)
 {
 
-	gcal ptr;
-	ptr = (gcal ) malloc(sizeof(struct gcal_resource));
+	struct gcal_resource *ptr;
+	ptr = malloc(sizeof(struct gcal_resource));
 	if (!ptr)
 		goto exit;
 
@@ -116,7 +116,7 @@ exit:
 	return ptr;
 }
 
-void gcal_set_service(gcal gcalobj, gservice mode)
+void gcal_set_service(struct gcal_resource *gcalobj, gservice mode)
 {
 
 	if (gcalobj) {
@@ -128,12 +128,12 @@ void gcal_set_service(gcal gcalobj, gservice mode)
 	}
 }
 
-void clean_buffer(gcal gcal_obj)
+void clean_buffer(struct gcal_resource *gcal_obj)
 {
 	memset(gcal_obj->buffer, 0, gcal_obj->length);
 }
 
-void gcal_destroy(gcal gcal_obj)
+void gcal_destroy(struct gcal_resource *gcal_obj)
 {
 	if (!gcal_obj)
 		return;
@@ -169,7 +169,7 @@ static size_t write_cb(void *ptr, size_t count, size_t chunk_size, void *data)
 {
 
 	size_t size = count * chunk_size;
-	gcal gcal_ptr = (gcal ) data;
+	struct gcal_resource *gcal_ptr = (struct gcal_resource *)data;
 	int current_length = strnlen(gcal_ptr->buffer, gcal_ptr->length);
 	char *ptr_tmp;
 
@@ -200,7 +200,7 @@ exit:
 	return size;
 }
 
-static int check_request_error(gcal gcalobj, int code,
+static int check_request_error(struct gcal_resource *gcalobj, int code,
 			       int expected_answer)
 {
 	int result = 0;
@@ -226,7 +226,7 @@ static int check_request_error(gcal gcalobj, int code,
 	return result;
 }
 
-static int common_upload(gcal gcalobj,
+static int common_upload(struct gcal_resource *gcalobj,
 			 char *header, char *header2, char *header3,
 			 struct curl_slist **curl_headers)
 {
@@ -262,7 +262,7 @@ static int common_upload(gcal gcalobj,
 	return result = 0;
 }
 
-int http_post(gcal gcalobj, const char *url,
+int http_post(struct gcal_resource *gcalobj, const char *url,
 	      char *header, char *header2, char *header3,
 	      char *post_data, const int expected_answer)
 {
@@ -301,7 +301,7 @@ exit:
 
 }
 
-static int http_put(gcal gcalobj, const char *url,
+static int http_put(struct gcal_resource *gcalobj, const char *url,
 		    char *header, char *header2, char *header3,
 		    char *post_data, const int expected_answer)
 {
@@ -343,7 +343,7 @@ exit:
 
 }
 
-int gcal_get_authentication(gcal gcalobj,
+int gcal_get_authentication(struct gcal_resource *gcalobj,
 			    char *user, char *password)
 {
 
@@ -415,7 +415,7 @@ exit:
 
 }
 
-static int get_follow_redirection(gcal gcalobj,
+static int get_follow_redirection(struct gcal_resource *gcalobj,
 				  const char *url)
 {
 	struct curl_slist *response_headers = NULL;
@@ -494,7 +494,7 @@ exit:
 }
 
 
-static char *mount_query_url(gcal gcalobj,
+static char *mount_query_url(struct gcal_resource *gcalobj,
 			     const char *parameters, ...)
 {
 	va_list ap;
@@ -602,7 +602,7 @@ exit:
 	return result;
 }
 
-int gcal_dump(gcal gcalobj)
+int gcal_dump(struct gcal_resource *gcalobj)
 {
 	int result = -1;
 	char *buffer = NULL;
@@ -628,7 +628,7 @@ exit:
 	return result;
 }
 
-int gcal_calendar_list(gcal gcalobj)
+int gcal_calendar_list(struct gcal_resource *gcalobj)
 {
 	int result;
 	result =  get_follow_redirection(gcalobj, GCAL_LIST);
@@ -637,7 +637,7 @@ int gcal_calendar_list(gcal gcalobj)
 	return result;
 }
 
-int gcal_entry_number(gcal gcalobj)
+int gcal_entry_number(struct gcal_resource *gcalobj)
 {
 	int result = -1;
 
@@ -662,7 +662,7 @@ exit:
 	return result;
 }
 
-struct gcal_event *gcal_get_entries(gcal gcalobj,
+struct gcal_event *gcal_get_entries(struct gcal_resource *gcalobj,
 				    size_t *length)
 {
 
@@ -759,14 +759,14 @@ void gcal_destroy_entries(struct gcal_event *entries, size_t length)
 /* This function makes possible to share code between 'add'
  * and 'edit' events.
  */
-int up_entry(char *data2post, gcal gcalobj,
+int up_entry(char *data2post, struct gcal_resource *gcalobj,
 	     const char *url_server, HTTP_CMD up_mode, int expected_code)
 {
 	int result = -1;
 	int length = 0;
 	char *h_auth = NULL, *h_length = NULL, *tmp;
 	const char header[] = "Content-length: ";
-	int (*up_callback)(gcal , const char *,
+	int (*up_callback)(struct gcal_resource *, const char *,
 			   char *, char *, char *,
 			   char *, const int);
 
@@ -870,7 +870,7 @@ exit:
 	return result;
 }
 
-int gcal_create_event(gcal gcalobj,
+int gcal_create_event(struct gcal_resource *gcalobj,
 		      struct gcal_event *entries,
 		      struct gcal_event *updated)
 {
@@ -914,7 +914,7 @@ exit:
 	return result;
 }
 
-int gcal_delete_event(gcal gcalobj,
+int gcal_delete_event(struct gcal_resource *gcalobj,
 		      struct gcal_event *entry)
 {
 	int result = -1, length;
@@ -967,7 +967,7 @@ exit:
 
 }
 
-int gcal_edit_event(gcal gcalobj,
+int gcal_edit_event(struct gcal_resource *gcalobj,
 		    struct gcal_event *entry,
 		    struct gcal_event *updated)
 {
@@ -1012,7 +1012,7 @@ exit:
 	return result;
 }
 
-char *gcal_access_buffer(gcal gcalobj)
+char *gcal_access_buffer(struct gcal_resource *gcalobj)
 {
 	char *result = NULL;
 	if (gcalobj)
@@ -1057,7 +1057,7 @@ int get_mili_timestamp(char *timestamp, size_t length, char *atimezone)
  * quering for updated entries is just a query with a set of
  * parameters.
  */
-int gcal_query_updated(gcal gcalobj, char *timestamp)
+int gcal_query_updated(struct gcal_resource *gcalobj, char *timestamp)
 {
 	int result = -1;
 	char *query_url = NULL;
@@ -1172,7 +1172,7 @@ exit:
 
 }
 
-int gcal_set_timezone(gcal gcalobj, char *atimezone)
+int gcal_set_timezone(struct gcal_resource *gcalobj, char *atimezone)
 {
 	int result = -1;
 	if ((!gcalobj) || (!atimezone))
@@ -1189,7 +1189,7 @@ exit:
 	return result;
 }
 
-int gcal_set_location(gcal gcalobj, char *location)
+int gcal_set_location(struct gcal_resource *gcalobj, char *location)
 {
 	int result = -1;
 	if ((!gcalobj) || (!location))
@@ -1207,7 +1207,7 @@ exit:
 
 }
 
-void gcal_deleted(gcal gcalobj, display_deleted_entries opt)
+void gcal_deleted(struct gcal_resource *gcalobj, display_deleted_entries opt)
 {
 	if (!gcalobj)
 		return;
@@ -1222,7 +1222,7 @@ void gcal_deleted(gcal gcalobj, display_deleted_entries opt)
 
 }
 
-int gcal_query(gcal gcalobj, const char *parameters)
+int gcal_query(struct gcal_resource *gcalobj, const char *parameters)
 {
 	char *query_url = NULL, *ptr_tmp;
 	int result = -1;

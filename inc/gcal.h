@@ -68,11 +68,6 @@ typedef enum {
  */
 struct gcal_resource;
 
-/** Since user cannot create an static instance of it, it entitles itself
- * to be a completely abstract data type. See \ref gcal_resource.
- */
-typedef struct gcal_resource * gcal;
-
 /** Library structure, represents each calendar event entry.
  */
 struct gcal_event;
@@ -90,7 +85,7 @@ struct gcal_entry;
 
 /** Library structure destructor (use it free its internal resources properly).
  */
-void gcal_destroy(gcal gcal_obj);
+void gcal_destroy(struct gcal_resource *gcal_obj);
 
 /** Internal use function, cleans up the internal buffer.
  *
@@ -98,7 +93,7 @@ void gcal_destroy(gcal gcal_obj);
  *
  * @param gcal_obj Library resource structure pointer.
  */
-void clean_buffer(gcal gcal_obj);
+void clean_buffer(struct gcal_resource *gcal_obj);
 
 
 /** Library structure constructor, the user can only have pointers to the
@@ -112,7 +107,7 @@ void clean_buffer(gcal gcal_obj);
  *
  * @return A pointer to a newly created object or NULL.
  */
-gcal gcal_construct(gservice mode);
+struct gcal_resource *gcal_construct(gservice mode);
 
 /** Sets the google service that user wants to authenticate.
  *
@@ -122,7 +117,7 @@ gcal gcal_construct(gservice mode);
  *
  * @param mode Service type, see \ref gservice.
  */
-void gcal_set_service(gcal gcalobj, gservice mode);
+void gcal_set_service(struct gcal_resource *gcalobj, gservice mode);
 
 
 /** Gets from google an authentication token, using the 'ClientLogin' service.
@@ -138,7 +133,7 @@ void gcal_set_service(gcal gcalobj, gservice mode);
  *
  * @return Returns 0 on success, -1 otherwise.
  */
-int gcal_get_authentication(gcal gcalobj,
+int gcal_get_authentication(struct gcal_resource *gcalobj,
 			    char *user, char *password);
 
 
@@ -152,7 +147,7 @@ int gcal_get_authentication(gcal gcalobj,
  *
  * @return Returns 0 on success, -1 otherwise.
  */
-int gcal_dump(gcal gcalobj);
+int gcal_dump(struct gcal_resource *gcalobj);
 
 /** Get a list of users calendars (gcalendar supports multiple calendars
  * besides the default calendar).
@@ -168,7 +163,7 @@ int gcal_dump(gcal gcalobj);
  *
  * @return Returns 0 on success, -1 otherwise.
  */
-int gcal_calendar_list(gcal gcalobj);
+int gcal_calendar_list(struct gcal_resource *gcalobj);
 
 
 /** Return the number of event entries a calendar has (you should
@@ -180,7 +175,7 @@ int gcal_calendar_list(gcal gcalobj);
  *
  * @return -1 on error, any number >= 0 otherwise.
  */
-int gcal_entry_number(gcal gcalobj);
+int gcal_entry_number(struct gcal_resource *gcalobj);
 
 
 /** Extracts from the atom stream the calendar event entries (you should
@@ -202,7 +197,7 @@ int gcal_entry_number(gcal gcalobj);
  *
  * @return A pointer on sucess, NULL otherwise.
  */
-struct gcal_event *gcal_get_entries(gcal gcalobj,
+struct gcal_event *gcal_get_entries(struct gcal_resource *gcalobj,
 				    size_t *length);
 
 
@@ -251,7 +246,7 @@ void gcal_destroy_entries(struct gcal_event *entries, size_t length);
  *
  * @return -1 on error, 0 on success.
  */
-int http_post(gcal gcalobj, const char *url,
+int http_post(struct gcal_resource *gcalobj, const char *url,
 	      char *header, char *header2, char *header3,
 	      char *post_data, const int expected_answer);
 
@@ -279,7 +274,7 @@ int http_post(gcal gcalobj, const char *url,
  *
  * @return -1 on error, 0 on success.
  */
-int up_entry(char *data2post, gcal gcalobj,
+int up_entry(char *data2post, struct gcal_resource *gcalobj,
 	     const char *url_server, HTTP_CMD up_mode, int expected_code);
 
 
@@ -301,7 +296,7 @@ int up_entry(char *data2post, gcal gcalobj,
  * @return -1 on error, 0 on success, -2 if operation went correctly but
  * cannot return 'updated' entry.
  */
-int gcal_create_event(gcal gcalobj,
+int gcal_create_event(struct gcal_resource *gcalobj,
 		      struct gcal_event *entries,
 		      struct gcal_event *updated);
 
@@ -318,7 +313,7 @@ int gcal_create_event(gcal gcalobj,
  *
  * @return -1 on error, 0 on success.
  */
-int gcal_delete_event(gcal gcalobj,
+int gcal_delete_event(struct gcal_resource *gcalobj,
 		      struct gcal_event *entry);
 
 
@@ -341,7 +336,7 @@ int gcal_delete_event(gcal gcalobj,
  * @return -1 on error, 0 on success, -2 if operation went correctly but
  * cannot return 'updated' entry.
  */
-int gcal_edit_event(gcal gcalobj,
+int gcal_edit_event(struct gcal_resource *gcalobj,
 		    struct gcal_event *entry,
 		    struct gcal_event *updated);
 
@@ -359,7 +354,7 @@ int gcal_edit_event(gcal gcalobj,
  *
  * @return A pointer to internal gcal_resource buffer.
  */
-char *gcal_access_buffer(gcal gcalobj);
+char *gcal_access_buffer(struct gcal_resource *gcalobj);
 
 /** Function to get the current timestamp (RFC3339) with milisecond
  * precision.
@@ -390,7 +385,7 @@ int get_mili_timestamp(char *timestamp, size_t length, char *atimezone);
  *
  * @return -1 on error, 0 on success.
  */
-int gcal_query_updated(gcal gcalobj, char *timestamp);
+int gcal_query_updated(struct gcal_resource *gcalobj, char *timestamp);
 
 /** Set a timezone, following the RFC 3339 format +/-hh:mm.
  *
@@ -405,7 +400,7 @@ int gcal_query_updated(gcal gcalobj, char *timestamp);
  *
  * @return -1 on error, 0 on success.
  */
-int gcal_set_timezone(gcal gcalobj, char *atimezone);
+int gcal_set_timezone(struct gcal_resource *gcalobj, char *atimezone);
 
 /** Define the location that results should be returned for queries.
  *
@@ -423,7 +418,7 @@ int gcal_set_timezone(gcal gcalobj, char *atimezone);
  *
  * @return -1 on error, 0 on success.
  */
-int gcal_set_location(gcal gcalobj, char *location);
+int gcal_set_location(struct gcal_resource *gcalobj, char *location);
 
 /** Use this to set if deleted entries should be returned or not. Pay attention
  * that this is implemented only for google contacts (google calendar entries
@@ -436,7 +431,7 @@ int gcal_set_location(gcal gcalobj, char *location);
  * @param opt Option parameter, enable (SHOW) or not (HIDE) retrieving of
  * deleted entries (see \ref display_deleted_entries).
  */
-void gcal_deleted(gcal gcalobj, display_deleted_entries opt);
+void gcal_deleted(struct gcal_resource *gcalobj, display_deleted_entries opt);
 
 
 /** Generic query function, use it to do a query to google services.
@@ -459,7 +454,7 @@ void gcal_deleted(gcal gcalobj, display_deleted_entries opt);
  *
  * @return -1 on error, 0 on success.
  */
-int gcal_query(gcal gcalobj, const char *parameters);
+int gcal_query(struct gcal_resource *gcalobj, const char *parameters);
 
 
 /* Common fields between calendar and contacts are

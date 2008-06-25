@@ -55,6 +55,8 @@ struct gcal_entry_array {
 };
 
 
+typedef struct gcal_resource * gcal_t;
+
 /** Creates a new gcal object (you need then to talk with google
  * servers).
  *
@@ -62,13 +64,13 @@ struct gcal_entry_array {
  *
  * @return The new object on success or NULL otherwise.
  */
-gcal gcal_new(gservice mode);
+gcal_t gcal_new(gservice mode);
 
 /** Deletes a gcal object.
  *
  * @param gcal_obj A gcal object created with \ref gcal_new.
  */
-void gcal_delete(gcal gcal_obj);
+void gcal_delete(gcal_t gcal_obj);
 
 /** Creates a new google calendar event object.
  *
@@ -97,7 +99,7 @@ void gcal_event_delete(gcal_event event);
  *
  * @return 0 on success, -1 otherwise.
  */
-int gcal_get_events(gcal gcalobj, struct gcal_entry_array *events_array);
+int gcal_get_events(gcal_t gcalobj, struct gcal_entry_array *events_array);
 
 
 /** Use this function to cleanup an array of calendar events.
@@ -110,9 +112,9 @@ int gcal_get_events(gcal gcalobj, struct gcal_entry_array *events_array);
 void gcal_cleanup_events(struct gcal_entry_array *events);
 
 
-int gcal_add_event(gcal gcal_obj, gcal_event event);
-int gcal_update_event(gcal gcal_obj, gcal_event event);
-int gcal_erase_event(gcal gcal_obj, gcal_event event);
+int gcal_add_event(gcal_t gcal_obj, gcal_event event);
+int gcal_update_event(gcal_t gcal_obj, gcal_event event);
+int gcal_erase_event(gcal_t gcal_obj, gcal_event event);
 
 gcal_event gcal_event_element(struct gcal_entry_array *events, size_t _index);
 

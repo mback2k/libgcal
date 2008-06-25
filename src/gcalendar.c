@@ -48,12 +48,12 @@ POSSIBILITY OF SUCH DAMAGE.
 #include "internal_gcal.h"
 
 
-gcal gcal_new(gservice mode)
+gcal_t gcal_new(gservice mode)
 {
 	return gcal_construct(mode);
 }
 
-void gcal_delete(gcal gcal_obj)
+void gcal_delete(gcal_t gcal_obj)
 {
 	gcal_destroy(gcal_obj);
 }
@@ -82,7 +82,7 @@ void gcal_event_delete(gcal_event event)
 	free(event);
 }
 
-int gcal_add_event(gcal gcal_obj, gcal_event event)
+int gcal_add_event(gcal_t gcal_obj, gcal_event event)
 {
 	int result = -1;
 	struct gcal_event updated;
@@ -116,7 +116,7 @@ exit:
 	return result;
 }
 
-int gcal_update_event(gcal gcal_obj, gcal_event event)
+int gcal_update_event(gcal_t gcal_obj, gcal_event event)
 {
 	int result = -1;
 	struct gcal_event updated;
@@ -146,7 +146,7 @@ exit:
 
 }
 
-int gcal_erase_event(gcal gcal_obj, gcal_event event)
+int gcal_erase_event(gcal_t gcal_obj, gcal_event event)
 {
 	int result = -1;
 	if ((!gcal_obj) || (!event))
@@ -157,7 +157,7 @@ exit:
 	return result;
 }
 
-int gcal_get_events(gcal gcalobj, struct gcal_entry_array *events_array)
+int gcal_get_events(gcal_t gcalobj, struct gcal_entry_array *events_array)
 {
 	int result = -1;
 	if ((!gcalobj) || (!events_array))

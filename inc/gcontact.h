@@ -60,7 +60,7 @@ struct gcal_contact;
  *
  * @return A pointer on sucess, NULL otherwise.
  */
-struct gcal_contact *gcal_get_contacts(gcal ptr_gcal,
+struct gcal_contact *gcal_get_contacts(struct gcal_resource *ptr_gcal,
 				       size_t *length);
 
 
@@ -109,7 +109,7 @@ void gcal_destroy_contacts(struct gcal_contact *contacts, size_t length);
  * @return -1 on error, 0 on success, -2 if operation went correctly but
  * cannot return 'updated' entry.
  */
-int gcal_create_contact(gcal ptr_gcal,
+int gcal_create_contact(struct gcal_resource *ptr_gcal,
 			struct gcal_contact *contact,
 			struct gcal_contact *updated);
 
@@ -128,7 +128,7 @@ int gcal_create_contact(gcal ptr_gcal,
  *
  * @return -1 on error, 0 on success.
  */
-int gcal_delete_contact(gcal ptr_gcal,
+int gcal_delete_contact(struct gcal_resource *ptr_gcal,
 			struct gcal_contact *contact);
 
 
@@ -152,7 +152,7 @@ int gcal_delete_contact(gcal ptr_gcal,
  * @return -1 on error, 0 on success, -2 if operation went correctly but
  * cannot return 'updated' entry.
  */
-int gcal_edit_contact(gcal ptr_gcal,
+int gcal_edit_contact(struct gcal_resource *ptr_gcal,
 		      struct gcal_contact *contact,
 		      struct gcal_contact *updated);
 
