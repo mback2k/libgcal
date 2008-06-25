@@ -3,7 +3,17 @@
  * @author Adenilson Cavalcanti da Silva <adenilson.silva@indt.org.br>
  * @date   Started on June 24 2008
  *
- * @brief  Header module for user api unit tests
+ * @brief  Implementation module for user api unit tests.
+ *
+ * This is a good place to look when learning to use libgcal. The following
+ * operations are covered:
+ * - authentication
+ * - getting all calendar events
+ * - accessing then
+ * - adding a new calendar event
+ * - editing and deleting an event
+ * - querying for updated calendar events
+ *
  */
 
 #include "utest_userapi.h"
