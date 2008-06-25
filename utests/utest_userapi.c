@@ -123,7 +123,7 @@ START_TEST (test_oper_calendar_event)
 	int result;
 
 	/* Create a new event object */
-	event = gcal_event_construct();
+	event = gcal_event_new();
 	fail_if (!event, "Cannot construct event object!");
 	gcal_set_calendar_title(event, "A new event");
 	gcal_set_calendar_content(event, "Here goes the description");
@@ -154,7 +154,7 @@ START_TEST (test_oper_calendar_event)
 	fail_if(result == -1, "Failed deleting event!");
 
 	/* Cleanup */
-	gcal_event_destroy(event);
+	gcal_event_delete(event);
 	gcal_delete(gcal_obj);
 }
 END_TEST

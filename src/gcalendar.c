@@ -60,7 +60,7 @@ void gcal_delete(gcal gcal_obj)
 
 
 
-gcal_event gcal_event_construct(void)
+gcal_event gcal_event_new(void)
 {
 	gcal_event result = NULL;
 	result = malloc(sizeof(struct gcal_event));
@@ -72,7 +72,7 @@ gcal_event gcal_event_construct(void)
 	return result;
 }
 
-void gcal_event_destroy(gcal_event event)
+void gcal_event_delete(gcal_event event)
 {
 
 	if (!event)

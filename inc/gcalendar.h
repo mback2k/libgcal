@@ -55,13 +55,36 @@ struct gcal_entry_array {
 };
 
 
+/** Creates a new gcal object (you need then to talk with google
+ * servers).
+ *
+ * @param mode Which google service to handle (GCONTACT and GCALENDAR)
+ *
+ * @return The new object on success or NULL otherwise.
+ */
 gcal gcal_new(gservice mode);
 
+/** Deletes a gcal object.
+ *
+ * @param gcal_obj A gcal object created with \ref gcal_new.
+ */
 void gcal_delete(gcal gcal_obj);
 
-gcal_event gcal_event_construct(void);
+/** Creates a new google calendar event object.
+ *
+ * If you are going to add new event, see also \ref gcal_add_event.
+ *
+ * @return A gcal_event object on success or NULL otherwise.
+ */
+gcal_event gcal_event_new(void);
 
-void gcal_event_destroy(gcal_event event);
+/** Free an gcal event object.
+ *
+ *
+ * @param event An gcal event object, see also \ref gcal_event_new.
+ */
+void gcal_event_delete(gcal_event event);
+
 
 /** Helper function, does all calendar events dump and parsing, returning
  * the data as an array of \ref gcal_event.
