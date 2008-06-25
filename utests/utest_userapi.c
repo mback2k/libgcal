@@ -173,18 +173,21 @@ START_TEST (test_query_calendar_updated)
 	result = gcal_get_authentication(gcal, "gcalntester", "77libgcal");
 
 	/* This will query for all updated events (fall in this category
-	 * added/deleted/updated events) starting for 06:00Z of today).
+	 * added/deleted/updated events) starting for 06:00Z UTC of today).
 	 */
 	result = gcal_get_updated_events(gcal, &event_array, NULL);
 	fail_if(result == -1, "Failed downloading updated events!");
 	fail_if(event_array.length < 1, "If previous test was ok, it must"
 		" return at least one updated event!");
 
+	/* Google returns the last updated event first */
 	event = gcal_event_element(&event_array, 0);
-
 	result = strcmp(gcal_get_calendar_title(event), title);
-	//fprintf(stderr, "title: %s\n", gcal_get_calendar_title(event));
 	fail_if(result != 0, "Cannot locate event!");
+
+	/* Cleanup */
+	gcal_cleanup_events(&event_array);
+	gcal_delete(gcal);
 
 }
 END_TEST
