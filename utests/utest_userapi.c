@@ -85,7 +85,7 @@ START_TEST (test_access_calendar)
 		ptr = gcal_get_event_status(event);
 	}
 
-	/* This one is for testing purposes only! Please dont use
+	/* This code block is for testing overflow only! Please dont use
 	 * gcal in this way.
 	 */
 	ptr = gcal_get_event_id(gcal_event_element(&event_array,
