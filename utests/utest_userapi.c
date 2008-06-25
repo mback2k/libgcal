@@ -14,7 +14,7 @@
 START_TEST (test_get_calendar)
 {
 	gcal_t gcal;
-	struct gcal_entry_array event_array;
+	struct gcal_event_array event_array;
 	int result;
 
 	gcal = gcal_new(GCALENDAR);
@@ -39,7 +39,7 @@ END_TEST
 START_TEST (test_access_calendar)
 {
 	gcal_t gcal;
-	struct gcal_entry_array event_array;
+	struct gcal_event_array event_array;
 	gcal_event event;
 	size_t i;
 	int result;

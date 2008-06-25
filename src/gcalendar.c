@@ -157,7 +157,7 @@ exit:
 	return result;
 }
 
-int gcal_get_events(gcal_t gcalobj, struct gcal_entry_array *events_array)
+int gcal_get_events(gcal_t gcalobj, struct gcal_event_array *events_array)
 {
 	int result = -1;
 	if ((!gcalobj) || (!events_array))
@@ -173,7 +173,7 @@ exit:
 	return result;
 }
 
-void gcal_cleanup_events(struct gcal_entry_array *events)
+void gcal_cleanup_events(struct gcal_event_array *events)
 {
 	if (!events)
 		return;
@@ -183,7 +183,7 @@ void gcal_cleanup_events(struct gcal_entry_array *events)
 	events->entries = NULL;
 }
 
-gcal_event gcal_event_element(struct gcal_entry_array *events, size_t _index)
+gcal_event gcal_event_element(struct gcal_event_array *events, size_t _index)
 {
 	struct gcal_event *event = NULL;
 	if ((!events) || (_index > (events->length - 1)))

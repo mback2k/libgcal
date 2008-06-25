@@ -47,7 +47,7 @@
  * This structure will contain the number of retrieved entries, as also
  * the pointer to an array of \ref gcal_event structures.
  */
-struct gcal_entry_array {
+struct gcal_event_array {
 	/** See \ref gcal_event. */
 	struct gcal_event *entries;
 	/** The number of entries */
@@ -99,7 +99,7 @@ void gcal_event_delete(gcal_event event);
  *
  * @return 0 on success, -1 otherwise.
  */
-int gcal_get_events(gcal_t gcalobj, struct gcal_entry_array *events_array);
+int gcal_get_events(gcal_t gcalobj, struct gcal_event_array *events_array);
 
 
 /** Use this function to cleanup an array of calendar events.
@@ -109,14 +109,16 @@ int gcal_get_events(gcal_t gcalobj, struct gcal_entry_array *events_array);
  * @param events A pointer to an events array structure. See
  * \ref gcal_entry_array.
  */
-void gcal_cleanup_events(struct gcal_entry_array *events);
+void gcal_cleanup_events(struct gcal_event_array *events);
 
 
 int gcal_add_event(gcal_t gcal_obj, gcal_event event);
 int gcal_update_event(gcal_t gcal_obj, gcal_event event);
 int gcal_erase_event(gcal_t gcal_obj, gcal_event event);
+int gcal_get_updated_events(gcal_t gcal_obj, struct gcal_event_array *events,
+			    char *timestamp);
 
-gcal_event gcal_event_element(struct gcal_entry_array *events, size_t _index);
+gcal_event gcal_event_element(struct gcal_event_array *events, size_t _index);
 
 
 /* Here starts gcal_event accessors */
