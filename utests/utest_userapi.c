@@ -10,6 +10,7 @@
 #include "gcalendar.h"
 #include "gcontact.h"
 #include <stdio.h>
+#include <string.h>
 
 START_TEST (test_get_calendar)
 {
@@ -159,6 +160,36 @@ START_TEST (test_oper_calendar_event)
 }
 END_TEST
 
+START_TEST (test_query_calendar_updated)
+{
+	gcal_t gcal;
+	struct gcal_event_array event_array;
+	gcal_event event;
+	int result;
+	/* Previous test added/edited/deleted an event with this title */
+	char *title = "Changing the title";
+
+	gcal = gcal_new(GCALENDAR);
+	result = gcal_get_authentication(gcal, "gcalntester", "77libgcal");
+
+	/* This will query for all updated events (fall in this category
+	 * added/deleted/updated events) starting for 06:00Z of today).
+	 */
+	result = gcal_get_updated_events(gcal, &event_array, NULL);
+	fail_if(result == -1, "Failed downloading updated events!");
+	fail_if(event_array.length < 1, "If previous test was ok, it must"
+		" return at least one updated event!");
+
+	event = gcal_event_element(&event_array, 0);
+
+	result = strcmp(gcal_get_calendar_title(event), title);
+	//fprintf(stderr, "title: %s\n", gcal_get_calendar_title(event));
+	fail_if(result != 0, "Cannot locate event!");
+
+}
+END_TEST
+
+
 
 TCase *gcal_userapi(void)
 {
@@ -170,5 +201,6 @@ TCase *gcal_userapi(void)
 	tcase_add_test(tc, test_get_calendar);
 	tcase_add_test(tc, test_access_calendar);
 	tcase_add_test(tc, test_oper_calendar_event);
+	tcase_add_test(tc, test_query_calendar_updated);
 	return tc;
 }

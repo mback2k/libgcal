@@ -157,6 +157,17 @@ exit:
 	return result;
 }
 
+int gcal_get_updated_events(gcal_t gcal_obj, struct gcal_event_array *events,
+			    char *timestamp)
+{
+
+	(void)gcal_obj;
+	(void)events;
+	(void)timestamp;
+
+	return -1;
+}
+
 int gcal_get_events(gcal_t gcalobj, struct gcal_event_array *events_array)
 {
 	int result = -1;
