@@ -87,20 +87,22 @@ int gcal_add_event(gcal gcal_obj, gcal_event event);
 int gcal_update_event(gcal gcal_obj, gcal_event event);
 int gcal_erase_event(gcal gcal_obj, gcal_event event);
 
+gcal_event gcal_event_element(struct gcal_entry_array *events, size_t _index);
+
+
 /* Here starts gcal_event accessors */
-char *gcal_get_calendar_id(struct gcal_entry_array *events, size_t _index);
-char *gcal_get_calendar_updated(struct gcal_entry_array *events, size_t _index);
-char *gcal_get_calendar_title(struct gcal_entry_array *events, size_t _index);
-char *gcal_get_calendar_url(struct gcal_entry_array *events, size_t _index);
+char *gcal_get_calendar_id(gcal_event event);
+char *gcal_get_calendar_updated(gcal_event event);
+char *gcal_get_calendar_title(gcal_event event);
+char *gcal_get_calendar_url(gcal_event event);
 
 /* This are the fields unique to calendar events */
-char *gcal_get_calendar_content(struct gcal_entry_array *events, size_t _index);
-char *gcal_get_calendar_recurrent(struct gcal_entry_array *events,
-				  size_t _index);
-char *gcal_get_calendar_start(struct gcal_entry_array *events, size_t _index);
-char *gcal_get_calendar_end(struct gcal_entry_array *events, size_t _index);
-char *gcal_get_calendar_where(struct gcal_entry_array *events, size_t _index);
-char *gcal_get_calendar_status(struct gcal_entry_array *events, size_t _index);
+char *gcal_get_calendar_content(gcal_event event);
+char *gcal_get_calendar_recurrent(gcal_event event);
+char *gcal_get_calendar_start(gcal_event event);
+char *gcal_get_calendar_end(gcal_event event);
+char *gcal_get_calendar_where(gcal_event event);
+char *gcal_get_calendar_status(gcal_event event);
 
 
 /* Here starts the setters */

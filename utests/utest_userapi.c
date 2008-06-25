@@ -40,6 +40,7 @@ START_TEST (test_access_calendar)
 {
 	gcal gcal_obj;
 	struct gcal_entry_array event_array;
+	gcal_event event;
 	size_t i;
 	int result;
 	char *ptr;
@@ -50,43 +51,61 @@ START_TEST (test_access_calendar)
 
 	/* Access events properties */
 	for (i = 0; i < event_array.length; ++i) {
+
+		/* Access i-nth calendar event */
+		event = gcal_event_element(&event_array, i);
+
 		/* Common fields between calendar and contacts are
 		 * of type 'gcal_entry'
 		 */
-		ptr = gcal_get_calendar_id(&event_array, i);
-		ptr = gcal_get_calendar_updated(&event_array, i);
-		ptr = gcal_get_calendar_title(&event_array, i);
-		fail_if(ptr == NULL, "Can't get event title!");
-		ptr = gcal_get_calendar_url(&event_array, i);
+		ptr = gcal_get_calendar_id(event);
+		ptr = gcal_get_calendar_updated(event);
+		ptr = gcal_get_calendar_title(event);
+		ptr = gcal_get_calendar_url(event);
+
+		fail_if(ptr == NULL, "Can't get edit url!");
 
 		/* This are the fields unique to calendar events */
-		ptr = gcal_get_calendar_content(&event_array, i);
-		ptr = gcal_get_calendar_recurrent(&event_array, i);
-		ptr = gcal_get_calendar_start(&event_array, i);
-		ptr = gcal_get_calendar_end(&event_array, i);
-		ptr = gcal_get_calendar_where(&event_array, i);
-		ptr = gcal_get_calendar_status(&event_array, i);
+		ptr = gcal_get_calendar_content(event);
+		ptr = gcal_get_calendar_recurrent(event);
+		ptr = gcal_get_calendar_start(event);
+		ptr = gcal_get_calendar_end(event);
+		ptr = gcal_get_calendar_where(event);
+		ptr = gcal_get_calendar_status(event);
 	}
 
-	ptr = gcal_get_calendar_id(&event_array, event_array.length);
+	/* This one is for testing purposes only! Please dont use
+	 * gcal in this way.
+	 */
+	ptr = gcal_get_calendar_id(gcal_event_element(&event_array,
+						      event_array.length));
 	fail_if(ptr != NULL, "Getting field must fail!");
-	ptr = gcal_get_calendar_updated(&event_array, event_array.length);
+	ptr = gcal_get_calendar_updated(gcal_event_element(&event_array,
+							   event_array.length));
 	fail_if(ptr != NULL, "Getting field must fail!");
-	ptr = gcal_get_calendar_title(&event_array, event_array.length);
+	ptr = gcal_get_calendar_title(gcal_event_element(&event_array,
+							 event_array.length));
 	fail_if(ptr != NULL, "Getting field must fail!");
-	ptr = gcal_get_calendar_url(&event_array, event_array.length);
+	ptr = gcal_get_calendar_url(gcal_event_element(&event_array,
+						       event_array.length));
 	fail_if(ptr != NULL, "Getting field must fail!");
-	ptr = gcal_get_calendar_content(&event_array, event_array.length);
+	ptr = gcal_get_calendar_content(gcal_event_element(&event_array,
+							   event_array.length));
 	fail_if(ptr != NULL, "Getting field must fail!");
-	ptr = gcal_get_calendar_recurrent(&event_array, event_array.length);
+	ptr = gcal_get_calendar_recurrent(gcal_event_element(&event_array,
+							     event_array.length));
 	fail_if(ptr != NULL, "Getting field must fail!");
-	ptr = gcal_get_calendar_start(&event_array, event_array.length);
+	ptr = gcal_get_calendar_start(gcal_event_element(&event_array,
+							 event_array.length));
 	fail_if(ptr != NULL, "Getting field must fail!");
-	ptr = gcal_get_calendar_end(&event_array, event_array.length);
+	ptr = gcal_get_calendar_end(gcal_event_element(&event_array,
+						       event_array.length));
 	fail_if(ptr != NULL, "Getting field must fail!");
-	ptr = gcal_get_calendar_where(&event_array, event_array.length);
+	ptr = gcal_get_calendar_where(gcal_event_element(&event_array,
+							 event_array.length));
 	fail_if(ptr != NULL, "Getting field must fail!");
-	ptr = gcal_get_calendar_status(&event_array, event_array.length);
+	ptr = gcal_get_calendar_status(gcal_event_element(&event_array,
+							  event_array.length));
 	fail_if(ptr != NULL, "Getting field must fail!");
 
 
