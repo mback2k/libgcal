@@ -48,6 +48,18 @@ POSSIBILITY OF SUCH DAMAGE.
 #include "internal_gcal.h"
 
 
+gcal gcal_new(gservice mode)
+{
+	return gcal_construct(mode);
+}
+
+void gcal_delete(gcal gcal_obj)
+{
+	gcal_destroy(gcal_obj);
+}
+
+
+
 gcal_event gcal_event_construct(void)
 {
 	gcal_event result = NULL;

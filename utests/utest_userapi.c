@@ -45,7 +45,7 @@ START_TEST (test_access_calendar)
 	int result;
 	char *ptr;
 
-	gcal_obj = gcal_construct(GCALENDAR);
+	gcal_obj = gcal_new(GCALENDAR);
 	result = gcal_get_authentication(gcal_obj, "gcal4tester", "66libgcal");
 	result = gcal_get_events(gcal_obj, &event_array);
 
@@ -111,7 +111,7 @@ START_TEST (test_access_calendar)
 
 	/* Cleanup */
 	gcal_cleanup_events(&event_array);
-	gcal_destroy(gcal_obj);
+	gcal_delete(gcal_obj);
 }
 END_TEST
 
@@ -132,7 +132,7 @@ START_TEST (test_oper_calendar_event)
 	gcal_set_calendar_where(event, "A nice place for a meeting");
 
 	/* Create a gcal object and authenticate */
-	gcal_obj = gcal_construct(GCALENDAR);
+	gcal_obj = gcal_new(GCALENDAR);
 	result = gcal_get_authentication(gcal_obj, "gcalntester", "77libgcal");
 	fail_if(result == -1, "Failed getting authentication");
 
@@ -155,7 +155,7 @@ START_TEST (test_oper_calendar_event)
 
 	/* Cleanup */
 	gcal_event_destroy(event);
-	gcal_destroy(gcal_obj);
+	gcal_delete(gcal_obj);
 }
 END_TEST
 

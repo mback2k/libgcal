@@ -55,6 +55,10 @@ struct gcal_entry_array {
 };
 
 
+gcal gcal_new(gservice mode);
+
+void gcal_delete(gcal gcal_obj);
+
 gcal_event gcal_event_construct(void);
 
 void gcal_event_destroy(gcal_event event);
