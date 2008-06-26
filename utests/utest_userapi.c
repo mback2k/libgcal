@@ -69,53 +69,53 @@ START_TEST (test_access_calendar)
 		/* Common fields between calendar and contacts are
 		 * of type 'gcal_entry'
 		 */
-		ptr = gcal_get_event_id(event);
-		ptr = gcal_get_event_updated(event);
-		ptr = gcal_get_event_title(event);
-		ptr = gcal_get_event_url(event);
+		ptr = gcal_event_get_id(event);
+		ptr = gcal_event_get_updated(event);
+		ptr = gcal_event_get_title(event);
+		ptr = gcal_event_get_url(event);
 
 		fail_if(ptr == NULL, "Can't get edit url!");
 
 		/* This are the fields unique to calendar events */
-		ptr = gcal_get_event_content(event);
-		ptr = gcal_get_event_recurrent(event);
-		ptr = gcal_get_event_start(event);
-		ptr = gcal_get_event_end(event);
-		ptr = gcal_get_event_where(event);
-		ptr = gcal_get_event_status(event);
+		ptr = gcal_event_get_content(event);
+		ptr = gcal_event_get_recurrent(event);
+		ptr = gcal_event_get_start(event);
+		ptr = gcal_event_get_end(event);
+		ptr = gcal_event_get_where(event);
+		ptr = gcal_event_get_status(event);
 	}
 
 	/* This code block is for testing overflow only! Please dont use
 	 * gcal in this way.
 	 */
-	ptr = gcal_get_event_id(gcal_event_element(&event_array,
+	ptr = gcal_event_get_id(gcal_event_element(&event_array,
 						      event_array.length));
 	fail_if(ptr != NULL, "Getting field must fail!");
-	ptr = gcal_get_event_updated(gcal_event_element(&event_array,
+	ptr = gcal_event_get_updated(gcal_event_element(&event_array,
 							   event_array.length));
 	fail_if(ptr != NULL, "Getting field must fail!");
-	ptr = gcal_get_event_title(gcal_event_element(&event_array,
+	ptr = gcal_event_get_title(gcal_event_element(&event_array,
 							 event_array.length));
 	fail_if(ptr != NULL, "Getting field must fail!");
-	ptr = gcal_get_event_url(gcal_event_element(&event_array,
+	ptr = gcal_event_get_url(gcal_event_element(&event_array,
 						       event_array.length));
 	fail_if(ptr != NULL, "Getting field must fail!");
-	ptr = gcal_get_event_content(gcal_event_element(&event_array,
+	ptr = gcal_event_get_content(gcal_event_element(&event_array,
 							   event_array.length));
 	fail_if(ptr != NULL, "Getting field must fail!");
-	ptr = gcal_get_event_recurrent(gcal_event_element(&event_array,
+	ptr = gcal_event_get_recurrent(gcal_event_element(&event_array,
 							     event_array.length));
 	fail_if(ptr != NULL, "Getting field must fail!");
-	ptr = gcal_get_event_start(gcal_event_element(&event_array,
+	ptr = gcal_event_get_start(gcal_event_element(&event_array,
 							 event_array.length));
 	fail_if(ptr != NULL, "Getting field must fail!");
-	ptr = gcal_get_event_end(gcal_event_element(&event_array,
+	ptr = gcal_event_get_end(gcal_event_element(&event_array,
 						       event_array.length));
 	fail_if(ptr != NULL, "Getting field must fail!");
-	ptr = gcal_get_event_where(gcal_event_element(&event_array,
+	ptr = gcal_event_get_where(gcal_event_element(&event_array,
 							 event_array.length));
 	fail_if(ptr != NULL, "Getting field must fail!");
-	ptr = gcal_get_event_status(gcal_event_element(&event_array,
+	ptr = gcal_event_get_status(gcal_event_element(&event_array,
 							  event_array.length));
 	fail_if(ptr != NULL, "Getting field must fail!");
 
@@ -136,11 +136,11 @@ START_TEST (test_oper_event_event)
 	/* Create a new event object */
 	event = gcal_event_new();
 	fail_if (!event, "Cannot construct event object!");
-	gcal_set_event_title(event, "A new event");
-	gcal_set_event_content(event, "Here goes the description");
-	gcal_set_event_start(event, "2008-06-24T16:00:00Z");
-	gcal_set_event_end(event, "2008-06-24T18:00:00Z");
-	gcal_set_event_where(event, "A nice place for a meeting");
+	gcal_event_set_title(event, "A new event");
+	gcal_event_set_content(event, "Here goes the description");
+	gcal_event_set_start(event, "2008-06-24T16:00:00Z");
+	gcal_event_set_end(event, "2008-06-24T18:00:00Z");
+	gcal_event_set_where(event, "A nice place for a meeting");
 
 	/* Create a gcal object and authenticate */
 	gcal = gcal_new(GCALENDAR);
@@ -153,7 +153,7 @@ START_TEST (test_oper_event_event)
 
 
 	/* Edit this event */
-	gcal_set_event_title(event, "Changing the title");
+	gcal_event_set_title(event, "Changing the title");
 	result = gcal_update_event(gcal, event);
 	fail_if(result == -1, "Failed editing event!");
 
@@ -192,7 +192,7 @@ START_TEST (test_query_event_updated)
 
 	/* Google returns the last updated event first */
 	event = gcal_event_element(&event_array, 0);
-	result = strcmp(gcal_get_event_title(event), title);
+	result = strcmp(gcal_event_get_title(event), title);
 	fail_if(result != 0, "Cannot locate event!");
 
 	/* Cleanup */
