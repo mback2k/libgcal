@@ -355,6 +355,48 @@ START_TEST (test_oper_contact)
 }
 END_TEST
 
+START_TEST (test_query_contact_updated)
+{
+	gcal_t gcal;
+	struct gcal_contact_array contact_array;
+	gcal_contact contact;
+	int result;
+	size_t tmp;
+	/* Previous test added/edited/deleted an contact with this title */
+	char *title = "John 'The Generic' Doe";
+
+	gcal = gcal_new(GCALENDAR);
+	result = gcal_get_authentication(gcal, "gcalntester", "77libgcal");
+
+	/* This will query for all updated contacts (fall in this category
+	 * added/updated contacts) starting for 06:00Z UTC of today).
+	 */
+	result = gcal_get_updated_contacts(gcal, &contact_array, NULL);
+	fail_if(result == -1, "Failed downloading updated contacts!");
+	fail_if(contact_array.length > 3, "This user should not have more"
+		"than 3 updated contacts!");
+
+	/* Now we query for deleted contacts (previous test
+	 * added/updated/deleted one contact, remember?)
+	 */
+	tmp = contact_array.length;
+	gcal_deleted(gcal, SHOW);
+	result = gcal_get_updated_contacts(gcal, &contact_array, NULL);
+	fail_if(result == -1, "Failed downloading updated contacts!");
+	fail_if(contact_array.length <= tmp , "If previous test was ok, it must"
+		" return one more contact!");
+
+	/* Google returns the last updated contact first */
+	contact = gcal_contact_element(&contact_array, 0);
+	result = strcmp(gcal_contact_get_title(contact), title);
+	fail_if(result != 0, "Cannot locate contact!");
+
+	/* Cleanup */
+	gcal_cleanup_contacts(&contact_array);
+	gcal_delete(gcal);
+
+}
+END_TEST
 
 
 TCase *gcal_userapi(void)
@@ -371,5 +413,6 @@ TCase *gcal_userapi(void)
 	tcase_add_test(tc, test_get_contacts);
 	tcase_add_test(tc, test_access_contacts);
 	tcase_add_test(tc, test_oper_contact);
+	tcase_add_test(tc, test_query_contact_updated);
 	return tc;
 }

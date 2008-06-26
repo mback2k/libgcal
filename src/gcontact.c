@@ -181,6 +181,18 @@ exit:
 	return result;
 }
 
+int gcal_get_updated_contacts(gcal_t gcal_obj,
+			      struct gcal_contact_array *contacts,
+			      char *timestamp)
+{
+	(void)gcal_obj;
+	(void)contacts;
+	(void)timestamp;
+
+	return -1;
+
+}
+
 gcal_contact gcal_contact_element(struct gcal_contact_array *contacts,
 				  size_t _index)
 

@@ -97,6 +97,9 @@ gcal_contact gcal_contact_element(struct gcal_contact_array *contacts,
 int gcal_add_contact(gcal_t gcalobj, gcal_contact contact);
 int gcal_update_contact(gcal_t gcalobj, gcal_contact contact);
 int gcal_erase_contact(gcal_t gcalobj, gcal_contact contact);
+int gcal_get_updated_contacts(gcal_t gcal_obj,
+			      struct gcal_contact_array *contacts,
+			      char *timestamp);
 
 
 /* Here starts gcal_contact accessors */
@@ -105,7 +108,7 @@ char *gcal_contact_get_updated(gcal_contact contact);
 char *gcal_contact_get_title(gcal_contact contact);
 char *gcal_contact_get_url(gcal_contact contact);
 
-/* This are the fields unique to calendar events */
+/* This are the fields unique to contacts */
 char *gcal_contact_get_email(gcal_contact contact);
 char *gcal_contact_get_content(gcal_contact contact);
 char *gcal_contact_get_orgname(gcal_contact contact);
