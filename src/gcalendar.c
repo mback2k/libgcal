@@ -214,7 +214,8 @@ void gcal_cleanup_events(struct gcal_event_array *events)
 gcal_event gcal_event_element(struct gcal_event_array *events, size_t _index)
 {
 	struct gcal_event *event = NULL;
-	if ((!events) || (_index > (events->length - 1)))
+	if ((!events) || (_index > (events->length - 1)) ||
+	    (events->length == 0))
 		return event;
 
 	event = &events->entries[_index];

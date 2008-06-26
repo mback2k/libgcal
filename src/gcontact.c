@@ -212,7 +212,8 @@ gcal_contact gcal_contact_element(struct gcal_contact_array *contacts,
 
 {
 	struct gcal_contact *contact = NULL;
-	if ((!contacts) || (_index > (contacts->length - 1)))
+	if ((!contacts) || (_index > (contacts->length - 1)) ||
+	    (contacts->length == 0))
 		return contact;
 
 	contact = &contacts->entries[_index];
