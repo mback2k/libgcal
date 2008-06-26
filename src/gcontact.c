@@ -101,3 +101,94 @@ void gcal_cleanup_contacts(struct gcal_contact_array *contacts)
 	contacts->entries = NULL;
 
 }
+
+gcal_contact gcal_contact_element(struct gcal_contact_array *contacts,
+				  size_t _index)
+
+{
+	struct gcal_contact *contact = NULL;
+	if ((!contacts) || (_index > (contacts->length - 1)))
+		return contact;
+
+	contact = &contacts->entries[_index];
+	return contact;
+}
+
+char *gcal_contact_get_id(gcal_contact contact)
+{
+	if ((!contact))
+		return NULL;
+	return gcal_get_id(&(contact->common));
+}
+
+char *gcal_contact_get_updated(gcal_contact contact)
+{
+	if ((!contact))
+		return NULL;
+	return gcal_get_updated(&(contact->common));
+}
+
+char *gcal_contact_get_title(gcal_contact contact)
+{
+	if ((!contact))
+		return NULL;
+	return gcal_get_title(&(contact->common));
+}
+
+char *gcal_contact_get_url(gcal_contact contact)
+{
+	if ((!contact))
+		return NULL;
+	return gcal_get_url(&(contact->common));
+}
+
+/* This are the fields unique to calendar contacts */
+char *gcal_contact_get_email(gcal_contact contact)
+{
+	if ((!contact))
+		return NULL;
+	return contact->email;
+}
+
+char *gcal_contact_get_content(gcal_contact contact)
+{
+	if ((!contact))
+		return NULL;
+	return contact->content;
+}
+
+char *gcal_contact_get_orgname(gcal_contact contact)
+{
+	if ((!contact))
+		return NULL;
+	return contact->org_name;
+}
+
+char *gcal_contact_get_orgtitle(gcal_contact contact)
+{
+	if ((!contact))
+		return NULL;
+	return contact->org_title;
+}
+
+char *gcal_contact_get_im(gcal_contact contact)
+{
+	if ((!contact))
+		return NULL;
+	return contact->im;
+}
+
+char *gcal_contact_get_phone(gcal_contact contact)
+{
+	if ((!contact))
+		return NULL;
+	return contact->phone_number;
+}
+
+char *gcal_contact_get_address(gcal_contact contact)
+{
+	if ((!contact))
+		return NULL;
+	return contact->post_address;
+}
+

@@ -90,4 +90,25 @@ void gcal_cleanup_contacts(struct gcal_contact_array *contacts);
 
 
 
+gcal_contact gcal_contact_element(struct gcal_contact_array *contacts,
+				  size_t _index);
+
+
+/* Here starts gcal_contact accessors */
+char *gcal_contact_get_id(gcal_contact contact);
+char *gcal_contact_get_updated(gcal_contact contact);
+char *gcal_contact_get_title(gcal_contact contact);
+char *gcal_contact_get_url(gcal_contact contact);
+
+/* This are the fields unique to calendar events */
+char *gcal_contact_get_email(gcal_contact contact);
+char *gcal_contact_get_content(gcal_contact contact);
+char *gcal_contact_get_orgname(gcal_contact contact);
+char *gcal_contact_get_orgtitle(gcal_contact contact);
+char *gcal_contact_get_im(gcal_contact contact);
+char *gcal_contact_get_phone(gcal_contact contact);
+char *gcal_contact_get_address(gcal_contact contact);
+
+
+
 #endif

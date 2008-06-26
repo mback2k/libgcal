@@ -227,6 +227,92 @@ START_TEST (test_get_contacts)
 END_TEST
 
 
+START_TEST (test_access_contacts)
+{
+	gcal_t gcal;
+	struct gcal_contact_array contact_array;
+	gcal_contact contact;
+	size_t i;
+	int result;
+	char *ptr;
+
+	gcal = gcal_new(GCONTACT);
+	result = gcal_get_authentication(gcal, "gcal4tester", "66libgcal");
+	result = gcal_get_contacts(gcal, &contact_array);
+
+	/* Access events properties */
+	for (i = 0; i < contact_array.length; ++i) {
+
+		/* Access i-nth calendar event */
+		contact = gcal_contact_element(&contact_array, i);
+
+		/* Common fields between calendar and contacts are
+		 * of type 'gcal_entry'
+		 */
+		ptr = gcal_contact_get_id(contact);
+		ptr = gcal_contact_get_updated(contact);
+		ptr = gcal_contact_get_title(contact);
+		ptr = gcal_contact_get_url(contact);
+
+		fail_if(ptr == NULL, "Can't get edit url!");
+
+		/* This are the fields unique to calendar events */
+		ptr = gcal_contact_get_email(contact);
+		ptr = gcal_contact_get_content(contact);
+		ptr = gcal_contact_get_orgname(contact);
+		ptr = gcal_contact_get_orgtitle(contact);
+		ptr = gcal_contact_get_im(contact);
+		ptr = gcal_contact_get_phone(contact);
+		ptr = gcal_contact_get_address(contact);
+
+	}
+
+	/* This code block is for testing overflow only! Please dont use
+	 * gcal in this way.
+	 */
+	ptr = gcal_contact_get_id(gcal_contact_element(&contact_array,
+						   contact_array.length));
+	fail_if(ptr != NULL, "Getting field must fail!");
+	ptr = gcal_contact_get_updated(gcal_contact_element(&contact_array,
+							contact_array.length));
+	fail_if(ptr != NULL, "Getting field must fail!");
+	ptr = gcal_contact_get_title(gcal_contact_element(&contact_array,
+						      contact_array.length));
+	fail_if(ptr != NULL, "Getting field must fail!");
+	ptr = gcal_contact_get_url(gcal_contact_element(&contact_array,
+						    contact_array.length));
+	fail_if(ptr != NULL, "Getting field must fail!");
+	ptr = gcal_contact_get_email(gcal_contact_element(&contact_array,
+							contact_array.length));
+	fail_if(ptr != NULL, "Getting field must fail!");
+	ptr = gcal_contact_get_content(gcal_contact_element(&contact_array,
+							contact_array.length));
+	fail_if(ptr != NULL, "Getting field must fail!");
+	ptr = gcal_contact_get_orgname(gcal_contact_element(&contact_array,
+							    contact_array.length));
+	fail_if(ptr != NULL, "Getting field must fail!");
+	ptr = gcal_contact_get_orgtitle(gcal_contact_element(&contact_array,
+						      contact_array.length));
+	fail_if(ptr != NULL, "Getting field must fail!");
+	ptr = gcal_contact_get_im(gcal_contact_element(&contact_array,
+						      contact_array.length));
+	fail_if(ptr != NULL, "Getting field must fail!");
+	ptr = gcal_contact_get_phone(gcal_contact_element(&contact_array,
+							  contact_array.length));
+	fail_if(ptr != NULL, "Getting field must fail!");
+	ptr = gcal_contact_get_address(gcal_contact_element(&contact_array,
+						      contact_array.length));
+	fail_if(ptr != NULL, "Getting field must fail!");
+
+
+	/* Cleanup */
+	gcal_cleanup_contacts(&contact_array);
+	gcal_delete(gcal);
+
+}
+END_TEST
+
+
 TCase *gcal_userapi(void)
 {
 	TCase *tc = NULL;
@@ -239,5 +325,7 @@ TCase *gcal_userapi(void)
 	tcase_add_test(tc, test_oper_event_event);
 	tcase_add_test(tc, test_query_event_updated);
 	tcase_add_test(tc, test_get_contacts);
+	tcase_add_test(tc, test_access_contacts);
+
 	return tc;
 }
