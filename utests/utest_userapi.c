@@ -208,7 +208,7 @@ START_TEST (test_get_contacts)
 	struct gcal_contact_array contact_array;
 	int result;
 
-	gcal = gcal_new(GCALENDAR);
+	gcal = gcal_new(GCONTACT);
 	fail_if(gcal == NULL, "Failed constructing gcal object!");
 
 	result = gcal_get_authentication(gcal, "gcal4tester", "66libgcal");
@@ -216,8 +216,8 @@ START_TEST (test_get_contacts)
 
 	result = gcal_get_contacts(gcal, &contact_array);
 	fail_if(result == -1, "Failed downloading contacts!");
-	fail_if(contact_array.length < 1, "gcal4tester must have at least"
-		"1 contact!");
+	fail_if(contact_array.length != 2, "gcal4tester must have only"
+		"2 contacts!");
 
 	/* Cleanup */
 	gcal_cleanup_contacts(&contact_array);
@@ -225,7 +225,6 @@ START_TEST (test_get_contacts)
 
 }
 END_TEST
-
 
 
 TCase *gcal_userapi(void)
