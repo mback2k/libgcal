@@ -72,13 +72,17 @@ void gcal_contact_delete(gcal_contact contact)
 int gcal_get_contacts(gcal_t gcalobj, struct gcal_contact_array *contact_array)
 {
 	int result = -1;
+	if (contact_array)
+		contact_array->length = 0;
 
 	if ((!gcalobj) || (!contact_array))
 		return result;
 
 	result = gcal_dump(gcalobj);
-	if (result == -1)
+	if (result == -1) {
+		contact_array->entries = NULL;
 		return result;
+	}
 
 	contact_array->entries = gcal_get_all_contacts(gcalobj,
 						       &contact_array->length);
@@ -186,6 +190,8 @@ int gcal_get_updated_contacts(gcal_t gcal_obj,
 			      char *timestamp)
 {
 	int result = -1;
+	if (contacts)
+		contacts->length = 0;
 
 	if ((!gcal_obj) || (!contacts))
 		return result;

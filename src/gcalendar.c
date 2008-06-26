@@ -161,6 +161,8 @@ int gcal_get_updated_events(gcal_t gcal_obj, struct gcal_event_array *events,
 			    char *timestamp)
 {
 	int result = -1;
+	if (events)
+		events->length = 0;
 
 	if ((!gcal_obj) || (!events))
 		return result;
@@ -179,12 +181,17 @@ int gcal_get_updated_events(gcal_t gcal_obj, struct gcal_event_array *events,
 int gcal_get_events(gcal_t gcalobj, struct gcal_event_array *events_array)
 {
 	int result = -1;
+	if (events_array)
+		events_array->length = 0;
+
 	if ((!gcalobj) || (!events_array))
 		goto exit;
 
 	result = gcal_dump(gcalobj);
-	if (result == -1)
+	if (result == -1) {
+		events_array->entries = NULL;
 		goto exit;
+	}
 
 	events_array->entries = gcal_get_entries(gcalobj, &events_array->length);
 	if (!events_array->entries)
