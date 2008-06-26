@@ -426,6 +426,8 @@ static int get_follow_redirection(struct gcal_resource *gcalobj,
 	/* Must cleanup HTTP buffer between requests */
 	clean_buffer(gcalobj);
 
+	if (!gcalobj->auth)
+		goto exit;
 	length = strlen(gcalobj->auth) + sizeof(HEADER_GET) + 1;
 	tmp_buffer = (char *) malloc(length);
 	if (!tmp_buffer)

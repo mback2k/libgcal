@@ -86,17 +86,6 @@ static const char CLIENT_SOURCE[] = "source=libgcal";
 static const char HEADER_AUTH[] = "Auth=";
 static const char HEADER_GET[] = "Authorization: GoogleLogin auth=";
 
-/* Really weird timestamp from RFC 3339 is
- * 1937-01-01T12:00:27.87+00:20
- * so 30 bytes is enough to have milisecond precision
- * in worst case.
- */
-static const size_t TIMESTAMP_MAX_SIZE = 30;
-/* Minimal timestamp size is
- * 1937-01-01T12:00:27.87Z
- */
-static const size_t TIMESTAMP_SIZE = 23;
-
 /** Library structure. It holds resources (curl, buffer, etc).
  */
 struct gcal_resource {

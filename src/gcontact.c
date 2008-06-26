@@ -197,8 +197,10 @@ int gcal_get_updated_contacts(gcal_t gcal_obj,
 		return result;
 
 	result = gcal_query_updated(gcal_obj, timestamp);
-	if (result)
+	if (result) {
+		contacts->entries = NULL;
 		return result;
+	}
 
 	contacts->entries = gcal_get_all_contacts(gcal_obj, &contacts->length);
 	if (contacts->entries)
