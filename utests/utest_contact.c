@@ -8,7 +8,7 @@
 
 #include "utest_contact.h"
 #include "gcal.h"
-#include "gcontact.h"
+#include "gcont.h"
 #include "gcal_parser.h"
 #include <string.h>
 #include <stdio.h>
