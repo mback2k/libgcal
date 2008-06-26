@@ -6,11 +6,11 @@ adenilson.silva@indt.org.br
    This is a library to access google calendar events (and contacts),
    its purpose is
 
-   - provide easy access to available events
+   - provide easy access to available events/contacts
 
    - enable common operations on events: add, delete, edit
 
-   - have few dependencies (up until now, only requires libcurl)
+   - have few dependencies (up until now, only requires libcurl and libxml)
 
 
 == Status ==
@@ -19,25 +19,26 @@ adenilson.silva@indt.org.br
 
  - authentication
 
- - get all events
+ - get all events/contacts
 
  - atom stream parsing
 
- - access to individual events
+ - access to individual events/contacts
 
- - add new event
+ - add/delete/edit
 
- - delete event
+ - query for updated events/contacts
 
- - edit event
-
- - calendar: auth/dump/parse/add/delete
 
 
 === Missing ===
 
 
- - select range of entries
+ - batch commit
+
+ - Contacts: upload/download of photos
+
+ - Calendar: creation of recurrent events (should use libical)
 
 
 === Dependencies ===
