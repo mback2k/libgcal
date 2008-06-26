@@ -313,6 +313,49 @@ START_TEST (test_access_contacts)
 }
 END_TEST
 
+START_TEST (test_oper_contact)
+{
+	gcal_t gcal;
+	gcal_contact contact;
+	int result;
+
+	/* Create a new event object */
+	contact = gcal_contact_new();
+	fail_if (!contact, "Cannot construct contact object!");
+	gcal_contact_set_title(contact, "John Doe");
+	gcal_contact_set_email(contact, "john.doe@foo.bar.com");
+
+	/* Create a gcal object and authenticate */
+	gcal = gcal_new(GCONTACT);
+	result = gcal_get_authentication(gcal, "gcalntester", "77libgcal");
+	fail_if(result == -1, "Failed getting authentication");
+
+	/* Add a new contact */
+	result = gcal_add_contact(gcal, contact);
+	fail_if(result == -1, "Failed adding a new contact!");
+
+	/* Edit this contact */
+	gcal_contact_set_title(contact, "John 'The Generic' Doe");
+	fail_if(result == -1, "Failed editing contact!");
+	gcal_contact_set_email(contact, "john.super.doe@foo.bar.com");
+	fail_if(result == -1, "Failed editing contact!");
+	result = gcal_update_contact(gcal, contact);
+	fail_if(result == -1, "Failed uploading edited contact!");
+
+	/* Delete this contact (note: google still keeps a deleted contact
+	 * for nearly 4 weeks. Its possible to retrieve it using
+	 * 'gcal_deleted(gcal, SHOW)' before downloading contacts)
+	 */
+	result = gcal_erase_contact(gcal, contact);
+	fail_if(result == -1, "Failed deleting contact!");
+
+	/* Cleanup */
+	gcal_contact_delete(contact);
+	gcal_delete(gcal);
+}
+END_TEST
+
+
 
 TCase *gcal_userapi(void)
 {
@@ -327,6 +370,6 @@ TCase *gcal_userapi(void)
 	tcase_add_test(tc, test_query_event_updated);
 	tcase_add_test(tc, test_get_contacts);
 	tcase_add_test(tc, test_access_contacts);
-
+	tcase_add_test(tc, test_oper_contact);
 	return tc;
 }

@@ -94,6 +94,11 @@ gcal_contact gcal_contact_element(struct gcal_contact_array *contacts,
 				  size_t _index);
 
 
+int gcal_add_contact(gcal_t gcalobj, gcal_contact contact);
+int gcal_update_contact(gcal_t gcalobj, gcal_contact contact);
+int gcal_erase_contact(gcal_t gcalobj, gcal_contact contact);
+
+
 /* Here starts gcal_contact accessors */
 char *gcal_contact_get_id(gcal_contact contact);
 char *gcal_contact_get_updated(gcal_contact contact);
@@ -109,6 +114,11 @@ char *gcal_contact_get_im(gcal_contact contact);
 char *gcal_contact_get_phone(gcal_contact contact);
 char *gcal_contact_get_address(gcal_contact contact);
 
+
+/* Here starts the gcal_contact setters */
+int gcal_contact_set_title(gcal_contact contact, char *name);
+int gcal_contact_set_email(gcal_contact contact, char *name);
+int gcal_contact_set_phone(gcal_contact contact, char *name);
 
 
 #endif

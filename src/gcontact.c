@@ -102,6 +102,29 @@ void gcal_cleanup_contacts(struct gcal_contact_array *contacts)
 
 }
 
+
+int gcal_add_contact(gcal_t gcalobj, gcal_contact contact)
+{
+	(void)gcalobj;
+	(void)contact;
+	return -1;
+
+}
+
+int gcal_update_contact(gcal_t gcalobj, gcal_contact contact)
+{
+	(void)gcalobj;
+	(void)contact;
+	return -1;
+}
+
+int gcal_erase_contact(gcal_t gcalobj, gcal_contact contact)
+{
+	(void)gcalobj;
+	(void)contact;
+	return -1;
+}
+
 gcal_contact gcal_contact_element(struct gcal_contact_array *contacts,
 				  size_t _index)
 
@@ -192,3 +215,24 @@ char *gcal_contact_get_address(gcal_contact contact)
 	return contact->post_address;
 }
 
+/* Here starts the gcal_contact setters */
+int gcal_contact_set_title(gcal_contact contact, char *name)
+{
+	(void)contact;
+	(void)name;
+	return -1;
+}
+
+int gcal_contact_set_email(gcal_contact contact, char *name)
+{
+	(void)contact;
+	(void)name;
+	return -1;
+}
+
+int gcal_contact_set_phone(gcal_contact contact, char *name)
+{
+	(void)contact;
+	(void)name;
+	return -1;
+}
