@@ -84,6 +84,10 @@ int main(void)
 
 	sapi = user_api();
 	userapi = srunner_create(sapi);
+	/* I will not fork the userapi, since I need to save a variable
+	 * between each running test.
+	 */
+	srunner_set_fork_status(userapi, CK_NOFORK);
 	srunner_run_all(userapi, CK_VERBOSE);
 	number_failed = srunner_ntests_failed(userapi);
 	srunner_free(userapi);

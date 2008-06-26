@@ -185,12 +185,20 @@ int gcal_get_updated_contacts(gcal_t gcal_obj,
 			      struct gcal_contact_array *contacts,
 			      char *timestamp)
 {
-	(void)gcal_obj;
-	(void)contacts;
-	(void)timestamp;
+	int result = -1;
 
-	return -1;
+	if ((!gcal_obj) || (!contacts))
+		return result;
 
+	result = gcal_query_updated(gcal_obj, timestamp);
+	if (result)
+		return result;
+
+	contacts->entries = gcal_get_all_contacts(gcal_obj, &contacts->length);
+	if (contacts->entries)
+		result = 0;
+
+	return result;
 }
 
 gcal_contact gcal_contact_element(struct gcal_contact_array *contacts,

@@ -22,6 +22,9 @@
 #include <stdio.h>
 #include <string.h>
 
+/* I use this variable to exchange data between the contacts tests */
+char *deleted_contact_id = NULL;
+
 START_TEST (test_get_calendar)
 {
 	gcal_t gcal;
@@ -342,6 +345,11 @@ START_TEST (test_oper_contact)
 	result = gcal_update_contact(gcal, contact);
 	fail_if(result == -1, "Failed uploading edited contact!");
 
+	/* Save this contact's ID to use it in the next test, where we
+	 * search for updated contacts.
+	 */
+	deleted_contact_id = strdup(gcal_contact_get_id(contact));
+
 	/* Delete this contact (note: google still keeps a deleted contact
 	 * for nearly 4 weeks. Its possible to retrieve it using
 	 * 'gcal_deleted(gcal, SHOW)' before downloading contacts)
@@ -362,10 +370,8 @@ START_TEST (test_query_contact_updated)
 	gcal_contact contact;
 	int result;
 	size_t tmp;
-	/* Previous test added/edited/deleted an contact with this title */
-	char *title = "John 'The Generic' Doe";
 
-	gcal = gcal_new(GCALENDAR);
+	gcal = gcal_new(GCONTACT);
 	result = gcal_get_authentication(gcal, "gcalntester", "77libgcal");
 
 	/* This will query for all updated contacts (fall in this category
@@ -374,7 +380,7 @@ START_TEST (test_query_contact_updated)
 	result = gcal_get_updated_contacts(gcal, &contact_array, NULL);
 	fail_if(result == -1, "Failed downloading updated contacts!");
 	fail_if(contact_array.length > 3, "This user should not have more"
-		"than 3 updated contacts!");
+		" than 3 updated contacts!");
 
 	/* Now we query for deleted contacts (previous test
 	 * added/updated/deleted one contact, remember?)
@@ -386,9 +392,18 @@ START_TEST (test_query_contact_updated)
 	fail_if(contact_array.length <= tmp , "If previous test was ok, it must"
 		" return one more contact!");
 
-	/* Google returns the last updated contact first */
-	contact = gcal_contact_element(&contact_array, 0);
-	result = strcmp(gcal_contact_get_title(contact), title);
+	/* FIXME: Contacts doesn't return the last updated contact
+	 * first when running with 'showdeleted'.
+	 */
+	result = -1;
+ 	for (tmp = 0; tmp < contact_array.length; ++tmp) {
+		contact = gcal_contact_element(&contact_array, tmp);
+		result = strcmp(gcal_contact_get_id(contact),
+				deleted_contact_id);
+		if (!result)
+			break;
+	}
+
 	fail_if(result != 0, "Cannot locate contact!");
 
 	/* Cleanup */

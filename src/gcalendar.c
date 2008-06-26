@@ -160,7 +160,7 @@ exit:
 int gcal_get_updated_events(gcal_t gcal_obj, struct gcal_event_array *events,
 			    char *timestamp)
 {
-	int result = 0;
+	int result = -1;
 
 	if ((!gcal_obj) || (!events))
 		return result;
@@ -170,8 +170,8 @@ int gcal_get_updated_events(gcal_t gcal_obj, struct gcal_event_array *events,
 		return result;
 
 	events->entries = gcal_get_entries(gcal_obj, &events->length);
-	if (!events->entries)
-		result = -1;
+	if (events->entries)
+		result = 0;
 
 	return result;
 }
