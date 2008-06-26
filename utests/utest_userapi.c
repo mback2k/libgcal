@@ -319,7 +319,7 @@ START_TEST (test_oper_contact)
 	gcal_contact contact;
 	int result;
 
-	/* Create a new event object */
+	/* Create a new contact object */
 	contact = gcal_contact_new();
 	fail_if (!contact, "Cannot construct contact object!");
 	gcal_contact_set_title(contact, "John Doe");

@@ -105,24 +105,80 @@ void gcal_cleanup_contacts(struct gcal_contact_array *contacts)
 
 int gcal_add_contact(gcal_t gcalobj, gcal_contact contact)
 {
-	(void)gcalobj;
-	(void)contact;
-	return -1;
+	int result = -1;
+	struct gcal_contact updated;
 
+	if ((!gcalobj) || (!contact))
+		goto exit;
+
+
+	result = gcal_create_contact(gcalobj, contact, &updated);
+	if (result)
+		goto exit;
+
+	/* Swap updated fields: id, edit_uri and updated */
+	if (contact->common.id)
+		free(contact->common.id);
+	contact->common.id = updated.common.id;
+	updated.common.id = NULL;
+
+	if (contact->common.edit_uri)
+		free(contact->common.edit_uri);
+	contact->common.edit_uri = updated.common.edit_uri;
+	updated.common.edit_uri = NULL;
+
+	if (contact->common.updated)
+		free(contact->common.updated);
+	contact->common.updated = updated.common.updated;
+	updated.common.updated = NULL;
+
+	/* Cleanup updated contact */
+	gcal_destroy_contact(&updated);
+
+exit:
+	return result;
 }
 
 int gcal_update_contact(gcal_t gcalobj, gcal_contact contact)
 {
-	(void)gcalobj;
-	(void)contact;
-	return -1;
+	int result = -1;
+	struct gcal_contact updated;
+
+	if ((!gcalobj) || (!contact))
+		goto exit;
+
+
+	result = gcal_edit_contact(gcalobj, contact, &updated);
+	if (result)
+		goto exit;
+
+	/* Swap updated fields: edit_uri and updated */
+	if (contact->common.edit_uri)
+		free(contact->common.edit_uri);
+	contact->common.edit_uri = updated.common.edit_uri;
+	updated.common.edit_uri = NULL;
+
+	if (contact->common.updated)
+		free(contact->common.updated);
+	contact->common.updated = updated.common.updated;
+	updated.common.updated = NULL;
+
+	/* Cleanup updated contact */
+	gcal_destroy_contact(&updated);
+
+exit:
+	return result;
 }
 
 int gcal_erase_contact(gcal_t gcalobj, gcal_contact contact)
 {
-	(void)gcalobj;
-	(void)contact;
-	return -1;
+	int result = -1;
+	if ((!gcalobj) || (!contact))
+		goto exit;
+
+	result = gcal_delete_contact(gcalobj, contact);
+exit:
+	return result;
 }
 
 gcal_contact gcal_contact_element(struct gcal_contact_array *contacts,
@@ -216,23 +272,46 @@ char *gcal_contact_get_address(gcal_contact contact)
 }
 
 /* Here starts the gcal_contact setters */
-int gcal_contact_set_title(gcal_contact contact, char *name)
+int gcal_contact_set_title(gcal_contact contact, char *field)
 {
-	(void)contact;
-	(void)name;
-	return -1;
+	int result = -1;
+
+	if ((!contact) || (!field))
+		return result;
+
+	if (contact->common.title)
+		free(contact->common.title);
+
+	contact->common.title = strdup(field);
+	if (contact->common.title)
+		result = 0;
+
+	return result;
 }
 
-int gcal_contact_set_email(gcal_contact contact, char *name)
+int gcal_contact_set_email(gcal_contact contact, char *field)
 {
-	(void)contact;
-	(void)name;
-	return -1;
+	int result = -1;
+
+	if ((!contact) || (!field))
+		return result;
+
+	if (contact->email)
+		free(contact->email);
+
+	contact->email = strdup(field);
+	if (contact->email)
+		result = 0;
+
+	return result;
 }
 
-int gcal_contact_set_phone(gcal_contact contact, char *name)
+/* TODO: Contacts extra fields, not implemented in internal functions
+ * see ticket: http://code.google.com/p/libgcal/issues/detail?id=4
+ */
+int gcal_contact_set_phone(gcal_contact contact, char *field)
 {
 	(void)contact;
-	(void)name;
+	(void)field;
 	return -1;
 }

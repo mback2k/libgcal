@@ -116,9 +116,13 @@ char *gcal_contact_get_address(gcal_contact contact);
 
 
 /* Here starts the gcal_contact setters */
-int gcal_contact_set_title(gcal_contact contact, char *name);
-int gcal_contact_set_email(gcal_contact contact, char *name);
-int gcal_contact_set_phone(gcal_contact contact, char *name);
+int gcal_contact_set_title(gcal_contact contact, char *field);
+int gcal_contact_set_email(gcal_contact contact, char *field);
+
+/* TODO: Contacts extra fields, not implemented in internal functions
+ * see ticket: http://code.google.com/p/libgcal/issues/detail?id=4
+ */
+int gcal_contact_set_phone(gcal_contact contact, char *field);
 
 
 #endif
