@@ -251,6 +251,7 @@ START_TEST (test_access_contacts)
 		 */
 		ptr = gcal_contact_get_id(contact);
 		ptr = gcal_contact_get_updated(contact);
+		/* Tip: it *is* valid a contact have no name. */
 		ptr = gcal_contact_get_title(contact);
 		ptr = gcal_contact_get_url(contact);
 
