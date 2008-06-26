@@ -886,6 +886,8 @@ int gcal_create_event(struct gcal_resource *gcalobj,
 
 	result = up_entry(xml_entry, gcalobj, GCAL_EDIT_URL, POST,
 			  GCAL_EDIT_ANSWER);
+	if (result)
+		goto cleanup;
 
 	/* Parse buffer and create the new contact object */
 	if (!updated)
@@ -920,7 +922,7 @@ int gcal_delete_event(struct gcal_resource *gcalobj,
 	int result = -1, length;
 	char *h_auth;
 
-	if (!entry || !gcalobj)
+	if ((!entry) || (!gcalobj) || (!gcalobj->auth))
 		goto exit;
 
 	/* Must cleanup HTTP buffer between requests */
@@ -984,6 +986,8 @@ int gcal_edit_event(struct gcal_resource *gcalobj,
 
 	result = up_entry(xml_entry, gcalobj, entry->common.edit_uri, PUT,
 			  GCAL_DEFAULT_ANSWER);
+	if (result)
+		goto cleanup;
 
 	/* Parse buffer and create the new contact object */
 	if (!updated)

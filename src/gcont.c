@@ -167,6 +167,8 @@ int gcal_create_contact(struct gcal_resource *gcalobj,
 
 	result = up_entry(xml_contact, gcalobj, buffer, POST,
 			  GCAL_EDIT_ANSWER);
+	if (result)
+		goto cleanup;
 
 	/* Parse buffer and create the new contact object */
 	if (!updated)
@@ -250,6 +252,8 @@ int gcal_edit_contact(struct gcal_resource *gcalobj,
 
 	result = up_entry(xml_contact, gcalobj, contact->common.edit_uri, PUT,
 			  GCAL_DEFAULT_ANSWER);
+	if (result)
+		goto cleanup;
 
 	/* Parse buffer and create the new contact object */
 	if (!updated)
