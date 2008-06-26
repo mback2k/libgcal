@@ -54,9 +54,6 @@ struct gcal_event_array {
 	size_t length;
 };
 
-
-typedef struct gcal_resource * gcal_t;
-
 /** Creates a new gcal object (you need then to talk with google
  * servers).
  *

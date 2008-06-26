@@ -202,6 +202,30 @@ START_TEST (test_query_event_updated)
 }
 END_TEST
 
+START_TEST (test_get_contacts)
+{
+	gcal_t gcal;
+	struct gcal_contact_array contact_array;
+	int result;
+
+	gcal = gcal_new(GCALENDAR);
+	fail_if(gcal == NULL, "Failed constructing gcal object!");
+
+	result = gcal_get_authentication(gcal, "gcal4tester", "66libgcal");
+	fail_if(result == -1, "Cannot authenticate!");
+
+	result = gcal_get_contacts(gcal, &contact_array);
+	fail_if(result == -1, "Failed downloading contacts!");
+	fail_if(contact_array.length < 1, "gcal4tester must have at least"
+		"1 contact!");
+
+	/* Cleanup */
+	gcal_cleanup_contacts(&contact_array);
+	gcal_delete(gcal);
+
+}
+END_TEST
+
 
 
 TCase *gcal_userapi(void)
@@ -215,5 +239,6 @@ TCase *gcal_userapi(void)
 	tcase_add_test(tc, test_access_calendar);
 	tcase_add_test(tc, test_oper_event_event);
 	tcase_add_test(tc, test_query_event_updated);
+	tcase_add_test(tc, test_get_contacts);
 	return tc;
 }

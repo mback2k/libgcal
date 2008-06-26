@@ -218,7 +218,7 @@ START_TEST (test_query_contact)
 		goto cleanup;
 	}
 
-	contacts = gcal_get_contacts(obj_gcal, &count);
+	contacts = gcal_get_all_contacts(obj_gcal, &count);
 	if(contacts == NULL) {
 		msg = "Failed extracting the contacts vector!";
 		flag = 1;
@@ -276,7 +276,7 @@ START_TEST (test_query_delcontact)
 		goto cleanup;
 	}
 
-	contacts = gcal_get_contacts(obj_gcal, &count);
+	contacts = gcal_get_all_contacts(obj_gcal, &count);
 	if((count < 1) || (contacts == NULL)) {
 		msg = "Query didn't return deleted contacts!";
 		flag = 1;
@@ -293,7 +293,7 @@ START_TEST (test_query_delcontact)
 		goto cleanup;
 	}
 
-	contacts = gcal_get_contacts(obj_gcal, &count);
+	contacts = gcal_get_all_contacts(obj_gcal, &count);
 	if(count > 1) {
 		msg = "Query returned inconsistent results!";
 		flag = 1;
@@ -334,7 +334,7 @@ START_TEST (test_query_generic)
 		goto cleanup;
 	}
 
-	contacts = gcal_get_contacts(obj_gcal, &count);
+	contacts = gcal_get_all_contacts(obj_gcal, &count);
 	if((count < 1) || (contacts == NULL)) {
 		msg = "Query returned more contacts!";
 		flag = 1;

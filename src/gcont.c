@@ -45,7 +45,7 @@ POSSIBILITY OF SUCH DAMAGE.
 #include "gcal_parser.h"
 
 
-struct gcal_contact *gcal_get_contacts(struct gcal_resource *gcalobj,
+struct gcal_contact *gcal_get_all_contacts(struct gcal_resource *gcalobj,
 				       size_t *length)
 
 {

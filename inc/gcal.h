@@ -82,6 +82,10 @@ typedef struct gcal_event * gcal_event;
  */
 struct gcal_entry;
 
+/** An opaque type for gcal object.
+ */
+typedef struct gcal_resource * gcal_t;
+
 
 /** Library structure destructor (use it free its internal resources properly).
  */

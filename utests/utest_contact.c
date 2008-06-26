@@ -108,7 +108,7 @@ START_TEST (test_contact_extract)
 	result = gcal_dump(ptr_gcal);
 	fail_if(result != 0, "Failed dumping contacts");
 
-	contacts = gcal_get_contacts(ptr_gcal, &count);
+	contacts = gcal_get_all_contacts(ptr_gcal, &count);
 	fail_if(contacts == NULL, "Failed extracting the contacts vector!");
 
 	for (i = 0; i < count; ++i)
@@ -219,7 +219,7 @@ START_TEST (test_contact_delete)
 	result = gcal_dump(ptr_gcal);
 	fail_if(result != 0, "Failed dumping contacts");
 
-	contacts = gcal_get_contacts(ptr_gcal, &count);
+	contacts = gcal_get_all_contacts(ptr_gcal, &count);
 	fail_if(contacts == NULL, "Failed extracting contacts vector!");
 
 	for (i = 0; i < count; ++i)

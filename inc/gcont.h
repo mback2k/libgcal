@@ -37,14 +37,20 @@ POSSIBILITY OF SUCH DAMAGE.
  *
  */
 
-#ifndef __GCONTACT_LIB__
-#define __GCONTACT_LIB__
+#ifndef __GCONT_LIB__
+#define __GCONT_LIB__
 
 #include <stdlib.h>
 #include "gcal.h"
 
 /** Contact data type */
 struct gcal_contact;
+
+/** Since user cannot create an static instance of it, it entitles itself
+ * to be a completely abstract data type. See \ref gcal_contact.
+ */
+typedef struct gcal_contact* gcal_contact;
+
 
 /** Extracts from the atom stream the contact entries  (you should
  * had got the atom stream before, using \ref gcal_dump).
@@ -60,7 +66,7 @@ struct gcal_contact;
  *
  * @return A pointer on sucess, NULL otherwise.
  */
-struct gcal_contact *gcal_get_contacts(struct gcal_resource *ptr_gcal,
+struct gcal_contact *gcal_get_all_contacts(struct gcal_resource *ptr_gcal,
 				       size_t *length);
 
 
