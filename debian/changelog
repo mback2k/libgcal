@@ -1,5 +1,11 @@
-libgcal (0.01) unstable; urgency=low
+libgcal (0.7) unstable; urgency=low
 
-  * Initial release.
+  * Initial release, it features:
+    - authentication
+    - get all events/contacts
+    - atom stream parsing
+    - access to individual events/contacts
+    - add/delete/edit
+    - query for updated events/contacts
 
  -- Mika Bostrom <mika.bostrom@nomovok.com>  Tue, 20 May 2008 11:53:59 +0300

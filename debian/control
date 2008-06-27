@@ -11,8 +11,7 @@ Architecture: any
 Section: libs
 Priority: optional
 Depends: libxml2, libcurl3, libcurl4-openssl | libcurl3-gnutls
-Description: library to access Google Calendar
- view, delete and edit events in Google Calendar
+Description: A simple C library to handle google calendar events and contacts.
 
 Package: libgcal0-dev
 Architecture: any
