@@ -170,7 +170,7 @@ static size_t write_cb(void *ptr, size_t count, size_t chunk_size, void *data)
 
 	size_t size = count * chunk_size;
 	struct gcal_resource *gcal_ptr = (struct gcal_resource *)data;
-	int current_length = strnlen(gcal_ptr->buffer, gcal_ptr->length);
+	int current_length = strlen(gcal_ptr->buffer);
 	char *ptr_tmp;
 
 	if (size > (gcal_ptr->length - current_length - 1)) {
