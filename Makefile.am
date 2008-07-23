@@ -38,6 +38,7 @@ utest_SOURCES = $(utestdir)/utest_gcal.h $(utestdir)/utest_gcal.c \
 		$(utestdir)/utest_debug.h $(utestdir)/utest_debug.c \
 		$(utestdir)/utest_query.h $(utestdir)/utest_query.c \
 		$(utestdir)/utest_userapi.h $(utestdir)/utest_userapi.c \
+		$(utestdir)/utest_xmlmode.h $(utestdir)/utest_xmlmode.c \
 		$(utestdir)/utest.c
 
 utest_CPPFLAGS = $(CHECK_FLAGS) $(AM_CPPFLAGS) -I$(csourcedir) -I$(headerdir) \

@@ -224,6 +224,12 @@ gcal_event gcal_event_element(struct gcal_event_array *events, size_t _index)
 	return event;
 }
 
+char *gcal_event_get_xml(gcal_event event)
+{
+	if ((!event))
+		return NULL;
+	return gcal_get_xml(&(event->common));
+}
 
 char *gcal_event_get_id(gcal_event event)
 {

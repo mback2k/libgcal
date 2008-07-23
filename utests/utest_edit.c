@@ -49,6 +49,8 @@ START_TEST (test_edit_xml)
 	char *xml = NULL;
 	int result, length;
 
+	gcal_init_event(&event);
+
 	event.common.title = "A new event";
 	event.content = "Here goes the description of my new event";
 	event.dt_start = "2008-04-08T08:00:00.000Z";
@@ -77,6 +79,8 @@ START_TEST (test_edit_add)
 {
 	int result;
 	struct gcal_event event;
+
+	gcal_init_event(&event);
 
 	event.common.title = "A new event";
 	event.content = "Here goes the description of my new event";
@@ -107,6 +111,8 @@ START_TEST (test_edit_delete)
 	int result, i, entry_index = -1;
 	struct gcal_event event;
 	struct gcal_event *entries;
+
+	gcal_init_event(&event);
 
 	event.common.title = "A soon to be deleted event";
 	event.content = "This event will be included and deleted soon";
@@ -158,6 +164,8 @@ START_TEST (test_edit_stress)
 	char start_buffer[256], end_buffer[256];
 	char number_buffer1[4], number_buffer2[4];
 	struct gcal_event *entries;
+
+	gcal_init_event(&event);
 
 	event.common.title = "A new event: stress test";
 	event.content = "Here goes the description of my new event";
@@ -226,6 +234,10 @@ START_TEST (test_edit_edit)
 
 	int result;
 	struct gcal_event event, new_event, updated_event;
+
+	gcal_init_event(&event);
+	gcal_init_event(&new_event);
+	gcal_init_event(&updated_event);
 
 	event.common.title = "An editable event";
 	event.content = "This event will be included and edited";

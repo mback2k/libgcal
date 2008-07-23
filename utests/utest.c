@@ -23,6 +23,7 @@
 #include "utest_debug.h"
 #include "utest_query.h"
 #include "utest_userapi.h"
+#include "utest_xmlmode.h"
 
 static Suite *core_suite(void)
 {
@@ -70,11 +71,20 @@ static Suite *user_api(void)
 	return s;
 }
 
+static Suite *xml_api(void)
+{
+	Suite *s;
+	s = suite_create("xmlapi");
+	suite_add_tcase(s, xmlmode_tcase_create());
+	return s;
+}
+
+
 int main(void)
 {
 	int number_failed;
-	Suite *s, *sapi;
-	SRunner *core, *userapi;
+	Suite *s, *sapi, *sxml;
+	SRunner *core, *userapi, *xmlapi;
 
 	s = core_suite();
 	core = srunner_create(s);
@@ -91,6 +101,15 @@ int main(void)
 	srunner_run_all(userapi, CK_VERBOSE);
 	number_failed = srunner_ntests_failed(userapi);
 	srunner_free(userapi);
+
+	/* This one tests for XML api mode */
+	sxml = xml_api();
+	xmlapi = srunner_create(sxml);
+	srunner_set_fork_status(xmlapi, CK_FORK);
+	srunner_run_all(xmlapi, CK_VERBOSE);
+	number_failed = srunner_ntests_failed(xmlapi);
+	srunner_free(xmlapi);
+
 
 	return (number_failed == 0) ? EXIT_SUCCESS : EXIT_FAILURE;
 }

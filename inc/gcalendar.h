@@ -123,6 +123,8 @@ char *gcal_event_get_id(gcal_event event);
 char *gcal_event_get_updated(gcal_event event);
 char *gcal_event_get_title(gcal_event event);
 char *gcal_event_get_url(gcal_event event);
+char *gcal_event_get_xml(gcal_event event);
+
 
 /* This are the fields unique to calendar events */
 char *gcal_event_get_content(gcal_event event);

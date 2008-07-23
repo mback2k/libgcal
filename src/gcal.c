@@ -100,6 +100,7 @@ struct gcal_resource *gcal_construct(gservice mode)
 	ptr->timezone = NULL;
 	ptr->location = NULL;
 	ptr->deleted = HIDE;
+	ptr->store_xml_entry = 0;
 
 	if (!(ptr->buffer) || (!(ptr->curl)) || (!ptr->max_results)) {
 		if (ptr->max_results)
@@ -668,7 +669,7 @@ struct gcal_event *gcal_get_entries(struct gcal_resource *gcalobj,
 				    size_t *length)
 {
 
-	int result = -1;
+	int result = -1, i;
 	struct gcal_event *ptr_res = NULL;
 
 	if (!gcalobj)
@@ -692,6 +693,13 @@ struct gcal_event *gcal_get_entries(struct gcal_resource *gcalobj,
 		goto cleanup;
 
 	*length = result;
+
+	for (i = 0; i < result; ++i) {
+		gcal_init_event((ptr_res + i));
+		if (gcalobj->store_xml_entry)
+			(ptr_res + i)->common.store_xml = 1;
+	}
+
 	result = extract_all_entries(gcalobj->document, ptr_res, result);
 	if (result == -1) {
 		free(ptr_res);
@@ -719,8 +727,9 @@ void gcal_init_event(struct gcal_event *entry)
 	if (!entry)
 		return;
 
+	entry->common.store_xml = 0;
 	entry->common.title = entry->common.id = entry->common.edit_uri = NULL;
-	entry->common.updated = NULL;
+	entry->common.xml = entry->common.updated = NULL;
 	entry->content = entry->dt_recurrent = entry->dt_start = NULL;
 	entry->dt_end = entry->where = entry->status = NULL;
 
@@ -736,6 +745,7 @@ void gcal_destroy_entry(struct gcal_event *entry)
 	clean_string(entry->common.id);
 	clean_string(entry->common.edit_uri);
 	clean_string(entry->common.updated);
+	clean_string(entry->common.xml);
 
 	clean_string(entry->content);
 	clean_string(entry->dt_recurrent);
@@ -1213,6 +1223,15 @@ exit:
 
 }
 
+void gcal_set_store_xml(struct gcal_resource *gcalobj, char flag)
+{
+	if ((!gcalobj))
+		return;
+
+	gcalobj->store_xml_entry = flag;
+}
+
+
 void gcal_deleted(struct gcal_resource *gcalobj, display_deleted_entries opt)
 {
 	if (!gcalobj)
@@ -1261,6 +1280,14 @@ char *gcal_get_id(struct gcal_entry *entry)
 {
 	if (entry)
 		return entry->id;
+
+	return NULL;
+}
+
+char *gcal_get_xml(struct gcal_entry *entry)
+{
+	if (entry)
+		return entry->xml;
 
 	return NULL;
 }

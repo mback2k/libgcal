@@ -128,13 +128,18 @@ struct gcal_resource {
 	 * valid for google contacts.
 	 */
 	int deleted;
-
+	/** Controls if raw XML entries will be stored inside each
+	 * event/contact object.
+	 */
+	char store_xml_entry;
 };
 
 /** This structure has the common data fields between google services
  * (calendar and contacts).
  */
 struct gcal_entry {
+	/** Controls if raw XML data will be stored. */
+	char store_xml;
 	/** element ID */
 	char *id;
 	/** Time when the event was updated. */
@@ -143,6 +148,8 @@ struct gcal_entry {
 	char *title;
 	/** The edit URL */
 	char *edit_uri;
+	/** RAW XML data of this entry */
+	char *xml;
 };
 
 /** Library structure, represents each calendar event entry.

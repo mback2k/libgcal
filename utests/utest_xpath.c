@@ -95,6 +95,9 @@ START_TEST (test_get_entries)
 	struct gcal_event extracted;
 	int res;
 
+	gcal_init_event(&known_value);
+	gcal_init_event(&extracted);
+
 	res = build_doc_tree(&doc, xml_data);
 	fail_if(res == -1, "failed to build document tree!");
 
@@ -157,6 +160,8 @@ START_TEST (test_get_recurrence)
 	struct gcal_event extracted;
 	char *file_contents = NULL;
 	int res;
+
+	gcal_init_event(&extracted);
 
 	if (find_load_file("/utests/3entries_recurrence.xml", &file_contents))
 		fail_if(1, "Cannot load test XML file!");

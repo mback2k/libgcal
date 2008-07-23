@@ -417,6 +417,20 @@ int gcal_query_updated(struct gcal_resource *gcalobj, char *timestamp);
  */
 int gcal_set_timezone(struct gcal_resource *gcalobj, char *atimezone);
 
+/** Sets gcal XML store mode.
+ *
+ * Use it if you wish to store the RAW google XML entry data inside
+ * each entry object.
+ *
+ * @param gcalobj Pointer to a \ref gcal_resource structure, which has
+ *                 previously got the authentication using
+ *                 \ref gcal_get_authentication.
+ *
+ * @param flag 0 for not store, 1 to activate store mode.
+ */
+void gcal_set_store_xml(struct gcal_resource *gcalobj, char flag);
+
+
 /** Define the location that results should be returned for queries.
  *
  * Use it to set your current location, otherwise the configured city for
@@ -479,6 +493,6 @@ char *gcal_get_id(struct gcal_entry *entry);
 char *gcal_get_updated(struct gcal_entry *entry);
 char *gcal_get_title(struct gcal_entry *entry);
 char *gcal_get_url(struct gcal_entry *entry);
-
+char *gcal_get_xml(struct gcal_entry *entry);
 
 #endif

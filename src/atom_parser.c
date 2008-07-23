@@ -183,7 +183,8 @@ exit:
 
 int atom_extract_data(xmlNode *entry, struct gcal_event *ptr_entry)
 {
-	int result = -1;
+	int result = -1, length = 0;
+	xmlChar *xml_str = NULL;
 	xmlDoc *doc = NULL;
 	xmlNode *copy = NULL;
 
@@ -202,6 +203,19 @@ int atom_extract_data(xmlNode *entry, struct gcal_event *ptr_entry)
 		goto cleanup;
 
 	xmlDocSetRootElement(doc, copy);
+
+	/* Store XML raw data */
+	if (ptr_entry->common.store_xml) {
+		xmlDocDumpMemory(doc, &xml_str, &length);
+		if (xml_str) {
+			if (!(ptr_entry->common.xml = strdup(xml_str)))
+				goto cleanup;
+		}
+		else
+			goto cleanup;
+	} else
+		if (!(ptr_entry->common.xml = strdup("")))
+			goto cleanup;
 
 	/* Gets the 'what' calendar field */
 	ptr_entry->common.title = extract_and_check(doc,
@@ -285,6 +299,8 @@ cleanup:
 	/* Dumps the doc to stdout */
 	/* xmlSaveFormatFileEnc("-", doc, "UTF-8", 1); */
 	xmlFreeDoc(doc);
+	if (xml_str)
+		xmlFree(xml_str);
 
 exit:
 	return result;
