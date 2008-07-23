@@ -308,7 +308,8 @@ exit:
 
 int atom_extract_contact(xmlNode *entry, struct gcal_contact *ptr_entry)
 {
-	int result = -1;
+	int result = -1, length = 0;
+	xmlChar *xml_str = NULL;
 	xmlDoc *doc = NULL;
 	xmlNode *copy = NULL;
 
@@ -332,6 +333,20 @@ int atom_extract_contact(xmlNode *entry, struct gcal_contact *ptr_entry)
 		goto cleanup;
 
 	xmlDocSetRootElement(doc, copy);
+
+	/* Store XML raw data */
+	if (ptr_entry->common.store_xml) {
+		xmlDocDumpMemory(doc, &xml_str, &length);
+		if (xml_str) {
+			if (!(ptr_entry->common.xml = strdup(xml_str)))
+				goto cleanup;
+		}
+		else
+			goto cleanup;
+	} else
+		if (!(ptr_entry->common.xml = strdup("")))
+			goto cleanup;
+
 
 	/* Gets the 'id' contact field */
 	ptr_entry->common.id = extract_and_check(doc,

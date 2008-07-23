@@ -50,6 +50,42 @@ START_TEST (test_get_xmlentries)
 }
 END_TEST
 
+START_TEST (test_get_xmlcontacts)
+{
+
+	gcal_t gcal;
+	struct gcal_contact_array contact_array;
+	gcal_contact contact;
+	int result;
+	char *xml_entry, *tmp;
+
+	gcal = gcal_new(GCONTACT);
+	fail_if(gcal == NULL, "Failed constructing gcal object!");
+
+	result = gcal_get_authentication(gcal, "gcal4tester", "66libgcal");
+	fail_if(result == -1, "Cannot authenticate!");
+
+	/* Set flag to save XML in internal field of each event */
+	gcal_set_store_xml(gcal, 1);
+
+	result = gcal_get_contacts(gcal, &contact_array);
+	fail_if(result == -1, "Failed downloading events!");
+
+	contact = gcal_contact_element(&contact_array, 0);
+	xml_entry = gcal_contact_get_xml(contact);
+
+	fail_if(xml_entry == NULL, "Cannot access raw XML!");
+	tmp = strstr(xml_entry, "<gd:email");
+	fail_if(xml_entry == NULL, "Raw XML lacks field!");
+
+	/* Cleanup */
+	gcal_cleanup_contacts(&contact_array);
+	gcal_delete(gcal);
+
+}
+END_TEST
+
+
 
 TCase *xmlmode_tcase_create(void)
 {
@@ -59,6 +95,7 @@ TCase *xmlmode_tcase_create(void)
 
 	tcase_set_timeout (tc, timeout_seconds);
 	tcase_add_test(tc, test_get_xmlentries);
+	tcase_add_test(tc, test_get_xmlcontacts);
 
 	return tc;
 }

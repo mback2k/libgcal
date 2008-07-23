@@ -678,8 +678,6 @@ struct gcal_event *gcal_get_entries(struct gcal_resource *gcalobj,
 	if (!gcalobj->buffer || !gcalobj->has_xml)
 		goto exit;
 
-	/* create a doc and free atom xml buffer
-	 */
 	gcalobj->document = build_dom_document(gcalobj->buffer);
 	if (!gcalobj->document)
 		goto exit;

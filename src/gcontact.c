@@ -222,6 +222,13 @@ gcal_contact gcal_contact_element(struct gcal_contact_array *contacts,
 	return contact;
 }
 
+char *gcal_contact_get_xml(gcal_contact contact)
+{
+	if ((!contact))
+		return NULL;
+	return gcal_get_xml(&(contact->common));
+}
+
 char *gcal_contact_get_id(gcal_contact contact)
 {
 	if ((!contact))

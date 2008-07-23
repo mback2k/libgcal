@@ -49,7 +49,7 @@ struct gcal_contact *gcal_get_all_contacts(struct gcal_resource *gcalobj,
 				       size_t *length)
 
 {
-	int result = -1;
+	int result = -1, i;
 	struct gcal_contact *ptr_res = NULL;
 
 	if (!gcalobj)
@@ -72,6 +72,12 @@ struct gcal_contact *gcal_get_all_contacts(struct gcal_resource *gcalobj,
 		goto cleanup;
 
 	*length = result;
+	for (i = 0; i < result; ++i) {
+		gcal_init_contact((ptr_res + i));
+		if (gcalobj->store_xml_entry)
+			(ptr_res + i)->common.store_xml = 1;
+	}
+
 	result = extract_all_contacts(gcalobj->document, ptr_res, result);
 	if (result == -1) {
 		free(ptr_res);
@@ -101,8 +107,10 @@ void gcal_init_contact(struct gcal_contact *contact)
 	if (!contact)
 		return;
 
+	contact->common.store_xml = 0;
 	contact->common.id = contact->common.updated = NULL;
 	contact->common.title = contact->common.edit_uri = NULL;
+	contact->common.xml = NULL;
 	contact->email = contact->content = NULL;
 	contact->org_name = contact->org_title = contact->im = NULL;
 	contact->phone_number = contact->post_address = NULL;
@@ -118,6 +126,7 @@ void gcal_destroy_contact(struct gcal_contact *contact)
 	clean_string(contact->common.title);
 	clean_string(contact->common.edit_uri);
 	clean_string(contact->email);
+	clean_string(contact->common.xml);
 
 	/* Extra fields */
 	clean_string(contact->content);
