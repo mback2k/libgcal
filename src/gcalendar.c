@@ -82,6 +82,28 @@ void gcal_event_delete(gcal_event event)
 	free(event);
 }
 
+int gcal_add_xmlentry(gcal_t gcal_obj, char *xml_entry)
+{
+	(void)gcal_obj;
+	(void)xml_entry;
+	return -1;
+}
+
+int gcal_update_xmlentry(gcal_t gcal_obj, char *xml_entry)
+{
+	(void)gcal_obj;
+	(void)xml_entry;
+	return -1;
+}
+
+int gcal_erase_xmlentry(gcal_t gcal_obj, char *xml_entry)
+{
+	(void)gcal_obj;
+	(void)xml_entry;
+	return -1;
+}
+
+
 int gcal_add_event(gcal_t gcal_obj, gcal_event event)
 {
 	int result = -1;

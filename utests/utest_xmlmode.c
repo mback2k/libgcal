@@ -13,7 +13,7 @@
 #include "gcontact.h"
 #include <stdio.h>
 #include <string.h>
-
+#include "utils.h"
 
 START_TEST (test_get_xmlentries)
 {
@@ -62,7 +62,7 @@ START_TEST (test_get_xmlcontacts)
 	gcal = gcal_new(GCONTACT);
 	fail_if(gcal == NULL, "Failed constructing gcal object!");
 
-	result = gcal_get_authentication(gcal, "gcal4tester", "66libgcal");
+	result = gcal_get_authentication(gcal, "gcalntester", "77libgcal");
 	fail_if(result == -1, "Cannot authenticate!");
 
 	/* Set flag to save XML in internal field of each event */
@@ -153,7 +153,7 @@ START_TEST (test_oper_xmlcontact)
 	gcal = gcal_new(GCONTACT);
 	fail_if(gcal == NULL, "Failed constructing gcal object!");
 
-	result = gcal_get_authentication(gcal, "gcal4tester", "66libgcal");
+	result = gcal_get_authentication(gcal, "gcalntester", "77libgcal");
 	fail_if(result == -1, "Cannot authenticate!");
 
 	/* Set flag to save XML in internal field of each contact */
@@ -199,6 +199,37 @@ START_TEST (test_oper_xmlcontact)
 }
 END_TEST
 
+START_TEST (test_oper_purexml)
+{
+	char *super_contact = NULL;
+	gcal_t gcal;
+	int result;
+
+	gcal = gcal_new(GCONTACT);
+	fail_if(gcal == NULL, "Failed constructing gcal object!");
+
+	result = gcal_get_authentication(gcal, "gcalntester", "77libgcal");
+	fail_if(result == -1, "Cannot authenticate!");
+
+	if (find_load_file("/utests/supercontact.xml", &super_contact))
+		fail_if(1, "Cannot load contact XML file!");
+
+	result = gcal_add_xmlentry(gcal, super_contact);
+	fail_if(result == -1, "Failed adding a new contact!");
+
+	result = gcal_update_xmlentry(gcal, super_contact);
+	fail_if(result == -1, "Failed editing contact!");
+
+	result = gcal_erase_xmlentry(gcal, super_contact);
+	fail_if(result == -1, "Failed deleting contact!");
+
+	/* Cleanup */
+	free(super_contact);
+	gcal_delete(gcal);
+
+}
+END_TEST
+
 
 TCase *xmlmode_tcase_create(void)
 {
@@ -211,5 +242,6 @@ TCase *xmlmode_tcase_create(void)
 	tcase_add_test(tc, test_get_xmlcontacts);
 	tcase_add_test(tc, test_oper_xmlevents);
 	tcase_add_test(tc, test_oper_xmlcontact);
+	tcase_add_test(tc, test_oper_purexml);
 	return tc;
 }
