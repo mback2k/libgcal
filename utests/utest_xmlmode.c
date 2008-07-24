@@ -143,6 +143,62 @@ START_TEST (test_oper_xmlevents)
 }
 END_TEST
 
+START_TEST (test_oper_xmlcontact)
+{
+	gcal_t gcal;
+	gcal_contact contact;
+	int result;
+	char *xml_entry, *tmp;
+
+	gcal = gcal_new(GCONTACT);
+	fail_if(gcal == NULL, "Failed constructing gcal object!");
+
+	result = gcal_get_authentication(gcal, "gcal4tester", "66libgcal");
+	fail_if(result == -1, "Cannot authenticate!");
+
+	/* Set flag to save XML in internal field of each contact */
+	gcal_set_store_xml(gcal, 1);
+
+	/* Create a new contact object */
+	contact = gcal_contact_new();
+	fail_if(!contact, "Cannot construct contact object!");
+	gcal_contact_set_title(contact, "Jonhy Generic Guy");
+	gcal_contact_set_email(contact, "johnthedoe@nobody.com");
+
+
+	/* Add a new contact */
+	result = gcal_add_contact(gcal, contact);
+	fail_if(result == -1, "Failed adding a new contact!");
+	xml_entry = gcal_contact_get_xml(contact);
+	fail_if(xml_entry == NULL, "Cannot access raw XML!");
+	tmp = strstr(xml_entry, "<gd:email");
+	fail_if(xml_entry == NULL, "Raw XML lacks field!");
+
+
+	/* Edit this contact */
+	gcal_contact_set_title(contact, "Jonhy Super Generic Guy");
+	result = gcal_update_contact(gcal, contact);
+	fail_if(result == -1, "Failed editing contact!");
+	xml_entry = gcal_contact_get_xml(contact);
+	fail_if(xml_entry == NULL, "Cannot access raw XML!");
+	tmp = strstr(xml_entry, "Super");
+	fail_if(xml_entry == NULL, "Raw XML lacks field!");
+
+
+	/* Delete this contact (note: google doesn't really deletes
+	 * the contact, but set its status to 'cancelled' and keeps
+	 * then for nearly 4 weeks).
+	 */
+	result = gcal_erase_contact(gcal, contact);
+	fail_if(result == -1, "Failed deleting contact!");
+
+	/* Cleanup */
+	gcal_contact_delete(contact);
+	gcal_delete(gcal);
+
+}
+END_TEST
+
 
 TCase *xmlmode_tcase_create(void)
 {
@@ -154,5 +210,6 @@ TCase *xmlmode_tcase_create(void)
 	tcase_add_test(tc, test_get_xmlentries);
 	tcase_add_test(tc, test_get_xmlcontacts);
 	tcase_add_test(tc, test_oper_xmlevents);
+	tcase_add_test(tc, test_oper_xmlcontact);
 	return tc;
 }

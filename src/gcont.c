@@ -179,6 +179,14 @@ int gcal_create_contact(struct gcal_resource *gcalobj,
 	if (result)
 		goto cleanup;
 
+	/* Copy raw XML */
+	if (gcalobj->store_xml_entry) {
+		if (contact->common.xml)
+			free(contact->common.xml);
+		if (!(contact->common.xml = strdup(gcalobj->buffer)))
+			goto cleanup;
+	}
+
 	/* Parse buffer and create the new contact object */
 	if (!updated)
 		goto cleanup;
@@ -263,6 +271,14 @@ int gcal_edit_contact(struct gcal_resource *gcalobj,
 			  GCAL_DEFAULT_ANSWER);
 	if (result)
 		goto cleanup;
+
+	/* Copy raw XML */
+	if (gcalobj->store_xml_entry) {
+		if (contact->common.xml)
+			free(contact->common.xml);
+		if (!(contact->common.xml = strdup(gcalobj->buffer)))
+			goto cleanup;
+	}
 
 	/* Parse buffer and create the new contact object */
 	if (!updated)
