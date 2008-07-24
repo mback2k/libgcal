@@ -907,6 +907,14 @@ int gcal_create_event(struct gcal_resource *gcalobj,
 	if (!gcalobj->document)
 		goto cleanup;
 
+	/* Copy raw XML */
+	if (gcalobj->store_xml_entry) {
+		if (entries->common.xml)
+			free(entries->common.xml);
+		if (!(entries->common.xml = strdup(gcalobj->buffer)))
+			goto xmlclean;
+	}
+
 	/* There is only one 'entry' in the buffer */
 	result = extract_all_entries(gcalobj->document, updated, 1);
 	if (result == -1)
@@ -1006,6 +1014,15 @@ int gcal_edit_event(struct gcal_resource *gcalobj,
 	gcalobj->document = build_dom_document(gcalobj->buffer);
 	if (!gcalobj->document)
 		goto cleanup;
+
+	/* Copy raw XML */
+	if (gcalobj->store_xml_entry) {
+		if (entry->common.xml)
+			free(entry->common.xml);
+		if (!(entry->common.xml = strdup(gcalobj->buffer)))
+			goto xmlclean;
+	}
+
 
 	/* There is only one 'entry' in the buffer */
 	result = extract_all_entries(gcalobj->document, updated, 1);

@@ -85,6 +85,63 @@ START_TEST (test_get_xmlcontacts)
 }
 END_TEST
 
+START_TEST (test_oper_xmlevents)
+{
+	gcal_t gcal;
+	gcal_event event;
+	int result;
+	char *xml_entry, *tmp;
+
+	gcal = gcal_new(GCALENDAR);
+	fail_if(gcal == NULL, "Failed constructing gcal object!");
+
+	result = gcal_get_authentication(gcal, "gcal4tester", "66libgcal");
+	fail_if(result == -1, "Cannot authenticate!");
+
+	/* Set flag to save XML in internal field of each event */
+	gcal_set_store_xml(gcal, 1);
+
+	/* Create a new event object */
+	event = gcal_event_new();
+	fail_if (!event, "Cannot construct event object!");
+	gcal_event_set_title(event, "A new event");
+	gcal_event_set_content(event, "Here goes the description");
+	gcal_event_set_start(event, "2008-06-24T16:00:00Z");
+	gcal_event_set_end(event, "2008-06-24T18:00:00Z");
+	gcal_event_set_where(event, "A nice place for a meeting");
+
+	/* Add a new event */
+	result = gcal_add_event(gcal, event);
+	fail_if(result == -1, "Failed adding a new event!");
+	xml_entry = gcal_event_get_xml(event);
+	fail_if(xml_entry == NULL, "Cannot access raw XML!");
+	tmp = strstr(xml_entry, "<gd:who");
+	fail_if(xml_entry == NULL, "Raw XML lacks field!");
+
+
+	/* Edit this event */
+	gcal_event_set_title(event, "Changing the title");
+	result = gcal_update_event(gcal, event);
+	fail_if(result == -1, "Failed editing event!");
+	xml_entry = gcal_event_get_xml(event);
+	fail_if(xml_entry == NULL, "Cannot access raw XML!");
+	tmp = strstr(xml_entry, "Changing the title");
+	fail_if(xml_entry == NULL, "Raw XML lacks field!");
+
+
+	/* Delete this event (note: google doesn't really deletes
+	 * the event, but set its status to 'cancelled' and keeps
+	 * then for nearly 4 weeks).
+	 */
+	result = gcal_erase_event(gcal, event);
+	fail_if(result == -1, "Failed deleting event!");
+
+	/* Cleanup */
+	gcal_event_delete(event);
+	gcal_delete(gcal);
+
+}
+END_TEST
 
 
 TCase *xmlmode_tcase_create(void)
@@ -96,6 +153,6 @@ TCase *xmlmode_tcase_create(void)
 	tcase_set_timeout (tc, timeout_seconds);
 	tcase_add_test(tc, test_get_xmlentries);
 	tcase_add_test(tc, test_get_xmlcontacts);
-
+	tcase_add_test(tc, test_oper_xmlevents);
 	return tc;
 }
