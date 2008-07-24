@@ -84,9 +84,36 @@ void gcal_event_delete(gcal_event event)
 
 int gcal_add_xmlentry(gcal_t gcal_obj, char *xml_entry)
 {
-	(void)gcal_obj;
-	(void)xml_entry;
-	return -1;
+	int result = -1, length = 0;
+	char *buffer = NULL;
+
+	if ((!gcal_obj) || (!xml_entry))
+		goto exit;
+
+	if (!(strcmp(gcal_obj->service, "cl")))
+		result = up_entry(xml_entry, gcal_obj, GCAL_EDIT_URL, POST,
+				  GCAL_EDIT_ANSWER);
+
+	else {
+		/* Mounts URL */
+		length = sizeof(GCONTACT_START) + sizeof(GCONTACT_END) +
+			strlen(gcal_obj->user) + 1;
+		buffer = (char *) malloc(length);
+		if (!buffer)
+			goto cleanup;
+		snprintf(buffer, length - 1, "%s%s%s", GCONTACT_START,
+			 gcal_obj->user, GCONTACT_END);
+
+		result = up_entry(xml_entry, gcal_obj, buffer, POST,
+				  GCAL_EDIT_ANSWER);
+	}
+
+cleanup:
+	if (buffer)
+		free(buffer);
+
+exit:
+	return result;
 }
 
 int gcal_update_xmlentry(gcal_t gcal_obj, char *xml_entry)

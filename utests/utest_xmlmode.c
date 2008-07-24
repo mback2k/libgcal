@@ -14,6 +14,7 @@
 #include <stdio.h>
 #include <string.h>
 #include "utils.h"
+#include "gcal_status.h"
 
 START_TEST (test_get_xmlentries)
 {
@@ -215,13 +216,19 @@ START_TEST (test_oper_purexml)
 		fail_if(1, "Cannot load contact XML file!");
 
 	result = gcal_add_xmlentry(gcal, super_contact);
-	fail_if(result == -1, "Failed adding a new contact!");
+	fail_if(result == -1, "Failed adding a new contact! HTTP code: %d"
+		"\nmsg: %s\n", gcal_status_httpcode(gcal),
+		gcal_status_msg(gcal));
 
 	result = gcal_update_xmlentry(gcal, super_contact);
-	fail_if(result == -1, "Failed editing contact!");
+	fail_if(result == -1, "Failed editing a new contact! HTTP code: %d"
+		"\nmsg: %s\n", gcal_status_httpcode(gcal),
+		gcal_status_msg(gcal));
 
 	result = gcal_erase_xmlentry(gcal, super_contact);
-	fail_if(result == -1, "Failed deleting contact!");
+	fail_if(result == -1, "Failed deleting a new contact! HTTP code: %d"
+		"\nmsg: %s\n", gcal_status_httpcode(gcal),
+		gcal_status_msg(gcal));
 
 	/* Cleanup */
 	free(super_contact);
