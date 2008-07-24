@@ -31,7 +31,8 @@ libgcal_la_LIBADD = $(LIBCURL_LIBS) $(LIBXML_LIBS)
 if CHECK
 TESTS = utest
 noinst_PROGRAMS = utest
-utest_SOURCES = $(utestdir)/utest_gcal.h $(utestdir)/utest_gcal.c \
+utest_SOURCES = $(utestdir)/utils.h $(utestdir)/utils.c \
+		$(utestdir)/utest_gcal.h $(utestdir)/utest_gcal.c \
 		$(utestdir)/utest_xpath.h $(utestdir)/utest_xpath.c \
 		$(utestdir)/utest_edit.h $(utestdir)/utest_edit.c \
 		$(utestdir)/utest_contact.h $(utestdir)/utest_contact.c \

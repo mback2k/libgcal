@@ -19,39 +19,9 @@
 #include "gcal.h"
 #include "gcontact.h"
 #include "gcal_status.h"
+#include "utils.h"
 
 static struct gcal_resource *ptr_gcal = NULL;
-
-static int read_file(int fd, char **buffer, size_t *length)
-{
-	int result = -1, bytes = 0;
-	size_t chunk = 256;
-
-	if (!*buffer) {
-		*length = chunk;
-		*buffer = (char *) malloc(*length);
-		if (!buffer)
-			goto exit;
-	}
-
-	result = read(fd, *buffer, *length);
-	while ((result != 0) && (result != -1)) {
-		*length += chunk;
-		*buffer = realloc(*buffer, *length);
-		if (!*buffer) {
-			result = -1;
-			goto exit;
-		}
-		bytes += result;
-		result = read(fd, (*buffer + bytes), chunk);
-	}
-
-	result = 0;
-
-exit:
-	return result;
-
-}
 
 static void setup(void)
 {
