@@ -407,6 +407,8 @@ cleanup:
 	/* Dumps the doc to stdout */
 	/* xmlSaveFormatFileEnc("-", doc, "UTF-8", 1); */
 	xmlFreeDoc(doc);
+	if (xml_str)
+		xmlFree(xml_str);
 
 exit:
 	return result;
