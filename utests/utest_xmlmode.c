@@ -186,9 +186,9 @@ START_TEST (test_oper_xmlcontact)
 	fail_if(xml_entry == NULL, "Raw XML lacks field!");
 
 
-	/* Delete this contact (note: google doesn't really deletes
-	 * the contact, but set its status to 'cancelled' and keeps
-	 * then for nearly 4 weeks).
+	/* Delete this contact (the contact can still be retrieved
+	 * using query parameter 'showdeleted=true' for
+	 * for nearly 4 weeks).
 	 */
 	result = gcal_erase_contact(gcal, contact);
 	fail_if(result == -1, "Failed deleting contact!");
