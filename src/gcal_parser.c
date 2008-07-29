@@ -99,21 +99,74 @@ int get_the_url(char *data, int length, char **url)
 
 	root_element = xmlDocGetRootElement(doc);
 	*url = get(root_element);
+	/* TODO: commit this fix later
+	if (*url)
+		result = 0;
+	 */
 
 	xmlFreeDoc(doc);
 	xmlCleanupParser();
 	result = 0;
+
+exit:
+	return result;
+
+}
+
+static char *get_edit(xmlNode *a_node)
+{
+	xmlNode *cur_node = NULL;
+	char *result = NULL;
+	xmlChar *attr = NULL, *uri = NULL;
+
+	for (cur_node = a_node; cur_node; cur_node = cur_node->next) {
+		if (xmlHasProp(cur_node, "rel")) {
+			attr = xmlGetProp(cur_node, "rel");
+			if (attr) {
+				if (!strcmp(attr, "edit")) {
+					uri = xmlGetProp(cur_node, "href");
+					if (uri)
+						result = strdup(uri);
+					xmlFree(attr);
+					xmlFree(uri);
+					goto exit;
+				}
+
+				xmlFree(attr);
+			}
+
+		}
+
+		result = get_edit(cur_node->children);
+		if (result)
+			goto exit;
+	}
+
 exit:
 	return result;
 }
 
 int get_edit_url(char *data, int length, char **url)
 {
-	(void)data;
-	(void)length;
-	(void)url;
+	xmlDoc *doc = NULL;
+	xmlNode *root_element = NULL;
+	int result = -1;
 
-	return -1;
+	*url = NULL;
+	doc = xmlReadMemory(data, length, "noname.xml", NULL, 0);
+	if (!doc)
+		goto exit;
+
+	root_element = xmlDocGetRootElement(doc);
+	*url = get_edit(root_element);
+	if (*url)
+		result = 0;
+
+	xmlFreeDoc(doc);
+	xmlCleanupParser();
+
+exit:
+	return result;
 }
 
 dom_document *build_dom_document(char *xml_data)

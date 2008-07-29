@@ -76,17 +76,39 @@ START_TEST (test_editurl_parse)
 	char *edit_url = NULL;
 	char *tmp;
 	int result;
-	if (find_load_file("/utests/supercontact.xml", &super_contact))
+	if (find_load_file("/utests/fullcontact.xml", &super_contact))
 		fail_if(1, "Cannot load contact XML file!");
 
 	result = get_edit_url(super_contact, strlen(super_contact), &edit_url);
 	fail_if(result == -1, "Failed extracting edit URL from raw XML entry!");
+	fail_if(edit_url == NULL, "Failed extracting edit URL from raw XML entry!");
 
-	tmp = strstr(edit_url, "http://www.google.com");
-	fail_if(tmp == NULL, "Cannot find address, check if URL is correct!");
-
+	tmp = strcmp(edit_url, "http://www.google.com/m8/feeds/contacts/gcalntester%40gmail.com/base/a1fa2ca095c082e/1216490120006000");
+	fail_if(tmp != 0, "Extracted URL differs from sample file!");
 	free(super_contact);
 	free(edit_url);
+
+	/* TODO: load_file is failing, I will need to fix that later. */
+/* 	if (find_load_file("/utests/fullcalendar.xml", &super_contact)) */
+/* 		fail_if(1, "Cannot load calendar XML file!"); */
+/* 	fprintf(stderr, "XML: %s nice!\n", super_contact); */
+
+/* 	result = get_edit_url(super_contact, strlen(super_contact), &edit_url); */
+/* 	fail_if(result == -1, "Failed extracting edit URL from raw XML entry!"); */
+/* 	fail_if(edit_url == NULL, "Failed extracting edit URL from raw XML entry!"); */
+/* 	tmp = strstr(edit_url, "http://www.google.com"); */
+/* 	fail_if(tmp == NULL, "Cannot find address, check if URL is correct!"); */
+/* 	fprintf(stderr, "url: %s is nice!\n", edit_url); */
+/* 	free(super_contact); */
+/* 	free(edit_url); */
+
+/* 	if (find_load_file("/utests/supercontact.xml", &super_contact)) */
+/* 		fail_if(1, "Cannot load contact XML file!"); */
+/* 	result = get_edit_url(super_contact, strlen(super_contact), &edit_url); */
+/* 	fail_if(edit_url != NULL, "This file has no edit URL. Failed!"); */
+/* 	free(super_contact); */
+/* 	free(edit_url); */
+
 }
 END_TEST
 
