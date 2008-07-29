@@ -137,7 +137,6 @@ int gcal_update_xmlentry(gcal_t gcal_obj, char *xml_entry)
 	 * parameter?
 	 */
 
-cleanup:
 	if (edit_url)
 		free(edit_url);
 

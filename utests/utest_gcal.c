@@ -9,6 +9,7 @@
 #include "utest_gcal.h"
 #include "gcal.h"
 #include "gcal_parser.h"
+#include "utils.h"
 #include <string.h>
 
 struct gcal_resource *ptr_gcal = NULL;
@@ -68,6 +69,27 @@ START_TEST (test_url_parse)
 
 }
 END_TEST
+
+START_TEST (test_editurl_parse)
+{
+	char *super_contact = NULL;
+	char *edit_url = NULL;
+	char *tmp;
+	int result;
+	if (find_load_file("/utests/supercontact.xml", &super_contact))
+		fail_if(1, "Cannot load contact XML file!");
+
+	result = get_edit_url(super_contact, strlen(super_contact), &edit_url);
+	fail_if(result == -1, "Failed extracting edit URL from raw XML entry!");
+
+	tmp = strstr(edit_url, "http://www.google.com");
+	fail_if(tmp == NULL, "Cannot find address, check if URL is correct!");
+
+	free(super_contact);
+	free(edit_url);
+}
+END_TEST
+
 
 START_TEST (test_gcal_dump)
 {
@@ -160,6 +182,7 @@ TCase *gcal_tcase_create(void)
 	tcase_add_test(tc, test_gcal_dump);
 	tcase_add_test(tc, test_gcal_event);
 	tcase_add_test(tc, test_gcal_naive);
+	tcase_add_test(tc, test_editurl_parse);
 	return tc;
 }
 
