@@ -99,14 +99,11 @@ int get_the_url(char *data, int length, char **url)
 
 	root_element = xmlDocGetRootElement(doc);
 	*url = get(root_element);
-	/* TODO: commit this fix later
 	if (*url)
 		result = 0;
-	 */
 
 	xmlFreeDoc(doc);
 	xmlCleanupParser();
-	result = 0;
 
 exit:
 	return result;
