@@ -60,6 +60,18 @@ POSSIBILITY OF SUCH DAMAGE.
  */
 int get_the_url(char *data, int length, char **url);
 
+/** Parses an entry XML (being calendar or contact) and extracts the edit
+ * URL field (required for edit/delete operations).
+ *
+ * @param data Raw XML (an entry).
+ * @param length Data buffer lenght.
+ * @param url Pointer to the pointer (ouch!) that will receive the edit URL
+ * (you should cleanup its memory). It will point to NULL if there is
+ * not a URL in the raw XML buffer.
+ *
+ * @return Returns 0 on success, -1 otherwise.
+ */
+int get_edit_url(char *data, int length, char **url);
 
 /** Builds a DOM tree from a XML string.
  *

@@ -46,7 +46,7 @@ POSSIBILITY OF SUCH DAMAGE.
 #include <stdio.h>
 #include "gcalendar.h"
 #include "internal_gcal.h"
-
+#include "gcal_parser.h"
 
 gcal_t gcal_new(gservice mode)
 {
@@ -120,7 +120,30 @@ int gcal_update_xmlentry(gcal_t gcal_obj, char *xml_entry)
 {
 	(void)gcal_obj;
 	(void)xml_entry;
-	return -1;
+	char *edit_url = NULL;
+	int result = -1;
+
+	if ((!gcal_obj) || (!xml_entry))
+		goto exit;
+
+	result = get_edit_url(xml_entry, strlen(xml_entry), &edit_url);
+	if (result)
+		goto exit;
+
+	result = up_entry(xml_entry, gcal_obj, edit_url, PUT,
+				  GCAL_DEFAULT_ANSWER);
+
+	/* TODO: How to return the updated XML entry? Using another
+	 * parameter?
+	 */
+
+cleanup:
+	if (edit_url)
+		free(edit_url);
+
+exit:
+
+	return result;
 }
 
 int gcal_erase_xmlentry(gcal_t gcal_obj, char *xml_entry)

@@ -107,6 +107,15 @@ exit:
 	return result;
 }
 
+int get_edit_url(char *data, int length, char **url)
+{
+	(void)data;
+	(void)length;
+	(void)url;
+
+	return -1;
+}
+
 dom_document *build_dom_document(char *xml_data)
 {
 	dom_document *ptr = NULL;
