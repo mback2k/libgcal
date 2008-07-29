@@ -117,8 +117,8 @@ int gcal_get_updated_events(gcal_t gcal_obj, struct gcal_event_array *events,
 
 
 /* Raw XML base functions: common for both calendar/contacts */
-int gcal_add_xmlentry(gcal_t gcal_obj, char *xml_entry);
-int gcal_update_xmlentry(gcal_t gcal_obj, char *xml_entry);
+int gcal_add_xmlentry(gcal_t gcal_obj, char *xml_entry, char **xml_updated);
+int gcal_update_xmlentry(gcal_t gcal_obj, char *xml_entry, char **xml_updated);
 int gcal_erase_xmlentry(gcal_t gcal_obj, char *xml_entry);
 
 

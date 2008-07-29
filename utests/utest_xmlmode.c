@@ -203,6 +203,7 @@ END_TEST
 START_TEST (test_oper_purexml)
 {
 	char *super_contact = NULL;
+	char *updated1 = NULL, *updated2 = NULL;
 	gcal_t gcal;
 	int result;
 
@@ -215,23 +216,25 @@ START_TEST (test_oper_purexml)
 	if (find_load_file("/utests/supercontact.xml", &super_contact))
 		fail_if(1, "Cannot load contact XML file!");
 
-	result = gcal_add_xmlentry(gcal, super_contact);
+	result = gcal_add_xmlentry(gcal, super_contact, &updated1);
 	fail_if(result == -1, "Failed adding a new contact! HTTP code: %d"
 		"\nmsg: %s\n", gcal_status_httpcode(gcal),
 		gcal_status_msg(gcal));
 
-	result = gcal_update_xmlentry(gcal, super_contact);
+	result = gcal_update_xmlentry(gcal, updated1, &updated2);
 	fail_if(result == -1, "Failed editing a new contact! HTTP code: %d"
 		"\nmsg: %s\n", gcal_status_httpcode(gcal),
 		gcal_status_msg(gcal));
 
-	result = gcal_erase_xmlentry(gcal, super_contact);
+	result = gcal_erase_xmlentry(gcal, updated2);
 	fail_if(result == -1, "Failed deleting a new contact! HTTP code: %d"
 		"\nmsg: %s\n", gcal_status_httpcode(gcal),
 		gcal_status_msg(gcal));
 
 	/* Cleanup */
 	free(super_contact);
+	free(updated1);
+	free(updated2);
 	gcal_delete(gcal);
 
 }

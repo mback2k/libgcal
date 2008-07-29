@@ -82,7 +82,7 @@ void gcal_event_delete(gcal_event event)
 	free(event);
 }
 
-int gcal_add_xmlentry(gcal_t gcal_obj, char *xml_entry)
+int gcal_add_xmlentry(gcal_t gcal_obj, char *xml_entry, char **xml_updated)
 {
 	int result = -1, length = 0;
 	char *buffer = NULL;
@@ -108,6 +108,10 @@ int gcal_add_xmlentry(gcal_t gcal_obj, char *xml_entry)
 				  GCAL_EDIT_ANSWER);
 	}
 
+	if (!result)
+		if (xml_updated)
+			*xml_updated = strdup(gcal_obj->buffer);
+
 cleanup:
 	if (buffer)
 		free(buffer);
@@ -116,10 +120,8 @@ exit:
 	return result;
 }
 
-int gcal_update_xmlentry(gcal_t gcal_obj, char *xml_entry)
+int gcal_update_xmlentry(gcal_t gcal_obj, char *xml_entry, char **xml_updated)
 {
-	(void)gcal_obj;
-	(void)xml_entry;
 	char *edit_url = NULL;
 	int result = -1;
 
@@ -133,9 +135,9 @@ int gcal_update_xmlentry(gcal_t gcal_obj, char *xml_entry)
 	result = up_entry(xml_entry, gcal_obj, edit_url, PUT,
 				  GCAL_DEFAULT_ANSWER);
 
-	/* TODO: How to return the updated XML entry? Using another
-	 * parameter?
-	 */
+	if (!result)
+		if (xml_updated)
+			*xml_updated = strdup(gcal_obj->buffer);
 
 	if (edit_url)
 		free(edit_url);
@@ -149,6 +151,7 @@ int gcal_erase_xmlentry(gcal_t gcal_obj, char *xml_entry)
 {
 	(void)gcal_obj;
 	(void)xml_entry;
+
 	return -1;
 }
 

@@ -74,8 +74,8 @@ START_TEST (test_editurl_parse)
 {
 	char *super_contact = NULL;
 	char *edit_url = NULL;
-	char *tmp;
 	int result;
+
 	if (find_load_file("/utests/fullcontact.xml", &super_contact))
 		fail_if(1, "Cannot load contact XML file!");
 
@@ -83,8 +83,8 @@ START_TEST (test_editurl_parse)
 	fail_if(result == -1, "Failed extracting edit URL from raw XML entry!");
 	fail_if(edit_url == NULL, "Failed extracting edit URL from raw XML entry!");
 
-	tmp = strcmp(edit_url, "http://www.google.com/m8/feeds/contacts/gcalntester%40gmail.com/base/a1fa2ca095c082e/1216490120006000");
-	fail_if(tmp != 0, "Extracted URL differs from sample file!");
+	result = strcmp(edit_url, "http://www.google.com/m8/feeds/contacts/gcalntester%40gmail.com/base/a1fa2ca095c082e/1216490120006000");
+	fail_if(result != 0, "Extracted URL differs from sample file!");
 	free(super_contact);
 	free(edit_url);
 
