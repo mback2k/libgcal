@@ -257,6 +257,63 @@ START_TEST (test_oper_purexml)
 }
 END_TEST
 
+START_TEST (test_oper_purexmlcal)
+{
+	char *super_calendar = NULL, *edit_url;
+	char *updated1 = NULL, *updated2 = NULL, *updated3 = NULL;
+	gcal_t gcal;
+	int result;
+
+	gcal = gcal_new(GCALENDAR);
+	fail_if(gcal == NULL, "Failed constructing gcal object!");
+
+	result = gcal_get_authentication(gcal, "gcalntester", "77libgcal");
+	fail_if(result == -1, "Cannot authenticate!");
+
+	if (find_load_file("/utests/fullcalendar.xml", &super_calendar))
+		fail_if(1, "Cannot load calendar XML file!");
+
+	/* Add and update */
+	result = gcal_add_xmlentry(gcal, super_calendar, &updated1);
+	fail_if(result == -1, "Failed adding a new calendar! HTTP code: %d"
+		"\nmsg: %s\n", gcal_status_httpcode(gcal),
+		gcal_status_msg(gcal));
+
+	result = gcal_update_xmlentry(gcal, updated1, &updated2, NULL);
+	fail_if(result == -1, "Failed editing a new calendar! HTTP code: %d"
+		"\nmsg: %s\n", gcal_status_httpcode(gcal),
+		gcal_status_msg(gcal));
+
+	/* update corner case where the new XML doesn't have the edit URL */
+	free(super_calendar);
+	if (find_load_file("/utests/calendar_documentation.xml", &super_calendar))
+		fail_if(1, "Cannot load calendar XML file!");
+
+	/* TODO: provide a public wrapper to this internal function */
+	result = get_edit_url(updated2, strlen(updated2), &edit_url);
+	fail_if(result == -1, "Cannot extract edit URL!");
+
+	result = gcal_update_xmlentry(gcal, super_calendar, &updated3, edit_url);
+	fail_if(result == -1, "Failed editing a new event! HTTP code: %d"
+		"\nmsg: %s\n", gcal_status_httpcode(gcal),
+		gcal_status_msg(gcal));
+
+	/* delete */
+	result = gcal_erase_xmlentry(gcal, updated3);
+	fail_if(result == -1, "Failed deleting a new calendar! HTTP code: %d"
+		"\nmsg: %s\n", gcal_status_httpcode(gcal),
+		gcal_status_msg(gcal));
+
+	/* Cleanup */
+	free(super_calendar);
+	free(updated1);
+	free(updated2);
+	free(updated3);
+	free(edit_url);
+	gcal_delete(gcal);
+
+}
+END_TEST
 
 TCase *xmlmode_tcase_create(void)
 {
@@ -270,5 +327,6 @@ TCase *xmlmode_tcase_create(void)
 	tcase_add_test(tc, test_oper_xmlevents);
 	tcase_add_test(tc, test_oper_xmlcontact);
 	tcase_add_test(tc, test_oper_purexml);
+	tcase_add_test(tc, test_oper_purexmlcal);
 	return tc;
 }

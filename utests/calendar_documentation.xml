@@ -2,15 +2,15 @@
     xmlns:gd='http://schemas.google.com/g/2005'>
   <category scheme='http://schemas.google.com/g/2005#kind'
     term='http://schemas.google.com/g/2005#event'></category>
-  <title type='text'>Hockey with Beth</title>
-  <content type='text'>Meet for a quick brawl.</content>
+  <title type='text'>Tennis with Beth</title>
+  <content type='text'>Meet for a quick lesson.</content>
   <gd:transparency
     value='http://schemas.google.com/g/2005#event.opaque'>
   </gd:transparency>
   <gd:eventStatus
     value='http://schemas.google.com/g/2005#event.confirmed'>
   </gd:eventStatus>
-  <gd:where valueString='Frozen lake'></gd:where>
+  <gd:where valueString='Rolling Lawn Courts'></gd:where>
   <gd:when startTime='2008-08-17T15:00:00.000Z'
     endTime='2008-08-17T17:00:00.000Z'></gd:when>
 </entry>
