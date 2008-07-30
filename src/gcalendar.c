@@ -149,10 +149,36 @@ exit:
 
 int gcal_erase_xmlentry(gcal_t gcal_obj, char *xml_entry)
 {
-	(void)gcal_obj;
-	(void)xml_entry;
+	char *edit_url = NULL;
+	int result = -1;
+	/* I could use just 1 structure object and benefit from the fact
+	 * that both have the same field type/name alignment (that would
+	 * save 1 structure from the stack). But it would break with any
+	 * change in the field type/alignment, I don't think its worthwhile.
+	 */
+	struct gcal_event event;
+	struct gcal_contact contact;
 
-	return -1;
+	if ((!gcal_obj) || (!xml_entry))
+		goto exit;
+
+	result = get_edit_url(xml_entry, strlen(xml_entry), &edit_url);
+	if (result)
+		goto exit;
+	event.common.edit_uri = edit_url;
+	contact.common.edit_uri = edit_url;
+
+	if (!(strcmp(gcal_obj->service, "cl")))
+		result = gcal_delete_event(gcal_obj, &event);
+
+	else
+		result = gcal_delete_contact(gcal_obj, &contact);
+
+	if (edit_url)
+		free(edit_url);
+
+exit:
+	return result;
 }
 
 
