@@ -95,7 +95,7 @@ START_TEST (test_editurl_parse)
 	result = get_edit_url(super_contact, strlen(super_contact), &edit_url);
 	fail_if(result == -1, "Failed extracting edit URL from raw XML entry!");
 	fail_if(edit_url == NULL, "Failed extracting edit URL from raw XML entry!");
-	tmp = strstr(edit_url, "http://www.google.com/calendar/feeds/gcalntester%40gmail.com/private/full/ofvef64g878rpvam6ts2rd3p70/63349499166");
+	tmp = strstr(edit_url, "http://www.google.com/calendar/feeds/default/private/full/oserr36hrabj8l184qkddocmo8/63352172611");
 	fail_if(tmp == NULL, "Cannot find address, check if URL is correct!");
 	free(super_contact);
 	free(edit_url);
