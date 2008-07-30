@@ -11,33 +11,37 @@ int read_file(int fd, char **buffer, size_t *length)
 {
 	int result = -1, bytes = 0;
 	size_t chunk = 256;
+	char *tmp;
 
-	if (!*buffer) {
-		*length = chunk;
-		*buffer = (char *) malloc(*length);
-		if (!buffer)
-			goto exit;
-	}
+	*length = chunk + 1;
+	*buffer = (char *) malloc(*length);
+	if (!buffer)
+		goto exit;
 
-	result = read(fd, *buffer, *length);
-	while ((result != 0) && (result != -1)) {
+	while (((result = read(fd, (*buffer + bytes), chunk)) != -1) &&
+	       (result != 0)) {
 		*length += chunk;
-		*buffer = realloc(*buffer, *length);
-		if (!*buffer) {
+		tmp = realloc(*buffer, *length + chunk);
+		if (!tmp) {
 			result = -1;
-			goto exit;
+			goto error;
 		}
+		*buffer = tmp;
 		bytes += result;
-		result = read(fd, (*buffer + bytes), chunk);
 	}
 
+	tmp[bytes] = '\0';
 	result = 0;
+	goto exit;
+
+error:
+	free(*buffer);
+	*buffer = NULL;
 
 exit:
 	return result;
 
 }
-
 
 char *find_file_path(char *file_name)
 {
