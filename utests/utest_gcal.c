@@ -89,7 +89,7 @@ START_TEST (test_editurl_parse)
 	free(super_contact);
 	free(edit_url);
 
-	if (find_load_file("/utests/fullcalendar.xml", &super_contact))
+	if (find_load_file("/utests/gcalendar.xml", &super_contact))
 		fail_if(1, "Cannot load calendar XML file!");
 
 	result = get_edit_url(super_contact, strlen(super_contact), &edit_url);
