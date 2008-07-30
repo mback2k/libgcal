@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<entry xmlns="http://www.w3.org/2005/Atom" xmlns:gd="http://schemas.google.com/g/2005" xmlns:gCal="http://schemas.google.com/gCal/2005"><id>http://www.google.com/calendar/feeds/gcalntester%40gmail.com/private/full/ofvef64g878rpvam6ts2rd3p70</id><published>2008-06-18T19:06:06.000Z</published><updated>2008-06-18T19:06:06.000Z</updated><category scheme="http://schemas.google.com/g/2005#kind" term="http://schemas.google.com/g/2005#event"/><title type="text">test of timezone</title><content type="text"/><link rel="alternate" type="text/html" href="http://www.google.com/calendar/event?eid=b2Z2ZWY2NGc4NzhycHZhbTZ0czJyZDNwNzBfMjAwODA2MThUMTgzMDAwWiBnY2FsbnRlc3RlckBt" title="alternate"/><link rel="self" type="application/atom+xml" href="http://www.google.com/calendar/feeds/gcalntester%40gmail.com/private/full/ofvef64g878rpvam6ts2rd3p70"/><link rel="edit" type="application/atom+xml" href="http://www.google.com/calendar/feeds/gcalntester%40gmail.com/private/full/ofvef64g878rpvam6ts2rd3p70/63349499166"/><author><name>gcalntester gcalntester</name><email>gcalntester@gmail.com</email></author><gd:recurrence>DTSTART;TZID=America/Manaus:20080618T143000
+DTEND;TZID=America/Manaus:20080618T153000
+RRULE:FREQ=WEEKLY;BYDAY=WE;WKST=SU
+BEGIN:VTIMEZONE
+TZID:America/Manaus
+X-LIC-LOCATION:America/Manaus
+BEGIN:STANDARD
+TZOFFSETFROM:-0400
+TZOFFSETTO:-0400
+TZNAME:AMT
+DTSTART:19700101T000000
+END:STANDARD
+END:VTIMEZONE
+</gd:recurrence><gd:eventStatus value="http://schemas.google.com/g/2005#event.confirmed"/><gd:visibility value="http://schemas.google.com/g/2005#event.default"/><gd:transparency value="http://schemas.google.com/g/2005#event.opaque"/><gCal:uid value="ofvef64g878rpvam6ts2rd3p70@google.com"/><gCal:sequence value="0"/><gd:reminder minutes="10" method="alert"/><gd:who rel="http://schemas.google.com/g/2005#event.organizer" valueString="gcalntester gcalntester" email="gcalntester@gmail.com"/><gd:where/></entry>
