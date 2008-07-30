@@ -11,7 +11,7 @@ int read_file(int fd, char **buffer, size_t *length)
 {
 	int result = -1, bytes = 0;
 	size_t chunk = 256;
-	char *tmp;
+	char *tmp = NULL;
 
 	*length = chunk + 1;
 	*buffer = (char *) malloc(*length);
