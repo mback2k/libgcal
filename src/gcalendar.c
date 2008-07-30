@@ -120,27 +120,32 @@ exit:
 	return result;
 }
 
-int gcal_update_xmlentry(gcal_t gcal_obj, char *xml_entry, char **xml_updated)
+int gcal_update_xmlentry(gcal_t gcal_obj, char *xml_entry, char **xml_updated,
+			 char *edit_url)
 {
-	char *edit_url = NULL;
+	char *url = NULL;
 	int result = -1;
 
 	if ((!gcal_obj) || (!xml_entry))
 		goto exit;
 
-	result = get_edit_url(xml_entry, strlen(xml_entry), &edit_url);
-	if (result)
-		goto exit;
+	if (!edit_url) {
+		result = get_edit_url(xml_entry, strlen(xml_entry), &url);
+		if (result)
+			goto exit;
 
-	result = up_entry(xml_entry, gcal_obj, edit_url, PUT,
-				  GCAL_DEFAULT_ANSWER);
+	} else
+		if (!(url = strdup(edit_url)))
+			goto exit;
+
+	result = up_entry(xml_entry, gcal_obj, url, PUT, GCAL_DEFAULT_ANSWER);
 
 	if (!result)
 		if (xml_updated)
 			*xml_updated = strdup(gcal_obj->buffer);
 
-	if (edit_url)
-		free(edit_url);
+	if (url)
+		free(url);
 
 exit:
 

@@ -202,8 +202,8 @@ END_TEST
 
 START_TEST (test_oper_purexml)
 {
-	char *super_contact = NULL;
-	char *updated1 = NULL, *updated2 = NULL;
+	char *super_contact = NULL, *edit_url;
+	char *updated1 = NULL, *updated2 = NULL, *updated3 = NULL;
 	gcal_t gcal;
 	int result;
 
@@ -216,17 +216,32 @@ START_TEST (test_oper_purexml)
 	if (find_load_file("/utests/supercontact.xml", &super_contact))
 		fail_if(1, "Cannot load contact XML file!");
 
+	/* Add and update */
 	result = gcal_add_xmlentry(gcal, super_contact, &updated1);
 	fail_if(result == -1, "Failed adding a new contact! HTTP code: %d"
 		"\nmsg: %s\n", gcal_status_httpcode(gcal),
 		gcal_status_msg(gcal));
 
-	result = gcal_update_xmlentry(gcal, updated1, &updated2);
+	result = gcal_update_xmlentry(gcal, updated1, &updated2, NULL);
 	fail_if(result == -1, "Failed editing a new contact! HTTP code: %d"
 		"\nmsg: %s\n", gcal_status_httpcode(gcal),
 		gcal_status_msg(gcal));
 
-	result = gcal_erase_xmlentry(gcal, updated2);
+	/* update corner case where the new XML doesn't have the edit URL */
+	free(super_contact);
+	if (find_load_file("/utests/contact_documentation.xml", &super_contact))
+		fail_if(1, "Cannot load contact XML file!");
+	/* TODO: provide a public wrapper to this internal function */
+	result = get_edit_url(updated2, strlen(updated2), &edit_url);
+	fail_if(result == -1, "Cannot extract edit URL!");
+
+	result = gcal_update_xmlentry(gcal, super_contact, &updated3, edit_url);
+	fail_if(result == -1, "Failed editing a new contact! HTTP code: %d"
+		"\nmsg: %s\n", gcal_status_httpcode(gcal),
+		gcal_status_msg(gcal));
+
+	/* delete */
+	result = gcal_erase_xmlentry(gcal, updated3);
 	fail_if(result == -1, "Failed deleting a new contact! HTTP code: %d"
 		"\nmsg: %s\n", gcal_status_httpcode(gcal),
 		gcal_status_msg(gcal));
@@ -235,6 +250,8 @@ START_TEST (test_oper_purexml)
 	free(super_contact);
 	free(updated1);
 	free(updated2);
+	free(updated3);
+	free(edit_url);
 	gcal_delete(gcal);
 
 }
