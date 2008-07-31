@@ -231,10 +231,8 @@ START_TEST (test_oper_purexml)
 	free(super_contact);
 	if (find_load_file("/utests/contact_documentation.xml", &super_contact))
 		fail_if(1, "Cannot load contact XML file!");
-	/* TODO: provide a public wrapper to this internal function */
-	result = get_edit_url(updated2, strlen(updated2), &edit_url);
+	result = gcal_get_edit_url(updated2, &edit_url);
 	fail_if(result == -1, "Cannot extract edit URL!");
-
 	result = gcal_update_xmlentry(gcal, super_contact, &updated3, edit_url);
 	fail_if(result == -1, "Failed editing a new contact! HTTP code: %d"
 		"\nmsg: %s\n", gcal_status_httpcode(gcal),
@@ -284,15 +282,13 @@ START_TEST (test_oper_purexmlcal)
 		"\nmsg: %s\n", gcal_status_httpcode(gcal),
 		gcal_status_msg(gcal));
 
-	/* update corner case where the new XML doesn't have the edit URL */
+	/* update corner case: where the new XML doesn't have the edit URL */
 	free(super_calendar);
 	if (find_load_file("/utests/calendar_documentation.xml", &super_calendar))
 		fail_if(1, "Cannot load calendar XML file!");
 
-	/* TODO: provide a public wrapper to this internal function */
-	result = get_edit_url(updated2, strlen(updated2), &edit_url);
+	result = gcal_get_edit_url(updated2, &edit_url);
 	fail_if(result == -1, "Cannot extract edit URL!");
-
 	result = gcal_update_xmlentry(gcal, super_calendar, &updated3, edit_url);
 	fail_if(result == -1, "Failed editing a new event! HTTP code: %d"
 		"\nmsg: %s\n", gcal_status_httpcode(gcal),

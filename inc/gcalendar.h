@@ -116,6 +116,10 @@ int gcal_get_updated_events(gcal_t gcal_obj, struct gcal_event_array *events,
 			    char *timestamp);
 
 
+/* Helper function, extracts the edit URL in a XML entry */
+int gcal_get_edit_url(char *entry, char **extracted_url);
+
+
 /* Raw XML base functions: common for both calendar/contacts */
 int gcal_add_xmlentry(gcal_t gcal_obj, char *xml_entry, char **xml_updated);
 int gcal_update_xmlentry(gcal_t gcal_obj, char *xml_entry, char **xml_updated,

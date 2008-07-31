@@ -82,6 +82,19 @@ void gcal_event_delete(gcal_event event)
 	free(event);
 }
 
+int gcal_get_edit_url(char *entry, char **extracted_url)
+{
+	int result = -1;
+	if (!entry)
+		goto exit;
+
+	result = get_edit_url(entry, strlen(entry), extracted_url);
+
+exit:
+	return result;
+
+}
+
 int gcal_add_xmlentry(gcal_t gcal_obj, char *xml_entry, char **xml_updated)
 {
 	int result = -1, length = 0;
