@@ -60,6 +60,32 @@ START_TEST (test_usercalendarapi)
 }
 END_TEST
 
+START_TEST (test_usermismatch)
+{
+	gcal_t gcal;
+	struct gcal_event_array event_array;
+	struct gcal_contact_array contact_array;
+	gcal_event event;
+	gcal_contact contact;
+	int result;
+
+	gcal = gcal_new(GCALENDAR);
+	result = gcal_get_authentication(gcal, "gcal4tester", "66libgcal");
+	result = gcal_get_events(gcal, &contact_array);
+	fail_if(result != -1, "Should fail writing contact out of a calendar!");
+	contact = gcal_contact_element(&contact_array, 0);
+	fail_if(contact != NULL, "Contact should be NULL!");
+
+	gcal_set_service(gcal, GCONTACT);
+	result = gcal_get_authentication(gcal, "gcal4tester", "66libgcal");
+	result = gcal_get_contacts(gcal, &event_array);
+	fail_if(result != -1, "Should fail writing events out of contacts!");
+	event = gcal_event_element(&event_array, 0);
+	fail_if(event != NULL, "Event should be NULL!");
+
+}
+END_TEST
+
 TCase *gcal_screw(void)
 {
 	TCase *tc = NULL;
@@ -68,5 +94,6 @@ TCase *gcal_screw(void)
 	tcase_set_timeout (tc, timeout_seconds);
 
 	tcase_add_test(tc, test_usercalendarapi);
+	tcase_add_test(tc, test_usermismatch);
 	return tc;
 }
