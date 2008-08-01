@@ -24,6 +24,7 @@
 #include "utest_query.h"
 #include "utest_userapi.h"
 #include "utest_xmlmode.h"
+#include "utest_screw.h"
 
 static Suite *core_suite(void)
 {
@@ -80,11 +81,20 @@ static Suite *xml_api(void)
 }
 
 
+static Suite *screw_api(void)
+{
+	Suite *s;
+	s = suite_create("screwapi");
+	suite_add_tcase(s, gcal_screw());
+	return s;
+
+}
+
 int main(void)
 {
 	int number_failed;
-	Suite *s, *sapi, *sxml;
-	SRunner *core, *userapi, *xmlapi;
+	Suite *s, *sapi, *sxml, *s_screw;
+	SRunner *core, *userapi, *xmlapi, *screwtest;
 
 	s = core_suite();
 	core = srunner_create(s);
@@ -110,6 +120,13 @@ int main(void)
 	number_failed = srunner_ntests_failed(xmlapi);
 	srunner_free(xmlapi);
 
+
+	/* Tests trying to break libgcal */
+	s_screw = screw_api();
+	screwtest = srunner_create(s_screw);
+	srunner_run_all(screwtest, CK_VERBOSE);
+	number_failed = srunner_ntests_failed(screwtest);
+	srunner_free(screwtest);
 
 	return (number_failed == 0) ? EXIT_SUCCESS : EXIT_FAILURE;
 }
