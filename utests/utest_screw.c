@@ -27,11 +27,14 @@ START_TEST (test_usercalendarapi)
 	fail_if(gcal != NULL, "Should return NULL!");
 	result = gcal_get_authentication(gcal, "nonexistant", "invalid");
 	fail_if(result != -1, "Should fail authentication!");
+	gcal_delete(gcal);
 
 	/* Failed authentication */
 	gcal = gcal_new(GCALENDAR);
 	result = gcal_get_authentication(gcal, "nonexistant", "invalid");
 	fail_if(result != -1, "Should fail authentication!");
+	result = gcal_get_events(gcal, NULL);
+	fail_if(result != -1, "Should event extraction!");
 	result = gcal_get_events(gcal, &event_array);
 	fail_if(result != -1, "Should event extraction!");
 

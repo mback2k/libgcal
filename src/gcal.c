@@ -77,7 +77,6 @@ static void reset_buffer(struct gcal_resource *ptr)
 
 struct gcal_resource *gcal_construct(gservice mode)
 {
-	int result = 0;
 	struct gcal_resource *ptr;
 	ptr = malloc(sizeof(struct gcal_resource));
 	if (!ptr)
@@ -140,7 +139,8 @@ int gcal_set_service(struct gcal_resource *gcalobj, gservice mode)
 
 void clean_buffer(struct gcal_resource *gcal_obj)
 {
-	memset(gcal_obj->buffer, 0, gcal_obj->length);
+	if (gcal_obj)
+		memset(gcal_obj->buffer, 0, gcal_obj->length);
 }
 
 void gcal_destroy(struct gcal_resource *gcal_obj)
@@ -362,7 +362,7 @@ int gcal_get_authentication(struct gcal_resource *gcalobj,
 	int result = -1;
 	char *tmp = NULL;
 
-	if (!user || !password)
+	if (!gcalobj || !user || !password)
 		goto exit;
 
 	/* Must cleanup HTTP buffer between requests */
