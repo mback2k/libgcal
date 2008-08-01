@@ -25,6 +25,8 @@ START_TEST (test_usercalendarapi)
 	/* Wrong object construction */
 	gcal = gcal_new(1345);
 	fail_if(gcal != NULL, "Should return NULL!");
+	result = gcal_get_authentication(gcal, "nonexistant", "invalid");
+	fail_if(result != -1, "Should fail authentication!");
 
 	/* Failed authentication */
 	gcal = gcal_new(GCALENDAR);
