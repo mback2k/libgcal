@@ -40,6 +40,14 @@ START_TEST (test_usercalendarapi)
 		fail_if(ptr != NULL, "Should return NULL!");
 	}
 
+	/* Forces access to elements */
+	event = gcal_event_element(&event_array, -1);
+	fail_if(event != NULL, "Should return NULL!");
+	event = gcal_event_element(&event_array, 0);
+	fail_if(event != NULL, "Should return NULL!");
+	ptr = gcal_event_get_id(event);
+	fail_if(ptr != NULL, "Should return NULL!");
+
 
 	gcal_cleanup_events(&event_array);
 	gcal_delete(gcal);

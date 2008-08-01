@@ -77,7 +77,7 @@ static void reset_buffer(struct gcal_resource *ptr)
 
 struct gcal_resource *gcal_construct(gservice mode)
 {
-
+	int result = 0;
 	struct gcal_resource *ptr;
 	ptr = malloc(sizeof(struct gcal_resource));
 	if (!ptr)
@@ -111,22 +111,31 @@ struct gcal_resource *gcal_construct(gservice mode)
 	}
 
 	/* Initializes to google calendar as default */
-	gcal_set_service(ptr, mode);
+	if (gcal_set_service(ptr, mode)) {
+		free(ptr);
+		ptr = NULL;
+	}
 
 exit:
 	return ptr;
 }
 
-void gcal_set_service(struct gcal_resource *gcalobj, gservice mode)
+int gcal_set_service(struct gcal_resource *gcalobj, gservice mode)
 {
+	int result = 0;
 
 	if (gcalobj) {
 		if (mode == GCALENDAR)
 			strcpy(gcalobj->service, "cl");
 		else if (mode == GCONTACT)
 			strcpy(gcalobj->service, "cp");
+		else
+			result = -1;
 
 	}
+
+	return result;
+
 }
 
 void clean_buffer(struct gcal_resource *gcal_obj)

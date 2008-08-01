@@ -131,8 +131,10 @@ struct gcal_resource *gcal_construct(gservice mode);
  * @param gcalobj Pointer to a library resource structure \ref gcal_resource.
  *
  * @param mode Service type, see \ref gservice.
+ *
+ * @return 0 for success, -1 otherwise.
  */
-void gcal_set_service(struct gcal_resource *gcalobj, gservice mode);
+int gcal_set_service(struct gcal_resource *gcalobj, gservice mode);
 
 
 /** Gets from google an authentication token, using the 'ClientLogin' service.
