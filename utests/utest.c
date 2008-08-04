@@ -90,43 +90,74 @@ static Suite *screw_api(void)
 
 }
 
+static void run_and_clean(SRunner *runner)
+{
+	/* TODO: use it to determine exit status */
+	int number_failed;
+	if (!runner)
+		return;
+
+	srunner_run_all(runner, CK_VERBOSE);
+	number_failed = srunner_ntests_failed(runner);
+	srunner_free(runner);
+}
+
+
 int main(void)
 {
-	int number_failed;
+	char *env_var;
 	Suite *s, *sapi, *sxml, *s_screw;
 	SRunner *core, *userapi, *xmlapi, *screwtest;
 
-	s = core_suite();
-	core = srunner_create(s);
-	srunner_run_all(core, CK_VERBOSE);
-	number_failed = srunner_ntests_failed(core);
-	srunner_free(core);
+	s = sapi = sxml = s_screw = NULL;
+	core = userapi = xmlapi = screwtest = NULL;
 
-	sapi = user_api();
-	userapi = srunner_create(sapi);
-	/* I will not fork the userapi, since I need to save a variable
-	 * between each running test.
+	env_var = getenv("GCAL");
+	if (env_var) {
+		if (!strcmp("core", env_var)) {
+			/* Core internals */
+			s = core_suite();
+			core = srunner_create(s);
+		} else if(!strcmp("user", env_var)) {
+			sapi = user_api();
+			userapi = srunner_create(sapi);
+			/* I will not fork the userapi, since I need to
+			 * save a variable
+			 * between each running test.
+			 */
+			srunner_set_fork_status(userapi, CK_NOFORK);
+
+		} else if (!strcmp("xml", env_var)) {
+			/* This one tests for XML api mode */
+			sxml = xml_api();
+			xmlapi = srunner_create(sxml);
+		} else if (!strcmp("screw", env_var)) {
+			/* Tests trying to break libgcal */
+			s_screw = screw_api();
+			screwtest = srunner_create(s_screw);
+		}
+	} else { /* Run all tests */
+		s = core_suite();
+		core = srunner_create(s);
+
+		sapi = user_api();
+		userapi = srunner_create(sapi);
+		srunner_set_fork_status(userapi, CK_NOFORK);
+
+		sxml = xml_api();
+		xmlapi = srunner_create(sxml);
+
+		s_screw = screw_api();
+		screwtest = srunner_create(s_screw);
+	}
+
+	run_and_clean(core);
+	run_and_clean(userapi);
+	run_and_clean(xmlapi);
+	run_and_clean(screwtest);
+
+	/* TODO: use number of failures to decide exit status, it can
+	 * be either EXIT_FAILURE or ...
 	 */
-	srunner_set_fork_status(userapi, CK_NOFORK);
-	srunner_run_all(userapi, CK_VERBOSE);
-	number_failed = srunner_ntests_failed(userapi);
-	srunner_free(userapi);
-
-	/* This one tests for XML api mode */
-	sxml = xml_api();
-	xmlapi = srunner_create(sxml);
-	srunner_set_fork_status(xmlapi, CK_FORK);
-	srunner_run_all(xmlapi, CK_VERBOSE);
-	number_failed = srunner_ntests_failed(xmlapi);
-	srunner_free(xmlapi);
-
-
-	/* Tests trying to break libgcal */
-	s_screw = screw_api();
-	screwtest = srunner_create(s_screw);
-	srunner_run_all(screwtest, CK_VERBOSE);
-	number_failed = srunner_ntests_failed(screwtest);
-	srunner_free(screwtest);
-
-	return (number_failed == 0) ? EXIT_SUCCESS : EXIT_FAILURE;
+	return EXIT_SUCCESS;
 }
