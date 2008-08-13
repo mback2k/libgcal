@@ -195,7 +195,10 @@ START_TEST (test_query_event_updated)
 
 	/* Google returns the last updated event first */
 	event = gcal_event_element(&event_array, 0);
-	result = strcmp(gcal_event_get_title(event), title);
+	if (gcal_event_get_title(event))
+		result = strcmp(gcal_event_get_title(event), title);
+	else
+		result = -1;
 	fail_if(result != 0, "Cannot locate event!");
 
 	/* Cleanup */
