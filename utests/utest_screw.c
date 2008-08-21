@@ -11,7 +11,8 @@
 #include "utest_screw.h"
 #include "gcalendar.h"
 #include "gcontact.h"
-
+/* XXX: API violation for forcing an error condition in 'mount_query_url' */
+#include "internal_gcal.h"
 
 START_TEST (test_usercalendarapi)
 {
@@ -28,6 +29,20 @@ START_TEST (test_usercalendarapi)
 	result = gcal_get_authentication(gcal, "nonexistant", "invalid");
 	fail_if(result != -1, "Should fail authentication!");
 	gcal_delete(gcal);
+
+	/* Querying without authentication/username */
+	gcal = gcal_new(GCALENDAR);
+	result = gcal_get_updated_events(gcal, &event_array, NULL);
+	fail_if(result != -1, "Should fail querying updated!");
+	result = gcal_get_events(gcal, &event_array);
+	fail_if(result != -1, "Should fail querying!");
+	/* XXX: forcing test of internal 'mount_query_url' */
+	gcal->auth = "foobie";
+	result = gcal_get_updated_events(gcal, &event_array, NULL);
+	fail_if(result != -1, "Should fail querying updated!");
+	gcal->auth = NULL;
+	gcal_delete(gcal);
+
 
 	/* Failed authentication */
 	gcal = gcal_new(GCALENDAR);

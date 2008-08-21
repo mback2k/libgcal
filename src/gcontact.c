@@ -81,6 +81,7 @@ int gcal_get_contacts(gcal_t gcalobj, struct gcal_contact_array *contact_array)
 	result = gcal_dump(gcalobj);
 	if (result == -1) {
 		contact_array->entries = NULL;
+		contact_array->length = 0;
 		return result;
 	}
 
@@ -199,6 +200,7 @@ int gcal_get_updated_contacts(gcal_t gcal_obj,
 	result = gcal_query_updated(gcal_obj, timestamp);
 	if (result) {
 		contacts->entries = NULL;
+		contacts->length = 0;
 		return result;
 	}
 

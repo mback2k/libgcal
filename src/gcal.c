@@ -514,6 +514,12 @@ static char *mount_query_url(struct gcal_resource *gcalobj,
 	char query_separator[] = "&";
 	char query_init[] = "?";
 
+	if (!gcalobj)
+		goto exit;
+
+	if ((!gcalobj->user))
+		goto exit;
+
 	/* TODO: put the google service type string in an array. */
 	if (!(strcmp(gcalobj->service, "cl"))) {
 		if (gcalobj->max_results)
@@ -1109,6 +1115,10 @@ int gcal_query_updated(struct gcal_resource *gcalobj, char *timestamp)
 	if (!gcalobj)
 		goto exit;
 
+	/* Failed to get authentication token */
+	if (!gcalobj->auth)
+		goto exit;
+
 	length = TIMESTAMP_MAX_SIZE + sizeof(query_updated_param) + 1;
 	buffer1 = (char *) malloc(length);
 	if (!buffer1)
@@ -1122,6 +1132,8 @@ int gcal_query_updated(struct gcal_resource *gcalobj, char *timestamp)
 					    gcalobj->timezone);
 		if (result)
 			goto cleanup;
+
+		result = -1;
 
 		/* Change the hour to 06:00AM plus the timezone when
 		 * available.

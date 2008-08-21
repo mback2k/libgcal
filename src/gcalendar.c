@@ -288,6 +288,7 @@ int gcal_get_updated_events(gcal_t gcal_obj, struct gcal_event_array *events,
 	result = gcal_query_updated(gcal_obj, timestamp);
 	if (result) {
 		events->entries = NULL;
+		events->length = 0;
 		return result;
 	}
 
@@ -310,6 +311,7 @@ int gcal_get_events(gcal_t gcalobj, struct gcal_event_array *events_array)
 	result = gcal_dump(gcalobj);
 	if (result == -1) {
 		events_array->entries = NULL;
+		events_array->length = 0;
 		goto exit;
 	}
 

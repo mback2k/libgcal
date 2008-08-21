@@ -319,7 +319,7 @@ START_TEST (test_query_generic)
 	size_t count = 0;
 	char *msg = NULL;
 	char *query="updated-min=2008-06-20T06:00:00Z&"
-	  "alt=atom&max-results=500&showdeleted=true";
+	  "alt=atom&max-results=1200&showdeleted=true";
 
 	obj_gcal = gcal_construct(GCONTACT);
 	fail_if(obj_gcal == NULL, "Failed to create gcal resource!");
