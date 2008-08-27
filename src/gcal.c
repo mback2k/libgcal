@@ -513,7 +513,8 @@ static char *mount_query_url(struct gcal_resource *gcalobj,
 	int length;
 	char query_separator[] = "&";
 	char query_init[] = "?";
-
+	/* By default, google contacts are not ordered */
+	char contact_order[] = "&orderby=lastmodified";
 	if (!gcalobj)
 		goto exit;
 
@@ -541,7 +542,8 @@ static char *mount_query_url(struct gcal_resource *gcalobj,
 				sizeof(GCONTACT_END) +
 				sizeof(query_init) +
 				strlen(gcalobj->max_results) +
-				strlen(gcalobj->user) + 1;
+				strlen(gcalobj->user) +
+				sizeof(contact_order) + 1;
 		else
 			length = sizeof(GCONTACT_START) +
 				sizeof(GCONTACT_END) +
@@ -571,10 +573,11 @@ static char *mount_query_url(struct gcal_resource *gcalobj,
 
 	} else if (!(strcmp(gcalobj->service, "cp"))) {
 		if (gcalobj->max_results)
-			snprintf(result, length - 1, "%s%s%s%s%s",
+			snprintf(result, length - 1, "%s%s%s%s%s%s",
 				 GCONTACT_START, gcalobj->user,
 				 GCONTACT_END, query_init,
-				 gcalobj->max_results);
+				 gcalobj->max_results,
+				 contact_order);
 		else
 			snprintf(result, length - 1, "%s%s%s%s",
 				 GCONTACT_START, gcalobj->user,

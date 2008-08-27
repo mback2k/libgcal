@@ -356,7 +356,7 @@ TCase *gcal_query_tcase_create(void)
 {
 
 	TCase *tc = NULL;
-	int timeout_seconds = 90;
+	int timeout_seconds = 100;
 	tc = tcase_create("gqueries");
 
 	tcase_add_checked_fixture(tc, setup, teardown);

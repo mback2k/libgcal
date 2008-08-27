@@ -95,11 +95,11 @@ START_TEST (test_contact_extract)
 	size_t count, i;
 	struct gcal_contact *contacts;
 	char *contacts_email[] = { "gcal4tester@gmail.com",
-				   "gcalntester@gmail.com",
-				   "cavalcantii@gmail.com" };
+				   "cavalcantii@gmail.com",
+				   "gcalntester@gmail.com" };
 	char *contacts_name[] = { "", /* its valid not having a name */
-				  "gcalntester gcalntester",
-				  "Adenilson Cavalcanti" };
+				  "Adenilson Cavalcanti",
+				  "gcalntester gcalntester" };
 	size_t contacts_count = 3, found_count = 0;;
 
 	result = gcal_get_authentication(ptr_gcal, "gcalntester", "77libgcal");
