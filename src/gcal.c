@@ -1329,6 +1329,15 @@ char *gcal_get_xml(struct gcal_entry *entry)
 	return NULL;
 }
 
+char gcal_get_deleted(struct gcal_entry *entry)
+{
+
+	if (entry)
+		return entry->deleted;
+
+	return 0;
+}
+
 char *gcal_get_updated(struct gcal_entry *entry)
 {
 	if (entry)

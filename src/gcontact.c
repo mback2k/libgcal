@@ -259,6 +259,14 @@ char *gcal_contact_get_url(gcal_contact contact)
 	return gcal_get_url(&(contact->common));
 }
 
+char gcal_contact_is_deleted(gcal_contact contact)
+{
+	if ((!contact))
+		return 0;
+	return gcal_get_deleted(&(contact->common));
+}
+
+
 /* This are the fields unique to calendar contacts */
 char *gcal_contact_get_email(gcal_contact contact)
 {

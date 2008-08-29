@@ -351,6 +351,13 @@ char *gcal_event_get_xml(gcal_event event)
 	return gcal_get_xml(&(event->common));
 }
 
+char gcal_event_is_deleted(gcal_event event)
+{
+	if ((!event))
+		return 0;
+	return gcal_get_deleted(&(event->common));
+}
+
 char *gcal_event_get_id(gcal_event event)
 {
 	if ((!event))

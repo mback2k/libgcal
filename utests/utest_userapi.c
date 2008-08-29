@@ -195,8 +195,9 @@ START_TEST (test_query_event_updated)
 
 	/* Google returns the last updated event first */
 	event = gcal_event_element(&event_array, 0);
-	if (gcal_event_get_title(event))
-		result = strcmp(gcal_event_get_title(event), title);
+	if (gcal_event_is_deleted(event))
+	    if (gcal_event_get_title(event))
+		    result = strcmp(gcal_event_get_title(event), title);
 	else
 		result = -1;
 	fail_if(result != 0, "Cannot locate event!");
@@ -401,8 +402,10 @@ START_TEST (test_query_contact_updated)
 	result = -1;
  	for (tmp = 0; tmp < contact_array.length; ++tmp) {
 		contact = gcal_contact_element(&contact_array, tmp);
-		result = strcmp(gcal_contact_get_id(contact),
-				deleted_contact_id);
+		/* only compare deleted contacts */
+		if (gcal_contact_is_deleted(contact))
+			result = strcmp(gcal_contact_get_id(contact),
+					deleted_contact_id);
 		if (!result)
 			break;
 	}

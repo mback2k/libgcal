@@ -496,5 +496,6 @@ char *gcal_get_updated(struct gcal_entry *entry);
 char *gcal_get_title(struct gcal_entry *entry);
 char *gcal_get_url(struct gcal_entry *entry);
 char *gcal_get_xml(struct gcal_entry *entry);
+char gcal_get_deleted(struct gcal_entry *entry);
 
 #endif
