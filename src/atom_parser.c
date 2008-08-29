@@ -283,6 +283,10 @@ int atom_extract_data(xmlNode *entry, struct gcal_event *ptr_entry)
 	if (!ptr_entry->status)
 		goto cleanup;
 
+	/* Detects if event was deleted/canceled and marks the flag */
+	if (!(strcmp("http://schemas.google.com/g/2005#event.canceled",
+		     ptr_entry->status)))
+		ptr_entry->common.deleted = 1;
 
 	/* Gets the 'updated' calendar field */
 	ptr_entry->common.updated = extract_and_check(doc,
