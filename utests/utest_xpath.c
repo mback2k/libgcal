@@ -204,11 +204,11 @@ START_TEST (test_get_contact_deleted)
 	xmlXPathObject *xpath_obj = NULL;
 	xmlDoc *doc = NULL;
 	xmlNodeSet *nodes;
-	struct gcal_event extracted;
+	struct gcal_contact extracted;
 	char *file_contents = NULL;
 	int res;
 
-	gcal_init_event(&extracted);
+	gcal_init_contact(&extracted);
 
 	if (find_load_file("/utests/up_new_delete_contact.xml", &file_contents))
 		fail_if(1, "Cannot load test XML file!");
@@ -230,7 +230,7 @@ START_TEST (test_get_contact_deleted)
 	if (xpath_obj)
 		xmlXPathFreeObject(xpath_obj);
 
-	gcal_destroy_entry(&extracted);
+	gcal_destroy_contact(&extracted);
 	clean_doc_tree(&doc);
 
 }

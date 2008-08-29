@@ -313,6 +313,7 @@ exit:
 int atom_extract_contact(xmlNode *entry, struct gcal_contact *ptr_entry)
 {
 	int result = -1, length = 0;
+	char *tmp = NULL;
 	xmlChar *xml_str = NULL;
 	xmlDoc *doc = NULL;
 	xmlNode *copy = NULL;
@@ -351,6 +352,12 @@ int atom_extract_contact(xmlNode *entry, struct gcal_contact *ptr_entry)
 		if (!(ptr_entry->common.xml = strdup("")))
 			goto cleanup;
 
+	/* Detects if this contacts was deleted */
+	tmp = extract_and_check(doc, "//atom:entry/gd:deleted", NULL);
+	if (tmp)
+		free(tmp);
+	else
+		ptr_entry->common.deleted = 1;
 
 	/* Gets the 'id' contact field */
 	ptr_entry->common.id = extract_and_check(doc,
