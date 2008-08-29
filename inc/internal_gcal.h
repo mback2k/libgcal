@@ -140,6 +140,8 @@ struct gcal_resource {
 struct gcal_entry {
 	/** Controls if raw XML data will be stored. */
 	char store_xml;
+	/** Flags if this entry was deleted/canceled */
+	char deleted;
 	/** element ID */
 	char *id;
 	/** Time when the event was updated. */
