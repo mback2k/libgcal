@@ -54,9 +54,11 @@ struct gcal_contact_array {
  *
  * If you are going to add new event, see also \ref gcal_add_contact.
  *
+ * @param raw_xml A string with google data XML of this entry.
+ *
  * @return A gcal_contact object on success or NULL otherwise.
  */
-gcal_contact gcal_contact_new(void);
+gcal_contact gcal_contact_new(char *raw_xml);
 
 /** Free an gcal contact object.
  *

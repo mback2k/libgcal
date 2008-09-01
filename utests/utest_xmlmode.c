@@ -15,6 +15,7 @@
 #include <string.h>
 #include "utils.h"
 #include "gcal_status.h"
+#include "gcontact.h"
 
 START_TEST (test_get_xmlentries)
 {
@@ -161,7 +162,7 @@ START_TEST (test_oper_xmlcontact)
 	gcal_set_store_xml(gcal, 1);
 
 	/* Create a new contact object */
-	contact = gcal_contact_new();
+	contact = gcal_contact_new(NULL);
 	fail_if(!contact, "Cannot construct contact object!");
 	gcal_contact_set_title(contact, "Jonhy Generic Guy");
 	gcal_contact_set_email(contact, "johnthedoe@nobody.com");
@@ -205,6 +206,7 @@ START_TEST (test_oper_purexml)
 	char *super_contact = NULL, *edit_url;
 	char *updated1 = NULL, *updated2 = NULL, *updated3 = NULL;
 	gcal_t gcal;
+	gcal_contact contact;
 	int result;
 
 	gcal = gcal_new(GCONTACT);
@@ -226,6 +228,14 @@ START_TEST (test_oper_purexml)
 	fail_if(result == -1, "Failed editing a new contact! HTTP code: %d"
 		"\nmsg: %s\n", gcal_status_httpcode(gcal),
 		gcal_status_msg(gcal));
+
+	/* Create an event object out of raw XML: useful to get the
+	 * updated edit_url, id, etc.
+	 */
+	contact = gcal_contact_new(updated2);
+	fail_if(!contact, "Cannot create contact object!\n");
+	fail_if(strcmp("John 'Super' Doe", gcal_contact_get_title(contact)),
+		"Failure parsing contact XML: title!\n");
 
 	/* update corner case where the new XML doesn't have the edit URL */
 	free(super_contact);
@@ -251,6 +261,7 @@ START_TEST (test_oper_purexml)
 	free(updated3);
 	free(edit_url);
 	gcal_delete(gcal);
+	gcal_contact_delete(contact);
 
 }
 END_TEST

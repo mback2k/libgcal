@@ -45,18 +45,38 @@ POSSIBILITY OF SUCH DAMAGE.
 #include <string.h>
 #include <stdio.h>
 #include "gcontact.h"
+#include "gcal_parser.h"
 #include "internal_gcal.h"
 
-gcal_contact gcal_contact_new(void)
+gcal_contact gcal_contact_new(char *raw_xml)
 {
-	gcal_contact result = NULL;
-	result = (gcal_contact) malloc(sizeof(struct gcal_contact));
-	if (!result)
-		return result;
+	gcal_contact contact = NULL;
+	dom_document *doc;
+	int result = -1;
 
-	gcal_init_contact(result);
-	return result;
+	contact = (gcal_contact) malloc(sizeof(struct gcal_contact));
+	if (!contact)
+		return contact;
 
+	gcal_init_contact(contact);
+	if (!raw_xml)
+		goto exit;
+
+	/* Builds a doc, parse and init object */
+	doc = build_dom_document(raw_xml);
+	if (!doc)
+		goto cleanup;
+
+	result = extract_all_contacts(doc, contact, 1);
+	clean_dom_document(doc);
+
+cleanup:
+	if (result) {
+		free(contact);
+		contact = NULL;
+	}
+exit:
+	return contact;
 }
 
 void gcal_contact_delete(gcal_contact contact)
