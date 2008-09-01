@@ -137,7 +137,7 @@ START_TEST (test_oper_event_event)
 	int result;
 
 	/* Create a new event object */
-	event = gcal_event_new();
+	event = gcal_event_new(NULL);
 	fail_if (!event, "Cannot construct event object!");
 	gcal_event_set_title(event, "A new event");
 	gcal_event_set_content(event, "Here goes the description");

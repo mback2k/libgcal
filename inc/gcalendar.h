@@ -73,9 +73,11 @@ void gcal_delete(gcal_t gcal_obj);
  *
  * If you are going to add new event, see also \ref gcal_add_event.
  *
+ * @param raw_xml A string with google data XML of this entry.
+ *
  * @return A gcal_event object on success or NULL otherwise.
  */
-gcal_event gcal_event_new(void);
+gcal_event gcal_event_new(char *raw_xml);
 
 /** Free an gcal event object.
  *

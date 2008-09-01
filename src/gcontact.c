@@ -56,7 +56,7 @@ gcal_contact gcal_contact_new(char *raw_xml)
 
 	contact = (gcal_contact) malloc(sizeof(struct gcal_contact));
 	if (!contact)
-		return contact;
+		goto exit;
 
 	gcal_init_contact(contact);
 	if (!raw_xml)

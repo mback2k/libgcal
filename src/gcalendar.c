@@ -60,16 +60,35 @@ void gcal_delete(gcal_t gcal_obj)
 
 
 
-gcal_event gcal_event_new(void)
+gcal_event gcal_event_new(char *raw_xml)
 {
-	gcal_event result = NULL;
-	result = malloc(sizeof(struct gcal_event));
+	gcal_event event = NULL;
+	dom_document *doc;
+	int result = -1;
 
-	if (!result)
-		return result;
+	event = malloc(sizeof(struct gcal_event));
+	if (!event)
+		goto exit;
+	gcal_init_event(event);
+	if (!raw_xml)
+		goto exit;
 
-	gcal_init_event(result);
-	return result;
+	/* Builds a doc, parse and init object */
+	doc = build_dom_document(raw_xml);
+	if (!doc)
+		goto cleanup;
+
+	result = extract_all_entries(doc, event, 1);
+	clean_dom_document(doc);
+
+cleanup:
+	if (result) {
+		free(event);
+		event = NULL;
+	}
+
+exit:
+	return event;
 }
 
 void gcal_event_delete(gcal_event event)

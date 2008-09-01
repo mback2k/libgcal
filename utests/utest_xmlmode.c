@@ -104,7 +104,7 @@ START_TEST (test_oper_xmlevents)
 	gcal_set_store_xml(gcal, 1);
 
 	/* Create a new event object */
-	event = gcal_event_new();
+	event = gcal_event_new(NULL);
 	fail_if (!event, "Cannot construct event object!");
 	gcal_event_set_title(event, "A new event");
 	gcal_event_set_content(event, "Here goes the description");
@@ -229,7 +229,7 @@ START_TEST (test_oper_purexml)
 		"\nmsg: %s\n", gcal_status_httpcode(gcal),
 		gcal_status_msg(gcal));
 
-	/* Create an event object out of raw XML: useful to get the
+	/* Create a contact object out of raw XML: useful to get the
 	 * updated edit_url, id, etc.
 	 */
 	contact = gcal_contact_new(updated2);
@@ -271,6 +271,7 @@ START_TEST (test_oper_purexmlcal)
 	char *super_calendar = NULL, *edit_url;
 	char *updated1 = NULL, *updated2 = NULL, *updated3 = NULL;
 	gcal_t gcal;
+	gcal_event event;
 	int result;
 
 	gcal = gcal_new(GCALENDAR);
@@ -292,6 +293,15 @@ START_TEST (test_oper_purexmlcal)
 	fail_if(result == -1, "Failed editing a new calendar! HTTP code: %d"
 		"\nmsg: %s\n", gcal_status_httpcode(gcal),
 		gcal_status_msg(gcal));
+
+	/* Create an event object out of raw XML: useful to get the
+	 * updated edit_url, id, etc.
+	 */
+	event = gcal_event_new(updated2);
+	fail_if(!event, "Cannot create event object!\n");
+	fail_if(strcmp("Hockey with Beth", gcal_event_get_title(event)),
+		"Failure parsing event XML: title!\n");
+
 
 	/* update corner case: where the new XML doesn't have the edit URL */
 	free(super_calendar);
@@ -318,6 +328,7 @@ START_TEST (test_oper_purexmlcal)
 	free(updated3);
 	free(edit_url);
 	gcal_delete(gcal);
+	gcal_event_delete(event);
 
 }
 END_TEST
