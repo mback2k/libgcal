@@ -1268,6 +1268,19 @@ void gcal_set_store_xml(struct gcal_resource *gcalobj, char flag)
 	gcalobj->store_xml_entry = flag;
 }
 
+void gcal_set_proxy(struct gcal_resource *gcalobj, char *proxy)
+{
+	if ((!gcalobj) || (!proxy)) {
+		if (gcalobj->fout_log)
+			fprintf(gcalobj->fout_log, "Invalid proxy!\n");
+		return;
+	} else
+		if (gcalobj->fout_log)
+			fprintf(gcalobj->fout_log, "\n\nproxy: %s\n\n", proxy);
+
+	curl_easy_setopt(gcalobj->curl, CURLOPT_PROXY, proxy);
+
+}
 
 void gcal_deleted(struct gcal_resource *gcalobj, display_deleted_entries opt)
 {

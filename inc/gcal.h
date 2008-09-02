@@ -432,6 +432,18 @@ int gcal_set_timezone(struct gcal_resource *gcalobj, char *atimezone);
  */
 void gcal_set_store_xml(struct gcal_resource *gcalobj, char flag);
 
+/** Sets network proxy.
+ *
+ * Use it if you are behind a network proxy and can't directly access
+ * the google server.
+ *
+ * @param gcalobj Pointer to a \ref gcal_resource structure, which has
+ *                 previously got the authentication using
+ *                 \ref gcal_get_authentication.
+ * @param proxy A null terminated string, can have the hostname (or IP)
+ * and the user+password too.
+ */
+void gcal_set_proxy(struct gcal_resource *gcalobj, char *proxy);
 
 /** Define the location that results should be returned for queries.
  *
