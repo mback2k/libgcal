@@ -440,8 +440,12 @@ void gcal_set_store_xml(struct gcal_resource *gcalobj, char flag);
  * @param gcalobj Pointer to a \ref gcal_resource structure, which has
  *                 previously got the authentication using
  *                 \ref gcal_get_authentication.
- * @param proxy A null terminated string, can have the hostname (or IP)
- * and the user+password too.
+ *
+ * @param proxy A null terminated string, must have the hostname (or IP)
+ * and can have the user+password too (e.g. "user+password@10.10.1.1:8080" or
+ * simply "http://hostname:port". Remark: I only tested it with
+ * a proxy that doesn't require authentication.
+ *
  */
 void gcal_set_proxy(struct gcal_resource *gcalobj, char *proxy);
 
