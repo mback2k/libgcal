@@ -110,15 +110,98 @@ int gcal_get_events(gcal_t gcalobj, struct gcal_event_array *events_array);
  */
 void gcal_cleanup_events(struct gcal_event_array *events);
 
-
+/** Create a new event in user's calendar.
+ *
+ * You should have authenticate before using \ref gcal_get_authentication.
+ *
+ * @param gcal_obj A gcal object, see \ref gcal_new.
+ *
+ * @param event An event object, see \ref gcal_event_new.
+ *
+ * @return 0 on sucess, -1 otherwise.
+ */
 int gcal_add_event(gcal_t gcal_obj, gcal_event event);
+
+/** Updates an already existant event.
+ *
+ * Use it to update an event, but pay attention that you neeed to have
+ * a valid event object (i.e. that has at least the edit_url to this entry).
+ * See also \ref gcal_get_edit_url and \ref gcal_event_get_xml).
+ *
+ * A common use case is when you added a new event using \ref gcal_add_event
+ * and later whant to edit it.
+ *
+ * @param gcal_obj A gcal object, see \ref gcal_new.
+ *
+ * @param event An event object.
+ *
+ * @return 0 on sucess, -1 otherwise.
+ */
 int gcal_update_event(gcal_t gcal_obj, gcal_event event);
+
+/** Deletes an event (pay attention that google server will mark this
+ * event as 'cancelled').
+ *
+ * Being cancelled still makes possible to retrieve all the data of this
+ * event (for a timeframe of a few weeks).
+ *
+ * The event object must be valid (i.e. has at least the edit_url to this
+ * entry). See also \ref gcal_get_edit_url and \ref gcal_event_get_xml).
+ *
+ * @param gcal_obj A gcal object, see \ref gcal_new.
+ *
+ * @param event An event object.
+ *
+ * @return 0 on sucess, -1 otherwise.
+ */
 int gcal_erase_event(gcal_t gcal_obj, gcal_event event);
+
+/** Query for updated events (added/edited/deleted).
+ *
+ * Its going to retrieve only updated events from user's calendar, its
+ * useful if you implementing sync software and have downloaded all events
+ * at least one time.
+ *
+ * Use this functions to get only the changed data.
+ *
+ * @param gcal_obj A gcal object, see \ref gcal_new.
+ *
+ * @param events A pointer to a struct of type \ref gcal_event_array.
+ *
+ * @param timestamp A timestamp in format RFC 3339 format
+ * (e.g. 2008-09-010T21:00:00Z) (see \ref TIMESTAMP_MAX_SIZE and
+ * \ref get_mili_timestamp). It can include timezones too.
+ * If you just want to get the updated events starting from today at 06:00Z,
+ * use NULL as parameter.
+ *
+ * @return 0 on sucess, -1 otherwise.
+ */
 int gcal_get_updated_events(gcal_t gcal_obj, struct gcal_event_array *events,
 			    char *timestamp);
 
 
-/* Helper function, extracts the edit URL in a XML entry */
+
+/** Helper function, extracts the edit URL in a XML entry
+ *
+ * The use of this function is a corner case: say that you just added an event
+ * (so you dont have the gevent object for some reason) and want to load a
+ * completely different event (say from a XML file) and want to update the
+ * event with the new data.
+ * You need to being able to access the older edit_url from the raw XML (that
+ * I hope its still available somewhere) and that is when this function can
+ * save your ass.
+ *
+ * A better approach would just create a new event object out from the older
+ * XML data and use \ref gcal_event_get_url.
+ * \todo: revise the real need of this function (at least as a public function).
+ *
+ * @param entry A pointer to a string that represents an event as raw XML.
+ *
+ * @param extracted_url This will be loaded with the edit_url, remember to free
+ * it up.
+ *
+ * @return 0 on sucess, -1 otherwise.
+ */
 int gcal_get_edit_url(char *entry, char **extracted_url);
 
 

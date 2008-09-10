@@ -63,13 +63,14 @@ typedef enum {
 	/** Code for HTTP PUT */
 	PUT } HTTP_CMD;
 
-/* Really weird timestamp from RFC 3339 is
+/** Really weird timestamp from RFC 3339 is
  * 1937-01-01T12:00:27.87+00:20
  * so 30 bytes is enough to have milisecond precision
  * in worst case.
  */
 static const size_t TIMESTAMP_MAX_SIZE = 30;
-/* Minimal timestamp size is
+
+/** Minimal timestamp size is
  * 1937-01-01T12:00:27.87Z
  */
 static const size_t TIMESTAMP_SIZE = 23;
@@ -139,7 +140,9 @@ int gcal_set_service(struct gcal_resource *gcalobj, gservice mode);
 
 /** Gets from google an authentication token, using the 'ClientLogin' service.
  *
- * Use it before getting/setting google calendar events.
+ * Use it before getting/setting google calendar events. If you are behind of
+ * a network proxy, its import to use \ref gcal_set_proxy *before* to set
+ * the proxy (or all network connections will hang and timeout).
  *
  * @param gcalobj Pointer to a library resource structure \ref gcal_resource
  *
@@ -507,11 +510,76 @@ int gcal_query(struct gcal_resource *gcalobj, const char *parameters);
 /* Common fields between calendar and contacts are
  * of type 'gcal_entry'
  */
+
+/** Access to entry ID.
+ *
+ * Each google entry (event/contact) has a unique ID, you can access
+ * it using this function.
+ *
+ * @param entry A data entry pointer, see \ref gcal_entry.
+ *
+ * @return A pointer to internal field (*dont* try to free it!).
+ */
 char *gcal_get_id(struct gcal_entry *entry);
+
+/** Access to last updated timestamp of an entry.
+ *
+ * When an operation (being add/edit/delete) is done in an entry, the timestamp
+ * of it is recorded). You can access it using this function.
+ *
+ * @param entry A data entry pointer, see \ref gcal_entry.
+ *
+ * @return A pointer to internal field (*dont* try to free it!).
+ */
 char *gcal_get_updated(struct gcal_entry *entry);
+
+/** Access entry title.
+ *
+ * Each entry has a title, being contacts (the contact name) or event
+ * (meeting title).
+ *
+ * @param entry A data entry pointer, see \ref gcal_entry.
+ *
+ * @return A pointer to internal field (*dont* try to free it!).
+ */
 char *gcal_get_title(struct gcal_entry *entry);
+
+/** Access edit url.
+ *
+ * Each entry has an edit url (which is the combination of ID + cookie).
+ * This edit url is required to do operations (edit/delete) and changes
+ * each time an operation is done.
+ *
+ * @param entry A data entry pointer, see \ref gcal_entry.
+ *
+ * @return A pointer to internal field (*dont* try to free it!).
+ */
 char *gcal_get_url(struct gcal_entry *entry);
+
+/** Access raw XML.
+ *
+ * Even if some fields are parsed from atom stream and directly accessable
+ * from entry objects, its possible to access the RAW representation of the
+ * whole entry using this function.
+ *
+ * @param entry A data entry pointer, see \ref gcal_entry.
+ *
+ * @return A pointer to internal field (*dont* try to free it!).
+ */
 char *gcal_get_xml(struct gcal_entry *entry);
+
+/** Entry status (deleted: 1, not: 0).
+ *
+ * When an entry is deleted, there is a way to known it, being specific for
+ * the entry type. Events have the gd:eventStatus equal to
+ * "blah#event.cancelled".
+ *
+ * Contacts will have a new field (gd:deleted).
+ *
+ * @param entry A data entry pointer, see \ref gcal_entry.
+ *
+ * @return A pointer to internal field (*dont* try to free it!).
+ */
 char gcal_get_deleted(struct gcal_entry *entry);
 
 #endif

@@ -42,6 +42,9 @@
 #include "gcal.h"
 #include "gcont.h"
 
+/** Contact entries array. Its used to hold retrieved contacts
+ * retrieved from google server.
+ */
 struct gcal_contact_array {
 	/** See \ref gcal_contact. */
 	struct gcal_contact *entries;
