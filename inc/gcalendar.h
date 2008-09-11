@@ -386,7 +386,7 @@ char *gcal_event_get_content(gcal_event event);
  * Case positive, it will return the string with the representation of recurrence
  * rule. Google calendar uses a subset of iCalendar to represent this (yeah, brain
  * f*ked in my opinion put another text format inside of XML...). See more
- * information here:
+ * information here: http://code.google.com/apis/calendar/developers_guide_protocol.html#CreatingRecurring
  *
  * @param event An event object, see \ref gcal_event.
  *
@@ -436,18 +436,112 @@ char *gcal_event_get_end(gcal_event event);
 char *gcal_event_get_where(gcal_event event);
 
 
+/** Access event status.
+ *
+ * An event can have some status (confirmed/cancelled) and its possible to
+ * access then. For while, libgcal store the whole URL with the description
+ * of event status (e.g. "http://schemas.google.com/g/2005#event.confirmed").
+ * \todo Use enumeration to represent status.
+ *
+ * @param event An event object, see \ref gcal_event.
+ *
+ * @return Pointer to internal object field (dont free it!) or NULL (in error
+ * case or if the field is not set). If the entry hasn't this field in the
+ * atom stream, it will be set to an empty string (i.e. "").
+ */
 char *gcal_event_get_status(gcal_event event);
 
 
 /* Here starts the setters */
+
+/** Sets event title.
+ *
+ * Use this to assign an event title (or to change it if you wish to update an
+ * already existant calendar event).
+ *
+ * @param event An event object, see \ref gcal_event and \ref gcal_event_new.
+ *
+ * @param field String with event title (e.g. "Dinner with Mary").
+ *
+ * @return 0 for sucess, -1 otherwise.
+ */
 int gcal_event_set_title(gcal_event event, char *field);
+
+/** Set event detailed description.
+ *
+ * See also \ref gcal_event_get_content for an example of valid description.
+ *
+ * @param event An event object, see \ref gcal_event and \ref gcal_event_new.
+ *
+ * @param field A string with event description.
+ *
+ * @return 0 for sucess, -1 otherwise.
+ */
 int gcal_event_set_content(gcal_event event, char *field);
+
+/** Set event start time.
+ *
+ * See also \ref gcal_event_get_start.
+ *
+ * @param event An event object, see \ref gcal_event and \ref gcal_event_new.
+ *
+ * @param field A string with the timestamp for start time using RFC 3339 format
+ * (e.g. "2008-09-11T21:00:00Z").
+ *
+ * @return 0 for sucess, -1 otherwise.
+ */
 int gcal_event_set_start(gcal_event event, char *field);
+
+
+/** Set event end time.
+ *
+ * See also \ref gcal_event_set_start.
+ *
+ * @param event An event object, see \ref gcal_event and \ref gcal_event_new.
+ *
+ * @param field A string with the timestamp for start time using RFC 3339 format
+ * (e.g. "2008-09-11T22:00:00Z").
+ *
+ * @return 0 for sucess, -1 otherwise.
+ */
 int gcal_event_set_end(gcal_event event, char *field);
+
+/** Set event location/place.
+ *
+ * See also \ref gcal_event_get_where.
+ *
+ * @param event An event object, see \ref gcal_event and \ref gcal_event_new.
+ *
+ * @param field The place where event is supposed to happen (e.g. "Nearby an
+ * nice pub, close the church")
+ *
+ * @return 0 for sucess, -1 otherwise.
+ */
 int gcal_event_set_where(gcal_event event, char *field);
 
 /* TODO: Not implemented */
+
+/** Sets recurrence rule.
+ *
+ * \todo implement this method, its just stub now.
+ * @param event An event object, see \ref gcal_event and \ref gcal_event_new.
+ *
+ * @param field A string with google invalid iCalendar format
+ * to represent recurrence rules.
+ *
+ * @return 0 for sucess, -1 otherwise.
+ */
 int gcal_event_set_recurrent(gcal_event event, char *field);
+
+/** Set event status (for while, all then were created as 'confirmed').
+ *
+ * \todo implement this method, its just stub now.
+ * @param event An event object, see \ref gcal_event and \ref gcal_event_new.
+ *
+ * @param field Status description (should I use enums or string?).
+ *
+ * @return 0 for sucess, -1 otherwise.
+ */
 int gcal_event_set_status(gcal_event event, char *field);
 
 #endif
