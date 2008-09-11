@@ -3,12 +3,12 @@ adenilson.silva@indt.org.br
 
 == About ==
 
-   This is a library to access google calendar events (and contacts),
+   This is a library to access google calendar events and contacts,
    its purpose is
 
    - provide easy access to available events/contacts
 
-   - enable common operations on events: add, delete, edit
+   - enable common operations: add, delete, edit
 
    - have few dependencies (up until now, only requires libcurl and libxml)
 
@@ -29,6 +29,8 @@ adenilson.silva@indt.org.br
 
  - query for updated events/contacts
 
+ - operate using only raw XML (without creating gcal_event or gcal_contact
+ objects).
 
 
 === Missing ===

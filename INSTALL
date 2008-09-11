@@ -25,7 +25,7 @@ $sudo make install
 
 == Development ==
 
-Dependencies: lcov, gcov, check
+Dependencies: lcov, gcov, check, doxygen, dot
 
 Do the same but you can also add:
 
@@ -46,7 +46,7 @@ $make doxygen #generates API documentation
 
 
 
-ps: you can format this doucument to HTML running
+ps: you can format this document to HTML running
 
 $txt2tags -t html INSTALL
 
