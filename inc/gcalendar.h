@@ -94,7 +94,7 @@ void gcal_event_delete(gcal_event event);
  * \ref gcal_get_authentication.
  *
  * @param events_array Pointer to an events array structure. See
- * \ref gcal_entry_array.
+ * \ref gcal_event_array.
  *
  * @return 0 on success, -1 otherwise.
  */
@@ -106,7 +106,7 @@ int gcal_get_events(gcal_t gcalobj, struct gcal_event_array *events_array);
  * See also \ref gcal_get_events.
  *
  * @param events A pointer to an events array structure. See
- * \ref gcal_entry_array.
+ * \ref gcal_event_array.
  */
 void gcal_cleanup_events(struct gcal_event_array *events);
 
@@ -162,7 +162,7 @@ int gcal_erase_event(gcal_t gcal_obj, gcal_event event);
  * useful if you implementing sync software and have downloaded all events
  * at least one time.
  *
- * Use this functions to get only the changed data.
+ * Use this function to get only the changed data.
  *
  * @param gcal_obj A gcal object, see \ref gcal_new.
  *
@@ -271,9 +271,10 @@ int gcal_erase_xmlentry(gcal_t gcal_obj, char *xml_entry);
 
 /** Returns an event element from an event array.
  *
- * Since to final user events are abstract types, its not possible to access
- * internal \ref gcal_event_array vector of events. Use this function as an
- * accessor to then.
+ * Since to final user events are abstract types, even if is possible to access
+ * internal \ref gcal_event_array vector of events, its not possible to do
+ * pointer arithmetic with it. Use this function as an
+ * accessor to them.
  * A context where this function is useful is when downloading all events
  * from user calendar using \ref gcal_get_events.
  *

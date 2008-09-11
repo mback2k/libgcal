@@ -55,7 +55,7 @@ struct gcal_contact_array {
 
 /** Creates a new google contact object.
  *
- * If you are going to add new event, see also \ref gcal_add_contact.
+ * If you are going to add new contact, see also \ref gcal_add_contact.
  *
  * @param raw_xml A string with google data XML of this entry.
  *
@@ -63,19 +63,19 @@ struct gcal_contact_array {
  */
 gcal_contact gcal_contact_new(char *raw_xml);
 
-/** Free an gcal contact object.
+/** Free a gcal contact object.
  *
  *
- * @param event An gcal event object, see also \ref gcal_event_new.
+ * @param contact An gcal contact object, see also \ref gcal_contact_new.
  */
 void gcal_contact_delete(gcal_contact contact);
 
 
-/** Helper function, does all contact events dump and parsing, returning
+/** Helper function, does all contact dump and parsing, returning
  * the data as an array of \ref gcal_contact.
  *
  * @param gcalobj A libgcal object, must be previously authenticated with
- * \ref gcal_get_authentication.
+ * \ref gcal_get_authentication. See also \ref gcal_new.
  *
  * @param contact_array Pointer to a contact array structure. See
  * \ref gcal_contact_array.
@@ -88,50 +88,310 @@ int gcal_get_contacts(gcal_t gcalobj, struct gcal_contact_array *contact_array);
  *
  * See also \ref gcal_get_contacts.
  *
- * @param events A pointer to an contacts array structure. See
+ * @param contacts A pointer to an contacts array structure. See
  * \ref gcal_contact_array.
  */
 void gcal_cleanup_contacts(struct gcal_contact_array *contacts);
 
 
-
+/** Returns a contact element from a contact array.
+ *
+ * Since to final user contacts are abstract types, even if is possible to
+ * access internal \ref gcal_contact_array vector of contacts, its not
+ * possible to do pointer arithmetic. Use this function as an
+ * accessor to them.
+ * A context where this function is useful is when downloading all contacts
+ * from user account using \ref gcal_get_contacts.
+ *
+ * @param contacts An array of contacts, see \ref gcal_contact_array.
+ *
+ * @param _index Index of element (is zero based).
+ *
+ * @return Either a pointer to the event object or NULL.
+ */
 gcal_contact gcal_contact_element(struct gcal_contact_array *contacts,
 				  size_t _index);
 
-
+/** Add a new contat in user's account.
+ *
+ * You should have authenticate before using \ref gcal_get_authentication.
+ *
+ * @param gcalobj A gcal object, see \ref gcal_new.
+ *
+ * @param contact A contact object, see \ref gcal_contact.
+ *
+ * @return 0 on sucess, -1 otherwise.
+ */
 int gcal_add_contact(gcal_t gcalobj, gcal_contact contact);
+
+
+/** Updates an already existant contact.
+ *
+ * Use it to update a contact, but pay attention that you neeed to have
+ * a valid contact object (i.e. that has at least the edit_url to this entry).
+ * See also \ref gcal_get_edit_url and \ref gcal_contact_get_xml).
+ *
+ * A common use case is when you added a new contact using \ref gcal_add_contact
+ * and later whant to edit it.
+ *
+ * @param gcalobj A gcal object, see \ref gcal_new.
+ *
+ * @param contact A contact object, see \ref gcal_contact.
+ *
+ * @return 0 on sucess, -1 otherwise.
+ */
 int gcal_update_contact(gcal_t gcalobj, gcal_contact contact);
+
+
+/** Deletes a contact (once you do this, is not possible to recover the
+ * information from this contact, only the ID).
+ *
+ * The behavior is different from calendar events, where is possible to
+ * retrieve all the data from a deleted event.
+ *
+ * @param gcalobj A gcal object, see \ref gcal_new.
+ *
+ * @param contact A contact object, see \ref gcal_contact.
+ *
+ * @return 0 on sucess, -1 otherwise.
+ */
 int gcal_erase_contact(gcal_t gcalobj, gcal_contact contact);
+
+/** Query for updated contacts (added/edited/deleted).
+ *
+ * Pay attention that by default, google server will hide deleted contacts.
+ * If you need to access them, remember to set it using \ref gcal_deleted
+ * *before* requesting the data.
+ *
+ * Use this function to get only the changed data. Somewhat related, see too
+ * \ref gcal_get_updated_events.
+ *
+ * @param gcal_obj A libgcal object, must be previously authenticated with
+ * \ref gcal_get_authentication. See also \ref gcal_new.
+ *
+ * @param contacts Pointer to a contact array structure. See
+ * \ref gcal_contact_array.
+ *
+ * @param timestamp A timestamp in format RFC 3339 format
+ * (e.g. 2008-09-10T21:00:00Z) (see \ref TIMESTAMP_MAX_SIZE and
+ * \ref get_mili_timestamp). It can include timezones too.
+ * If you just want to get the updated events starting from today at 06:00Z,
+ * use NULL as parameter.
+ *
+ * @return 0 on success, -1 otherwise.
+ */
 int gcal_get_updated_contacts(gcal_t gcal_obj,
 			      struct gcal_contact_array *contacts,
 			      char *timestamp);
 
 
 /* Here starts gcal_contact accessors */
+
+/** Access contact ID.
+ *
+ * Each entry has a unique ID assigned by google server.
+ *
+ * @param contact A contact object, see \ref gcal_contact.
+ *
+ * @return Pointer to internal object field (dont free it!) or NULL (in error
+ * case or if the field is not set). If the entry hasn't this field in the
+ * atom stream, it will be set to an empty string (i.e. "").
+ */
 char *gcal_contact_get_id(gcal_contact contact);
+
+/** Access last updated timestamp.
+ *
+ * Not only each operation will change the updated timestamp of a contact,
+ * but I *guess* that (in the case of a google account contact) your
+ * contact can change this too.
+ *
+ * @param contact A contact object, see \ref gcal_contact.
+ *
+ * @return Pointer to internal object field (dont free it!) or NULL (in error
+ * case or if the field is not set). If the entry hasn't this field in the
+ * atom stream, it will be set to an empty string (i.e. "").
+ */
 char *gcal_contact_get_updated(gcal_contact contact);
+
+/** Access contact name.
+ *
+ * All entries have a title, with semantic depending on the entry type:
+ * events (event title) or contact (contact name).
+ *
+ * @param contact A contact object, see \ref gcal_contact.
+ *
+ * @return Pointer to internal object field (dont free it!) or NULL (in error
+ * case or if the field is not set). If the entry hasn't this field in the
+ * atom stream, it will be set to an empty string (i.e. "").
+ */
 char *gcal_contact_get_title(gcal_contact contact);
+
+/** Access the edit_url field.
+ *
+ * All entries have an edit_url field (which is the combo of ID+cookie) that
+ * must be used to do operations (edit/delete).
+ *
+ * @param contact A contact object, see \ref gcal_contact.
+ *
+ * @return Pointer to internal object field (dont free it!) or NULL (in error
+ * case or if the field is not set). If the entry hasn't this field in the
+ * atom stream, it will be set to an empty string (i.e. "").
+ */
 char *gcal_contact_get_url(gcal_contact contact);
+
+/** Access the raw XML representation of the entry.
+ *
+ * Besides having the more important information already parsed, its still
+ * possible to access the raw xml of the entry if and *only* if you set
+ * this mode in \ref gcal_t object using \ref gcal_set_store_xml function
+ * *before* getting the data (using \ref gcal_get_contacts).
+ *
+ * @param contact A contact object, see \ref gcal_contact.
+ *
+ * @return Pointer to internal object field (dont free it!) or NULL (in error
+ * case or if the field is not set). If the entry hasn't this field in the
+ * atom stream, it will be set to an empty string (i.e. "").
+ */
 char *gcal_contact_get_xml(gcal_contact contact);
+
+/** Checks if the current event was deleted or not.
+ *
+ * When parsing the entry, the respective element used to represent deleted
+ * is stored internally of contact object.
+ *
+ * @param contact A contact object, see \ref gcal_contact.
+ *
+ * @return 1 for deleted, 0 for not deleted, -1 for error case (f the event
+ * object is invalid).
+ */
 char gcal_contact_is_deleted(gcal_contact contact);
 
 
 /* This are the fields unique to contacts */
+
+/** Access contact e-mail.
+ *
+ * Email has an important rule for google contacts, since its the only
+ * really required field to being able to add a new entry in user's
+ * contact list.
+ * It needs to be unique, no 2 contacts can have the same e-mail.
+ *
+ * @param contact A contact object, see \ref gcal_contact.
+ *
+ * @return Pointer to internal object field (dont free it!) or NULL (in error
+ * case or if the field is not set). If the entry hasn't this field in the
+ * atom stream, it will be set to an empty string (i.e. "").
+
+ */
 char *gcal_contact_get_email(gcal_contact contact);
+
+/** Access contact description.
+ *
+ * This the place where contacts notes can be retrieved.
+ *
+ * @param contact A contact object, see \ref gcal_contact.
+ *
+ * @return Pointer to internal object field (dont free it!) or NULL (in error
+ * case or if the field is not set). If the entry hasn't this field in the
+ * atom stream, it will be set to an empty string (i.e. "").
+ */
 char *gcal_contact_get_content(gcal_contact contact);
+
+/** Missing implementation.
+ *
+ * \todo Implement retrieve of extra fields in \ref atom_parser.c
+ *
+ * @param contact A contact object, see \ref gcal_contact.
+ *
+ * @return Will only return NULL.
+ */
 char *gcal_contact_get_orgname(gcal_contact contact);
+
+/** Missing implementation.
+ *
+ * \todo Implement retrieve of extra fields in \ref atom_parser.c
+ *
+ * @param contact A contact object, see \ref gcal_contact.
+ *
+ * @return Will only return NULL.
+ */
 char *gcal_contact_get_orgtitle(gcal_contact contact);
+
+/** Missing implementation.
+ *
+ * \todo Implement retrieve of extra fields in \ref atom_parser.c
+ *
+ * @param contact A contact object, see \ref gcal_contact.
+ *
+ * @return Will only return NULL.
+ */
 char *gcal_contact_get_im(gcal_contact contact);
+
+/** Missing implementation.
+ *
+ * \todo Implement retrieve of extra fields in \ref atom_parser.c
+ *
+ * @param contact A contact object, see \ref gcal_contact.
+ *
+ * @return Will only return NULL.
+ */
 char *gcal_contact_get_phone(gcal_contact contact);
+
+/** Missing implementation.
+ *
+ * \todo Implement retrieve of extra fields in \ref atom_parser.c
+ *
+ * @param contact A contact object, see \ref gcal_contact.
+ *
+ * @return Will only return NULL.
+ */
 char *gcal_contact_get_address(gcal_contact contact);
 
 
 /* Here starts the gcal_contact setters */
+
+/** Sets contact name.
+ *
+ * Use this to assign a contact's name (or to change it if you wish to update an
+ * already existant contact).
+ *
+ * @param contact A contact object, see \ref gcal_contact.
+ *
+ * @param field String with contact name (e.g. "Joe Doe").
+ *
+ * @return 0 for sucess, -1 otherwise.
+ */
 int gcal_contact_set_title(gcal_contact contact, char *field);
+
+/** Sets contac email.
+ *
+ * This field is a hard requirement to create a new contact. Google server
+ * supports more e-mails with special tags too, but its not supported
+ * for while using gcal_contact object.
+ *
+ * If you need to add a contact entry with all optional fields, an
+ * alternative is to use \ref gcal_add_xmlentry.
+ *
+ * @param contact A contact object, see \ref gcal_contact.
+ *
+ * @param field String with contact email (e.g. "joe.doe@nobody.com").
+ *
+ * @return 0 for sucess, -1 otherwise.
+ */
 int gcal_contact_set_email(gcal_contact contact, char *field);
 
 /* TODO: Contacts extra fields, not implemented in internal functions
  * see ticket: http://code.google.com/p/libgcal/issues/detail?id=4
+ */
+/** Missing implementation.
+ *
+ * \todo Implement setting extra fields.
+ *
+ * @param contact A contact object, see \ref gcal_contact.
+ *
+ * @param field Phone number.
+ *
+ * @return Will only return -1.
  */
 int gcal_contact_set_phone(gcal_contact contact, char *field);
 

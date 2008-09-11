@@ -578,7 +578,8 @@ char *gcal_get_xml(struct gcal_entry *entry);
  *
  * @param entry A data entry pointer, see \ref gcal_entry.
  *
- * @return A pointer to internal field (*dont* try to free it!).
+ * @return 1 for deleted, 0 for not deleted, -1 for error case (f the event
+ * object is invalid).
  */
 char gcal_get_deleted(struct gcal_entry *entry);
 

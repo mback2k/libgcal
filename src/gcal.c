@@ -1348,7 +1348,7 @@ char gcal_get_deleted(struct gcal_entry *entry)
 	if (entry)
 		return entry->deleted;
 
-	return 0;
+	return -1;
 }
 
 char *gcal_get_updated(struct gcal_entry *entry)

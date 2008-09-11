@@ -282,7 +282,7 @@ char *gcal_contact_get_url(gcal_contact contact)
 char gcal_contact_is_deleted(gcal_contact contact)
 {
 	if ((!contact))
-		return 0;
+		return -1;
 	return gcal_get_deleted(&(contact->common));
 }
 
