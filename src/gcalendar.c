@@ -373,7 +373,7 @@ char *gcal_event_get_xml(gcal_event event)
 char gcal_event_is_deleted(gcal_event event)
 {
 	if ((!event))
-		return 0;
+		return -1;
 	return gcal_get_deleted(&(event->common));
 }
 

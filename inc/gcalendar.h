@@ -88,7 +88,7 @@ void gcal_event_delete(gcal_event event);
 
 
 /** Helper function, does all calendar events dump and parsing, returning
- * the data as an array of \ref gcal_event.
+ * the data as an array of \ref gcal_event. See too \ref gcal_event_array.
  *
  * @param gcalobj A libgcal object, must be previously authenticated with
  * \ref gcal_get_authentication.
@@ -169,7 +169,7 @@ int gcal_erase_event(gcal_t gcal_obj, gcal_event event);
  * @param events A pointer to a struct of type \ref gcal_event_array.
  *
  * @param timestamp A timestamp in format RFC 3339 format
- * (e.g. 2008-09-010T21:00:00Z) (see \ref TIMESTAMP_MAX_SIZE and
+ * (e.g. 2008-09-10T21:00:00Z) (see \ref TIMESTAMP_MAX_SIZE and
  * \ref get_mili_timestamp). It can include timezones too.
  * If you just want to get the updated events starting from today at 06:00Z,
  * use NULL as parameter.
@@ -206,29 +206,236 @@ int gcal_get_edit_url(char *entry, char **extracted_url);
 
 
 /* Raw XML base functions: common for both calendar/contacts */
+
+/** Adds a new entry (event or contact) in to user's feed, using raw xml.
+ *
+ * Use this if you already have the input data as a valid atom entry
+ * XML data.  You don't need to create an entry object (gcal_event or
+ * gcal_contact).
+ *
+ * A context where this function is handy is if you are going to load the
+ * entries from XML files. Another context is if you use XSLT to convert
+ * from another XML format (e.g. opensync) to create the gdata format.
+ *
+ * @param gcal_obj A gcal object, see \ref gcal_new.
+ *
+ * @param xml_entry A pointer to a string with XML representing the entry.
+ *
+ * @param xml_updated A pointer to pointer to string, it will have the updated
+ * entry with new fields (updated, edit_url, ID). Remember to clean up this
+ * memory. If you don't care about getting this information, just pass NULL.
+ *
+ * @return 0 on sucess, -1 otherwise.
+ */
 int gcal_add_xmlentry(gcal_t gcal_obj, char *xml_entry, char **xml_updated);
+
+
+/** Updates an entry (event or contact) using raw xml.
+ *
+ * For rationale of xml functions, see \ref gcal_add_xmlentry. Use it to update
+ * (i.e. change) an entry.
+ *
+ * @param gcal_obj A gcal object, see \ref gcal_new.
+ *
+ * @param xml_entry A pointer to a string with XML representing the entry.
+ *
+ * @param xml_updated A pointer to pointer to string, it will have the updated
+ * entry with new fields (updated, edit_url, ID). Remember to clean up this
+ * memory. If you don't care about getting this information, just pass NULL.
+ *
+ * @param edit_url Common case, pass NULL (it assumes that 'xml_entry' has
+ * a valid edit_url field). Case negative, you can supply the edit_url using
+ * this parameter.
+ *
+ * @return 0 on sucess, -1 otherwise.
+ */
 int gcal_update_xmlentry(gcal_t gcal_obj, char *xml_entry, char **xml_updated,
 			 char *edit_url);
+
+
+/** Deletes an entry (event or contact) using raw xml.
+ *
+ * For rationale of xml functions, see \ref gcal_add_xmlentry. Use it to update
+ * (i.e. change) an entry.
+ *
+ * @param gcal_obj A gcal object, see \ref gcal_new.
+ *
+ * @param xml_entry A pointer to a string with XML representing the entry. It
+ * has to have a valid edit_url field or operation will fail (i.e. you must
+ * have created this xml out of an pre-existant entry).
+ *
+ * @return 0 on sucess, -1 otherwise.
+ */
 int gcal_erase_xmlentry(gcal_t gcal_obj, char *xml_entry);
 
 
+/** Returns an event element from an event array.
+ *
+ * Since to final user events are abstract types, its not possible to access
+ * internal \ref gcal_event_array vector of events. Use this function as an
+ * accessor to then.
+ * A context where this function is useful is when downloading all events
+ * from user calendar using \ref gcal_get_events.
+ *
+ * @param events An array of events, see \ref gcal_event_array.
+ *
+ * @param _index Index of element (is zero based).
+ *
+ * @return Either a pointer to the event object or NULL.
+ */
 gcal_event gcal_event_element(struct gcal_event_array *events, size_t _index);
 
 
 /* Here starts gcal_event accessors */
+
+/** Access event ID.
+ *
+ * Each entry has a unique ID assigned by google server.
+ *
+ * @param event An event object, see \ref gcal_event.
+ *
+ * @return Pointer to internal object field (dont free it!) or NULL (in error
+ * case or if the field is not set). If the entry hasn't this field in the
+ * atom stream, it will be set to an empty string (i.e. "").
+ */
 char *gcal_event_get_id(gcal_event event);
+
+/** Access last updated timestamp.
+ *
+ * Each operation (add/edit/delete) will set a timestamp to the entry.
+ *
+ * @param event An event object, see \ref gcal_event.
+ *
+ * @return Pointer to internal object field (dont free it!) or NULL (in error
+ * case or if the field is not set). If the entry hasn't this field in the
+ * atom stream, it will be set to an empty string (i.e. "").
+ */
 char *gcal_event_get_updated(gcal_event event);
+
+/** Access event title.
+ *
+ * All entries have a title, with semantic depending on the entry type:
+ * events (event title) or contact (contact name).
+ *
+ * @param event An event object, see \ref gcal_event.
+ *
+ * @return Pointer to internal object field (dont free it!) or NULL (in error
+ * case or if the field is not set). If the entry hasn't this field in the
+ * atom stream, it will be set to an empty string (i.e. "").
+ */
 char *gcal_event_get_title(gcal_event event);
+
+/** Access the edit_url field.
+ *
+ * All entries have an edit_url field (which is the combo of ID+cookie) that
+ * must be used to do operations (edit/delete).
+ *
+ * @param event An event object, see \ref gcal_event.
+ *
+ * @return Pointer to internal object field (dont free it!) or NULL (in error
+ * case or if the field is not set). If the entry hasn't this field in the
+ * atom stream, it will be set to an empty string (i.e. "").
+ */
 char *gcal_event_get_url(gcal_event event);
+
+/** Access the raw XML representation of the entry.
+ *
+ * Besides having the more important information already parsed, its still
+ * possible to access the raw xml of the entry if and *only* if you set
+ * this mode in \ref gcal_t object using \ref gcal_set_store_xml function
+ * *before* getting the data (using \ref gcal_get_events).
+ *
+ * @param event An event object, see \ref gcal_event.
+ *
+ * @return Pointer to internal object field (dont free it!) or NULL (in error
+ * case or if the field is not set).
+ */
 char *gcal_event_get_xml(gcal_event event);
+
+
+/** Checks if the current event was deleted or not.
+ *
+ * When parsing the entry, the respective element used to represent deleted or
+ * cancelled status (for calendar events) is stored internally of event object.
+ *
+ * @param event An event object, see \ref gcal_event.
+ *
+ * @return 1 for deleted, 0 for not deleted, -1 for error case (f the event
+ * object is invalid).
+ */
 char gcal_event_is_deleted(gcal_event event);
 
+
 /* This are the fields unique to calendar events */
+
+/** Access event description.
+ *
+ * Events have an extra field for description (like: "Meeting with someone and
+ * remember to discuss whatever targeting do something").
+ *
+ * @param event An event object, see \ref gcal_event.
+ *
+ * @return Pointer to internal object field (dont free it!) or NULL (in error
+ * case or if the field is not set). If the entry hasn't this field in the
+ * atom stream, it will be set to an empty string (i.e. "").
+ */
 char *gcal_event_get_content(gcal_event event);
+
+/** Checks if this is a recurrent event.
+ *
+ * Case positive, it will return the string with the representation of recurrence
+ * rule. Google calendar uses a subset of iCalendar to represent this (yeah, brain
+ * f*ked in my opinion put another text format inside of XML...). See more
+ * information here:
+ *
+ * @param event An event object, see \ref gcal_event.
+ *
+ * @return Pointer to internal object field (dont free it!) or NULL (in error
+ * case or if the field is not set). If the entry hasn't this field in the
+ * atom stream, it will be set to an empty string (i.e. "").
+ */
 char *gcal_event_get_recurrent(gcal_event event);
+
+/** Access event start timestamp.
+ *
+ * Google calendar uses RFC 3339 format (e.g. "2008-09-11T21:00:00Z") to represent
+ * when an event will start. It can have the timezone information too
+ * (e.g. "2008-09-11T12:39:00-04:00" for a -4hours from UTC timezone, a.k.a. Manaus).
+ *
+ * @param event An event object, see \ref gcal_event.
+ *
+ * @return Pointer to internal object field (dont free it!) or NULL (in error
+ * case or if the field is not set). If the entry hasn't this field in the
+ * atom stream, it will be set to an empty string (i.e. "").
+ */
 char *gcal_event_get_start(gcal_event event);
+
+/** Access event end timestamp.
+ *
+ * See too \ref gcal_event_get_start for further discussion.
+ *
+ * @param event An event object, see \ref gcal_event.
+ *
+ * @return Pointer to internal object field (dont free it!) or NULL (in error
+ * case or if the field is not set). If the entry hasn't this field in the
+ * atom stream, it will be set to an empty string (i.e. "").
+ */
 char *gcal_event_get_end(gcal_event event);
+
+/** Access event location/place.
+ *
+ * Google calendar allows to store any string as the place where the event
+ * will happen (even GPS coordinates).
+ *
+ * @param event An event object, see \ref gcal_event.
+ *
+ * @return Pointer to internal object field (dont free it!) or NULL (in error
+ * case or if the field is not set). If the entry hasn't this field in the
+ * atom stream, it will be set to an empty string (i.e. "").
+ */
 char *gcal_event_get_where(gcal_event event);
+
+
 char *gcal_event_get_status(gcal_event event);
 
 
