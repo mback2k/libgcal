@@ -26,6 +26,21 @@ suite to run from command line);
 - more unit tests and bug fixes;
 
 
+== libgcal 0.7 (2008-06-27) ==
+
+- authentication
+
+- get all events/contacts
+
+- atom stream parsing
+
+- access to individual events/contacts
+
+- add/delete/edit
+
+- query for updated events/contacts
+
+
 ps: you can format this document to HTML running
 
 $txt2tags -t html INSTALL
