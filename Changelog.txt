@@ -24,3 +24,8 @@ query for updated events);
 suite to run from command line);
 
 - more unit tests and bug fixes;
+
+
+ps: you can format this document to HTML running
+
+$txt2tags -t html INSTALL

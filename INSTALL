@@ -3,7 +3,7 @@ adenilson.silva@indt.org.br
 
 == Compile and install ==
 
-Dependencies: gcc, automake, libxml-dev, libcurl-dev
+Dependencies: gcc, automake, libxml-dev, libcurl-dev, ca-certificates
 
 
 In the project root directory, run:
@@ -32,8 +32,8 @@ Do the same but you can also add:
 $../configure --enable-devel #enable unit tests and other flags
 
 
-**Attention**: There is an issue with efence in Ubuntu Hardy (mprotect fails), you
-should run instead
+**Attention**: There is an issue with efence in Ubuntu Hardy (mprotect fails),
+you should run instead
 
 **$../configure --enable-warnings --enable-check --enable-lcov**
 

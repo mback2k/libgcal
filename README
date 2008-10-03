@@ -32,6 +32,8 @@ adenilson.silva@indt.org.br
  - operate using only raw XML (without creating gcal_event or gcal_contact
  objects).
 
+ - use of http proxy
+
 
 === Missing ===
 
