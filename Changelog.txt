@@ -1,0 +1,26 @@
+libgcal changelog
+Adenilson Cavalcanti (adenilson.silva@indt.org.br)
+
+== libgcal 0.8 (2008-10-03) ==
+
+- support to store and access RAW XML of each entry;
+
+- add/edit/delete contacts/events using only XML (this makes easier to
+integrate libgcal with other projects that uses a XML format to represent data);
+
+- updated contacts now are returned ordered;
+
+- added code to let you known if a returned entry was deleted from
+server (useful when implementing synchronization software and doing a
+query for updated events);
+
+- support to http proxy;
+
+- support for Mac OSX Leopard (should compile on FreeBSD too);
+
+- doxygen documentation in all functions;
+
+- improvement in unit test execution (you can now select which test
+suite to run from command line);
+
+- more unit tests and bug fixes;
