@@ -4,7 +4,7 @@ libdir=@libdir@
 includedir=@includedir@
 
 Name: libgcal
-Description: Library to access google calendar
+Description: Implements google data protocol for calendar and contacts
 Version: @VERSION@
 Libs: -L${libdir} -lgcal
 Cflags: -I${includedir}
