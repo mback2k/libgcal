@@ -1,11 +1,14 @@
-libgcal (0.7) unstable; urgency=low
+libgcal (0.8) unstable; urgency=low
 
-  * Initial release, it features:
-    - authentication
-    - get all events/contacts
-    - atom stream parsing
-    - access to individual events/contacts
-    - add/delete/edit
-    - query for updated events/contacts
+  * Second release, it features:
+    - support to store and access RAW XML of each entry;
+    - add/edit/delete contacts/events using only XML;
+    - updated contacts now are returned ordered;
+    - added code to let you known if a returned entry was deleted;
+    - support to http proxy;
+    - support for Mac OSX Leopard;
+    - doxygen documentation in all functions;
+    - improvement in unit test execution
+    - more unit tests and bug fixes;
 
- -- Mika Bostrom <mika.bostrom@nomovok.com>  Tue, 20 May 2008 11:53:59 +0300
+ -- Adenilson Cavalcanti <adenilson.silva@indt.org.br>  Fri, 03 Oct 2008 13:06:00 -0300
