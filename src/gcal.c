@@ -36,7 +36,6 @@ POSSIBILITY OF SUCH DAMAGE.
  * \todo:
  * High priority
  * - batch operation (add/edit/delete): will require some new public functions
- * - handle http_proxy
  *
  * Lower priority
  * - enable user list and access available calendars
