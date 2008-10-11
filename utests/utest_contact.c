@@ -94,11 +94,11 @@ START_TEST (test_contact_extract)
 	int result;
 	size_t count, i;
 	struct gcal_contact *contacts;
-	char *contacts_email[] = { "gcal4tester@gmail.com",
-				   "cavalcantii@gmail.com",
+	char *contacts_email[] = { "cavalcantii@gmail.com",
+				   "gcal4tester@gmail.com",
 				   "gcalntester@gmail.com" };
-	char *contacts_name[] = { "", /* its valid not having a name */
-				  "Adenilson Cavalcanti",
+	char *contacts_name[] = { "Adenilson Cavalcanti",
+				  "", /* its valid not having a name */
 				  "gcalntester gcalntester" };
 	size_t contacts_count = 3, found_count = 0;;
 
