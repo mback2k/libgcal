@@ -62,9 +62,9 @@ START_TEST (test_contact_entries)
 {
 	/* obs: this test is a copy of utest_gcal.c:test_gcal_event */
 	int result, i;
-	char *contacts_emails[] = { "cavalcantii@gmail.com",
-				   "gcal4tester@gmail.com",
-				   "gcalntester@gmail.com" };
+	char *contacts_emails[] = { "gcal4tester@gmail.com",
+				    "gcalntester@gmail.com",
+				    "cavalcantii@gmail.com" };
 	char *ptr;
 	int contacts_count = 3;
 
@@ -94,12 +94,12 @@ START_TEST (test_contact_extract)
 	int result;
 	size_t count, i;
 	struct gcal_contact *contacts;
-	char *contacts_email[] = { "cavalcantii@gmail.com",
-				   "gcal4tester@gmail.com",
-				   "gcalntester@gmail.com" };
-	char *contacts_name[] = { "Adenilson Cavalcanti",
-				  "", /* its valid not having a name */
-				  "gcalntester gcalntester" };
+	char *contacts_email[] = { "gcal4tester@gmail.com",
+				   "gcalntester@gmail.com",
+				   "cavalcantii@gmail.com" };
+	char *contacts_name[] = { "", /* its valid not having a name */
+				  "gcalntester gcalntester",
+				  "Adenilson Cavalcanti" };
 	size_t contacts_count = 3, found_count = 0;;
 
 	result = gcal_get_authentication(ptr_gcal, "gcalntester", "77libgcal");
