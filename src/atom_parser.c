@@ -287,6 +287,8 @@ int atom_extract_data(xmlNode *entry, struct gcal_event *ptr_entry)
 	if (!(strcmp("http://schemas.google.com/g/2005#event.canceled",
 		     ptr_entry->status)))
 		ptr_entry->common.deleted = 1;
+	else
+		ptr_entry->common.deleted = 0;
 
 	/* Gets the 'updated' calendar field */
 	ptr_entry->common.updated = extract_and_check(doc,
@@ -354,9 +356,10 @@ int atom_extract_contact(xmlNode *entry, struct gcal_contact *ptr_entry)
 
 	/* Detects if this contacts was deleted */
 	tmp = extract_and_check(doc, "//atom:entry/gd:deleted", NULL);
-	if (tmp)
+	if (tmp) {
 		free(tmp);
-	else
+		ptr_entry->common.deleted = 0;
+	} else
 		ptr_entry->common.deleted = 1;
 
 	/* Gets the 'id' contact field */
