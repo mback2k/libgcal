@@ -70,6 +70,7 @@ struct gcal_contact *gcal_get_all_contacts(struct gcal_resource *gcalobj,
 	ptr_res = malloc(sizeof(struct gcal_contact) * result);
 	if (!ptr_res)
 		goto cleanup;
+	memset(ptr_res, 0, sizeof(struct gcal_contact) * result);
 
 	*length = result;
 	for (i = 0; i < result; ++i) {

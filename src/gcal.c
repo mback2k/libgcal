@@ -705,6 +705,7 @@ struct gcal_event *gcal_get_entries(struct gcal_resource *gcalobj,
 	ptr_res = malloc(sizeof(struct gcal_event) * result);
 	if (!ptr_res)
 		goto cleanup;
+	memset(ptr_res, 0, sizeof(struct gcal_event) * result);
 
 	*length = result;
 
