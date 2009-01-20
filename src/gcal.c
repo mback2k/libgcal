@@ -251,6 +251,10 @@ static int common_upload(struct gcal_resource *gcalobj,
 	curl_easy_setopt(gcalobj->curl, CURLOPT_VERBOSE, 1);
 #endif
 
+	/* To support Google Data API 2.0 */
+	response_headers = curl_slist_append(response_headers,
+					     "GData-Version: 2");
+
 	if (header)
 		response_headers = curl_slist_append(response_headers, header);
 	if (header2)
@@ -442,7 +446,13 @@ static int get_follow_redirection(struct gcal_resource *gcalobj,
 		goto exit;
 	snprintf(tmp_buffer, length - 1, "%s%s", HEADER_GET, gcalobj->auth);
 
+	/* To support Google Data API 2.0 */
+	response_headers = curl_slist_append(response_headers,
+					     "GData-Version: 2");
+
 	response_headers = curl_slist_append(response_headers, tmp_buffer);
+	if (!response_headers)
+		return result;
 
 	curl_easy_setopt(gcalobj->curl, CURLOPT_HTTPGET, 1);
 	curl_easy_setopt(gcalobj->curl, CURLOPT_HTTPHEADER, response_headers);
