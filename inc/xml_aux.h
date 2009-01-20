@@ -58,7 +58,7 @@ static const char gd_href[] = "http://schemas.google.com/g/2005";
 static const char gd_ns[] = "gd";
 
 /** Opensearch URL/URI */
-static const char open_search_href[] = "http://a9.com/-/spec/opensearchrss/1.0/";
+static const char open_search_href[] = "http://a9.com/-/spec/opensearch/1.1/";
 static const char open_search_ns[] = "openSearch";
 
 
