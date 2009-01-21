@@ -110,8 +110,8 @@ void gcal_init_contact(struct gcal_contact *contact)
 
 	contact->common.store_xml = 0;
 	contact->common.id = contact->common.updated = NULL;
-	contact->common.title = contact->common.edit_uri = NULL;
-	contact->common.xml = NULL;
+	contact->common.title = contact->common.xml = NULL;
+	contact->common.edit_uri = contact->common.etag = NULL;
 	contact->email = contact->content = NULL;
 	contact->org_name = contact->org_title = contact->im = NULL;
 	contact->phone_number = contact->post_address = NULL;
@@ -126,6 +126,7 @@ void gcal_destroy_contact(struct gcal_contact *contact)
 	clean_string(contact->common.updated);
 	clean_string(contact->common.title);
 	clean_string(contact->common.edit_uri);
+	clean_string(contact->common.etag);
 	clean_string(contact->email);
 	clean_string(contact->common.xml);
 
