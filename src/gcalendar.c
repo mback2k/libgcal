@@ -232,7 +232,7 @@ int gcal_add_event(gcal_t gcal_obj, gcal_event event)
 	if (result)
 		goto exit;
 
-	/* Swap updated fields: id, edit_uri and updated */
+	/* Swap updated fields: id, updated, edit_uri, etag  */
 	if (event->common.id)
 		free(event->common.id);
 	event->common.id = updated.common.id;
@@ -271,7 +271,7 @@ int gcal_update_event(gcal_t gcal_obj, gcal_event event)
 	if (result)
 		goto exit;
 
-	/* Swap updated fields: edit_uri and updated */
+	/* Swap updated fields: updated, edit_uri, etag */
 	if (event->common.updated)
 		free(event->common.updated);
 	event->common.updated = updated.common.updated;

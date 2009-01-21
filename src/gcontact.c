@@ -142,7 +142,7 @@ int gcal_add_contact(gcal_t gcalobj, gcal_contact contact)
 	if (result)
 		goto exit;
 
-	/* Swap updated fields: id, edit_uri and updated */
+	/* Swap updated fields: id, updated, edit_uri, etag  */
 	if (contact->common.id)
 		free(contact->common.id);
 	contact->common.id = updated.common.id;
@@ -183,7 +183,7 @@ int gcal_update_contact(gcal_t gcalobj, gcal_contact contact)
 	if (result)
 		goto exit;
 
-	/* Swap updated fields: edit_uri and updated */
+	/* Swap updated fields: updated, edit_uri, etag */
 	if (contact->common.updated)
 		free(contact->common.updated);
 	contact->common.updated = updated.common.updated;
