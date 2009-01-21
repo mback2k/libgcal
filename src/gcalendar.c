@@ -223,6 +223,7 @@ int gcal_add_event(gcal_t gcal_obj, gcal_event event)
 {
 	int result = -1;
 	struct gcal_event updated;
+	gcal_init_event(&updated);
 
 	if ((!gcal_obj) || (!event))
 		goto exit;

@@ -753,7 +753,8 @@ void gcal_init_event(struct gcal_event *entry)
 		return;
 
 	entry->common.store_xml = 0;
-	entry->common.title = entry->common.id = entry->common.edit_uri = NULL;
+	entry->common.title = entry->common.id = NULL;
+	entry->common.edit_uri = entry->common.etag = NULL;
 	entry->common.xml = entry->common.updated = NULL;
 	entry->content = entry->dt_recurrent = entry->dt_start = NULL;
 	entry->dt_end = entry->where = entry->status = NULL;
@@ -769,6 +770,7 @@ void gcal_destroy_entry(struct gcal_event *entry)
 	clean_string(entry->common.title);
 	clean_string(entry->common.id);
 	clean_string(entry->common.edit_uri);
+	clean_string(entry->common.etag);
 	clean_string(entry->common.updated);
 	clean_string(entry->common.xml);
 

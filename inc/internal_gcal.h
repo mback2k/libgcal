@@ -150,6 +150,8 @@ struct gcal_entry {
 	char *title;
 	/** The edit URL */
 	char *edit_uri;
+	/** The ETag (required by Google Data API 2.0) */
+	char *etag;
 	/** RAW XML data of this entry */
 	char *xml;
 };
