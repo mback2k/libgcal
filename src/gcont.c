@@ -242,7 +242,8 @@ int gcal_delete_contact(struct gcal_resource *gcalobj,
 	curl_easy_setopt(gcalobj->curl, CURLOPT_CUSTOMREQUEST, "DELETE");
 	result = http_post(gcalobj, contact->common.edit_uri,
 			   "Content-Type: application/atom+xml",
-			   NULL,
+			   /* Google Data API 2.0 requires ETag */
+			   "If-Match: *",
 			   h_auth,
 			   NULL, GCAL_DEFAULT_ANSWER);
 
