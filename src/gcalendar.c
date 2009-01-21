@@ -248,6 +248,11 @@ int gcal_add_event(gcal_t gcal_obj, gcal_event event)
 	event->common.edit_uri = updated.common.edit_uri;
 	updated.common.edit_uri = NULL;
 
+	if (event->common.etag)
+		free(event->common.etag);
+	event->common.etag = updated.common.etag;
+	updated.common.etag = NULL;
+
 	/* Cleanup updated event */
 	gcal_destroy_entry(&updated);
 exit:
@@ -276,6 +281,11 @@ int gcal_update_event(gcal_t gcal_obj, gcal_event event)
 		free(event->common.edit_uri);
 	event->common.edit_uri = updated.common.edit_uri;
 	updated.common.edit_uri = NULL;
+
+	if (event->common.etag)
+		free(event->common.etag);
+	event->common.etag = updated.common.etag;
+	updated.common.etag = NULL;
 
 	/* Cleanup updated event */
 	gcal_destroy_entry(&updated);

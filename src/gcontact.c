@@ -148,15 +148,20 @@ int gcal_add_contact(gcal_t gcalobj, gcal_contact contact)
 	contact->common.id = updated.common.id;
 	updated.common.id = NULL;
 
+	if (contact->common.updated)
+		free(contact->common.updated);
+	contact->common.updated = updated.common.updated;
+	updated.common.updated = NULL;
+
 	if (contact->common.edit_uri)
 		free(contact->common.edit_uri);
 	contact->common.edit_uri = updated.common.edit_uri;
 	updated.common.edit_uri = NULL;
 
-	if (contact->common.updated)
-		free(contact->common.updated);
-	contact->common.updated = updated.common.updated;
-	updated.common.updated = NULL;
+	if (contact->common.etag)
+		free(contact->common.etag);
+	contact->common.etag = updated.common.etag;
+	updated.common.etag = NULL;
 
 	/* Cleanup updated contact */
 	gcal_destroy_contact(&updated);
@@ -179,15 +184,20 @@ int gcal_update_contact(gcal_t gcalobj, gcal_contact contact)
 		goto exit;
 
 	/* Swap updated fields: edit_uri and updated */
+	if (contact->common.updated)
+		free(contact->common.updated);
+	contact->common.updated = updated.common.updated;
+	updated.common.updated = NULL;
+
 	if (contact->common.edit_uri)
 		free(contact->common.edit_uri);
 	contact->common.edit_uri = updated.common.edit_uri;
 	updated.common.edit_uri = NULL;
 
-	if (contact->common.updated)
-		free(contact->common.updated);
-	contact->common.updated = updated.common.updated;
-	updated.common.updated = NULL;
+	if (contact->common.etag)
+		free(contact->common.etag);
+	contact->common.etag = updated.common.etag;
+	updated.common.etag = NULL;
 
 	/* Cleanup updated contact */
 	gcal_destroy_contact(&updated);
