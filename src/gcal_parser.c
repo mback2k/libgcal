@@ -260,6 +260,10 @@ int xmlentry_create(struct gcal_event *entry, char **xml_entry, int *length)
 		goto exit;
 
 	xmlSetProp(root, BAD_CAST "xmlns", BAD_CAST atom_href);
+	/* Google Data API 2.0 requires ETag to edit an entry */
+	if (entry->common.etag)
+		xmlSetProp(root, BAD_CAST "gd:etag",
+			   BAD_CAST entry->common.etag);
 	ns =  xmlNewNs(root, BAD_CAST gd_href, BAD_CAST "gd");
 
 	xmlDocSetRootElement(doc, root);
@@ -441,6 +445,11 @@ int xmlcontact_create(struct gcal_contact *contact, char **xml_contact,
 		goto exit;
 
 	xmlSetProp(root, BAD_CAST "xmlns", BAD_CAST atom_href);
+	/* Google Data API 2.0 requires ETag to edit an entry */
+	if (contact->common.etag)
+		xmlSetProp(root, BAD_CAST "gd:etag",
+			   BAD_CAST contact->common.etag);
+
 	ns =  xmlNewNs(root, BAD_CAST gd_href, BAD_CAST "gd");
 
 	xmlDocSetRootElement(doc, root);

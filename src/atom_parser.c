@@ -181,6 +181,22 @@ exit:
 	return result;
 }
 
+static char *get_etag_attribute(xmlNode * a_node)
+{
+	xmlChar *uri = NULL;
+	char *result = NULL;
+	if (xmlHasProp(a_node, "etag")) {
+		uri = xmlGetProp(a_node, "etag");
+		if (uri) {
+			result = strdup(uri);
+			xmlFree(uri);
+		}
+	}
+
+	return result;
+}
+
+
 int atom_extract_data(xmlNode *entry, struct gcal_event *ptr_entry)
 {
 	int result = -1, length = 0;
@@ -203,6 +219,14 @@ int atom_extract_data(xmlNode *entry, struct gcal_event *ptr_entry)
 		goto cleanup;
 
 	xmlDocSetRootElement(doc, copy);
+
+	/* Google Data API 2.0 requires ETag to edit an entry */
+	/* //atom:entry/@gd:etag*/
+	ptr_entry->common.etag = get_etag_attribute(copy);
+	if (!ptr_entry->common.etag) {
+		fprintf(stderr, "failed getting ETag!!!!!!\n");
+		goto cleanup;
+	}
 
 	/* Store XML raw data */
 	if (ptr_entry->common.store_xml) {
@@ -340,6 +364,14 @@ int atom_extract_contact(xmlNode *entry, struct gcal_contact *ptr_entry)
 		goto cleanup;
 
 	xmlDocSetRootElement(doc, copy);
+
+	/* Google Data API 2.0 requires ETag to edit an entry */
+	/* //atom:entry/@gd:etag*/
+	ptr_entry->common.etag = get_etag_attribute(copy);
+	if (!ptr_entry->common.etag) {
+		fprintf(stderr, "failed getting ETag!!!!!!\n");
+		goto cleanup;
+	}
 
 	/* Store XML raw data */
 	if (ptr_entry->common.store_xml) {
