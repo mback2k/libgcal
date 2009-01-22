@@ -260,6 +260,8 @@ void gcal_destroy_entries(struct gcal_event *entries, size_t length);
  * @param header First header part.
  * @param header2 Second header part (can be NULL).
  * @param header3 Third header part (can be NULL).
+ * @param header4 Third header part (can be NULL). Used for ETag (Google Data
+ * API 2.0)
  * @param post_data The data to post (can be NULL).
  * @param expected_answer The expected answer code, see GCAL_DEFAULT_ANSWER and
  * friends.
@@ -268,6 +270,7 @@ void gcal_destroy_entries(struct gcal_event *entries, size_t length);
  */
 int http_post(struct gcal_resource *gcalobj, const char *url,
 	      char *header, char *header2, char *header3,
+	      char *header4,
 	      char *post_data, const int expected_answer);
 
 
@@ -298,7 +301,7 @@ int http_post(struct gcal_resource *gcalobj, const char *url,
  * @return -1 on error, 0 on success.
  */
 int up_entry(char *data2post, struct gcal_resource *gcalobj,
-	     const char *url_server, const char *etag,
+	     const char *url_server, char *etag,
 	     HTTP_CMD up_mode, int expected_code);
 
 /** Creates an new calendar event.

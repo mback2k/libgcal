@@ -236,6 +236,7 @@ static int check_request_error(struct gcal_resource *gcalobj, int code,
 
 static int common_upload(struct gcal_resource *gcalobj,
 			 char *header, char *header2, char *header3,
+			 char *header4,
 			 struct curl_slist **curl_headers)
 {
 	int result = -1;
@@ -261,6 +262,8 @@ static int common_upload(struct gcal_resource *gcalobj,
 		response_headers = curl_slist_append(response_headers, header2);
 	if (header3)
 		response_headers = curl_slist_append(response_headers, header3);
+	if (header4)
+		response_headers = curl_slist_append(response_headers, header4);
 
 	if (!response_headers)
 		return result;
@@ -276,6 +279,7 @@ static int common_upload(struct gcal_resource *gcalobj,
 
 int http_post(struct gcal_resource *gcalobj, const char *url,
 	      char *header, char *header2, char *header3,
+	      char *header4,
 	      char *post_data, const int expected_answer)
 {
 	int result = -1;
@@ -286,7 +290,7 @@ int http_post(struct gcal_resource *gcalobj, const char *url,
 		goto exit;
 
 	curl_ctx = gcalobj->curl;
-	result = common_upload(gcalobj, header, header2, header3,
+	result = common_upload(gcalobj, header, header2, header3, header4,
 			       &response_headers);
 	if (result)
 		goto exit;
@@ -315,6 +319,7 @@ exit:
 
 static int http_put(struct gcal_resource *gcalobj, const char *url,
 		    char *header, char *header2, char *header3,
+		    char *header4,
 		    char *post_data, const int expected_answer)
 {
 	int result = -1;
@@ -325,7 +330,7 @@ static int http_put(struct gcal_resource *gcalobj, const char *url,
 		goto exit;
 
 	curl_ctx = gcalobj->curl;
-	result = common_upload(gcalobj, header, header2, header3,
+	result = common_upload(gcalobj, header, header2, header3, header4,
 			       &response_headers);
 	if (result)
 		goto exit;
@@ -392,7 +397,7 @@ int gcal_get_authentication(struct gcal_resource *gcalobj,
 
 	result = http_post(gcalobj, GCAL_URL,
 			   "Content-Type: application/x-www-form-urlencoded",
-			   NULL, NULL, post, GCAL_DEFAULT_ANSWER);
+			   NULL, NULL, NULL, post, GCAL_DEFAULT_ANSWER);
 	if (result)
 		goto cleanup;
 
@@ -799,7 +804,7 @@ void gcal_destroy_entries(struct gcal_event *entries, size_t length)
  * and 'edit' events.
  */
 int up_entry(char *data2post, struct gcal_resource *gcalobj,
-	     const char *url_server, const char *etag,
+	     const char *url_server, char *etag,
 	     HTTP_CMD up_mode, int expected_code)
 {
 	int result = -1;
@@ -807,11 +812,8 @@ int up_entry(char *data2post, struct gcal_resource *gcalobj,
 	char *h_auth = NULL, *h_length = NULL, *tmp;
 	const char header[] = "Content-length: ";
 	int (*up_callback)(struct gcal_resource *, const char *,
-			   char *, char *, char *,
+			   char *, char *, char *, char *,
 			   char *, const int);
-
-	/* TODO: use ETag in HTTP header */
-	(void)etag;
 
 	if (!data2post || !gcalobj)
 		goto exit;
@@ -853,6 +855,7 @@ int up_entry(char *data2post, struct gcal_resource *gcalobj,
 				     "Content-Type: application/atom+xml",
 				     h_length,
 				     h_auth,
+				     etag,
 				     data2post, expected_code);
 		if (!result) {
 
@@ -865,6 +868,7 @@ int up_entry(char *data2post, struct gcal_resource *gcalobj,
 				     "Content-Type: application/atom+xml",
 				     h_length,
 				     h_auth,
+				     etag,
 				     data2post, GCAL_REDIRECT_ANSWER);
 		if (result == -1)
 			goto cleanup;
@@ -887,6 +891,7 @@ int up_entry(char *data2post, struct gcal_resource *gcalobj,
 			     "Content-Type: application/atom+xml",
 			     h_length,
 			     h_auth,
+			     etag,
 			     data2post, expected_code);
 
 	if (result == -1) {
@@ -991,7 +996,7 @@ int gcal_delete_event(struct gcal_resource *gcalobj,
 			   /* Google Data API 2.0 requires ETag */
 			   "If-Match: *",
 			   h_auth,
-			   NULL, GCAL_REDIRECT_ANSWER);
+			   NULL, NULL, GCAL_REDIRECT_ANSWER);
 
 	/* Get the gsessionid redirect URL */
 	if (result == -1)
@@ -1009,7 +1014,7 @@ int gcal_delete_event(struct gcal_resource *gcalobj,
 			   /* Google Data API 2.0 requires ETag */
 			   "If-Match: *",
 			   h_auth,
-			   NULL, GCAL_DEFAULT_ANSWER);
+			   NULL, NULL, GCAL_DEFAULT_ANSWER);
 
 cleanup:
 

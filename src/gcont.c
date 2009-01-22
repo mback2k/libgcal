@@ -245,7 +245,7 @@ int gcal_delete_contact(struct gcal_resource *gcalobj,
 			   /* Google Data API 2.0 requires ETag */
 			   "If-Match: *",
 			   h_auth,
-			   NULL, GCAL_DEFAULT_ANSWER);
+			   NULL, NULL, GCAL_DEFAULT_ANSWER);
 
 	if (h_auth)
 		free(h_auth);
