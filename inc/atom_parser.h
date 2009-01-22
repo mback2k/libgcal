@@ -86,6 +86,17 @@ int atom_entries(xmlDoc *document);
  */
 xmlXPathObject *atom_get_entries(xmlDoc *document);
 
+/* This function extracts the attribute 'gd:etag' required to do
+ * some operations using Google Data API 2.0.
+ * Is used by both \ref atom_extract_data and by \ref get_edit_etag.
+ *
+ * @param a_node A xmlNode that has an atom xml entry.
+ *
+ * @return The string with the etag or NULL in error case. You must cleanup
+ * this memory.
+ */
+char *get_etag_attribute(xmlNode * a_node);
+
 
 /** Extract calendar information from a Atom entry (what, where, location, etc).
  *

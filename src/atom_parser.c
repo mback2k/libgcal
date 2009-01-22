@@ -181,7 +181,7 @@ exit:
 	return result;
 }
 
-static char *get_etag_attribute(xmlNode * a_node)
+char *get_etag_attribute(xmlNode * a_node)
 {
 	xmlChar *uri = NULL;
 	char *result = NULL;
