@@ -166,6 +166,30 @@ exit:
 	return result;
 }
 
+int get_edit_etag(char *data, int length, char **url)
+{
+	xmlDoc *doc = NULL;
+	xmlNode *root_element = NULL;
+	int result = -1;
+
+	*url = NULL;
+	doc = xmlReadMemory(data, length, "noname.xml", NULL, 0);
+	if (!doc)
+		goto exit;
+
+	root_element = xmlDocGetRootElement(doc);
+	*url = get_etag_attribute(root_element);
+	if (*url)
+		result = 0;
+
+	xmlFreeDoc(doc);
+	xmlCleanupParser();
+
+exit:
+	return result;
+}
+
+
 dom_document *build_dom_document(char *xml_data)
 {
 	dom_document *ptr = NULL;

@@ -73,6 +73,20 @@ int get_the_url(char *data, int length, char **url);
  */
 int get_edit_url(char *data, int length, char **url);
 
+/** Parses an entry XML (being calendar or contacts) and extracts the ETag
+ * (gd:etag) attribute required to do some operations using Google
+ * Data API 2.0.
+ *
+ * @param data Raw XML (an entry).
+ * @param length Data buffer lenght.
+ * @param url Pointer to the pointer (ouch!) that will receive the ETag
+ * (you should cleanup its memory). It will point to NULL if there is
+ * not an etag attribute in the raw XML buffer.
+ *
+ * @return Returns 0 on success, -1 otherwise.
+ */
+int get_edit_etag(char *data, int length, char **url);
+
 /** Builds a DOM tree from a XML string.
  *
  * This is a thin wrapper to \ref build_doc_tree.
