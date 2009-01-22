@@ -799,7 +799,8 @@ void gcal_destroy_entries(struct gcal_event *entries, size_t length)
  * and 'edit' events.
  */
 int up_entry(char *data2post, struct gcal_resource *gcalobj,
-	     const char *url_server, HTTP_CMD up_mode, int expected_code)
+	     const char *url_server, const char *etag,
+	     HTTP_CMD up_mode, int expected_code)
 {
 	int result = -1;
 	int length = 0;
@@ -808,6 +809,9 @@ int up_entry(char *data2post, struct gcal_resource *gcalobj,
 	int (*up_callback)(struct gcal_resource *, const char *,
 			   char *, char *, char *,
 			   char *, const int);
+
+	/* TODO: use ETag in HTTP header */
+	(void)etag;
 
 	if (!data2post || !gcalobj)
 		goto exit;
@@ -923,8 +927,8 @@ int gcal_create_event(struct gcal_resource *gcalobj,
 	if (result == -1)
 		goto exit;
 
-	result = up_entry(xml_entry, gcalobj, GCAL_EDIT_URL, POST,
-			  GCAL_EDIT_ANSWER);
+	result = up_entry(xml_entry, gcalobj, GCAL_EDIT_URL, NULL,
+			  POST, GCAL_EDIT_ANSWER);
 	if (result)
 		goto cleanup;
 
@@ -1033,8 +1037,8 @@ int gcal_edit_event(struct gcal_resource *gcalobj,
 	if (result == -1)
 		goto exit;
 
-	result = up_entry(xml_entry, gcalobj, entry->common.edit_uri, PUT,
-			  GCAL_DEFAULT_ANSWER);
+	result = up_entry(xml_entry, gcalobj, entry->common.edit_uri, NULL,
+			  PUT, GCAL_DEFAULT_ANSWER);
 	if (result)
 		goto cleanup;
 

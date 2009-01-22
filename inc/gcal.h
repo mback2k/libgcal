@@ -286,6 +286,9 @@ int http_post(struct gcal_resource *gcalobj, const char *url,
  * @param url_server The URL of server (one for calendar and other for
  * contacts).
  *
+ * @param etag Google Data API 2.0 requires an Etag in HTTP header for some
+ * operations.
+ *
  * @param up_mode If the upload of data will be using PUT or POST (internally
  * it uses 'http_put' and \ref 'http_post').
  *
@@ -295,8 +298,8 @@ int http_post(struct gcal_resource *gcalobj, const char *url,
  * @return -1 on error, 0 on success.
  */
 int up_entry(char *data2post, struct gcal_resource *gcalobj,
-	     const char *url_server, HTTP_CMD up_mode, int expected_code);
-
+	     const char *url_server, const char *etag,
+	     HTTP_CMD up_mode, int expected_code);
 
 /** Creates an new calendar event.
  *
