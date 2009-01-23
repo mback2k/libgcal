@@ -12,6 +12,7 @@ adenilson.silva@indt.org.br
 
    - have few dependencies (up until now, only requires libcurl and libxml)
 
+   It implements Google Data API 2.0.
 
 == Status ==
 
