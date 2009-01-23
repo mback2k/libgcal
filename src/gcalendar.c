@@ -156,7 +156,10 @@ int gcal_update_xmlentry(gcal_t gcal_obj, char *xml_entry, char **xml_updated,
 			 char *edit_url)
 {
 	char *url = NULL;
+	char *etag = NULL;
 	int result = -1;
+	char buffer[512];
+	const char if_match[] = "If-Match: ";
 
 	if ((!gcal_obj) || (!xml_entry))
 		goto exit;
@@ -170,7 +173,16 @@ int gcal_update_xmlentry(gcal_t gcal_obj, char *xml_entry, char **xml_updated,
 		if (!(url = strdup(edit_url)))
 			goto exit;
 
-	result = up_entry(xml_entry, gcal_obj, url, NULL,
+
+	if ((result = get_edit_etag(xml_entry, strlen(xml_entry), &etag)))
+		goto exit;
+
+	/* Mounts costum HTTP header using ETag */
+	memset(buffer, '\0', sizeof(buffer));
+	snprintf(buffer, sizeof(buffer) - 1, "%s\%s",
+		 if_match, etag);
+
+	result = up_entry(xml_entry, gcal_obj, url, buffer,
 			  PUT, GCAL_DEFAULT_ANSWER);
 
 	if (!result)
@@ -180,6 +192,8 @@ int gcal_update_xmlentry(gcal_t gcal_obj, char *xml_entry, char **xml_updated,
 	if (url)
 		free(url);
 
+	if (etag)
+		free(etag);
 exit:
 
 	return result;
