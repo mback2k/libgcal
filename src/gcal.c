@@ -35,12 +35,17 @@ POSSIBILITY OF SUCH DAMAGE.
  *
  * \todo:
  * High priority
+ * - retrieve a single event
+ * - soft/hard edits/deletes (use 'If-Match: *' instead of ETag)
+ * - test and support languages with special characters
  * - batch operation (add/edit/delete): will require some new public functions
  *
  * Lower priority
+ * - allow user to subscribe to another person calendar
  * - enable user list and access available calendars
- * - enable user create new calendars
- * - enable user delete calendars
+ * - enable user create/edit/delete calendars
+ * - enable user to operate in another calendar than its default private one
+ * - support hosted accounts (e.g. foobar.com hosted in google)
  * - think a way to securely store passwords
  * - more utests
  * - provide option to use another XML parser (maybe expat?)
