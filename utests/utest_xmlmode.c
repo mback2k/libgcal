@@ -203,7 +203,7 @@ END_TEST
 
 START_TEST (test_oper_purexml)
 {
-	char *super_contact = NULL, *edit_url;
+	char *super_contact = NULL, *edit_url = NULL, *etag = NULL;
 	char *updated1 = NULL, *updated2 = NULL, *updated3 = NULL;
 	gcal_t gcal;
 	gcal_contact contact;
@@ -224,7 +224,7 @@ START_TEST (test_oper_purexml)
 		"\nmsg: %s\n", gcal_status_httpcode(gcal),
 		gcal_status_msg(gcal));
 
-	result = gcal_update_xmlentry(gcal, updated1, &updated2, NULL);
+	result = gcal_update_xmlentry(gcal, updated1, &updated2, NULL, NULL);
 	fail_if(result == -1, "Failed editing a new contact! HTTP code: %d"
 		"\nmsg: %s\n", gcal_status_httpcode(gcal),
 		gcal_status_msg(gcal));
@@ -241,9 +241,14 @@ START_TEST (test_oper_purexml)
 	free(super_contact);
 	if (find_load_file("/utests/contact_documentation.xml", &super_contact))
 		fail_if(1, "Cannot load contact XML file!");
+
 	result = gcal_get_edit_url(updated2, &edit_url);
 	fail_if(result == -1, "Cannot extract edit URL!");
-	result = gcal_update_xmlentry(gcal, super_contact, &updated3, edit_url);
+	result = gcal_get_extract_etag(updated2, &etag);
+	fail_if(result == -1, "Cannot extract etag!");
+
+	result = gcal_update_xmlentry(gcal, super_contact, &updated3,
+				      edit_url, etag);
 	fail_if(result == -1, "Failed editing a new contact! HTTP code: %d"
 		"\nmsg: %s\n", gcal_status_httpcode(gcal),
 		gcal_status_msg(gcal));
@@ -268,7 +273,7 @@ END_TEST
 
 START_TEST (test_oper_purexmlcal)
 {
-	char *super_calendar = NULL, *edit_url;
+	char *super_calendar = NULL, *edit_url = NULL, *etag = NULL;
 	char *updated1 = NULL, *updated2 = NULL, *updated3 = NULL;
 	gcal_t gcal;
 	gcal_event event;
@@ -289,7 +294,7 @@ START_TEST (test_oper_purexmlcal)
 		"\nmsg: %s\n", gcal_status_httpcode(gcal),
 		gcal_status_msg(gcal));
 
-	result = gcal_update_xmlentry(gcal, updated1, &updated2, NULL);
+	result = gcal_update_xmlentry(gcal, updated1, &updated2, NULL, NULL);
 	fail_if(result == -1, "Failed editing a new calendar! HTTP code: %d"
 		"\nmsg: %s\n", gcal_status_httpcode(gcal),
 		gcal_status_msg(gcal));
@@ -310,7 +315,11 @@ START_TEST (test_oper_purexmlcal)
 
 	result = gcal_get_edit_url(updated2, &edit_url);
 	fail_if(result == -1, "Cannot extract edit URL!");
-	result = gcal_update_xmlentry(gcal, super_calendar, &updated3, edit_url);
+	result = gcal_get_extract_etag(updated2, &etag);
+	fail_if(result == -1, "Cannot extract etag!");
+
+	result = gcal_update_xmlentry(gcal, super_calendar, &updated3,
+				      edit_url, etag);
 	fail_if(result == -1, "Failed editing a new event! HTTP code: %d"
 		"\nmsg: %s\n", gcal_status_httpcode(gcal),
 		gcal_status_msg(gcal));
@@ -339,7 +348,7 @@ TCase *xmlmode_tcase_create(void)
 	int timeout_seconds = 60;
 	tc = tcase_create("xmlmode");
 
-	tcase_set_timeout (tc, timeout_seconds);
+ 	tcase_set_timeout(tc, timeout_seconds);
 	tcase_add_test(tc, test_get_xmlentries);
 	tcase_add_test(tc, test_get_xmlcontacts);
 	tcase_add_test(tc, test_oper_xmlevents);

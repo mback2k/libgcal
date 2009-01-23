@@ -270,10 +270,14 @@ int gcal_add_xmlentry(gcal_t gcal_obj, char *xml_entry, char **xml_updated);
  * a valid edit_url field). Case negative, you can supply the edit_url using
  * this parameter.
  *
+ * @param etag Common case, pass NULL (it assumes that 'xml_entry' has
+ * a valid etag field). Case negative, you can supply the etag using
+ * this parameter. Required by Google Data protocols 2.0.
+ *
  * @return 0 on sucess, -1 otherwise.
  */
 int gcal_update_xmlentry(gcal_t gcal_obj, char *xml_entry, char **xml_updated,
-			 char *edit_url);
+			 char *edit_url, char *etag);
 
 
 /** Deletes an entry (event or contact) using raw xml.
