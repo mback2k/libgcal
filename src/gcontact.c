@@ -290,6 +290,13 @@ char *gcal_contact_get_url(gcal_contact contact)
 	return gcal_get_url(&(contact->common));
 }
 
+char *gcal_contact_get_etag(gcal_contact contact)
+{
+	if ((!contact))
+		return NULL;
+	return gcal_get_etag(&(contact->common));
+}
+
 char gcal_contact_is_deleted(gcal_contact contact)
 {
 	if ((!contact))

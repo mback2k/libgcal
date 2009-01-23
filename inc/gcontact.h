@@ -230,6 +230,7 @@ char *gcal_contact_get_title(gcal_contact contact);
  *
  * All entries have an edit_url field (which is the combo of ID+cookie) that
  * must be used to do operations (edit/delete).
+ * See also \ref gcal_get_edit_url.
  *
  * @param contact A contact object, see \ref gcal_contact.
  *
@@ -238,6 +239,20 @@ char *gcal_contact_get_title(gcal_contact contact);
  * atom stream, it will be set to an empty string (i.e. "").
  */
 char *gcal_contact_get_url(gcal_contact contact);
+
+
+/** Access the ETag
+ *
+ * All entries have an etag field (Google Data API 2.0) that must be used
+ * to do operations (edit/delete). See also \ref gcal_get_edit_etag.
+ *
+ * @param contact A contact object, see \ref gcal_contact.
+ *
+ * @return Pointer to internal object field (dont free it!) or NULL (in error
+ * case or if the field is not set). If the entry hasn't this field in the
+ * atom stream, it will be set to an empty string (i.e. "").
+ */
+char *gcal_contact_get_etag(gcal_contact contact);
 
 /** Access the raw XML representation of the entry.
  *

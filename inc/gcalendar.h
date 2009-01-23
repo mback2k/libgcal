@@ -204,6 +204,29 @@ int gcal_get_updated_events(gcal_t gcal_obj, struct gcal_event_array *events,
  */
 int gcal_get_edit_url(char *entry, char **extracted_url);
 
+/** Helper function, extracts the ETag code in a XML entry, required by
+ * (Google Data API 2.0).
+ *
+ * The use of this function is a corner case: say that you just added an event
+ * (so you dont have the gevent object for some reason) and want to load a
+ * completely different event (say from a XML file) and want to update the
+ * event with the new data.
+ * You need to being able to access the older ETag from the raw XML (that
+ * I hope its still available somewhere) and that is when this function can
+ * save your ass.
+ *
+ * A better approach would just create a new event object out from the older
+ * XML data and use \ref gcal_event_get_url. See also \ref gcal_get_edit_url.
+ * \todo: revise the real need of this function (at least as a public function).
+ *
+ * @param entry A pointer to a string that represents an event as raw XML.
+ *
+ * @param extracted_etag This will be loaded with the edit_url, remember to free
+ * it up.
+ *
+ * @return 0 on sucess, -1 otherwise.
+ */
+int gcal_get_extract_etag(char *entry, char **extracted_etag);
 
 /* Raw XML base functions: common for both calendar/contacts */
 

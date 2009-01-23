@@ -114,6 +114,19 @@ exit:
 
 }
 
+int gcal_get_extract_etag(char *entry, char **extracted_etag)
+{
+	int result = -1;
+	if (!entry)
+		goto exit;
+
+	result = get_edit_etag(entry, strlen(entry), extracted_etag);
+
+exit:
+	return result;
+
+}
+
 int gcal_add_xmlentry(gcal_t gcal_obj, char *xml_entry, char **xml_updated)
 {
 	int result = -1, length = 0;
@@ -429,6 +442,13 @@ char *gcal_event_get_url(gcal_event event)
 	if ((!event))
 		return NULL;
 	return gcal_get_url(&(event->common));
+}
+
+char *gcal_event_get_etag(gcal_event event)
+{
+	if ((!event))
+		return NULL;
+	return gcal_get_etag(&(event->common));
 }
 
 /* This are the fields unique to calendar events */

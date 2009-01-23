@@ -562,6 +562,18 @@ char *gcal_get_title(struct gcal_entry *entry);
  */
 char *gcal_get_url(struct gcal_entry *entry);
 
+/** Access ETag.
+ *
+ * Each entry has an ETag (Google Data API 2.0).
+ * This etag is required to do operations (edit/delete) and changes
+ * each time an operation is done.
+ *
+ * @param entry A data entry pointer, see \ref gcal_entry.
+ *
+ * @return A pointer to internal field (*dont* try to free it!).
+ */
+char *gcal_get_etag(struct gcal_entry *entry);
+
 /** Access raw XML.
  *
  * Even if some fields are parsed from atom stream and directly accessable

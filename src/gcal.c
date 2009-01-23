@@ -1399,3 +1399,11 @@ char *gcal_get_url(struct gcal_entry *entry)
 
 	return NULL;
 }
+
+char *gcal_get_etag(struct gcal_entry *entry)
+{
+	if (entry)
+		return entry->etag;
+
+	return NULL;
+}
