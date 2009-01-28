@@ -84,11 +84,6 @@ struct gcal_resource;
  */
 struct gcal_event;
 
-/** Since user cannot create an static instance of it, it entitles itself
- * to be a completely abstract data type. See \ref gcal_event.
- */
-typedef struct gcal_event * gcal_event;
-
 /** Library structure, represents common data for a google entry (being
  * calendar or contact). It has: id, updated, title, edit_uri.
  */

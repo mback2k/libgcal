@@ -54,7 +54,7 @@ START_TEST (test_access_calendar)
 {
 	gcal_t gcal;
 	struct gcal_event_array event_array;
-	gcal_event event;
+	gcal_event_t event;
 	size_t i;
 	int result;
 	char *ptr;
@@ -133,7 +133,7 @@ END_TEST
 START_TEST (test_oper_event_event)
 {
 	gcal_t gcal;
-	gcal_event event;
+	gcal_event_t event;
 	int result;
 
 	/* Create a new event object */
@@ -177,7 +177,7 @@ START_TEST (test_query_event_updated)
 {
 	gcal_t gcal;
 	struct gcal_event_array event_array;
-	gcal_event event;
+	gcal_event_t event;
 	int result;
 	/* Previous test added/edited/deleted an event with this title */
 	char *title = "Changing the title";

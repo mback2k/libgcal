@@ -22,7 +22,7 @@ START_TEST (test_get_xmlentries)
 
 	gcal_t gcal;
 	struct gcal_event_array event_array;
-	gcal_event event;
+	gcal_event_t event;
 	int result;
 	char *xml_entry, *tmp;
 
@@ -90,7 +90,7 @@ END_TEST
 START_TEST (test_oper_xmlevents)
 {
 	gcal_t gcal;
-	gcal_event event;
+	gcal_event_t event;
 	int result;
 	char *xml_entry, *tmp;
 
@@ -276,7 +276,7 @@ START_TEST (test_oper_purexmlcal)
 	char *super_calendar = NULL, *edit_url = NULL, *etag = NULL;
 	char *updated1 = NULL, *updated2 = NULL, *updated3 = NULL;
 	gcal_t gcal;
-	gcal_event event;
+	gcal_event_t event;
 	int result;
 
 	gcal = gcal_new(GCALENDAR);

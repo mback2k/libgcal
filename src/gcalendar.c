@@ -58,11 +58,9 @@ void gcal_delete(gcal_t gcal_obj)
 	gcal_destroy(gcal_obj);
 }
 
-
-
-gcal_event gcal_event_new(char *raw_xml)
+gcal_event_t gcal_event_new(char *raw_xml)
 {
-	gcal_event event = NULL;
+	gcal_event_t event = NULL;
 	dom_document *doc;
 	int result = -1;
 
@@ -91,7 +89,7 @@ exit:
 	return event;
 }
 
-void gcal_event_delete(gcal_event event)
+void gcal_event_delete(gcal_event_t event)
 {
 
 	if (!event)
@@ -251,7 +249,7 @@ exit:
 }
 
 
-int gcal_add_event(gcal_t gcal_obj, gcal_event event)
+int gcal_add_event(gcal_t gcal_obj, gcal_event_t event)
 {
 	int result = -1;
 	struct gcal_event updated;
@@ -291,7 +289,7 @@ exit:
 	return result;
 }
 
-int gcal_update_event(gcal_t gcal_obj, gcal_event event)
+int gcal_update_event(gcal_t gcal_obj, gcal_event_t event)
 {
 	int result = -1;
 	struct gcal_event updated;
@@ -326,7 +324,7 @@ exit:
 
 }
 
-int gcal_erase_event(gcal_t gcal_obj, gcal_event event)
+int gcal_erase_event(gcal_t gcal_obj, gcal_event_t event)
 {
 	int result = -1;
 	if ((!gcal_obj) || (!event))
@@ -395,7 +393,7 @@ void gcal_cleanup_events(struct gcal_event_array *events)
 	events->entries = NULL;
 }
 
-gcal_event gcal_event_element(struct gcal_event_array *events, size_t _index)
+gcal_event_t gcal_event_element(struct gcal_event_array *events, size_t _index)
 {
 	struct gcal_event *event = NULL;
 	if ((!events) || (_index > (events->length - 1)) ||
@@ -406,49 +404,49 @@ gcal_event gcal_event_element(struct gcal_event_array *events, size_t _index)
 	return event;
 }
 
-char *gcal_event_get_xml(gcal_event event)
+char *gcal_event_get_xml(gcal_event_t event)
 {
 	if ((!event))
 		return NULL;
 	return gcal_get_xml(&(event->common));
 }
 
-char gcal_event_is_deleted(gcal_event event)
+char gcal_event_is_deleted(gcal_event_t event)
 {
 	if ((!event))
 		return -1;
 	return gcal_get_deleted(&(event->common));
 }
 
-char *gcal_event_get_id(gcal_event event)
+char *gcal_event_get_id(gcal_event_t event)
 {
 	if ((!event))
 		return NULL;
 	return gcal_get_id(&(event->common));
 }
 
-char *gcal_event_get_updated(gcal_event event)
+char *gcal_event_get_updated(gcal_event_t event)
 {
 	if ((!event))
 		return NULL;
 	return gcal_get_updated(&(event->common));
 }
 
-char *gcal_event_get_title(gcal_event event)
+char *gcal_event_get_title(gcal_event_t event)
 {
 	if ((!event))
 		return NULL;
 	return gcal_get_title(&(event->common));
 }
 
-char *gcal_event_get_url(gcal_event event)
+char *gcal_event_get_url(gcal_event_t event)
 {
 	if ((!event))
 		return NULL;
 	return gcal_get_url(&(event->common));
 }
 
-char *gcal_event_get_etag(gcal_event event)
+char *gcal_event_get_etag(gcal_event_t event)
 {
 	if ((!event))
 		return NULL;
@@ -456,42 +454,42 @@ char *gcal_event_get_etag(gcal_event event)
 }
 
 /* This are the fields unique to calendar events */
-char *gcal_event_get_content(gcal_event event)
+char *gcal_event_get_content(gcal_event_t event)
 {
 	if ((!event))
 		return NULL;
 	return event->content;
 }
 
-char *gcal_event_get_recurrent(gcal_event event)
+char *gcal_event_get_recurrent(gcal_event_t event)
 {
 	if ((!event))
 		return NULL;
 	return event->dt_recurrent;
 }
 
-char *gcal_event_get_start(gcal_event event)
+char *gcal_event_get_start(gcal_event_t event)
 {
 	if ((!event))
 		return NULL;
 	return event->dt_start;
 }
 
-char *gcal_event_get_end(gcal_event event)
+char *gcal_event_get_end(gcal_event_t event)
 {
 	if ((!event))
 		return NULL;
 	return event->dt_end;
 }
 
-char *gcal_event_get_where(gcal_event event)
+char *gcal_event_get_where(gcal_event_t event)
 {
 	if ((!event))
 		return NULL;
 	return event->where;
 }
 
-char *gcal_event_get_status(gcal_event event)
+char *gcal_event_get_status(gcal_event_t event)
 {
 	if ((!event))
 		return NULL;
@@ -500,7 +498,7 @@ char *gcal_event_get_status(gcal_event event)
 
 
 /* Here starts the setters */
-int gcal_event_set_title(gcal_event event, char *field)
+int gcal_event_set_title(gcal_event_t event, char *field)
 {
 	int result = -1;
 
@@ -517,7 +515,7 @@ int gcal_event_set_title(gcal_event event, char *field)
 	return result;
 }
 
-int gcal_event_set_content(gcal_event event, char *field)
+int gcal_event_set_content(gcal_event_t event, char *field)
 {
 	int result = -1;
 
@@ -534,7 +532,7 @@ int gcal_event_set_content(gcal_event event, char *field)
 	return result;
 }
 
-int gcal_event_set_start(gcal_event event, char *field)
+int gcal_event_set_start(gcal_event_t event, char *field)
 {
 	int result = -1;
 
@@ -551,7 +549,7 @@ int gcal_event_set_start(gcal_event event, char *field)
 	return result;
 }
 
-int gcal_event_set_end(gcal_event event, char *field)
+int gcal_event_set_end(gcal_event_t event, char *field)
 {
 	int result = -1;
 
@@ -568,7 +566,7 @@ int gcal_event_set_end(gcal_event event, char *field)
 	return result;
 }
 
-int gcal_event_set_where(gcal_event event, char *field)
+int gcal_event_set_where(gcal_event_t event, char *field)
 {
 	int result = -1;
 

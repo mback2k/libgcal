@@ -18,7 +18,7 @@ START_TEST (test_usercalendarapi)
 {
 	gcal_t gcal;
 	struct gcal_event_array event_array;
-	gcal_event event;
+	gcal_event_t event;
 	char *ptr;
 	int result;
 	size_t i;
@@ -80,7 +80,7 @@ START_TEST (test_usermismatch)
 	gcal_t gcal;
 	struct gcal_event_array event_array;
 	struct gcal_contact_array contact_array;
-	gcal_event event;
+	gcal_event_t event;
 	gcal_contact contact;
 	int result;
 

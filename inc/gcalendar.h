@@ -41,6 +41,12 @@
 
 #include "gcal.h"
 
+/** Since user cannot create an static instance of it, it entitles itself
+ * to be a completely abstract data type. See \ref gcal_event.
+ */
+typedef struct gcal_event* gcal_event_t;
+
+
 /** Structure to hold events array, use it as a parameter for
  * \ref gcal_get_events.
  *
@@ -49,7 +55,7 @@
  */
 struct gcal_event_array {
 	/** See \ref gcal_event. */
-	struct gcal_event *entries;
+	gcal_event_t entries;
 	/** The number of entries */
 	size_t length;
 };
@@ -75,16 +81,16 @@ void gcal_delete(gcal_t gcal_obj);
  *
  * @param raw_xml A string with google data XML of this entry.
  *
- * @return A gcal_event object on success or NULL otherwise.
+ * @return A gcal_event_t object on success or NULL otherwise.
  */
-gcal_event gcal_event_new(char *raw_xml);
+gcal_event_t gcal_event_new(char *raw_xml);
 
 /** Free an gcal event object.
  *
  *
  * @param event An gcal event object, see also \ref gcal_event_new.
  */
-void gcal_event_delete(gcal_event event);
+void gcal_event_delete(gcal_event_t event);
 
 
 /** Helper function, does all calendar events dump and parsing, returning
@@ -120,7 +126,7 @@ void gcal_cleanup_events(struct gcal_event_array *events);
  *
  * @return 0 on sucess, -1 otherwise.
  */
-int gcal_add_event(gcal_t gcal_obj, gcal_event event);
+int gcal_add_event(gcal_t gcal_obj, gcal_event_t event);
 
 /** Updates an already existant event.
  *
@@ -137,7 +143,7 @@ int gcal_add_event(gcal_t gcal_obj, gcal_event event);
  *
  * @return 0 on sucess, -1 otherwise.
  */
-int gcal_update_event(gcal_t gcal_obj, gcal_event event);
+int gcal_update_event(gcal_t gcal_obj, gcal_event_t event);
 
 /** Deletes an event (pay attention that google server will mark this
  * event as 'cancelled').
@@ -154,7 +160,7 @@ int gcal_update_event(gcal_t gcal_obj, gcal_event event);
  *
  * @return 0 on sucess, -1 otherwise.
  */
-int gcal_erase_event(gcal_t gcal_obj, gcal_event event);
+int gcal_erase_event(gcal_t gcal_obj, gcal_event_t event);
 
 /** Query for updated events (added/edited/deleted).
  *
@@ -178,7 +184,6 @@ int gcal_erase_event(gcal_t gcal_obj, gcal_event event);
  */
 int gcal_get_updated_events(gcal_t gcal_obj, struct gcal_event_array *events,
 			    char *timestamp);
-
 
 
 /** Helper function, extracts the edit URL in a XML entry
@@ -311,7 +316,7 @@ int gcal_erase_xmlentry(gcal_t gcal_obj, char *xml_entry);
  *
  * @return Either a pointer to the event object or NULL.
  */
-gcal_event gcal_event_element(struct gcal_event_array *events, size_t _index);
+gcal_event_t gcal_event_element(struct gcal_event_array *events, size_t _index);
 
 
 /* Here starts gcal_event accessors */
@@ -326,7 +331,7 @@ gcal_event gcal_event_element(struct gcal_event_array *events, size_t _index);
  * case or if the field is not set). If the entry hasn't this field in the
  * atom stream, it will be set to an empty string (i.e. "").
  */
-char *gcal_event_get_id(gcal_event event);
+char *gcal_event_get_id(gcal_event_t event);
 
 /** Access last updated timestamp.
  *
@@ -338,7 +343,7 @@ char *gcal_event_get_id(gcal_event event);
  * case or if the field is not set). If the entry hasn't this field in the
  * atom stream, it will be set to an empty string (i.e. "").
  */
-char *gcal_event_get_updated(gcal_event event);
+char *gcal_event_get_updated(gcal_event_t event);
 
 /** Access event title.
  *
@@ -351,7 +356,7 @@ char *gcal_event_get_updated(gcal_event event);
  * case or if the field is not set). If the entry hasn't this field in the
  * atom stream, it will be set to an empty string (i.e. "").
  */
-char *gcal_event_get_title(gcal_event event);
+char *gcal_event_get_title(gcal_event_t event);
 
 /** Access the edit_url field.
  *
@@ -364,7 +369,7 @@ char *gcal_event_get_title(gcal_event event);
  * case or if the field is not set). If the entry hasn't this field in the
  * atom stream, it will be set to an empty string (i.e. "").
  */
-char *gcal_event_get_url(gcal_event event);
+char *gcal_event_get_url(gcal_event_t event);
 
 /** Access the etag field.
  *
@@ -377,7 +382,7 @@ char *gcal_event_get_url(gcal_event event);
  * case or if the field is not set). If the entry hasn't this field in the
  * atom stream, it will be set to an empty string (i.e. "").
  */
-char *gcal_event_get_etag(gcal_event event);
+char *gcal_event_get_etag(gcal_event_t event);
 
 /** Access the raw XML representation of the entry.
  *
@@ -391,7 +396,7 @@ char *gcal_event_get_etag(gcal_event event);
  * @return Pointer to internal object field (dont free it!) or NULL (in error
  * case or if the field is not set).
  */
-char *gcal_event_get_xml(gcal_event event);
+char *gcal_event_get_xml(gcal_event_t event);
 
 
 /** Checks if the current event was deleted or not.
@@ -404,7 +409,7 @@ char *gcal_event_get_xml(gcal_event event);
  * @return 1 for deleted, 0 for not deleted, -1 for error case (f the event
  * object is invalid).
  */
-char gcal_event_is_deleted(gcal_event event);
+char gcal_event_is_deleted(gcal_event_t event);
 
 
 /* This are the fields unique to calendar events */
@@ -420,7 +425,7 @@ char gcal_event_is_deleted(gcal_event event);
  * case or if the field is not set). If the entry hasn't this field in the
  * atom stream, it will be set to an empty string (i.e. "").
  */
-char *gcal_event_get_content(gcal_event event);
+char *gcal_event_get_content(gcal_event_t event);
 
 /** Checks if this is a recurrent event.
  *
@@ -435,7 +440,7 @@ char *gcal_event_get_content(gcal_event event);
  * case or if the field is not set). If the entry hasn't this field in the
  * atom stream, it will be set to an empty string (i.e. "").
  */
-char *gcal_event_get_recurrent(gcal_event event);
+char *gcal_event_get_recurrent(gcal_event_t event);
 
 /** Access event start timestamp.
  *
@@ -449,7 +454,7 @@ char *gcal_event_get_recurrent(gcal_event event);
  * case or if the field is not set). If the entry hasn't this field in the
  * atom stream, it will be set to an empty string (i.e. "").
  */
-char *gcal_event_get_start(gcal_event event);
+char *gcal_event_get_start(gcal_event_t event);
 
 /** Access event end timestamp.
  *
@@ -461,7 +466,7 @@ char *gcal_event_get_start(gcal_event event);
  * case or if the field is not set). If the entry hasn't this field in the
  * atom stream, it will be set to an empty string (i.e. "").
  */
-char *gcal_event_get_end(gcal_event event);
+char *gcal_event_get_end(gcal_event_t event);
 
 /** Access event location/place.
  *
@@ -474,7 +479,7 @@ char *gcal_event_get_end(gcal_event event);
  * case or if the field is not set). If the entry hasn't this field in the
  * atom stream, it will be set to an empty string (i.e. "").
  */
-char *gcal_event_get_where(gcal_event event);
+char *gcal_event_get_where(gcal_event_t event);
 
 
 /** Access event status.
@@ -490,7 +495,7 @@ char *gcal_event_get_where(gcal_event event);
  * case or if the field is not set). If the entry hasn't this field in the
  * atom stream, it will be set to an empty string (i.e. "").
  */
-char *gcal_event_get_status(gcal_event event);
+char *gcal_event_get_status(gcal_event_t event);
 
 
 /* Here starts the setters */
@@ -506,7 +511,7 @@ char *gcal_event_get_status(gcal_event event);
  *
  * @return 0 for sucess, -1 otherwise.
  */
-int gcal_event_set_title(gcal_event event, char *field);
+int gcal_event_set_title(gcal_event_t event, char *field);
 
 /** Set event detailed description.
  *
@@ -518,7 +523,7 @@ int gcal_event_set_title(gcal_event event, char *field);
  *
  * @return 0 for sucess, -1 otherwise.
  */
-int gcal_event_set_content(gcal_event event, char *field);
+int gcal_event_set_content(gcal_event_t event, char *field);
 
 /** Set event start time.
  *
@@ -531,7 +536,7 @@ int gcal_event_set_content(gcal_event event, char *field);
  *
  * @return 0 for sucess, -1 otherwise.
  */
-int gcal_event_set_start(gcal_event event, char *field);
+int gcal_event_set_start(gcal_event_t event, char *field);
 
 
 /** Set event end time.
@@ -545,7 +550,7 @@ int gcal_event_set_start(gcal_event event, char *field);
  *
  * @return 0 for sucess, -1 otherwise.
  */
-int gcal_event_set_end(gcal_event event, char *field);
+int gcal_event_set_end(gcal_event_t event, char *field);
 
 /** Set event location/place.
  *
@@ -558,7 +563,7 @@ int gcal_event_set_end(gcal_event event, char *field);
  *
  * @return 0 for sucess, -1 otherwise.
  */
-int gcal_event_set_where(gcal_event event, char *field);
+int gcal_event_set_where(gcal_event_t event, char *field);
 
 /* TODO: Not implemented */
 
@@ -572,7 +577,7 @@ int gcal_event_set_where(gcal_event event, char *field);
  *
  * @return 0 for sucess, -1 otherwise.
  */
-int gcal_event_set_recurrent(gcal_event event, char *field);
+int gcal_event_set_recurrent(gcal_event_t event, char *field);
 
 /** Set event status (for while, all then were created as 'confirmed').
  *
@@ -583,6 +588,6 @@ int gcal_event_set_recurrent(gcal_event event, char *field);
  *
  * @return 0 for sucess, -1 otherwise.
  */
-int gcal_event_set_status(gcal_event event, char *field);
+int gcal_event_set_status(gcal_event_t event, char *field);
 
 #endif
