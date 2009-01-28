@@ -366,6 +366,19 @@ char *gcal_event_get_title(gcal_event event);
  */
 char *gcal_event_get_url(gcal_event event);
 
+/** Access the etag field.
+ *
+ * All entries have an etag field (required by Google Data API 2.0) that
+ * must be used to do operations (edit/delete).
+ *
+ * @param event An event object, see \ref gcal_event.
+ *
+ * @return Pointer to internal object field (dont free it!) or NULL (in error
+ * case or if the field is not set). If the entry hasn't this field in the
+ * atom stream, it will be set to an empty string (i.e. "").
+ */
+char *gcal_event_get_etag(gcal_event event);
+
 /** Access the raw XML representation of the entry.
  *
  * Besides having the more important information already parsed, its still

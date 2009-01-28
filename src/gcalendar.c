@@ -187,12 +187,13 @@ int gcal_update_xmlentry(gcal_t gcal_obj, char *xml_entry, char **xml_updated,
 		if (!(url = strdup(edit_url)))
 			goto exit;
 
-	if (!etag)
+	if (!etag) {
 		if ((result = get_edit_etag(xml_entry, strlen(xml_entry),
 					    &pvt_etag)))
 			goto exit;
 		else
 			etag = pvt_etag;
+	}
 
 	/* Mounts costum HTTP header using ETag */
 	snprintf(buffer, sizeof(buffer) - 1, "%s\%s",
