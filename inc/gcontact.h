@@ -42,12 +42,17 @@
 #include "gcal.h"
 #include "gcont.h"
 
+/** Since user cannot create an static instance of it, it entitles itself
+ * to be a completely abstract data type. See \ref gcal_contact.
+ */
+typedef struct gcal_contact* gcal_contact_t;
+
 /** Contact entries array. Its used to hold retrieved contacts
  * retrieved from google server.
  */
 struct gcal_contact_array {
 	/** See \ref gcal_contact. */
-	struct gcal_contact *entries;
+	gcal_contact_t entries;
 	/** The number of entries */
 	size_t length;
 };
@@ -61,14 +66,14 @@ struct gcal_contact_array {
  *
  * @return A gcal_contact object on success or NULL otherwise.
  */
-gcal_contact gcal_contact_new(char *raw_xml);
+gcal_contact_t gcal_contact_new(char *raw_xml);
 
 /** Free a gcal contact object.
  *
  *
  * @param contact An gcal contact object, see also \ref gcal_contact_new.
  */
-void gcal_contact_delete(gcal_contact contact);
+void gcal_contact_delete(gcal_contact_t contact);
 
 
 /** Helper function, does all contact dump and parsing, returning
@@ -109,8 +114,8 @@ void gcal_cleanup_contacts(struct gcal_contact_array *contacts);
  *
  * @return Either a pointer to the event object or NULL.
  */
-gcal_contact gcal_contact_element(struct gcal_contact_array *contacts,
-				  size_t _index);
+gcal_contact_t gcal_contact_element(struct gcal_contact_array *contacts,
+				    size_t _index);
 
 /** Add a new contat in user's account.
  *
@@ -122,7 +127,7 @@ gcal_contact gcal_contact_element(struct gcal_contact_array *contacts,
  *
  * @return 0 on sucess, -1 otherwise.
  */
-int gcal_add_contact(gcal_t gcalobj, gcal_contact contact);
+int gcal_add_contact(gcal_t gcalobj, gcal_contact_t contact);
 
 
 /** Updates an already existant contact.
@@ -140,7 +145,7 @@ int gcal_add_contact(gcal_t gcalobj, gcal_contact contact);
  *
  * @return 0 on sucess, -1 otherwise.
  */
-int gcal_update_contact(gcal_t gcalobj, gcal_contact contact);
+int gcal_update_contact(gcal_t gcalobj, gcal_contact_t contact);
 
 
 /** Deletes a contact (once you do this, is not possible to recover the
@@ -155,7 +160,7 @@ int gcal_update_contact(gcal_t gcalobj, gcal_contact contact);
  *
  * @return 0 on sucess, -1 otherwise.
  */
-int gcal_erase_contact(gcal_t gcalobj, gcal_contact contact);
+int gcal_erase_contact(gcal_t gcalobj, gcal_contact_t contact);
 
 /** Query for updated contacts (added/edited/deleted).
  *
@@ -197,7 +202,7 @@ int gcal_get_updated_contacts(gcal_t gcal_obj,
  * case or if the field is not set). If the entry hasn't this field in the
  * atom stream, it will be set to an empty string (i.e. "").
  */
-char *gcal_contact_get_id(gcal_contact contact);
+char *gcal_contact_get_id(gcal_contact_t contact);
 
 /** Access last updated timestamp.
  *
@@ -211,7 +216,7 @@ char *gcal_contact_get_id(gcal_contact contact);
  * case or if the field is not set). If the entry hasn't this field in the
  * atom stream, it will be set to an empty string (i.e. "").
  */
-char *gcal_contact_get_updated(gcal_contact contact);
+char *gcal_contact_get_updated(gcal_contact_t contact);
 
 /** Access contact name.
  *
@@ -224,7 +229,7 @@ char *gcal_contact_get_updated(gcal_contact contact);
  * case or if the field is not set). If the entry hasn't this field in the
  * atom stream, it will be set to an empty string (i.e. "").
  */
-char *gcal_contact_get_title(gcal_contact contact);
+char *gcal_contact_get_title(gcal_contact_t contact);
 
 /** Access the edit_url field.
  *
@@ -238,7 +243,7 @@ char *gcal_contact_get_title(gcal_contact contact);
  * case or if the field is not set). If the entry hasn't this field in the
  * atom stream, it will be set to an empty string (i.e. "").
  */
-char *gcal_contact_get_url(gcal_contact contact);
+char *gcal_contact_get_url(gcal_contact_t contact);
 
 
 /** Access the ETag
@@ -252,7 +257,7 @@ char *gcal_contact_get_url(gcal_contact contact);
  * case or if the field is not set). If the entry hasn't this field in the
  * atom stream, it will be set to an empty string (i.e. "").
  */
-char *gcal_contact_get_etag(gcal_contact contact);
+char *gcal_contact_get_etag(gcal_contact_t contact);
 
 /** Access the raw XML representation of the entry.
  *
@@ -267,7 +272,7 @@ char *gcal_contact_get_etag(gcal_contact contact);
  * case or if the field is not set). If the entry hasn't this field in the
  * atom stream, it will be set to an empty string (i.e. "").
  */
-char *gcal_contact_get_xml(gcal_contact contact);
+char *gcal_contact_get_xml(gcal_contact_t contact);
 
 /** Checks if the current event was deleted or not.
  *
@@ -279,7 +284,7 @@ char *gcal_contact_get_xml(gcal_contact contact);
  * @return 1 for deleted, 0 for not deleted, -1 for error case (f the event
  * object is invalid).
  */
-char gcal_contact_is_deleted(gcal_contact contact);
+char gcal_contact_is_deleted(gcal_contact_t contact);
 
 
 /* This are the fields unique to contacts */
@@ -298,7 +303,7 @@ char gcal_contact_is_deleted(gcal_contact contact);
  * atom stream, it will be set to an empty string (i.e. "").
 
  */
-char *gcal_contact_get_email(gcal_contact contact);
+char *gcal_contact_get_email(gcal_contact_t contact);
 
 /** Access contact description.
  *
@@ -310,7 +315,7 @@ char *gcal_contact_get_email(gcal_contact contact);
  * case or if the field is not set). If the entry hasn't this field in the
  * atom stream, it will be set to an empty string (i.e. "").
  */
-char *gcal_contact_get_content(gcal_contact contact);
+char *gcal_contact_get_content(gcal_contact_t contact);
 
 /** Missing implementation.
  *
@@ -320,7 +325,7 @@ char *gcal_contact_get_content(gcal_contact contact);
  *
  * @return Will only return NULL.
  */
-char *gcal_contact_get_orgname(gcal_contact contact);
+char *gcal_contact_get_orgname(gcal_contact_t contact);
 
 /** Missing implementation.
  *
@@ -330,7 +335,7 @@ char *gcal_contact_get_orgname(gcal_contact contact);
  *
  * @return Will only return NULL.
  */
-char *gcal_contact_get_orgtitle(gcal_contact contact);
+char *gcal_contact_get_orgtitle(gcal_contact_t contact);
 
 /** Missing implementation.
  *
@@ -340,7 +345,7 @@ char *gcal_contact_get_orgtitle(gcal_contact contact);
  *
  * @return Will only return NULL.
  */
-char *gcal_contact_get_im(gcal_contact contact);
+char *gcal_contact_get_im(gcal_contact_t contact);
 
 /** Missing implementation.
  *
@@ -350,7 +355,7 @@ char *gcal_contact_get_im(gcal_contact contact);
  *
  * @return Will only return NULL.
  */
-char *gcal_contact_get_phone(gcal_contact contact);
+char *gcal_contact_get_phone(gcal_contact_t contact);
 
 /** Missing implementation.
  *
@@ -360,7 +365,7 @@ char *gcal_contact_get_phone(gcal_contact contact);
  *
  * @return Will only return NULL.
  */
-char *gcal_contact_get_address(gcal_contact contact);
+char *gcal_contact_get_address(gcal_contact_t contact);
 
 
 /* Here starts the gcal_contact setters */
@@ -376,7 +381,7 @@ char *gcal_contact_get_address(gcal_contact contact);
  *
  * @return 0 for sucess, -1 otherwise.
  */
-int gcal_contact_set_title(gcal_contact contact, char *field);
+int gcal_contact_set_title(gcal_contact_t contact, char *field);
 
 /** Sets contac email.
  *
@@ -393,7 +398,7 @@ int gcal_contact_set_title(gcal_contact contact, char *field);
  *
  * @return 0 for sucess, -1 otherwise.
  */
-int gcal_contact_set_email(gcal_contact contact, char *field);
+int gcal_contact_set_email(gcal_contact_t contact, char *field);
 
 /* TODO: Contacts extra fields, not implemented in internal functions
  * see ticket: http://code.google.com/p/libgcal/issues/detail?id=4
@@ -408,7 +413,7 @@ int gcal_contact_set_email(gcal_contact contact, char *field);
  *
  * @return Will only return -1.
  */
-int gcal_contact_set_phone(gcal_contact contact, char *field);
+int gcal_contact_set_phone(gcal_contact_t contact, char *field);
 
 
 #endif

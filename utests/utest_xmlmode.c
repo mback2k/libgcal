@@ -57,7 +57,7 @@ START_TEST (test_get_xmlcontacts)
 
 	gcal_t gcal;
 	struct gcal_contact_array contact_array;
-	gcal_contact contact;
+	gcal_contact_t contact;
 	int result;
 	char *xml_entry, *tmp;
 
@@ -148,7 +148,7 @@ END_TEST
 START_TEST (test_oper_xmlcontact)
 {
 	gcal_t gcal;
-	gcal_contact contact;
+	gcal_contact_t contact;
 	int result;
 	char *xml_entry, *tmp;
 
@@ -206,7 +206,7 @@ START_TEST (test_oper_purexml)
 	char *super_contact = NULL, *edit_url = NULL, *etag = NULL;
 	char *updated1 = NULL, *updated2 = NULL, *updated3 = NULL;
 	gcal_t gcal;
-	gcal_contact contact;
+	gcal_contact_t contact;
 	int result;
 
 	gcal = gcal_new(GCONTACT);

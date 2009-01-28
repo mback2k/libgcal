@@ -238,7 +238,7 @@ START_TEST (test_access_contacts)
 {
 	gcal_t gcal;
 	struct gcal_contact_array contact_array;
-	gcal_contact contact;
+	gcal_contact_t contact;
 	size_t i;
 	int result;
 	char *ptr;
@@ -323,7 +323,7 @@ END_TEST
 START_TEST (test_oper_contact)
 {
 	gcal_t gcal;
-	gcal_contact contact;
+	gcal_contact_t contact;
 	int result;
 
 	/* Create a new contact object */
@@ -371,7 +371,7 @@ START_TEST (test_query_contact_updated)
 {
 	gcal_t gcal;
 	struct gcal_contact_array contact_array;
-	gcal_contact contact;
+	gcal_contact_t contact;
 	int result;
 	size_t tmp;
 

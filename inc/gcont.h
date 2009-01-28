@@ -46,12 +46,6 @@ POSSIBILITY OF SUCH DAMAGE.
 /** Contact data type */
 struct gcal_contact;
 
-/** Since user cannot create an static instance of it, it entitles itself
- * to be a completely abstract data type. See \ref gcal_contact.
- */
-typedef struct gcal_contact* gcal_contact;
-
-
 /** Extracts from the atom stream the contact entries  (you should
  * had got the atom stream before, using \ref gcal_dump).
  *

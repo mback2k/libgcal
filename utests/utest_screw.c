@@ -81,7 +81,7 @@ START_TEST (test_usermismatch)
 	struct gcal_event_array event_array;
 	struct gcal_contact_array contact_array;
 	gcal_event_t event;
-	gcal_contact contact;
+	gcal_contact_t contact;
 	int result;
 
 	gcal = gcal_new(GCALENDAR);

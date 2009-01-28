@@ -48,13 +48,13 @@ POSSIBILITY OF SUCH DAMAGE.
 #include "gcal_parser.h"
 #include "internal_gcal.h"
 
-gcal_contact gcal_contact_new(char *raw_xml)
+gcal_contact_t gcal_contact_new(char *raw_xml)
 {
-	gcal_contact contact = NULL;
+	gcal_contact_t contact = NULL;
 	dom_document *doc;
 	int result = -1;
 
-	contact = (gcal_contact) malloc(sizeof(struct gcal_contact));
+	contact = (gcal_contact_t) malloc(sizeof(struct gcal_contact));
 	if (!contact)
 		goto exit;
 
@@ -79,7 +79,7 @@ exit:
 	return contact;
 }
 
-void gcal_contact_delete(gcal_contact contact)
+void gcal_contact_delete(gcal_contact_t contact)
 {
 	if (!contact)
 		return;
@@ -128,7 +128,7 @@ void gcal_cleanup_contacts(struct gcal_contact_array *contacts)
 }
 
 
-int gcal_add_contact(gcal_t gcalobj, gcal_contact contact)
+int gcal_add_contact(gcal_t gcalobj, gcal_contact_t contact)
 {
 	int result = -1;
 	struct gcal_contact updated;
@@ -170,7 +170,7 @@ exit:
 	return result;
 }
 
-int gcal_update_contact(gcal_t gcalobj, gcal_contact contact)
+int gcal_update_contact(gcal_t gcalobj, gcal_contact_t contact)
 {
 	int result = -1;
 	struct gcal_contact updated;
@@ -206,7 +206,7 @@ exit:
 	return result;
 }
 
-int gcal_erase_contact(gcal_t gcalobj, gcal_contact contact)
+int gcal_erase_contact(gcal_t gcalobj, gcal_contact_t contact)
 {
 	int result = -1;
 	if ((!gcalobj) || (!contact))
@@ -242,7 +242,7 @@ int gcal_get_updated_contacts(gcal_t gcal_obj,
 	return result;
 }
 
-gcal_contact gcal_contact_element(struct gcal_contact_array *contacts,
+gcal_contact_t gcal_contact_element(struct gcal_contact_array *contacts,
 				  size_t _index)
 
 {
@@ -255,49 +255,49 @@ gcal_contact gcal_contact_element(struct gcal_contact_array *contacts,
 	return contact;
 }
 
-char *gcal_contact_get_xml(gcal_contact contact)
+char *gcal_contact_get_xml(gcal_contact_t contact)
 {
 	if ((!contact))
 		return NULL;
 	return gcal_get_xml(&(contact->common));
 }
 
-char *gcal_contact_get_id(gcal_contact contact)
+char *gcal_contact_get_id(gcal_contact_t contact)
 {
 	if ((!contact))
 		return NULL;
 	return gcal_get_id(&(contact->common));
 }
 
-char *gcal_contact_get_updated(gcal_contact contact)
+char *gcal_contact_get_updated(gcal_contact_t contact)
 {
 	if ((!contact))
 		return NULL;
 	return gcal_get_updated(&(contact->common));
 }
 
-char *gcal_contact_get_title(gcal_contact contact)
+char *gcal_contact_get_title(gcal_contact_t contact)
 {
 	if ((!contact))
 		return NULL;
 	return gcal_get_title(&(contact->common));
 }
 
-char *gcal_contact_get_url(gcal_contact contact)
+char *gcal_contact_get_url(gcal_contact_t contact)
 {
 	if ((!contact))
 		return NULL;
 	return gcal_get_url(&(contact->common));
 }
 
-char *gcal_contact_get_etag(gcal_contact contact)
+char *gcal_contact_get_etag(gcal_contact_t contact)
 {
 	if ((!contact))
 		return NULL;
 	return gcal_get_etag(&(contact->common));
 }
 
-char gcal_contact_is_deleted(gcal_contact contact)
+char gcal_contact_is_deleted(gcal_contact_t contact)
 {
 	if ((!contact))
 		return -1;
@@ -306,49 +306,49 @@ char gcal_contact_is_deleted(gcal_contact contact)
 
 
 /* This are the fields unique to calendar contacts */
-char *gcal_contact_get_email(gcal_contact contact)
+char *gcal_contact_get_email(gcal_contact_t contact)
 {
 	if ((!contact))
 		return NULL;
 	return contact->email;
 }
 
-char *gcal_contact_get_content(gcal_contact contact)
+char *gcal_contact_get_content(gcal_contact_t contact)
 {
 	if ((!contact))
 		return NULL;
 	return contact->content;
 }
 
-char *gcal_contact_get_orgname(gcal_contact contact)
+char *gcal_contact_get_orgname(gcal_contact_t contact)
 {
 	if ((!contact))
 		return NULL;
 	return contact->org_name;
 }
 
-char *gcal_contact_get_orgtitle(gcal_contact contact)
+char *gcal_contact_get_orgtitle(gcal_contact_t contact)
 {
 	if ((!contact))
 		return NULL;
 	return contact->org_title;
 }
 
-char *gcal_contact_get_im(gcal_contact contact)
+char *gcal_contact_get_im(gcal_contact_t contact)
 {
 	if ((!contact))
 		return NULL;
 	return contact->im;
 }
 
-char *gcal_contact_get_phone(gcal_contact contact)
+char *gcal_contact_get_phone(gcal_contact_t contact)
 {
 	if ((!contact))
 		return NULL;
 	return contact->phone_number;
 }
 
-char *gcal_contact_get_address(gcal_contact contact)
+char *gcal_contact_get_address(gcal_contact_t contact)
 {
 	if ((!contact))
 		return NULL;
@@ -356,7 +356,7 @@ char *gcal_contact_get_address(gcal_contact contact)
 }
 
 /* Here starts the gcal_contact setters */
-int gcal_contact_set_title(gcal_contact contact, char *field)
+int gcal_contact_set_title(gcal_contact_t contact, char *field)
 {
 	int result = -1;
 
@@ -373,7 +373,7 @@ int gcal_contact_set_title(gcal_contact contact, char *field)
 	return result;
 }
 
-int gcal_contact_set_email(gcal_contact contact, char *field)
+int gcal_contact_set_email(gcal_contact_t contact, char *field)
 {
 	int result = -1;
 
@@ -393,7 +393,7 @@ int gcal_contact_set_email(gcal_contact contact, char *field)
 /* TODO: Contacts extra fields, not implemented in internal functions
  * see ticket: http://code.google.com/p/libgcal/issues/detail?id=4
  */
-int gcal_contact_set_phone(gcal_contact contact, char *field)
+int gcal_contact_set_phone(gcal_contact_t contact, char *field)
 {
 	(void)contact;
 	(void)field;
