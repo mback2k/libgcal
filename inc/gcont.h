@@ -61,7 +61,7 @@ struct gcal_contact;
  * @return A pointer on sucess, NULL otherwise.
  */
 struct gcal_contact *gcal_get_all_contacts(struct gcal_resource *ptr_gcal,
-				       size_t *length);
+					   size_t *length);
 
 
 /** Cleanup memory of 1 contact structure pointer.
