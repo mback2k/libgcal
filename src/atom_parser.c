@@ -93,10 +93,13 @@ int atom_entries(xmlDoc *document)
 	if (!xpath_obj)
 		goto exit;
 
-	node = xpath_obj->nodesetval;
-	/* The expression can only return 1 node */
-	if (node->nodeNr != 1)
+	if ((node = xpath_obj->nodesetval)) {
+		/* The expression can only return 1 node */
+		if (node->nodeNr != 1)
+			goto cleanup;
+	} else
 		goto cleanup;
+
 	/* Node type must be 'text' */
 	if (strcmp(node->nodeTab[0]->name, "text") ||
 	    (node->nodeTab[0]->type != XML_TEXT_NODE))
