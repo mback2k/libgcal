@@ -92,7 +92,7 @@ END_TEST
 START_TEST (test_contact_extract)
 {
 	int result;
-	size_t count, i;
+	size_t count, i, j;
 	struct gcal_contact *contacts;
 	char *contacts_email[] = { "gcal4tester@gmail.com",
 				   "gcalntester@gmail.com",
@@ -111,19 +111,15 @@ START_TEST (test_contact_extract)
 	contacts = gcal_get_all_contacts(ptr_gcal, &count);
 	fail_if(contacts == NULL, "Failed extracting the contacts vector!");
 
-	for (i = 0; i < count; ++i)
-		if ((!(strcmp(contacts[i].email,
-			      contacts_email[found_count]))) &&
-		    (!(strcmp(contacts[i].common.title,
-			      contacts_name[found_count])))) {
-			++found_count;
-			if (found_count == contacts_count)
-				break;
-		}
-
+	for (i = 0; i < contacts_count; ++i)
+		for (j = 0; j < count; ++j)
+			if ((!(strcmp(contacts[i].email,
+				      contacts_email[j]))) &&
+			    (!(strcmp(contacts[i].common.title,
+				      contacts_name[j]))))
+				++found_count;
 
 	fail_if(found_count != contacts_count, "Cannot find all 3 contacts!");
-
 	gcal_destroy_contacts(contacts, count);
 }
 END_TEST
