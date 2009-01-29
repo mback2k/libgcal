@@ -3,7 +3,8 @@
       xmlns:openSearch='http://a9.com/-/spec/opensearchrss/1.0/'
       xmlns:gContact='http://schemas.google.com/contact/2008'
       xmlns:batch='http://schemas.google.com/gdata/batch'
-      xmlns:gd='http://schemas.google.com/g/2005'>
+      xmlns:gd='http://schemas.google.com/g/2005'
+	gd:etag='"EE4NTgBGfCp7ImA6WhVV"'>
   <id>gcalntester@gmail.com</id>
   <updated>2008-08-29T16:16:55.701Z</updated>
   <category scheme='http://schemas.google.com/g/2005#kind'
@@ -31,7 +32,7 @@
   <openSearch:totalResults>1</openSearch:totalResults>
   <openSearch:startIndex>1</openSearch:startIndex>
   <openSearch:itemsPerPage>999999999</openSearch:itemsPerPage>
-<entry>
+<entry gd:etag='"EE4NTgBGfCp7ImA6WhVV"'>
   <id>http://www.google.com/m8/feeds/contacts/gcalntester%40gmail.com/base/1caa6daa8bed4038</id><updated>2008-08-20T20:01:08.015Z</updated><category scheme="http://schemas.google.com/g/2005#kind" term="http://schemas.google.com/contact/2008#contact"/><title type="text"/><link rel="self" type="application/atom+xml" href="http://www.google.com/m8/feeds/contacts/gcalntester%40gmail.com/base/1caa6daa8bed4038"/><link rel="edit" type="application/atom+xml" href="http://www.google.com/m8/feeds/contacts/gcalntester%40gmail.com/base/1caa6daa8bed4038/1219262468015000"/>
 <gd:deleted/>
 </entry>

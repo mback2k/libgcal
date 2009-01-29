@@ -51,7 +51,8 @@ START_TEST (test_entry_list)
 	fail_if(res == -1, "failed to build document tree!");
 
 	num_entries = atom_entries(doc);
-	fail_if(num_entries != 4, "failed get correct number of entries");
+	fail_if(num_entries != 4, "failed get correct number of entries: "
+		"4 != %d\n", num_entries);
 
 	clean_doc_tree(&doc);
 }

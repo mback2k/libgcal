@@ -35,7 +35,7 @@
   <openSearch:itemsPerPage>999999999</openSearch:itemsPerPage>
   <gCal:timezone value='America/Sao_Paulo'/>
 
-  <entry>
+  <entry gd:etag='"EE4NTgBGfCp7ImA6WhVV"'>
     <id>http://www.google.com/calendar/feeds/gcalntester%40gmail.com/private/full/bhmh5p4okmiouiqi2sgnefmo44
     </id>
     <published>2008-08-20T19:45:00.000Z</published>
