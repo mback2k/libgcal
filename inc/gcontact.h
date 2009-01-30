@@ -416,4 +416,13 @@ int gcal_contact_set_email(gcal_contact_t contact, char *field);
 int gcal_contact_set_phone(gcal_contact_t contact, char *field);
 
 
+int gcal_contact_set_url(gcal_contact_t contact, char *field);
+
+
+int gcal_contact_set_id(gcal_contact_t contact, char *field);
+
+
+int gcal_contact_set_etag(gcal_contact_t contact, char *field);
+
+
 #endif

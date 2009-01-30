@@ -390,6 +390,59 @@ int gcal_contact_set_email(gcal_contact_t contact, char *field)
 	return result;
 }
 
+int gcal_contact_set_url(gcal_contact_t contact, char *field)
+{
+	int result = -1;
+
+	if ((!contact) || (!field))
+		return result;
+
+	if (contact->common.edit_uri)
+		free(contact->common.edit_uri);
+
+	contact->common.edit_uri = strdup(field);
+	if (contact->common.edit_uri)
+		result = 0;
+
+	return result;
+}
+
+
+int gcal_contact_set_id(gcal_contact_t contact, char *field)
+{
+	int result = -1;
+
+	if ((!contact) || (!field))
+		return result;
+
+	if (contact->common.id)
+		free(contact->common.id);
+
+	contact->common.id = strdup(field);
+	if (contact->common.id)
+		result = 0;
+
+	return result;
+}
+
+
+int gcal_contact_set_etag(gcal_contact_t contact, char *field)
+{
+	int result = -1;
+
+	if ((!contact) || (!field))
+		return result;
+
+	if (contact->common.etag)
+		free(contact->common.etag);
+
+	contact->common.etag = strdup(field);
+	if (contact->common.etag)
+		result = 0;
+
+	return result;
+}
+
 /* TODO: Contacts extra fields, not implemented in internal functions
  * see ticket: http://code.google.com/p/libgcal/issues/detail?id=4
  */
