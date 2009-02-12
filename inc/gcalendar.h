@@ -511,7 +511,7 @@ char *gcal_event_get_status(gcal_event_t event);
  *
  * @return 0 for sucess, -1 otherwise.
  */
-int gcal_event_set_title(gcal_event_t event, char *field);
+int gcal_event_set_title(gcal_event_t event, const char *field);
 
 /** Set event detailed description.
  *
@@ -523,7 +523,7 @@ int gcal_event_set_title(gcal_event_t event, char *field);
  *
  * @return 0 for sucess, -1 otherwise.
  */
-int gcal_event_set_content(gcal_event_t event, char *field);
+int gcal_event_set_content(gcal_event_t event, const char *field);
 
 /** Set event start time.
  *
@@ -536,7 +536,7 @@ int gcal_event_set_content(gcal_event_t event, char *field);
  *
  * @return 0 for sucess, -1 otherwise.
  */
-int gcal_event_set_start(gcal_event_t event, char *field);
+int gcal_event_set_start(gcal_event_t event, const char *field);
 
 
 /** Set event end time.
@@ -550,7 +550,7 @@ int gcal_event_set_start(gcal_event_t event, char *field);
  *
  * @return 0 for sucess, -1 otherwise.
  */
-int gcal_event_set_end(gcal_event_t event, char *field);
+int gcal_event_set_end(gcal_event_t event, const char *field);
 
 /** Set event location/place.
  *
@@ -563,7 +563,7 @@ int gcal_event_set_end(gcal_event_t event, char *field);
  *
  * @return 0 for sucess, -1 otherwise.
  */
-int gcal_event_set_where(gcal_event_t event, char *field);
+int gcal_event_set_where(gcal_event_t event, const char *field);
 
 /* TODO: Not implemented */
 
@@ -577,7 +577,7 @@ int gcal_event_set_where(gcal_event_t event, char *field);
  *
  * @return 0 for sucess, -1 otherwise.
  */
-int gcal_event_set_recurrent(gcal_event_t event, char *field);
+int gcal_event_set_recurrent(gcal_event_t event, const char *field);
 
 /** Set event status (for while, all then were created as 'confirmed').
  *
@@ -588,6 +588,9 @@ int gcal_event_set_recurrent(gcal_event_t event, char *field);
  *
  * @return 0 for sucess, -1 otherwise.
  */
-int gcal_event_set_status(gcal_event_t event, char *field);
+int gcal_event_set_status(gcal_event_t event, const char *field);
+
+
+/* TODO: add setters for etag, id, url */
 
 #endif

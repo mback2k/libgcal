@@ -381,9 +381,9 @@ char *gcal_contact_get_address(gcal_contact_t contact);
  *
  * @return 0 for sucess, -1 otherwise.
  */
-int gcal_contact_set_title(gcal_contact_t contact, char *field);
+int gcal_contact_set_title(gcal_contact_t contact, const char *field);
 
-/** Sets contac email.
+/** Sets contact email.
  *
  * This field is a hard requirement to create a new contact. Google server
  * supports more e-mails with special tags too, but its not supported
@@ -398,7 +398,50 @@ int gcal_contact_set_title(gcal_contact_t contact, char *field);
  *
  * @return 0 for sucess, -1 otherwise.
  */
-int gcal_contact_set_email(gcal_contact_t contact, char *field);
+int gcal_contact_set_email(gcal_contact_t contact, const char *field);
+
+/** Sets contact edit url.
+ *
+ * This field is a hard requirement to edit/delete a contact. Starting with
+ * google data API 2.0, the ETag is also required.
+ *
+ * @param contact A contact object, see \ref gcal_contact.
+ *
+ * @param field String with the edit url email
+ * (e.g. "http://www.google.com/m8/feeds/contacts/user%40gmail.com/base/2").
+ *
+ * @return 0 for sucess, -1 otherwise.
+ */
+int gcal_contact_set_url(gcal_contact_t contact, const char *field);
+
+
+/** Sets contact ID.
+ *
+ * Each contact has an ID (but this can extracted from the edit_url).
+ *
+ * @param contact A contact object, see \ref gcal_contact.
+ *
+ * @param field String with contact ID (e.g. "joe.doe@nobody.com").
+ *
+ * @return 0 for sucess, -1 otherwise.
+ */
+int gcal_contact_set_id(gcal_contact_t contact, const char *field);
+
+
+/** Sets contact ETag.
+ *
+ * Starting with google data API 2.0, the ETag is used for versioning the
+ * entries. Is required for edit/delete.
+ *
+ * @param contact A contact object, see \ref gcal_contact.
+ *
+ * @param field String with contact ETag (e.g. "Q3c5eDVSLyp7ImA9WxRbFE0KRAY.").
+ *
+ * @return 0 for sucess, -1 otherwise.
+ */
+int gcal_contact_set_etag(gcal_contact_t contact, const char *field);
+
+
 
 /* TODO: Contacts extra fields, not implemented in internal functions
  * see ticket: http://code.google.com/p/libgcal/issues/detail?id=4
@@ -413,16 +456,7 @@ int gcal_contact_set_email(gcal_contact_t contact, char *field);
  *
  * @return Will only return -1.
  */
-int gcal_contact_set_phone(gcal_contact_t contact, char *field);
-
-
-int gcal_contact_set_url(gcal_contact_t contact, char *field);
-
-
-int gcal_contact_set_id(gcal_contact_t contact, char *field);
-
-
-int gcal_contact_set_etag(gcal_contact_t contact, char *field);
+int gcal_contact_set_phone(gcal_contact_t contact, const char *field);
 
 
 #endif

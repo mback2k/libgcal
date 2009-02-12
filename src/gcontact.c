@@ -356,7 +356,7 @@ char *gcal_contact_get_address(gcal_contact_t contact)
 }
 
 /* Here starts the gcal_contact setters */
-int gcal_contact_set_title(gcal_contact_t contact, char *field)
+int gcal_contact_set_title(gcal_contact_t contact, const char *field)
 {
 	int result = -1;
 
@@ -373,7 +373,7 @@ int gcal_contact_set_title(gcal_contact_t contact, char *field)
 	return result;
 }
 
-int gcal_contact_set_email(gcal_contact_t contact, char *field)
+int gcal_contact_set_email(gcal_contact_t contact, const char *field)
 {
 	int result = -1;
 
@@ -390,7 +390,7 @@ int gcal_contact_set_email(gcal_contact_t contact, char *field)
 	return result;
 }
 
-int gcal_contact_set_url(gcal_contact_t contact, char *field)
+int gcal_contact_set_url(gcal_contact_t contact, const char *field)
 {
 	int result = -1;
 
@@ -408,7 +408,7 @@ int gcal_contact_set_url(gcal_contact_t contact, char *field)
 }
 
 
-int gcal_contact_set_id(gcal_contact_t contact, char *field)
+int gcal_contact_set_id(gcal_contact_t contact, const char *field)
 {
 	int result = -1;
 
@@ -426,7 +426,7 @@ int gcal_contact_set_id(gcal_contact_t contact, char *field)
 }
 
 
-int gcal_contact_set_etag(gcal_contact_t contact, char *field)
+int gcal_contact_set_etag(gcal_contact_t contact, const char *field)
 {
 	int result = -1;
 
@@ -446,7 +446,7 @@ int gcal_contact_set_etag(gcal_contact_t contact, char *field)
 /* TODO: Contacts extra fields, not implemented in internal functions
  * see ticket: http://code.google.com/p/libgcal/issues/detail?id=4
  */
-int gcal_contact_set_phone(gcal_contact_t contact, char *field)
+int gcal_contact_set_phone(gcal_contact_t contact, const char *field)
 {
 	(void)contact;
 	(void)field;

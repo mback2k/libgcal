@@ -498,7 +498,7 @@ char *gcal_event_get_status(gcal_event_t event)
 
 
 /* Here starts the setters */
-int gcal_event_set_title(gcal_event_t event, char *field)
+int gcal_event_set_title(gcal_event_t event, const char *field)
 {
 	int result = -1;
 
@@ -515,7 +515,7 @@ int gcal_event_set_title(gcal_event_t event, char *field)
 	return result;
 }
 
-int gcal_event_set_content(gcal_event_t event, char *field)
+int gcal_event_set_content(gcal_event_t event, const char *field)
 {
 	int result = -1;
 
@@ -532,7 +532,7 @@ int gcal_event_set_content(gcal_event_t event, char *field)
 	return result;
 }
 
-int gcal_event_set_start(gcal_event_t event, char *field)
+int gcal_event_set_start(gcal_event_t event, const char *field)
 {
 	int result = -1;
 
@@ -549,7 +549,7 @@ int gcal_event_set_start(gcal_event_t event, char *field)
 	return result;
 }
 
-int gcal_event_set_end(gcal_event_t event, char *field)
+int gcal_event_set_end(gcal_event_t event, const char *field)
 {
 	int result = -1;
 
@@ -566,7 +566,7 @@ int gcal_event_set_end(gcal_event_t event, char *field)
 	return result;
 }
 
-int gcal_event_set_where(gcal_event_t event, char *field)
+int gcal_event_set_where(gcal_event_t event, const char *field)
 {
 	int result = -1;
 
