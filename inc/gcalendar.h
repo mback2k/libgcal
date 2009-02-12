@@ -590,7 +590,48 @@ int gcal_event_set_recurrent(gcal_event_t event, const char *field);
  */
 int gcal_event_set_status(gcal_event_t event, const char *field);
 
+/** Sets event edit url.
+ *
+ * This field is a hard requirement to edit/delete a event. Starting with
+ * google data API 2.0, the ETag is also required.
+ *
+ * @param event A event object, see \ref gcal_event.
+ *
+ * @param field String with the edit url email
+ * (e.g. "http://www.google.com/m8/feeds/events/user%40gmail.com/base/2").
+ *
+ * @return 0 for sucess, -1 otherwise.
+ */
+int gcal_event_set_url(gcal_event_t event, const char *field);
 
-/* TODO: add setters for etag, id, url */
+
+/** Sets event ID.
+ *
+ * Each event has an ID (but this can extracted from the edit_url).
+ *
+ * @param event A event object, see \ref gcal_event.
+ *
+ * @param field String with event ID (e.g. "joe.doe@nobody.com").
+ *
+ * @return 0 for sucess, -1 otherwise.
+ */
+int gcal_event_set_id(gcal_event_t event, const char *field);
+
+
+/** Sets event ETag.
+ *
+ * Starting with google data API 2.0, the ETag is used for versioning the
+ * entries. Is required for edit/delete.
+ *
+ * @param event A event object, see \ref gcal_event.
+ *
+ * @param field String with event ETag (e.g. "Q3c5eDVSLyp7ImA9WxRbFE0KRAY.").
+ *
+ * @return 0 for sucess, -1 otherwise.
+ */
+int gcal_event_set_etag(gcal_event_t event, const char *field);
+
+
+
 
 #endif

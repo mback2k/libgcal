@@ -583,3 +583,56 @@ int gcal_event_set_where(gcal_event_t event, const char *field)
 	return result;
 
 }
+
+int gcal_event_set_url(gcal_event_t event, const char *field)
+{
+	int result = -1;
+
+	if ((!event) || (!field))
+		return result;
+
+	if (event->common.edit_uri)
+		free(event->common.edit_uri);
+
+	event->common.edit_uri = strdup(field);
+	if (event->common.edit_uri)
+		result = 0;
+
+	return result;
+}
+
+
+int gcal_event_set_id(gcal_event_t event, const char *field)
+{
+	int result = -1;
+
+	if ((!event) || (!field))
+		return result;
+
+	if (event->common.id)
+		free(event->common.id);
+
+	event->common.id = strdup(field);
+	if (event->common.id)
+		result = 0;
+
+	return result;
+}
+
+
+int gcal_event_set_etag(gcal_event_t event, const char *field)
+{
+	int result = -1;
+
+	if ((!event) || (!field))
+		return result;
+
+	if (event->common.etag)
+		free(event->common.etag);
+
+	event->common.etag = strdup(field);
+	if (event->common.etag)
+		result = 0;
+
+	return result;
+}
