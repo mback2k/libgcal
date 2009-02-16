@@ -360,6 +360,9 @@ static int http_put(struct gcal_resource *gcalobj, const char *url,
 	/* cleanup */
 	curl_slist_free_all(response_headers);
 
+	/* Restores curl context to previous standard mode */
+	curl_easy_setopt(gcalobj->curl, CURLOPT_CUSTOMREQUEST, NULL);
+
 exit:
 	return result;
 
