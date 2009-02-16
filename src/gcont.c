@@ -247,6 +247,9 @@ int gcal_delete_contact(struct gcal_resource *gcalobj,
 			   h_auth,
 			   NULL, NULL, GCAL_DEFAULT_ANSWER);
 
+	/* Restores curl context to previous standard mode */
+	curl_easy_setopt(gcalobj->curl, CURLOPT_CUSTOMREQUEST, NULL);
+
 	if (h_auth)
 		free(h_auth);
 
