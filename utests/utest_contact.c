@@ -153,6 +153,12 @@ START_TEST (test_contact_xml)
 	fail_if(ptr == NULL, "XML lacks a field: %s\n", contact.common.title);
 	ptr = strstr(xml, contact.email);
 	fail_if(ptr == NULL, "XML lacks a field: %s\n", contact.email);
+	ptr = strstr(xml, contact.content);
+	fail_if(ptr == NULL, "XML lacks a field: %s\n", contact.content);
+	ptr = strstr(xml, contact.org_name);
+	fail_if(ptr == NULL, "XML lacks a field: %s\n", contact.org_name);
+	ptr = strstr(xml, contact.org_title);
+	fail_if(ptr == NULL, "XML lacks a field: %s\n", contact.org_title);
 	ptr = strstr(xml, contact.post_address);
 	fail_if(ptr == NULL, "XML lacks a field: %s\n", contact.post_address);
 
