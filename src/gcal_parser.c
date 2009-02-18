@@ -458,7 +458,9 @@ int xmlcontact_create(struct gcal_contact *contact, char **xml_contact,
 	 */
 	int result = -1;
 	xmlDoc *doc = NULL;
-	xmlNode *root, *node;
+	xmlNode *root = NULL;
+	xmlNode *node = NULL;
+	xmlNode *child = NULL;
 	xmlNs *ns;
 	xmlChar *xml_str = NULL;
 
@@ -542,8 +544,31 @@ int xmlcontact_create(struct gcal_contact *contact, char **xml_contact,
 	xmlNodeAddContent(node, contact->content);
 	xmlAddChild(root, node);
 
-	/* TODO: implement missing fields (org_name, org_title, im,
-	 * phone_number, post_address).
+	/* organization (it has 2 subelements: orgName, orgTitle) */
+	if (contact->org_name || contact->org_title) {
+		if (!(node = xmlNewNode(ns, "organization")))
+			goto cleanup;
+		xmlSetProp(node, BAD_CAST "rel",
+			   BAD_CAST "http://schemas.google.com/g/2005#other");
+
+		if (contact->org_name) {
+			if (!(child = xmlNewNode(ns, "orgName")))
+				goto cleanup;
+			xmlNodeAddContent(child, contact->org_name);
+			xmlAddChild(node, child);
+		}
+
+
+		if (contact->org_title) {
+			if (!(child = xmlNewNode(ns, "orgTitle")))
+				goto cleanup;
+			xmlNodeAddContent(child, contact->org_title);
+			xmlAddChild(node, child);
+		}
+
+		xmlAddChild(root, node);
+	}
+	/* TODO: implement missing fields (im, phone_number, post_address).
 	 */
 
 	xmlDocDumpMemory(doc, &xml_str, length);
