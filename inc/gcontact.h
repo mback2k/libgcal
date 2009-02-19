@@ -499,6 +499,17 @@ int gcal_contact_set_profission(gcal_contact_t contact, const char *field);
  */
 int gcal_contact_set_organization(gcal_contact_t contact, const char *field);
 
+/** Sets contact description.
+ *
+ *
+ * @param contact A contact object, see \ref gcal_contact.
+ *
+ * @param field A note, description (i.e. "Really funny guy")
+ *
+ * @return 0 for success, -1 otherwise
+ */
+int gcal_contact_set_content(gcal_contact_t contact, const char *field);
+
 
 
 #endif

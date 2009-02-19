@@ -511,3 +511,21 @@ int gcal_contact_set_organization(gcal_contact_t contact, const char *field)
 
 	return result;
 }
+
+int gcal_contact_set_content(gcal_contact_t contact, const char *field)
+{
+	int result = -1;
+
+	if ((!contact) || (!field))
+		return result;
+
+	if (contact->content)
+		free(contact->content);
+
+	contact->content = strdup(field);
+	if (contact->content)
+		result = 0;
+
+	return result;
+
+}
