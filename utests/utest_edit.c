@@ -57,7 +57,7 @@ START_TEST (test_edit_xml)
 	event.dt_end = "2008-04-08T09:00:00.000Z";
 	event.where = "someplace";
 	event.common.id = NULL;
-	event.common.edit_uri = NULL;
+	event.common.edit_uri = event.common.etag = NULL;
 
 	/* TODO: think in a better way to describe the status, maybe use
 	 * a set of strings.
@@ -88,7 +88,7 @@ START_TEST (test_edit_add)
 	event.dt_end = "2008-05-10T09:00:00.000Z";
 	event.where = "someplace";
 	event.common.id = NULL;
-	event.common.edit_uri = NULL;
+	event.common.edit_uri = event.common.etag = NULL;
 
 	/* TODO: think in a better way to describe the status, maybe use
 	 * a set of strings.
@@ -120,7 +120,7 @@ START_TEST (test_edit_delete)
 	event.dt_end = "2008-05-07T09:00:00.000Z";
 	event.where = "nevermind";
 	event.common.id = NULL;
-	event.common.edit_uri = NULL;
+	event.common.edit_uri = event.common.etag = NULL;
 
 	/* TODO: think in a better way to describe the status, maybe use
 	 * a set of strings.
@@ -173,7 +173,7 @@ START_TEST (test_edit_stress)
 	format_end = "2008-05-%sT%s:00:00.000Z";
 	event.where = "someplace";
 	event.common.id = NULL;
-	event.common.edit_uri = NULL;
+	event.common.edit_uri = event.common.etag = NULL;
 
 	/* TODO: think in a better way to describe the status, maybe use
 	 * a set of strings.
@@ -245,7 +245,7 @@ START_TEST (test_edit_edit)
 	event.dt_end = "2008-05-07T09:00:00.000Z";
 	event.where = "nevermind";
 	event.common.id = NULL;
-	event.common.edit_uri = NULL;
+	event.common.edit_uri = event.common.etag = NULL;
 	/* TODO: think in a better way to describe the status, maybe use
 	 * a set of strings.
 	 */

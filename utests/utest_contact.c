@@ -135,7 +135,7 @@ START_TEST (test_contact_xml)
 	contact.common.title = "John Doe";
 	contact.email = "john.doe@foo.bar.com";
 	/* TODO: set etag as NULL in all utests here */
-	contact.common.id = contact.common.updated = contact.common.edit_uri = NULL;
+	contact.common.id = contact.common.updated = contact.common.edit_uri = contact.common.etag = NULL;
 	/* extra fields */
 	contact.content = "A very interesting person";
 	contact.org_name = "Foo software";
@@ -183,7 +183,7 @@ START_TEST (test_contact_add)
 
 	contact.common.title = "John Doe";
 	contact.email = "john.doe@foo.bar.com";
-	contact.common.id = contact.common.updated = contact.common.edit_uri = NULL;
+	contact.common.id = contact.common.updated = contact.common.edit_uri = contact.common.etag = NULL;
 	/* extra fields */
 	contact.content = "A very interesting person";
 	contact.org_name = "Foo software";
@@ -257,7 +257,7 @@ START_TEST (test_contact_edit)
 
 	contact.common.title = "Johny Doe";
 	contact.email = "johny.doe@foo.bar.com";
-	contact.common.id = contact.common.updated = contact.common.edit_uri = NULL;
+	contact.common.id = contact.common.updated = contact.common.edit_uri = contact.common.etag = NULL;
 	/* extra fields */
 	contact.content = "A very interesting person";
 	contact.org_name = "Foo software";
