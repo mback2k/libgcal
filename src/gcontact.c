@@ -320,14 +320,14 @@ char *gcal_contact_get_content(gcal_contact_t contact)
 	return contact->content;
 }
 
-char *gcal_contact_get_orgname(gcal_contact_t contact)
+char *gcal_contact_get_organization(gcal_contact_t contact)
 {
 	if ((!contact))
 		return NULL;
 	return contact->org_name;
 }
 
-char *gcal_contact_get_orgtitle(gcal_contact_t contact)
+char *gcal_contact_get_profission(gcal_contact_t contact)
 {
 	if ((!contact))
 		return NULL;
@@ -443,12 +443,71 @@ int gcal_contact_set_etag(gcal_contact_t contact, const char *field)
 	return result;
 }
 
-/* TODO: Contacts extra fields, not implemented in internal functions
- * see ticket: http://code.google.com/p/libgcal/issues/detail?id=4
- */
 int gcal_contact_set_phone(gcal_contact_t contact, const char *field)
 {
-	(void)contact;
-	(void)field;
-	return -1;
+	int result = -1;
+
+	if ((!contact) || (!field))
+		return result;
+
+	if (contact->phone_number)
+		free(contact->phone_number);
+
+	contact->phone_number = strdup(field);
+	if (contact->phone_number)
+		result = 0;
+
+	return result;
+}
+
+int gcal_contact_set_address(gcal_contact_t contact, const char *field)
+{
+	int result = -1;
+
+	if ((!contact) || (!field))
+		return result;
+
+	if (contact->post_address)
+		free(contact->post_address);
+
+	contact->post_address = strdup(field);
+	if (contact->post_address)
+		result = 0;
+
+	return result;
+}
+
+int gcal_contact_set_profission(gcal_contact_t contact, const char *field)
+{
+	int result = -1;
+
+	if ((!contact) || (!field))
+		return result;
+
+	if (contact->org_name)
+		free(contact->org_name);
+
+	contact->org_name = strdup(field);
+	if (contact->org_name)
+		result = 0;
+
+	return result;
+
+}
+
+int gcal_contact_set_organization(gcal_contact_t contact, const char *field)
+{
+	int result = -1;
+
+	if ((!contact) || (!field))
+		return result;
+
+	if (contact->org_title)
+		free(contact->org_title);
+
+	contact->org_title = strdup(field);
+	if (contact->org_title)
+		result = 0;
+
+	return result;
 }

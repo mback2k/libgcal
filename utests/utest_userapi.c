@@ -267,8 +267,8 @@ START_TEST (test_access_contacts)
 		/* This are the fields unique to calendar events */
 		ptr = gcal_contact_get_email(contact);
 		ptr = gcal_contact_get_content(contact);
-		ptr = gcal_contact_get_orgname(contact);
-		ptr = gcal_contact_get_orgtitle(contact);
+		ptr = gcal_contact_get_organization(contact);
+		ptr = gcal_contact_get_profission(contact);
 		ptr = gcal_contact_get_im(contact);
 		ptr = gcal_contact_get_phone(contact);
 		ptr = gcal_contact_get_address(contact);
@@ -296,10 +296,10 @@ START_TEST (test_access_contacts)
 	ptr = gcal_contact_get_content(gcal_contact_element(&contact_array,
 							contact_array.length));
 	fail_if(ptr != NULL, "Getting field must fail!");
-	ptr = gcal_contact_get_orgname(gcal_contact_element(&contact_array,
+	ptr = gcal_contact_get_organization(gcal_contact_element(&contact_array,
 							    contact_array.length));
 	fail_if(ptr != NULL, "Getting field must fail!");
-	ptr = gcal_contact_get_orgtitle(gcal_contact_element(&contact_array,
+	ptr = gcal_contact_get_profission(gcal_contact_element(&contact_array,
 						      contact_array.length));
 	fail_if(ptr != NULL, "Getting field must fail!");
 	ptr = gcal_contact_get_im(gcal_contact_element(&contact_array,

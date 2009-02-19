@@ -317,25 +317,29 @@ char *gcal_contact_get_email(gcal_contact_t contact);
  */
 char *gcal_contact_get_content(gcal_contact_t contact);
 
-/** Missing implementation.
+/** Access contact organization name.
  *
- * \todo Implement retrieve of extra fields in \ref atom_parser.c
  *
  * @param contact A contact object, see \ref gcal_contact.
  *
- * @return Will only return NULL.
- */
-char *gcal_contact_get_orgname(gcal_contact_t contact);
+ * @return Pointer to internal object field (dont free it!) or NULL (in error
+ * case or if the field is not set). If the entry hasn't this field in the
+ * atom stream, it will be set to an empty string (i.e. "").
 
-/** Missing implementation.
+ */
+char *gcal_contact_get_organization(gcal_contact_t contact);
+
+/** Access contact organization title/profission.
  *
- * \todo Implement retrieve of extra fields in \ref atom_parser.c
  *
  * @param contact A contact object, see \ref gcal_contact.
  *
- * @return Will only return NULL.
+ * @return Pointer to internal object field (dont free it!) or NULL (in error
+ * case or if the field is not set). If the entry hasn't this field in the
+ * atom stream, it will be set to an empty string (i.e. "").
+
  */
-char *gcal_contact_get_orgtitle(gcal_contact_t contact);
+char *gcal_contact_get_profission(gcal_contact_t contact);
 
 /** Missing implementation.
  *
@@ -347,23 +351,29 @@ char *gcal_contact_get_orgtitle(gcal_contact_t contact);
  */
 char *gcal_contact_get_im(gcal_contact_t contact);
 
-/** Missing implementation.
+/** Access contact telephone.
  *
- * \todo Implement retrieve of extra fields in \ref atom_parser.c
+ * \todo Implement support for multiple phones.
  *
  * @param contact A contact object, see \ref gcal_contact.
  *
- * @return Will only return NULL.
+ * @return Pointer to internal object field (dont free it!) or NULL (in error
+ * case or if the field is not set). If the entry hasn't this field in the
+ * atom stream, it will be set to an empty string (i.e. "").
+
  */
 char *gcal_contact_get_phone(gcal_contact_t contact);
 
-/** Missing implementation.
+/** Access contact telephone.
  *
- * \todo Implement retrieve of extra fields in \ref atom_parser.c
+ * \todo Implement support for multiple addresses.
  *
  * @param contact A contact object, see \ref gcal_contact.
  *
- * @return Will only return NULL.
+ * @return Pointer to internal object field (dont free it!) or NULL (in error
+ * case or if the field is not set). If the entry hasn't this field in the
+ * atom stream, it will be set to an empty string (i.e. "").
+
  */
 char *gcal_contact_get_address(gcal_contact_t contact);
 
@@ -443,20 +453,52 @@ int gcal_contact_set_etag(gcal_contact_t contact, const char *field);
 
 
 
-/* TODO: Contacts extra fields, not implemented in internal functions
- * see ticket: http://code.google.com/p/libgcal/issues/detail?id=4
- */
-/** Missing implementation.
+/** Sets the contact telephone (for while only a single number is supported).
  *
- * \todo Implement setting extra fields.
+ * \todo Implement multiple numbers support
  *
  * @param contact A contact object, see \ref gcal_contact.
  *
  * @param field Phone number.
  *
- * @return Will only return -1.
+ * @return 0 for success, -1 otherwise
  */
 int gcal_contact_set_phone(gcal_contact_t contact, const char *field);
+
+/** Sets the contact address (for while only a single address is supported).
+ *
+ * \todo Implement multiple address support
+ *
+ * @param contact A contact object, see \ref gcal_contact.
+ *
+ * @param field Address string.
+ *
+ * @return 0 for success, -1 otherwise
+ */
+int gcal_contact_set_address(gcal_contact_t contact, const char *field);
+
+/** Sets the organization title.
+ *
+ *
+ * @param contact A contact object, see \ref gcal_contact.
+ *
+ * @param field Organization title string (i.e. "C++ programmer").
+ *
+ * @return 0 for success, -1 otherwise
+ */
+int gcal_contact_set_profission(gcal_contact_t contact, const char *field);
+
+/** Sets the organization name.
+ *
+ *
+ * @param contact A contact object, see \ref gcal_contact.
+ *
+ * @param field Organization name string (i.e. "Foo Software Inc.").
+ *
+ * @return 0 for success, -1 otherwise
+ */
+int gcal_contact_set_organization(gcal_contact_t contact, const char *field);
+
 
 
 #endif
