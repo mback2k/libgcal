@@ -456,10 +456,22 @@ int atom_extract_contact(xmlNode *entry, struct gcal_contact *ptr_entry)
 						NULL);
 
 
+	/* Gets contact first phone number */
+	ptr_entry->phone_number = extract_and_check(doc,
+						    "//atom:entry/"
+						    "gd:phoneNumber/text()",
+						    NULL);
+
+	/* Gets contact first address */
+	ptr_entry->post_address = extract_and_check(doc,
+						    "//atom:entry/"
+						    "gd:postalAddress/text()",
+						    NULL);
+
+
+
 	/* TODO: implement remaining extra fields */
 	ptr_entry->im = NULL;
-	ptr_entry->phone_number = NULL;
-	ptr_entry->post_address = NULL;
 
 
 	result = 0;
