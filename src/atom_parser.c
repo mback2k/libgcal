@@ -441,9 +441,22 @@ int atom_extract_contact(xmlNode *entry, struct gcal_contact *ptr_entry)
 					       "atom:content/text()",
 					       NULL);
 
+	/* Gets the organization contact field */
+	ptr_entry->org_name = extract_and_check(doc,
+						"//atom:entry/"
+						"gd:organization/"
+						"gd:orgName/text()",
+						NULL);
+
+	/* Gets the org. title contact field */
+	ptr_entry->org_title = extract_and_check(doc,
+						"//atom:entry/"
+						"gd:organization/"
+						"gd:orgTitle/text()",
+						NULL);
+
+
 	/* TODO: implement remaining extra fields */
-	ptr_entry->org_name = NULL;
-	ptr_entry->org_title = NULL;
 	ptr_entry->im = NULL;
 	ptr_entry->phone_number = NULL;
 	ptr_entry->post_address = NULL;
