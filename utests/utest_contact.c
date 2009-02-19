@@ -134,6 +134,7 @@ START_TEST (test_contact_xml)
 
 	contact.common.title = "John Doe";
 	contact.email = "john.doe@foo.bar.com";
+	/* TODO: set etag as NULL in all utests here */
 	contact.common.id = contact.common.updated = contact.common.edit_uri = NULL;
 	/* extra fields */
 	contact.content = "A very interesting person";
@@ -141,7 +142,7 @@ START_TEST (test_contact_xml)
 	contact.org_title = "Software engineer";
 	contact.phone_number = "+9977554422119900";
 	contact.post_address = "Unknown Av. St., n. 69, Someplace";
-	contact.im = "john";
+	contact.im = "john_skype";
 
 	result = xmlcontact_create(&contact, &xml, &length);
 	fail_if(result == -1 || xml == NULL,

@@ -568,7 +568,36 @@ int xmlcontact_create(struct gcal_contact *contact, char **xml_contact,
 
 		xmlAddChild(root, node);
 	}
-	/* TODO: implement missing fields (im, phone_number, post_address).
+
+	/* For while I will get only the first phone number
+	 * TODO: use an array in gcal_contact to support multiple
+	 */
+	if (contact->phone_number) {
+		if (!(node = xmlNewNode(ns, "phoneNumber")))
+			goto cleanup;
+		/* TODO: support user settting phone type */
+		xmlSetProp(node, BAD_CAST "rel",
+			   BAD_CAST "http://schemas.google.com/g/2005#other");
+		xmlNodeAddContent(node, contact->phone_number);
+		xmlAddChild(root, node);
+
+	}
+
+	/* For while I will get only the first postal address
+	 * TODO: use an array in gcal_contact to support multiple
+	 */
+	if (contact->post_address) {
+		if (!(node = xmlNewNode(ns, "postalAddress")))
+			goto cleanup;
+		/* TODO: support user settting address type */
+		xmlSetProp(node, BAD_CAST "rel",
+			   BAD_CAST "http://schemas.google.com/g/2005#home");
+		xmlNodeAddContent(node, contact->post_address);
+		xmlAddChild(root, node);
+	}
+
+
+	/* TODO: implement missing fields (im)
 	 */
 
 	xmlDocDumpMemory(doc, &xml_str, length);
