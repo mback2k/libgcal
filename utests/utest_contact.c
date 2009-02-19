@@ -139,9 +139,9 @@ START_TEST (test_contact_xml)
 	contact.content = "A very interesting person";
 	contact.org_name = "Foo software";
 	contact.org_title = "Software engineer";
-	contact.im = "john";
 	contact.phone_number = "+9977554422119900";
 	contact.post_address = "Unknown Av. St., n. 69, Someplace";
+	contact.im = "john";
 
 	result = xmlcontact_create(&contact, &xml, &length);
 	fail_if(result == -1 || xml == NULL,
@@ -159,8 +159,15 @@ START_TEST (test_contact_xml)
 	fail_if(ptr == NULL, "XML lacks a field: %s\n", contact.org_name);
 	ptr = strstr(xml, contact.org_title);
 	fail_if(ptr == NULL, "XML lacks a field: %s\n", contact.org_title);
+	ptr = strstr(xml, contact.phone_number);
+	fail_if(ptr == NULL, "XML lacks a field: %s\n", contact.phone_number);
 	ptr = strstr(xml, contact.post_address);
 	fail_if(ptr == NULL, "XML lacks a field: %s\n", contact.post_address);
+	/* TODO: im requires a new field for service type (i.e. AIM, yahoo,
+	 * skype, etc)
+	 */
+	ptr = strstr(xml, contact.im);
+	fail_if(ptr == NULL, "XML lacks a field: %s\n", contact.im);
 
 	free(xml);
 
