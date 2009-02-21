@@ -237,7 +237,7 @@ START_TEST (test_get_contact_deleted)
 }
 END_TEST
 
-START_TEST (test_get_contact_photo)
+START_TEST (test_get_contact_nophoto)
 {
 	xmlXPathObject *xpath_obj = NULL;
 	xmlDoc *doc = NULL;
@@ -277,6 +277,46 @@ START_TEST (test_get_contact_photo)
 }
 END_TEST
 
+START_TEST (test_get_contact_photo)
+{
+	xmlXPathObject *xpath_obj = NULL;
+	xmlDoc *doc = NULL;
+	xmlNodeSet *nodes;
+	struct gcal_contact extracted;
+	char *file_contents = NULL;
+	int res;
+
+	gcal_init_contact(&extracted);
+
+	if (find_load_file("/utests/with_photo.xml", &file_contents))
+		fail_if(1, "Cannot load test XML file!");
+
+	res = build_doc_tree(&doc, file_contents);
+	fail_if(res == -1, "failed to build document tree!");
+
+	xpath_obj = atom_get_entries(doc);
+	fail_if(xpath_obj == NULL, "failed to get entry node list!");
+
+	nodes = xpath_obj->nodesetval;
+	res = atom_extract_contact(nodes->nodeTab[0], &extracted);
+	fail_if(res == -1, "failed to extract data from node!");
+
+	fail_if(extracted.has_photo != 1,
+		"this contact was supposed to have a photo!");
+
+	fail_if(strcmp(extracted.photo, "http://www.google.com/m8/feeds/photos"
+		       "/media/gcalntester%40gmail.com/1bd255c2889042a7") != 0,
+		"wrong photo url!");
+
+	free(file_contents);
+	if (xpath_obj)
+		xmlXPathFreeObject(xpath_obj);
+
+	gcal_destroy_contact(&extracted);
+	clean_doc_tree(&doc);
+}
+END_TEST
+
 
 TCase *xpath_tcase_create(void)
 {
@@ -288,6 +328,7 @@ TCase *xpath_tcase_create(void)
 	tcase_add_test(tc, test_get_recurrence);
 	tcase_add_test(tc, test_get_event_deleted);
 	tcase_add_test(tc, test_get_contact_deleted);
+	tcase_add_test(tc, test_get_contact_nophoto);
 	tcase_add_test(tc, test_get_contact_photo);
 	return tc;
 
