@@ -197,6 +197,10 @@ struct gcal_contact {
 	char *phone_number;
 	/** Address */
 	char *post_address;
+	/** Photo edit url */
+	char *photo;
+	/** Flag to identify if contact has a photo */
+	char has_photo;
 
 };
 
