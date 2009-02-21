@@ -261,7 +261,7 @@ START_TEST (test_get_contact_nophoto)
 	res = atom_extract_contact(nodes->nodeTab[0], &extracted);
 	fail_if(res == -1, "failed to extract data from node!");
 
-	fail_if(extracted.has_photo != 0,
+	fail_if(extracted.photo_length != 0,
 		"this contact was supposed to have no photo!");
 
 	fail_if(strcmp(extracted.photo, "http://www.google.com/m8/feeds/photos"
@@ -301,7 +301,7 @@ START_TEST (test_get_contact_photo)
 	res = atom_extract_contact(nodes->nodeTab[0], &extracted);
 	fail_if(res == -1, "failed to extract data from node!");
 
-	fail_if(extracted.has_photo != 1,
+	fail_if(extracted.photo_length == 0,
 		"this contact was supposed to have a photo!");
 
 	fail_if(strcmp(extracted.photo, "http://www.google.com/m8/feeds/photos"
