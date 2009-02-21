@@ -65,7 +65,7 @@ static const char GCAL_EVENT_END[] = "%40gmail.com/private/full";
 
 /* Google contact query URL */
 static const char GCONTACT_START[] = "http://www.google.com/m8/feeds/contacts/";
-static const char GCONTACT_END[] = "%40gmail.com/base";
+static const char GCONTACT_END[] = "%40gmail.com/full";
 
 /* Google 'pages' results in a range pages of 25 entries. But for downloading
  * all results its requirement to set a 'good enough' upper limit of range of
