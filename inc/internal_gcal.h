@@ -198,8 +198,14 @@ struct gcal_contact {
 	/** Address */
 	char *post_address;
 	/** Photo edit url */
-	unsigned char *photo;
-	/** Photo byte length (zero if no photo) */
+	char *photo;
+	/** Photo byte array */
+	unsigned char *photo_data;
+	/** Photo byte length. Values:
+	 * 0: no photo
+	 * 1: has photo
+	 * > 1: has photo data
+	 */
 	unsigned int photo_length;
 
 };

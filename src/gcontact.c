@@ -174,6 +174,7 @@ int gcal_update_contact(gcal_t gcalobj, gcal_contact_t contact)
 {
 	int result = -1;
 	struct gcal_contact updated;
+	gcal_init_contact(&updated);
 
 	if ((!gcalobj) || (!contact))
 		goto exit;

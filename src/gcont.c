@@ -115,7 +115,7 @@ void gcal_init_contact(struct gcal_contact *contact)
 	contact->email = contact->content = NULL;
 	contact->org_name = contact->org_title = contact->im = NULL;
 	contact->phone_number = contact->post_address = NULL;
-	contact->photo = NULL;
+	contact->photo = contact->photo_data = NULL;
 	contact->photo_length = 0;
 }
 
@@ -140,6 +140,7 @@ void gcal_destroy_contact(struct gcal_contact *contact)
 	clean_string(contact->phone_number);
 	clean_string(contact->post_address);
 	clean_string(contact->photo);
+	clean_string(contact->photo_data);
 	contact->photo_length = 0;
 }
 

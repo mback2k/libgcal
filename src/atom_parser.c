@@ -469,6 +469,18 @@ int atom_extract_contact(xmlNode *entry, struct gcal_contact *ptr_entry)
 						    NULL);
 
 
+	/* Gets contact photo edit url and test for etag */
+	ptr_entry->photo = extract_and_check(doc, "//atom:entry/"
+					     "atom:link[@type='image/*']",
+					     "href");
+	tmp = extract_and_check(doc, "//atom:entry/"
+				"atom:link[@type='image/*']",
+				"etag");
+	if (tmp) {
+		ptr_entry->photo_length = 1;
+		free(tmp);
+	}
+
 
 	/* TODO: implement remaining extra fields */
 	ptr_entry->im = NULL;
