@@ -530,3 +530,13 @@ int gcal_contact_set_content(gcal_contact_t contact, const char *field)
 	return result;
 
 }
+
+int gcal_contact_set_photo(gcal_contact_t contact, const unsigned char *field,
+			   int length)
+{
+	(void)contact;
+	(void)field;
+	(void)length;
+	return -1;
+
+}

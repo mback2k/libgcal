@@ -92,3 +92,24 @@ int find_load_file(char *path, char **file_content)
 	return res;
 }
 
+int find_load_photo(char *path, unsigned char **file_content, int *length)
+{
+  	int fd, res;
+	char *file_name = path;
+	char *tmp;
+
+	tmp = find_file_path(file_name);
+	fd = open(tmp, O_RDONLY);
+	if (fd == -1) {
+		printf("cannot open photo file: Path = %s.\n",
+			tmp);
+		return -1;
+	}
+
+	res = read_file(fd, file_content, length);
+	free(tmp);
+	close(fd);
+
+	return res;
+}
+

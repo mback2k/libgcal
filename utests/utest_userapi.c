@@ -19,6 +19,7 @@
 #include "utest_userapi.h"
 #include "gcalendar.h"
 #include "gcontact.h"
+#include "utils.h"
 #include <stdio.h>
 #include <string.h>
 
@@ -420,6 +421,44 @@ START_TEST (test_query_contact_updated)
 END_TEST
 
 
+START_TEST (test_contact_photo)
+{
+	gcal_t gcal;
+	gcal_contact_t contact;
+	unsigned char *photo_data;
+	int result;
+
+	if (find_load_photo("/utests/images/gromit.jpg",  &photo_data, &result))
+		fail_if(1, "Cannot load photo!");
+
+	/* Create a new contact object */
+	contact = gcal_contact_new(NULL);
+	fail_if (!contact, "Cannot construct contact object!");
+	gcal_contact_set_title(contact, "Gromit");
+	gcal_contact_set_email(contact, "gromit@wallace.com");
+	fail_if(gcal_contact_set_photo(contact, photo_data, result),
+		"Failed copying photo data");
+
+	/* Create a gcal object and authenticate */
+	gcal = gcal_new(GCONTACT);
+	result = gcal_get_authentication(gcal, "gcalntester", "77libgcal");
+	fail_if(result == -1, "Failed getting authentication");
+
+	/* Create a new contact with photo */
+	result = gcal_add_contact(gcal, contact);
+	fail_if(result == -1, "Failed adding a new contact!");
+
+	result = gcal_erase_contact(gcal, contact);
+	fail_if(result == -1, "Failed deleting contact!");
+
+	/* Cleanup */
+	gcal_contact_delete(contact);
+	gcal_delete(gcal);
+	free(photo_data);
+}
+END_TEST
+
+
 TCase *gcal_userapi(void)
 {
 	TCase *tc = NULL;
@@ -435,5 +474,6 @@ TCase *gcal_userapi(void)
 	tcase_add_test(tc, test_access_contacts);
 	tcase_add_test(tc, test_oper_contact);
 	tcase_add_test(tc, test_query_contact_updated);
+	tcase_add_test(tc, test_contact_photo);
 	return tc;
 }

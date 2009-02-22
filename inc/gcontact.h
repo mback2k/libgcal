@@ -510,6 +510,8 @@ int gcal_contact_set_organization(gcal_contact_t contact, const char *field);
  */
 int gcal_contact_set_content(gcal_contact_t contact, const char *field);
 
+int gcal_contact_set_photo(gcal_contact_t contact, const unsigned char *field,
+			   int length);
 
 
 #endif
