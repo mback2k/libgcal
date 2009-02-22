@@ -206,6 +206,8 @@ int gcal_create_contact(struct gcal_resource *gcalobj,
 	if (result == -1)
 		goto xmlclean;
 
+	/* TODO: if contact has photo, PUT it */
+
 	result = 0;
 
 

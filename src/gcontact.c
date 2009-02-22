@@ -534,9 +534,21 @@ int gcal_contact_set_content(gcal_contact_t contact, const char *field)
 int gcal_contact_set_photo(gcal_contact_t contact, const unsigned char *field,
 			   int length)
 {
-	(void)contact;
-	(void)field;
-	(void)length;
-	return -1;
+	int result = -1;
 
+	if ((!contact) || (!field))
+		return result;
+
+	if (contact->photo_data)
+		if (contact->photo_length > 1)
+			free(contact->photo_data);
+
+	if (!(contact->photo_data = malloc(length * sizeof(unsigned char))))
+		return result;
+
+	memcpy(contact->photo_data, field, length);
+	contact->photo_length = length;
+	result = 0;
+
+	return result;
 }
