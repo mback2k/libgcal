@@ -206,7 +206,16 @@ int gcal_create_contact(struct gcal_resource *gcalobj,
 	if (result == -1)
 		goto xmlclean;
 
-	/* TODO: if contact has photo, PUT it */
+	/* Adding photo is the same as an edit operation */
+	if (contact->photo_length) {
+		result = up_entry(contact->photo_data, gcalobj,
+				  updated->photo, NULL,
+				  PUT, "Content-Type: image/*",
+				  GCAL_EDIT_ANSWER);
+		if (result)
+			goto cleanup;
+
+	}
 
 	result = 0;
 

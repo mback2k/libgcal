@@ -808,7 +808,6 @@ void gcal_destroy_entries(struct gcal_event *entries, size_t length)
 	free(entries);
 }
 
-/* TODO: extra parameter for content type */
 /* This function makes possible to share code between 'add'
  * and 'edit' events.
  */

@@ -142,7 +142,7 @@ int gcal_add_contact(gcal_t gcalobj, gcal_contact_t contact)
 	if (result)
 		goto exit;
 
-	/* Swap updated fields: id, updated, edit_uri, etag  */
+	/* Swap updated fields: id, updated, edit_uri, etag, photo url  */
 	if (contact->common.id)
 		free(contact->common.id);
 	contact->common.id = updated.common.id;
@@ -162,6 +162,11 @@ int gcal_add_contact(gcal_t gcalobj, gcal_contact_t contact)
 		free(contact->common.etag);
 	contact->common.etag = updated.common.etag;
 	updated.common.etag = NULL;
+
+	if (contact->photo)
+		free(contact->photo);
+	contact->photo = updated.photo;
+	updated.photo = NULL;
 
 	/* Cleanup updated contact */
 	gcal_destroy_contact(&updated);
