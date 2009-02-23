@@ -181,7 +181,7 @@ int gcal_create_contact(struct gcal_resource *gcalobj,
 		 gcalobj->user, GCONTACT_END);
 
 	result = up_entry(xml_contact, gcalobj, buffer, NULL,
-			  POST, GCAL_EDIT_ANSWER);
+			  POST, NULL, GCAL_EDIT_ANSWER);
 	if (result)
 		goto cleanup;
 
@@ -280,7 +280,7 @@ int gcal_edit_contact(struct gcal_resource *gcalobj,
 		goto exit;
 
 	result = up_entry(xml_contact, gcalobj, contact->common.edit_uri, NULL,
-			  PUT, GCAL_DEFAULT_ANSWER);
+			  PUT, NULL, GCAL_DEFAULT_ANSWER);
 	if (result)
 		goto cleanup;
 

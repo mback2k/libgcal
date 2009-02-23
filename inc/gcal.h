@@ -290,6 +290,9 @@ int http_post(struct gcal_resource *gcalobj, const char *url,
  * @param up_mode If the upload of data will be using PUT or POST (internally
  * it uses 'http_put' and \ref 'http_post').
  *
+ * @param content_type The content type, to use default (application/atom+xml)
+ * pass NULL.
+ *
  * @param expected_code The expected return code from server (200, 201, etc.)
  * See GCAL_DEFAULT_ANSWER and friends.
  *
@@ -297,7 +300,9 @@ int http_post(struct gcal_resource *gcalobj, const char *url,
  */
 int up_entry(char *data2post, struct gcal_resource *gcalobj,
 	     const char *url_server, char *etag,
-	     HTTP_CMD up_mode, int expected_code);
+	     HTTP_CMD up_mode, char *content_type,
+	     int expected_code);
+
 
 /** Creates an new calendar event.
  *
