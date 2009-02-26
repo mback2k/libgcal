@@ -285,7 +285,8 @@ static int common_upload(struct gcal_resource *gcalobj,
 int http_post(struct gcal_resource *gcalobj, const char *url,
 	      char *header, char *header2, char *header3,
 	      char *header4,
-	      char *post_data, const int expected_answer)
+	      char *post_data, unsigned int length,
+	      const int expected_answer)
 {
 	int result = -1;
 	CURLcode res;
@@ -306,7 +307,7 @@ int http_post(struct gcal_resource *gcalobj, const char *url,
 	if (post_data) {
 		curl_easy_setopt(curl_ctx, CURLOPT_POSTFIELDS, post_data);
 		curl_easy_setopt(curl_ctx, CURLOPT_POSTFIELDSIZE,
-				 strlen(post_data));
+				 length);
 	}
 	else
 		curl_easy_setopt(curl_ctx, CURLOPT_POSTFIELDSIZE, 0);
@@ -325,7 +326,8 @@ exit:
 static int http_put(struct gcal_resource *gcalobj, const char *url,
 		    char *header, char *header2, char *header3,
 		    char *header4,
-		    char *post_data, const int expected_answer)
+		    char *post_data, unsigned int length,
+		    const int expected_answer)
 {
 	int result = -1;
 	CURLcode res;
@@ -347,7 +349,7 @@ static int http_put(struct gcal_resource *gcalobj, const char *url,
 	if (post_data) {
 		curl_easy_setopt(curl_ctx, CURLOPT_POSTFIELDS, post_data);
 		curl_easy_setopt(curl_ctx, CURLOPT_POSTFIELDSIZE,
-				 strlen(post_data));
+				length);
 	}
 	else
 		curl_easy_setopt(curl_ctx, CURLOPT_POSTFIELDSIZE, 0);
@@ -405,7 +407,8 @@ int gcal_get_authentication(struct gcal_resource *gcalobj,
 
 	result = http_post(gcalobj, GCAL_URL,
 			   "Content-Type: application/x-www-form-urlencoded",
-			   NULL, NULL, NULL, post, GCAL_DEFAULT_ANSWER);
+			   NULL, NULL, NULL, post, strlen(post),
+			   GCAL_DEFAULT_ANSWER);
 	if (result)
 		goto cleanup;
 
@@ -811,7 +814,8 @@ void gcal_destroy_entries(struct gcal_event *entries, size_t length)
 /* This function makes possible to share code between 'add'
  * and 'edit' events.
  */
-int up_entry(char *data2post, struct gcal_resource *gcalobj,
+int up_entry(char *data2post, unsigned int m_length,
+	     struct gcal_resource *gcalobj,
 	     const char *url_server, char *etag,
 	     HTTP_CMD up_mode, char *content_type,
 	     int expected_code)
@@ -822,7 +826,7 @@ int up_entry(char *data2post, struct gcal_resource *gcalobj,
 	const char header[] = "Content-length: ";
 	int (*up_callback)(struct gcal_resource *, const char *,
 			   char *, char *, char *, char *,
-			   char *, const int);
+			   char *, unsigned int, const int);
 
 	if (!data2post || !gcalobj)
 		goto exit;
@@ -841,13 +845,13 @@ int up_entry(char *data2post, struct gcal_resource *gcalobj,
 	clean_buffer(gcalobj);
 
 	/* Mounts content length and  authentication header strings */
-	length = strlen(data2post) + strlen(header) + 1;
+	length = m_length + strlen(header) + 1;
 	h_length = (char *) malloc(length) ;
 	if (!h_length)
 		goto exit;
 	strncpy(h_length, header, sizeof(header));
 	tmp = h_length + sizeof(header) - 1;
-	snprintf(tmp, length - (sizeof(header) + 1), "%d", strlen(data2post));
+	snprintf(tmp, length - (sizeof(header) + 1), "%d", m_length);
 
 
 	length = strlen(gcalobj->auth) + sizeof(HEADER_GET) + 1;
@@ -870,7 +874,8 @@ int up_entry(char *data2post, struct gcal_resource *gcalobj,
 				     h_length,
 				     h_auth,
 				     etag,
-				     data2post, expected_code);
+				     data2post, m_length,
+				     expected_code);
 		if (!result) {
 
 			result = 0;
@@ -883,7 +888,8 @@ int up_entry(char *data2post, struct gcal_resource *gcalobj,
 				     h_length,
 				     h_auth,
 				     etag,
-				     data2post, GCAL_REDIRECT_ANSWER);
+				     data2post, m_length,
+				     GCAL_REDIRECT_ANSWER);
 		if (result == -1)
 			goto cleanup;
 	} else
@@ -906,7 +912,8 @@ int up_entry(char *data2post, struct gcal_resource *gcalobj,
 			     h_length,
 			     h_auth,
 			     etag,
-			     data2post, expected_code);
+			     data2post, m_length,
+			     expected_code);
 
 	if (result == -1) {
 		if (gcalobj->fout_log) {
@@ -916,7 +923,7 @@ int up_entry(char *data2post, struct gcal_resource *gcalobj,
 				"\nurl = %s\nh_length = %s\nh_auth = %s"
 				"\ndata2post =%s%d\n",
 				gcalobj->url, h_length, h_auth, data2post,
-				strlen(data2post));
+				m_length);
 		}
 		goto cleanup;
 	}
@@ -946,7 +953,8 @@ int gcal_create_event(struct gcal_resource *gcalobj,
 	if (result == -1)
 		goto exit;
 
-	result = up_entry(xml_entry, gcalobj, GCAL_EDIT_URL, NULL,
+	result = up_entry(xml_entry, strlen(xml_entry),
+			  gcalobj, GCAL_EDIT_URL, NULL,
 			  POST, NULL, GCAL_EDIT_ANSWER);
 	if (result)
 		goto cleanup;
@@ -1010,7 +1018,7 @@ int gcal_delete_event(struct gcal_resource *gcalobj,
 			   /* Google Data API 2.0 requires ETag */
 			   "If-Match: *",
 			   h_auth,
-			   NULL, NULL, GCAL_REDIRECT_ANSWER);
+			   NULL, NULL, 0, GCAL_REDIRECT_ANSWER);
 
 	/* Get the gsessionid redirect URL */
 	if (result == -1)
@@ -1028,7 +1036,7 @@ int gcal_delete_event(struct gcal_resource *gcalobj,
 			   /* Google Data API 2.0 requires ETag */
 			   "If-Match: *",
 			   h_auth,
-			   NULL, NULL, GCAL_DEFAULT_ANSWER);
+			   NULL, NULL, 0, GCAL_DEFAULT_ANSWER);
 
 	/* Restores curl context to previous standard mode */
 	curl_easy_setopt(gcalobj->curl, CURLOPT_CUSTOMREQUEST, NULL);
@@ -1059,7 +1067,8 @@ int gcal_edit_event(struct gcal_resource *gcalobj,
 	if (result == -1)
 		goto exit;
 
-	result = up_entry(xml_entry, gcalobj, entry->common.edit_uri, NULL,
+	result = up_entry(xml_entry, strlen(xml_entry),
+			  gcalobj, entry->common.edit_uri, NULL,
 			  PUT, NULL, GCAL_DEFAULT_ANSWER);
 	if (result)
 		goto cleanup;

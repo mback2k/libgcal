@@ -134,7 +134,8 @@ int gcal_add_xmlentry(gcal_t gcal_obj, char *xml_entry, char **xml_updated)
 		goto exit;
 
 	if (!(strcmp(gcal_obj->service, "cl")))
-		result = up_entry(xml_entry, gcal_obj, GCAL_EDIT_URL, NULL,
+		result = up_entry(xml_entry, strlen(xml_entry), gcal_obj,
+				  GCAL_EDIT_URL, NULL,
 				  POST, NULL, GCAL_EDIT_ANSWER);
 
 	else {
@@ -147,7 +148,8 @@ int gcal_add_xmlentry(gcal_t gcal_obj, char *xml_entry, char **xml_updated)
 		snprintf(buffer, length - 1, "%s%s%s", GCONTACT_START,
 			 gcal_obj->user, GCONTACT_END);
 
-		result = up_entry(xml_entry, gcal_obj, buffer, NULL,
+		result = up_entry(xml_entry, strlen(xml_entry), gcal_obj,
+				  buffer, NULL,
 				  POST, NULL, GCAL_EDIT_ANSWER);
 	}
 
@@ -197,7 +199,7 @@ int gcal_update_xmlentry(gcal_t gcal_obj, char *xml_entry, char **xml_updated,
 	snprintf(buffer, sizeof(buffer) - 1, "%s\%s",
 		 if_match, etag);
 
-	result = up_entry(xml_entry, gcal_obj, url, buffer,
+	result = up_entry(xml_entry, strlen(xml_entry), gcal_obj, url, buffer,
 			  PUT, NULL, GCAL_DEFAULT_ANSWER);
 
 	if (!result)

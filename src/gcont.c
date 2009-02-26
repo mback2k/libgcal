@@ -180,8 +180,8 @@ int gcal_create_contact(struct gcal_resource *gcalobj,
 	snprintf(buffer, length - 1, "%s%s%s", GCONTACT_START,
 		 gcalobj->user, GCONTACT_END);
 
-	result = up_entry(xml_contact, gcalobj, buffer, NULL,
-			  POST, NULL, GCAL_EDIT_ANSWER);
+	result = up_entry(xml_contact, strlen(xml_contact), gcalobj,
+			  buffer, NULL, POST, NULL, GCAL_EDIT_ANSWER);
 	if (result)
 		goto cleanup;
 
@@ -202,16 +202,17 @@ int gcal_create_contact(struct gcal_resource *gcalobj,
 		goto cleanup;
 
 	/* There is only one 'entry' in the buffer */
+	gcal_init_contact(updated);
 	result = extract_all_contacts(gcalobj->document, updated, 1);
 	if (result == -1)
 		goto xmlclean;
 
 	/* Adding photo is the same as an edit operation */
 	if (contact->photo_length) {
-		result = up_entry(contact->photo_data, gcalobj,
-				  updated->photo, NULL,
+		result = up_entry(contact->photo_data, contact->photo_length,
+				  gcalobj, updated->photo, NULL,
 				  PUT, "Content-Type: image/*",
-				  GCAL_EDIT_ANSWER);
+				  GCAL_DEFAULT_ANSWER);
 		if (result)
 			goto cleanup;
 
@@ -260,7 +261,7 @@ int gcal_delete_contact(struct gcal_resource *gcalobj,
 			   /* Google Data API 2.0 requires ETag */
 			   "If-Match: *",
 			   h_auth,
-			   NULL, NULL, GCAL_DEFAULT_ANSWER);
+			   NULL, NULL, 0, GCAL_DEFAULT_ANSWER);
 
 	/* Restores curl context to previous standard mode */
 	curl_easy_setopt(gcalobj->curl, CURLOPT_CUSTOMREQUEST, NULL);
@@ -288,7 +289,8 @@ int gcal_edit_contact(struct gcal_resource *gcalobj,
 	if (result == -1)
 		goto exit;
 
-	result = up_entry(xml_contact, gcalobj, contact->common.edit_uri, NULL,
+	result = up_entry(xml_contact, strlen(xml_contact), gcalobj,
+			  contact->common.edit_uri, NULL,
 			  PUT, NULL, GCAL_DEFAULT_ANSWER);
 	if (result)
 		goto cleanup;
@@ -310,9 +312,12 @@ int gcal_edit_contact(struct gcal_resource *gcalobj,
 		goto cleanup;
 
 	/* There is only one 'entry' in the buffer */
+	gcal_init_contact(updated);
 	result = extract_all_contacts(gcalobj->document, updated, 1);
 	if (result == -1)
 		goto xmlclean;
+
+	/* TODO: update the photo */
 
 	result = 0;
 

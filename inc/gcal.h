@@ -258,6 +258,7 @@ void gcal_destroy_entries(struct gcal_event *entries, size_t length);
  * @param header4 Third header part (can be NULL). Used for ETag (Google Data
  * API 2.0)
  * @param post_data The data to post (can be NULL).
+ * @param length The data length (can be zero).
  * @param expected_answer The expected answer code, see GCAL_DEFAULT_ANSWER and
  * friends.
  *
@@ -266,7 +267,8 @@ void gcal_destroy_entries(struct gcal_event *entries, size_t length);
 int http_post(struct gcal_resource *gcalobj, const char *url,
 	      char *header, char *header2, char *header3,
 	      char *header4,
-	      char *post_data, const int expected_answer);
+	      char *post_data, unsigned int length,
+	      const int expected_answer);
 
 
 /** Uploads an entry (calendar or contact) to a server URL
@@ -276,6 +278,8 @@ int http_post(struct gcal_resource *gcalobj, const char *url,
  *
  *
  * @param data2post A pointer to string, it will be the body to be posted.
+ *
+ * @param length The data length (can be zero).
  *
  * @param gcalobj Pointer to a \ref gcal_resource structure, which has
  *                 previously got the authentication using
@@ -298,7 +302,8 @@ int http_post(struct gcal_resource *gcalobj, const char *url,
  *
  * @return -1 on error, 0 on success.
  */
-int up_entry(char *data2post, struct gcal_resource *gcalobj,
+int up_entry(char *data2post, unsigned int m_length,
+	     struct gcal_resource *gcalobj,
 	     const char *url_server, char *etag,
 	     HTTP_CMD up_mode, char *content_type,
 	     int expected_code);
