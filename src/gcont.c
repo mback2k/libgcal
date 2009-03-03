@@ -35,7 +35,6 @@ POSSIBILITY OF SUCH DAMAGE.
  * @brief  Base file for google contacts service access library.
  *
  * \todo:
- * - support get/add/edit contact's photos
  * - for some firewalls, X-HTTP-Method-Override: DELETE can be required
  *
  */
