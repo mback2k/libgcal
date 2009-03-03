@@ -448,6 +448,19 @@ START_TEST (test_contact_photo)
 	result = gcal_add_contact(gcal, contact);
 	fail_if(result == -1, "Failed adding a new contact!");
 
+	/* Update the contact: new title, photo, name, etc */
+	free(photo_data);
+	photo_data = NULL;
+	if (find_load_photo("/utests/images/hutch.png",  &photo_data, &result))
+		fail_if(1, "Cannot load photo!");
+	gcal_contact_set_title(contact, "hutch");
+	gcal_contact_set_email(contact, "hutch@wallace.com");
+	fail_if(gcal_contact_set_photo(contact, photo_data, result),
+		"Failed copying photo data");
+	result = gcal_update_contact(gcal, contact);
+	fail_if(result == -1, "Failed updating a contact!");
+
+	/* Delete */
 	result = gcal_erase_contact(gcal, contact);
 	fail_if(result == -1, "Failed deleting contact!");
 

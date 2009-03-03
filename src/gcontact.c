@@ -205,6 +205,11 @@ int gcal_update_contact(gcal_t gcalobj, gcal_contact_t contact)
 	contact->common.etag = updated.common.etag;
 	updated.common.etag = NULL;
 
+	if (contact->photo)
+		free(contact->photo);
+	contact->photo = updated.photo;
+	updated.photo = NULL;
+
 	/* Cleanup updated contact */
 	gcal_destroy_contact(&updated);
 

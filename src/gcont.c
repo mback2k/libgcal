@@ -290,7 +290,9 @@ int gcal_edit_contact(struct gcal_resource *gcalobj,
 		goto exit;
 
 	result = up_entry(xml_contact, strlen(xml_contact), gcalobj,
-			  contact->common.edit_uri, NULL,
+			  contact->common.edit_uri,
+			  /* Google Data API 2.0 requires ETag */
+			  "If-Match: *",
 			  PUT, NULL, GCAL_DEFAULT_ANSWER);
 	if (result)
 		goto cleanup;
@@ -317,7 +319,18 @@ int gcal_edit_contact(struct gcal_resource *gcalobj,
 	if (result == -1)
 		goto xmlclean;
 
-	/* TODO: update the photo */
+	/* Adding photo is the same as an edit operation */
+	if (contact->photo_length) {
+		result = up_entry(contact->photo_data, contact->photo_length,
+				  gcalobj, updated->photo,
+				  /* Google Data API 2.0 requires ETag */
+				  "If-Match: *",
+				  PUT, "Content-Type: image/*",
+				  GCAL_DEFAULT_ANSWER);
+		if (result)
+			goto cleanup;
+
+	}
 
 	result = 0;
 
