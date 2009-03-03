@@ -377,6 +377,27 @@ char *gcal_contact_get_phone(gcal_contact_t contact);
  */
 char *gcal_contact_get_address(gcal_contact_t contact);
 
+/** Access contact photo data.
+ *
+ * @param contact A contact object, see \ref gcal_contact.
+ *
+ * @return Pointer to internal object field (dont free it!) or NULL (in error
+ * case or if the field is not set). If the entry hasn't this field in the
+ * atom stream, it will be set to an empty string (i.e. "").
+ */
+unsigned char *gcal_contact_get_photo(gcal_contact_t contact);
+
+/** Access contact photo data length.
+ *
+ * It can required to known where the data ends (since is a binary blob
+ * you cannot use strlen).
+ *
+ * @param contact A contact object, see \ref gcal_contact.
+ *
+ * @return 0 for no photo, 1 for photo link existence and > 1 when having the
+ * photo data. -1 for error case.
+ */
+unsigned int gcal_contact_get_photolength(gcal_contact_t contact);
 
 /* Here starts the gcal_contact setters */
 

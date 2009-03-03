@@ -424,9 +424,10 @@ END_TEST
 START_TEST (test_contact_photo)
 {
 	gcal_t gcal;
-	gcal_contact_t contact;
+	gcal_contact_t contact, tmp;
 	unsigned char *photo_data;
-	int result;
+	struct gcal_contact_array contact_array;
+	int result, i;
 
 	if (find_load_photo("/utests/images/gromit.jpg",  &photo_data, &result))
 		fail_if(1, "Cannot load photo!");
@@ -460,6 +461,21 @@ START_TEST (test_contact_photo)
 	result = gcal_update_contact(gcal, contact);
 	fail_if(result == -1, "Failed updating a contact!");
 
+
+	/* Retrieve updated contacts and test for contact photo */
+	result = gcal_get_updated_contacts(gcal, &contact_array, NULL);
+	fail_if(result == -1, "Failed downloading updated contacts!");
+	fail_if(contact_array.length > 3, "This user should not have more"
+		" than 3 updated contacts!");
+
+	/* Last updated contact (i.e. first) should have photo */
+	tmp = gcal_contact_element(&contact_array, (contact_array.length - 1));
+	fail_if(tmp == NULL, "Last contact must not be NULL!");
+	fail_if(gcal_contact_get_photo(tmp) == NULL,
+		"Last updated contact must have photo");
+	fail_if(gcal_contact_get_photolength(tmp) < 2,
+		"Last updated contact photo length must be bigger");
+
 	/* Delete */
 	result = gcal_erase_contact(gcal, contact);
 	fail_if(result == -1, "Failed deleting contact!");
@@ -467,6 +483,8 @@ START_TEST (test_contact_photo)
 	/* Cleanup */
 	gcal_contact_delete(contact);
 	gcal_delete(gcal);
+
+	gcal_cleanup_contacts(&contact_array);
 	free(photo_data);
 }
 END_TEST

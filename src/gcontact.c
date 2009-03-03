@@ -366,6 +366,18 @@ char *gcal_contact_get_address(gcal_contact_t contact)
 	return contact->post_address;
 }
 
+unsigned char *gcal_contact_get_photo(gcal_contact_t contact)
+{
+	(void)contact;
+	return NULL;
+}
+
+unsigned int gcal_contact_get_photolength(gcal_contact_t contact)
+{
+	(void)contact;
+	return -1;
+}
+
 /* Here starts the gcal_contact setters */
 int gcal_contact_set_title(gcal_contact_t contact, const char *field)
 {
