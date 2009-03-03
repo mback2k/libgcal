@@ -1068,7 +1068,9 @@ int gcal_edit_event(struct gcal_resource *gcalobj,
 		goto exit;
 
 	result = up_entry(xml_entry, strlen(xml_entry),
-			  gcalobj, entry->common.edit_uri, NULL,
+			  gcalobj, entry->common.edit_uri,
+			  /* Google Data API 2.0 requires ETag */
+			  "If-Match: *",
 			  PUT, NULL, GCAL_DEFAULT_ANSWER);
 	if (result)
 		goto cleanup;
