@@ -468,11 +468,12 @@ START_TEST (test_contact_photo)
 	fail_if(contact_array.length > 3, "This user should not have more"
 		" than 3 updated contacts!");
 
-	/* Last updated contact (i.e. first) should have photo */
+	/* Last updated contact (i.e. last) should have photo */
 	tmp = gcal_contact_element(&contact_array, (contact_array.length - 1));
 	fail_if(tmp == NULL, "Last contact must not be NULL!");
 	fail_if(gcal_contact_get_photo(tmp) == NULL,
-		"Last updated contact must have photo");
+		"Last updated contact must have photo: %s",
+		gcal_contact_get_title(tmp));
 	fail_if(gcal_contact_get_photolength(tmp) < 2,
 		"Last updated contact photo length must be bigger");
 
