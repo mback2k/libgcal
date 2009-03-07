@@ -20,8 +20,8 @@ option(ENABLE_TESTS "Build unit tests" ON)
 find_package(CURL REQUIRED)
 find_package(LibXml2 REQUIRED)
 
-set(GCAL_SOURCE_DIR src)
-set(GCAL_HEADER_DIR inc)
+set(GCAL_SOURCE_DIR "${CMAKE_SOURCE_DIR}/src")
+set(GCAL_HEADER_DIR "${CMAKE_SOURCE_DIR}/inc")
 
 include_directories(
 	${GCAL_HEADER_DIR}
@@ -34,3 +34,7 @@ add_subdirectory(${GCAL_SOURCE_DIR})
 if(ENABLE_TESTS)
 	add_subdirectory(utests)
 endif()
+
+# Generate Doxygen Documentation
+configure_file(${CMAKE_SOURCE_DIR}/Doxyfile.cmake Doxyfile @ONLY)
+add_custom_target(doc doxygen)
