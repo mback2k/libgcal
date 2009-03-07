@@ -5,7 +5,7 @@ set(CMAKE_MODULE_PATH
 	"${CMAKE_SOURCE_DIR}/cmake/3rd-party-modules"
 )
 
-option(ENABLE_TESTS "Build and run unit tests" ON)
+option(ENABLE_TESTS "Build unit tests" ON)
 
 find_package(CURL REQUIRED)
 find_package(LibXml2 REQUIRED)
