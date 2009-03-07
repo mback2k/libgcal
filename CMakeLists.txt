@@ -10,13 +10,16 @@ option(ENABLE_TESTS "Build unit tests" ON)
 find_package(CURL REQUIRED)
 find_package(LibXml2 REQUIRED)
 
+set(GCAL_SOURCE_DIR src)
+set(GCAL_HEADER_DIR inc)
+
 include_directories(
-	inc
+	${GCAL_HEADER_DIR}
         ${CURL_INCLUDE_DIRS}
         ${LIBXML2_INCLUDE_DIR}
 )
 
-add_subdirectory(src)
+add_subdirectory(${GCAL_SOURCE_DIR})
 
 if(ENABLE_TESTS)
 	add_subdirectory(utests)

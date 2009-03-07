@@ -5,7 +5,7 @@ find_program(GCOV gcov)
 
 include_directories(${CHECK_INCLUDE_DIRS})
 
-set(TESTGCAL_SRCS
+set(GCAL_TEST_SOURCE_FILES
 	utest.c
 	utest_contact.c
 	utest_debug.c
@@ -19,7 +19,7 @@ set(TESTGCAL_SRCS
 	utils.c
 )
 
-add_executable(testgcal ${TESTGCAL_SRCS})
+add_executable(testgcal ${GCAL_TEST_SOURCE_FILES})
 target_link_libraries(testgcal gcal ${CHECK_LIBRARIES})
 
 add_custom_target(

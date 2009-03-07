@@ -1,4 +1,4 @@
-set(GCAL_SRCS
+set(GCAL_SOURCE_FILES
 	atom_parser.c
 	curl_debug_gcal.c
 	gcal.c
@@ -10,5 +10,5 @@ set(GCAL_SRCS
 	xml_aux.c
 )
 
-add_library(gcal SHARED ${GCAL_SRCS})
+add_library(gcal SHARED ${GCAL_SOURCE_FILES})
 target_link_libraries(gcal ${CURL_LIBRARIES} ${LIBXML2_LIBRARIES})
