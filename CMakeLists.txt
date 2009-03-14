@@ -5,6 +5,8 @@ set(CMAKE_MODULE_PATH
 	"${CMAKE_SOURCE_DIR}/cmake/3rd-party-modules"
 )
 
+include(SetBuildType)
+
 set(GCAL_VERSION_MAJOR 0)
 set(GCAL_VERSION_MINOR 8)
 set(GCAL_VERSION_PATCH 5)
@@ -20,6 +22,14 @@ option(ENABLE_TESTS "Build unit tests" ON)
 find_package(CURL REQUIRED)
 find_package(LibXml2 REQUIRED)
 
+if(CMAKE_DEBUG_BUILD)
+	# Try and find GCOV for test coverage.
+	find_program(GCOV gcov)
+	set(CMAKE_C_FLAGS
+		"${CMAKE_C_FLAGS} -Wall -W -Wno-pointer-sign -Wmissing-declarations -Wmissing-prototypes -Wredundant-decls -Wshadow -Wbad-function-cast -Wcast-qual -Wno-pointer-sign"
+        )
+endif()
+
 set(GCAL_SOURCE_DIR "${CMAKE_SOURCE_DIR}/src")
 set(GCAL_HEADER_DIR "${CMAKE_SOURCE_DIR}/inc")
 
@@ -31,6 +41,13 @@ include_directories(
         ${CURL_INCLUDE_DIRS}
         ${LIBXML2_INCLUDE_DIR}
 )
+
+# If we've found GCov then add the necessary profiling flags.
+if(GCOV)
+	set(CMAKE_C_FLAGS
+		"${CMAKE_C_FLAGS} -fprofile-arcs -ftest-coverage"
+	)
+endif()
 
 add_subdirectory(${GCAL_SOURCE_DIR})
 

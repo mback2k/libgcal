@@ -1,8 +1,5 @@
 find_package(Check REQUIRED)
 
-# Try and find GCOV for test coverage.
-find_program(GCOV gcov)
-
 include_directories(${CHECK_INCLUDE_DIRS})
 
 set(GCAL_TEST_SOURCE_FILES
@@ -26,4 +23,14 @@ add_custom_target(
 	test
 	COMMAND ${CMAKE_CURRENT_BINARY_DIR}/testgcal 
 	DEPENDS testgcal
+	WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}"
 )
+
+if(GCOV)
+	add_custom_target(
+		coverage
+		COMMAND ${GCOV} utest.c -o "${CMAKE_CURRENT_BINARY_DIR}/CMakeFiles/testgcal.dir/utest.c.gcno"
+		DEPENDS test
+		WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}"
+	)
+endif()
