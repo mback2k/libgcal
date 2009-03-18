@@ -36,6 +36,8 @@ set(GCAL_HEADER_DIR "${CMAKE_SOURCE_DIR}/inc")
 set(GCAL_LIBRARY_INSTALL_DIR "lib")
 set(GCAL_INCLUDE_INSTALL_DIR "include")
 
+include(SetAutotoolsVariables)
+
 include_directories(
 	${GCAL_HEADER_DIR}
         ${CURL_INCLUDE_DIRS}
@@ -56,11 +58,11 @@ if(ENABLE_TESTS)
 endif()
 
 # Generate Doxygen Documentation
-configure_file(${CMAKE_SOURCE_DIR}/Doxyfile.cmake Doxyfile @ONLY)
+configure_file(${CMAKE_SOURCE_DIR}/Doxyfile.in Doxyfile @ONLY)
 add_custom_target(doc doxygen)
 
 # Generate pkg-config files
-configure_file(${CMAKE_SOURCE_DIR}/libgcal.pc.cmake libgcal.pc @ONLY)
+configure_file(${CMAKE_SOURCE_DIR}/libgcal.pc.in libgcal.pc @ONLY)
 install(
 	FILES "${CMAKE_BINARY_DIR}/libgcal.pc"
 	DESTINATION "${GCAL_LIBRARY_INSTALL_DIR}/pkgconfig"
