@@ -23,16 +23,16 @@ target_link_libraries(testgcal gcal ${CHECK_LIBRARIES})
 
 add_custom_target(
 	test
-	COMMAND ${CMAKE_CURRENT_BINARY_DIR}/testgcal 
+	COMMAND "${CMAKE_CURRENT_BINARY_DIR}/testgcal" 
 	DEPENDS testgcal
-	WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}"
+	WORKING_DIRECTORY "${CMAKE_BINARY_DIR}"
 )
 
 if(GCOV)
 	add_custom_target(
 		gcov
-		COMMAND ${GCOV} utest.c -o "${CMAKE_CURRENT_BINARY_DIR}/CMakeFiles/testgcal.dir/utest.c.gcno"
-		WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}"
+		COMMAND ${GCOV} utest.c --object-directory "${CMAKE_CURRENT_BINARY_DIR}/CMakeFiles/testgcal.dir/utest.c.gcno"
+		WORKING_DIRECTORY "${CMAKE_BINARY_DIR}"
 	)
 	add_dependencies(gcov test)
 endif()
@@ -40,15 +40,15 @@ endif()
 if(LCOV)
 	add_custom_target(
 		lcov
-		COMMAND ${LCOV} --capture --directory "${CMAKE_BINARY_DIR}" --output-file testgcal.lcov
-		WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}"
+		COMMAND ${LCOV} --capture --directory "${CMAKE_BINARY_DIR}" --output-file "${CMAKE_CURRENT_BINARY_DIR}/testgcal.lcov"
+		WORKING_DIRECTORY "${CMAKE_BINARY_DIR}"
 	)
 	add_dependencies(lcov test)
 	if (LCOV_GENHTML)
 		add_custom_target(
 			lcov_genhtml
-			COMMAND ${LCOV_GENHTML} testgcal.lcov --output-directory "${CMAKE_BINARY_DIR}/lcov"
-			WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}"
+			COMMAND ${LCOV_GENHTML} "${CMAKE_CURRENT_BINARY_DIR}/testgcal.lcov" --output-directory "${CMAKE_BINARY_DIR}/lcov"
+			WORKING_DIRECTORY "${CMAKE_BINARY_DIR}"
 		)
 		add_dependencies(lcov_genhtml lcov)
 	endif()
