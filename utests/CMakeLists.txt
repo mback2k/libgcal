@@ -40,10 +40,16 @@ endif()
 if(LCOV)
 	add_custom_target(
 		lcov_capture
-		COMMAND ${LCOV} --capture --directory "${CMAKE_BINARY_DIR}" --output-file "${CMAKE_CURRENT_BINARY_DIR}/testgcal.lcov"
+		COMMAND ${LCOV} --capture --directory "src/" --output-file "${CMAKE_CURRENT_BINARY_DIR}/testgcal.lcov"
 		WORKING_DIRECTORY "${CMAKE_BINARY_DIR}"
 	)
 	add_dependencies(lcov_capture test)
+	add_custom_target(
+		lcov_remove
+		COMMAND ${LCOV} --remove "${CMAKE_CURRENT_BINARY_DIR}/testgcal.lcov" '*.h' --output-file "${CMAKE_CURRENT_BINARY_DIR}/testgcal.lcov"
+		WORKING_DIRECTORY "${CMAKE_BINARY_DIR}"
+	)
+	add_dependencies(lcov_remove lcov_capture)
 	if (LCOV_GENHTML)
 		add_custom_target(
 			lcov
@@ -51,6 +57,7 @@ if(LCOV)
 			WORKING_DIRECTORY "${CMAKE_BINARY_DIR}"
 		)
 		add_dependencies(lcov lcov_capture)
+		add_dependencies(lcov lcov_remove)
 		add_dependencies(doc lcov)
 	endif()
 endif()
