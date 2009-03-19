@@ -39,6 +39,7 @@ set(GCAL_TEST_DIR "${CMAKE_SOURCE_DIR}/utests")
 
 set(GCAL_LIBRARY_INSTALL_DIR "lib")
 set(GCAL_INCLUDE_INSTALL_DIR "include")
+set(GCAL_CMAKE_MODULE_INSTALL_DIR "share/cmake-2.6/Modules")
 
 include(SetAutotoolsVariables)
 
@@ -87,4 +88,10 @@ install(
 	DIRECTORY "${GCAL_HEADER_DIR}/"
         DESTINATION "${GCAL_INCLUDE_INSTALL_DIR}"
 	FILES_MATCHING PATTERN "*.h"
+)
+
+# Install CMake module
+install(
+	FILES "${CMAKE_SOURCE_DIR}/cmake/modules/FindLibGCal.cmake"
+	DESTINATION "${GCAL_CMAKE_MODULE_INSTALL_DIR}"
 )
