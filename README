@@ -35,15 +35,19 @@ adenilson.silva@indt.org.br
 
  - use of http proxy
 
+ - Contact photo upload
+
 
 === Missing ===
 
 
  - batch commit
 
- - Contacts: upload/download of photos
+ - Contacts: download of photos
 
  - Calendar: creation of recurrent events (should use libical)
+
+ - Hosted accounts
 
 
 === Dependencies ===
