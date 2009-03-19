@@ -8,6 +8,7 @@
 #	LIBGCAL_FOUND
 #	LIBGCAL_LIBRARY
 #
+# Copyright Mike Arthur 2009.
 find_path(LIBGCAL_INCLUDE_DIR gcal.h)
 
 set(LIBGCAL_NAMES ${LIBGCAL_NAMES} gcal)
