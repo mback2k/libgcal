@@ -18,6 +18,7 @@ set(GCAL_VERSION_COUNT 3)
 message(STATUS "Building ${PROJECT_NAME} ${GCAL_VERSION}")
 
 option(ENABLE_TESTS "Build unit tests" ON)
+option(CURL_DEBUG "Enable cURL debugging" OFF)
 
 find_package(CURL REQUIRED)
 find_package(LibXml2 REQUIRED)
