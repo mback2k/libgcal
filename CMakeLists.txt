@@ -23,6 +23,8 @@ option(CURL_DEBUG "Enable cURL debugging" OFF)
 find_package(CURL REQUIRED)
 find_package(LibXml2 REQUIRED)
 
+find_program(CTAGS ctags)
+
 if(CMAKE_DEBUG_BUILD)
 	# Try and find GCOV for test coverage.
 	find_program(GCOV gcov)
@@ -33,11 +35,33 @@ endif()
 
 set(GCAL_SOURCE_DIR "${CMAKE_SOURCE_DIR}/src")
 set(GCAL_HEADER_DIR "${CMAKE_SOURCE_DIR}/inc")
+set(GCAL_TEST_DIR "${CMAKE_SOURCE_DIR}/utests")
 
 set(GCAL_LIBRARY_INSTALL_DIR "lib")
 set(GCAL_INCLUDE_INSTALL_DIR "include")
 
 include(SetAutotoolsVariables)
+
+# Generate Doxygen Documentation
+configure_file(${CMAKE_SOURCE_DIR}/Doxyfile.in Doxyfile @ONLY)
+add_custom_target(doc)
+add_custom_target(docs)
+add_dependencies(docs doc)
+add_custom_target(doxygen doxygen)
+add_dependencies(doc doxygen)
+
+# Generate pkg-config files
+configure_file(${CMAKE_SOURCE_DIR}/libgcal.pc.in libgcal.pc @ONLY)
+install(
+	FILES "${CMAKE_BINARY_DIR}/libgcal.pc"
+	DESTINATION "${GCAL_LIBRARY_INSTALL_DIR}/pkgconfig"
+)
+
+if(CTAGS)
+	add_custom_target(tags
+		COMMAND ${CTAGS} --recurse ${GCAL_SOURCE_DIR} ${GCAL_HEADER_DIR} ${GCAL_TEST_DIR}
+	)
+endif()
 
 include_directories(
 	${GCAL_HEADER_DIR}
@@ -55,19 +79,8 @@ endif()
 add_subdirectory(${GCAL_SOURCE_DIR})
 
 if(ENABLE_TESTS)
-	add_subdirectory(utests)
+	add_subdirectory(${GCAL_TEST_DIR})
 endif()
-
-# Generate Doxygen Documentation
-configure_file(${CMAKE_SOURCE_DIR}/Doxyfile.in Doxyfile @ONLY)
-add_custom_target(doc doxygen)
-
-# Generate pkg-config files
-configure_file(${CMAKE_SOURCE_DIR}/libgcal.pc.in libgcal.pc @ONLY)
-install(
-	FILES "${CMAKE_BINARY_DIR}/libgcal.pc"
-	DESTINATION "${GCAL_LIBRARY_INSTALL_DIR}/pkgconfig"
-)
 
 # Install header files
 install(
