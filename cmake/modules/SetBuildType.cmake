@@ -9,6 +9,9 @@
 
 # Compile in "Debug" mode by default except with MSVC which handles
 # Release/Debug builds internally.
+#
+# Copyright (c) 2009 Mike Arthur <mike@mikearthur.co.uk>
+
 if(NOT MSVC OR CMAKE_GENERATOR STREQUAL "NMake Makefiles")
 	if(NOT CMAKE_BUILD_TYPE)
 		set(CMAKE_BUILD_TYPE

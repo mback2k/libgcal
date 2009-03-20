@@ -1,8 +1,10 @@
+# Copyright (c) 2009 Mike Arthur <mike@mikearthur.co.uk>
+
 project("libgcal" C)
 cmake_minimum_required(VERSION 2.6)
 set(CMAKE_MODULE_PATH 
 	"${CMAKE_SOURCE_DIR}/cmake/modules"
-	"${CMAKE_SOURCE_DIR}/cmake/3rd-party-modules"
+	"${CMAKE_SOURCE_DIR}/cmake/3rd-party-modules/opensync"
 )
 
 include(SetBuildType)

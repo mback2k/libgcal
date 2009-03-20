@@ -1,3 +1,5 @@
+# Copyright (c) 2009 Mike Arthur <mike@mikearthur.co.uk>
+
 find_package(Check REQUIRED)
 find_program(LCOV lcov)
 find_program(LCOV_GENHTML genhtml)

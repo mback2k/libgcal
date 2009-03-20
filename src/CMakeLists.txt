@@ -1,3 +1,5 @@
+# Copyright (c) 2009 Mike Arthur <mike@mikearthur.co.uk>
+
 set(GCAL_SOURCE_FILES
 	atom_parser.c
 	gcal.c

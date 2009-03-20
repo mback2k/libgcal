@@ -1,3 +1,10 @@
+# - Set Autotools variables
+#
+# Sets various needed Autotools variables until LibGCal moves to the CMake
+# buildsystem exclusively.
+#
+# Copyright (c) 2009 Mike Arthur <mike@mikearthur.co.uk>
+
 set(prefix "${CMAKE_INSTALL_PREFIX}")
 set(exec_prefix "${prefix}")
 set(libdir "${exec_prefix}/${GCAL_LIBRARY_INSTALL_DIR}")
