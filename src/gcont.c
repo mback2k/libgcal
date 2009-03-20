@@ -36,6 +36,7 @@ POSSIBILITY OF SUCH DAMAGE.
  *
  * \todo:
  * - for some firewalls, X-HTTP-Method-Override: DELETE can be required
+ * - support contact's photo download (upload is working ok!)
  *
  */
 #include <string.h>
