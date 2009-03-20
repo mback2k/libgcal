@@ -46,7 +46,7 @@ POSSIBILITY OF SUCH DAMAGE.
 
 
 struct gcal_contact *gcal_get_all_contacts(struct gcal_resource *gcalobj,
-				       size_t *length)
+					   size_t *length)
 
 {
 	int result = -1, i;
