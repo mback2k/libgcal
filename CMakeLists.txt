@@ -23,7 +23,7 @@ option(CURL_DEBUG "Enable cURL debugging" OFF)
 find_package(CURL REQUIRED)
 find_package(LibXml2 REQUIRED)
 
-find_program(ETAGS etags)
+find_program(CTAGS ctags)
 
 if(CMAKE_DEBUG_BUILD)
 	# Try and find GCOV for test coverage.
@@ -58,9 +58,9 @@ install(
 	DESTINATION "${GCAL_LIBRARY_INSTALL_DIR}/pkgconfig"
 )
 
-if(ETAGS)
+if(CTAGS)
 	add_custom_target(tags
-		COMMAND ${ETAGS} --recurse ${GCAL_SOURCE_DIR} ${GCAL_HEADER_DIR} ${GCAL_TEST_DIR}
+		COMMAND ${CTAGS} ${GCAL_SOURCE_DIR}/* ${GCAL_HEADER_DIR}/* ${GCAL_TEST_DIR}/*
 	)
 endif()
 
