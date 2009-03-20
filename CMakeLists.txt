@@ -24,6 +24,7 @@ find_package(CURL REQUIRED)
 find_package(LibXml2 REQUIRED)
 
 find_program(CTAGS ctags)
+find_program(DOXYGEN doxygen)
 
 if(CMAKE_DEBUG_BUILD)
 	# Try and find GCOV for test coverage.
@@ -43,13 +44,17 @@ set(GCAL_CMAKE_MODULE_INSTALL_DIR "share/cmake-2.6/Modules")
 
 include(SetAutotoolsVariables)
 
-# Generate Doxygen Documentation
-configure_file(${CMAKE_SOURCE_DIR}/Doxyfile.in Doxyfile @ONLY)
 add_custom_target(doc)
 add_custom_target(docs)
 add_dependencies(docs doc)
-add_custom_target(doxygen doxygen)
-add_dependencies(doc doxygen)
+
+# Generate Doxygen Documentation
+if(DOXYGEN)
+	configure_file(${CMAKE_SOURCE_DIR}/Doxyfile.in Doxyfile @ONLY)
+	execute_process(COMMAND ${CMAKE_COMMAND} -E make_directory "${CMAKE_BINARY_DIR}/docs")
+	add_custom_target(doxygen ${DOXYGEN})
+	add_dependencies(doc doxygen)
+endif()
 
 # Generate pkg-config files
 configure_file(${CMAKE_SOURCE_DIR}/libgcal.pc.in libgcal.pc @ONLY)
