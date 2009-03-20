@@ -890,8 +890,16 @@ int up_entry(char *data2post, unsigned int m_length,
 				     etag,
 				     data2post, m_length,
 				     GCAL_REDIRECT_ANSWER);
-		if (result == -1)
+		if (result == -1) {
+			/* XXX: there is one report where google server
+			 * doesn't always return redirection and creates
+			 * the entry right away!
+			 */
+			if (gcalobj->http_code == GCAL_EDIT_ANSWER)
+				result = 0;
+
 			goto cleanup;
+		}
 	} else
 		goto cleanup;
 

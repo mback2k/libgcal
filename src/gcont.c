@@ -36,6 +36,7 @@ POSSIBILITY OF SUCH DAMAGE.
  *
  * \todo:
  * - for some firewalls, X-HTTP-Method-Override: DELETE can be required
+ * - support contact's photo download (upload is working ok!)
  *
  */
 #include <string.h>
@@ -45,7 +46,7 @@ POSSIBILITY OF SUCH DAMAGE.
 
 
 struct gcal_contact *gcal_get_all_contacts(struct gcal_resource *gcalobj,
-				       size_t *length)
+					   size_t *length)
 
 {
 	int result = -1, i;

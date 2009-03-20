@@ -53,3 +53,5 @@ ps2: you can format this document to HTML running
 
 $txt2tags -t html INSTALL
 
+
+ps3: ATTENTION utest will not run on source directory.
