@@ -254,7 +254,7 @@ int gcal_get_updated_contacts(gcal_t gcal_obj,
 }
 
 gcal_contact_t gcal_contact_element(struct gcal_contact_array *contacts,
-				  size_t _index)
+				    size_t _index)
 
 {
 	struct gcal_contact *contact = NULL;
