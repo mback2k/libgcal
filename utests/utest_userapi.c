@@ -427,7 +427,7 @@ START_TEST (test_contact_photo)
 	gcal_contact_t contact, tmp;
 	char *photo_data;
 	struct gcal_contact_array contact_array;
-	int result, i;
+	int result;
 
 	if (find_load_photo("/utests/images/gromit.jpg",  &photo_data, &result))
 		fail_if(1, "Cannot load photo!");
