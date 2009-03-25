@@ -25,7 +25,7 @@ option(CURL_DEBUG "Enable cURL debugging" OFF)
 find_package(CURL REQUIRED)
 find_package(LibXml2 REQUIRED)
 
-find_program(CTAGS ctags)
+find_program(CTAGS etags)
 find_program(DOXYGEN doxygen)
 
 if(CMAKE_DEBUG_BUILD)
@@ -67,7 +67,7 @@ install(
 
 if(CTAGS)
 	add_custom_target(tags
-		COMMAND ${CTAGS} ${GCAL_SOURCE_DIR}/* ${GCAL_HEADER_DIR}/* ${GCAL_TEST_DIR}/*
+		COMMAND ${CTAGS} ${GCAL_SOURCE_DIR}/*.c ${GCAL_HEADER_DIR}/*.h ${GCAL_TEST_DIR}/*.?
 	)
 endif()
 
