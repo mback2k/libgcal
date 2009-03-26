@@ -892,10 +892,9 @@ int up_entry(char *data2post, unsigned int m_length,
 				     GCAL_REDIRECT_ANSWER);
 		if (result == -1) {
 			/* XXX: there is one report where google server
-			 * doesn't always return redirection and creates
-			 * the entry right away!
+			 * doesn't always return redirection.
 			 */
-			if (gcalobj->http_code == GCAL_EDIT_ANSWER)
+			if (gcalobj->http_code == expected_code)
 				result = 0;
 
 			goto cleanup;
@@ -1028,10 +1027,18 @@ int gcal_delete_event(struct gcal_resource *gcalobj,
 			   h_auth,
 			   NULL, NULL, 0, GCAL_REDIRECT_ANSWER);
 
-	/* Get the gsessionid redirect URL */
-	if (result == -1)
-		goto cleanup;
+	if (result == -1) {
+		/* XXX: there is one report where google server
+		 * doesn't always return redirection and deletes
+		 * the entry right away!
+		 */
+		if (gcalobj->http_code == GCAL_DEFAULT_ANSWER)
+			result = 0;
 
+		goto cleanup;
+	}
+
+	/* Get the gsessionid redirect URL */
 	if (gcalobj->url) {
 		free(gcalobj->url);
 		gcalobj->url = NULL;
@@ -1046,10 +1053,9 @@ int gcal_delete_event(struct gcal_resource *gcalobj,
 			   h_auth,
 			   NULL, NULL, 0, GCAL_DEFAULT_ANSWER);
 
+cleanup:
 	/* Restores curl context to previous standard mode */
 	curl_easy_setopt(gcalobj->curl, CURLOPT_CUSTOMREQUEST, NULL);
-
-cleanup:
 
 	if (h_auth)
 		free(h_auth);
