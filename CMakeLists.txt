@@ -21,6 +21,9 @@ message(STATUS "Building ${PROJECT_NAME} ${GCAL_VERSION}")
 
 option(ENABLE_TESTS "Build unit tests" ON)
 option(CURL_DEBUG "Enable cURL debugging" OFF)
+if(CURL_DEBUG)
+  ADD_DEFINITIONS(-DGCAL_DEBUG_CURL)
+endif()
 
 find_package(CURL REQUIRED)
 find_package(LibXml2 REQUIRED)
