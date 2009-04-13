@@ -366,7 +366,7 @@ char *gcal_contact_get_address(gcal_contact_t contact)
 	return contact->post_address;
 }
 
-unsigned char *gcal_contact_get_photo(gcal_contact_t contact)
+char *gcal_contact_get_photo(gcal_contact_t contact)
 {
 	if ((!contact))
 		return NULL;

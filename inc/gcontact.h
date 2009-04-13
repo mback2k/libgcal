@@ -385,7 +385,7 @@ char *gcal_contact_get_address(gcal_contact_t contact);
  * case or if the field is not set). If the entry hasn't this field in the
  * atom stream, it will be set to an empty string (i.e. "").
  */
-unsigned char *gcal_contact_get_photo(gcal_contact_t contact);
+char *gcal_contact_get_photo(gcal_contact_t contact);
 
 /** Access contact photo data length.
  *
