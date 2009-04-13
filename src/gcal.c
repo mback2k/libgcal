@@ -76,6 +76,7 @@ static void reset_buffer(struct gcal_resource *ptr)
 		free(ptr->buffer);
 	ptr->length = 256;
 	ptr->buffer = (char *) calloc(ptr->length, sizeof(char));
+	ptr->previous_length = 0;
 }
 
 struct gcal_resource *gcal_construct(gservice mode)
@@ -142,8 +143,10 @@ int gcal_set_service(struct gcal_resource *gcalobj, gservice mode)
 
 void clean_buffer(struct gcal_resource *gcal_obj)
 {
-	if (gcal_obj)
+	if (gcal_obj) {
 		memset(gcal_obj->buffer, 0, gcal_obj->length);
+		gcal_obj->previous_length = 0;
+	}
 }
 
 void gcal_destroy(struct gcal_resource *gcal_obj)
@@ -443,13 +446,19 @@ exit:
 
 }
 
-static int get_follow_redirection(struct gcal_resource *gcalobj,
-				  const char *url)
+int get_follow_redirection(struct gcal_resource *gcalobj, const char *url,
+			   void *cb_download)
 {
 	struct curl_slist *response_headers = NULL;
 	int length = 0;
 	int result = -1;
 	char *tmp_buffer = NULL;
+	void *downloader = NULL;
+
+	if (cb_download == NULL)
+		downloader = write_cb;
+	else
+		downloader = cb_download;
 
 	/* Must cleanup HTTP buffer between requests */
 	clean_buffer(gcalobj);
@@ -473,7 +482,7 @@ static int get_follow_redirection(struct gcal_resource *gcalobj,
 	curl_easy_setopt(gcalobj->curl, CURLOPT_HTTPGET, 1);
 	curl_easy_setopt(gcalobj->curl, CURLOPT_HTTPHEADER, response_headers);
 	curl_easy_setopt(gcalobj->curl, CURLOPT_URL, url);
-	curl_easy_setopt(gcalobj->curl, CURLOPT_WRITEFUNCTION, write_cb);
+	curl_easy_setopt(gcalobj->curl, CURLOPT_WRITEFUNCTION, downloader);
 	curl_easy_setopt(gcalobj->curl, CURLOPT_WRITEDATA, (void *)gcalobj);
 
 	result = curl_easy_perform(gcalobj->curl);
@@ -662,7 +671,7 @@ int gcal_dump(struct gcal_resource *gcalobj)
 	if (!buffer)
 		goto exit;
 
-	result =  get_follow_redirection(gcalobj, buffer);
+	result =  get_follow_redirection(gcalobj, buffer, NULL);
 
 	if (!result)
 		gcalobj->has_xml = 1;
@@ -676,7 +685,7 @@ exit:
 int gcal_calendar_list(struct gcal_resource *gcalobj)
 {
 	int result;
-	result =  get_follow_redirection(gcalobj, GCAL_LIST);
+	result =  get_follow_redirection(gcalobj, GCAL_LIST, NULL);
 	/* TODO: parse the Atom feed */
 
 	return result;
@@ -1268,7 +1277,7 @@ int gcal_query_updated(struct gcal_resource *gcalobj, char *timestamp)
 	if (!query_url)
 		goto cleanup;
 
-	result = get_follow_redirection(gcalobj, query_url);
+	result = get_follow_redirection(gcalobj, query_url, NULL);
 	if (!result)
 		gcalobj->has_xml = 1;
 
@@ -1380,7 +1389,7 @@ int gcal_query(struct gcal_resource *gcalobj, const char *parameters)
 	if (!query_url)
 		goto exit;
 
-	result = get_follow_redirection(gcalobj, query_url);
+	result = get_follow_redirection(gcalobj, query_url, NULL);
 	if (!result)
 		gcalobj->has_xml = 1;
 

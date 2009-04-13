@@ -232,6 +232,27 @@ void gcal_init_event(struct gcal_event *entry);
  */
 void gcal_destroy_entry(struct gcal_event *entry);
 
+
+/** Generic HTTP GET function.
+ *
+ * Used when getting entries in a feed (or other data that requires
+ * an authenticated GET).
+ *
+ * @param gcalobj Pointer to a \ref gcal_resource structure, which has
+ *                 previously got the authentication using
+ *                 \ref gcal_get_authentication.
+ *
+ * @param url URL string.
+ *
+ * @param cb_download Callback used for writing downloaded data. Must
+ * be of type: size_t()(void *, size_t, size_t, void*)
+ *
+ * @return 0 for success, -1 for error.
+ */
+int get_follow_redirection(struct gcal_resource *gcalobj, const char *url,
+			   void *cb_download);
+
+
 /** Cleanup the memory of a vector of calendar entries created using
  * \ref gcal_get_entries.
  *

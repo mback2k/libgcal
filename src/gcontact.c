@@ -368,14 +368,18 @@ char *gcal_contact_get_address(gcal_contact_t contact)
 
 unsigned char *gcal_contact_get_photo(gcal_contact_t contact)
 {
-	(void)contact;
-	return NULL;
+	if ((!contact))
+		return NULL;
+
+	return contact->photo_data;
 }
 
 unsigned int gcal_contact_get_photolength(gcal_contact_t contact)
 {
-	(void)contact;
-	return -1;
+	if ((!contact))
+		return -1;
+
+	return contact->photo_length;
 }
 
 /* Here starts the gcal_contact setters */

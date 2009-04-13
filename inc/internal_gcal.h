@@ -93,6 +93,10 @@ struct gcal_resource {
 	char *buffer;
 	/** Its length */
 	size_t length;
+	/** previous length, required when downloading binary data
+	 * i.e. contact photo data
+	 */
+	size_t previous_length;
 	/** gcalendar authorization */
 	char *auth;
 	/** curl data structure */

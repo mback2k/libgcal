@@ -45,11 +45,41 @@ POSSIBILITY OF SUCH DAMAGE.
 #include "gcal_parser.h"
 
 
+static size_t write_cb_binary(void *ptr, size_t count, size_t chunk_size,
+			      void *data)
+{
+
+	size_t size = count * chunk_size;
+	struct gcal_resource *gcal_ptr = (struct gcal_resource *)data;
+	char *ptr_tmp;
+
+	if (size > (gcal_ptr->length - gcal_ptr->previous_length - 1)) {
+		gcal_ptr->length = gcal_ptr->length + size + 1;
+		ptr_tmp = realloc(gcal_ptr->buffer, gcal_ptr->length);
+
+		if (!ptr_tmp) {
+			if (gcal_ptr->fout_log)
+				fprintf(gcal_ptr->fout_log,
+					"write_cb: Failed relloc!\n");
+			goto exit;
+		}
+
+		gcal_ptr->buffer = ptr_tmp;
+	}
+
+	memcpy(gcal_ptr->buffer + gcal_ptr->previous_length, ptr, size);
+	gcal_ptr->previous_length += size;
+
+exit:
+	return size;
+}
+
 struct gcal_contact *gcal_get_all_contacts(struct gcal_resource *gcalobj,
 					   size_t *length)
 
 {
-	int result = -1, i;
+	int result = -1;
+	size_t i = 0;
 	struct gcal_contact *ptr_res = NULL;
 
 	if (!gcalobj)
@@ -73,17 +103,40 @@ struct gcal_contact *gcal_get_all_contacts(struct gcal_resource *gcalobj,
 	memset(ptr_res, 0, sizeof(struct gcal_contact) * result);
 
 	*length = result;
-	for (i = 0; i < result; ++i) {
+	for (i = 0; i < *length; ++i) {
 		gcal_init_contact((ptr_res + i));
 		if (gcalobj->store_xml_entry)
 			(ptr_res + i)->common.store_xml = 1;
 	}
 
-	result = extract_all_contacts(gcalobj->document, ptr_res, result);
+	result = extract_all_contacts(gcalobj->document, ptr_res, *length);
 	if (result == -1) {
 		free(ptr_res);
 		ptr_res = NULL;
 	}
+
+	/* Check contacts with photo and download the pictures */
+	for (i = 0; i < *length; ++i)
+		if (ptr_res[i].photo_length) {
+			if (gcalobj->fout_log)
+				fprintf(gcalobj->fout_log,
+					"contact with photo!\n");
+
+ 			result = get_follow_redirection(gcalobj,
+ 							ptr_res[i].photo,
+							write_cb_binary);
+			ptr_res[i].photo_data = malloc(sizeof(char) *
+						       gcalobj->length);
+			if (!ptr_res[i].photo_data)
+				goto exit;
+			ptr_res[i].photo_length = gcalobj->length;
+			memcpy(ptr_res[i].photo_data, gcalobj->buffer,
+			       ptr_res[i].photo_length);
+
+			clean_buffer(gcalobj);
+
+		} else if (gcalobj->fout_log)
+			fprintf(gcalobj->fout_log, "contact without photo!\n");
 
 	goto exit;
 
@@ -94,7 +147,6 @@ cleanup:
 exit:
 
 	return ptr_res;
-
 }
 
 static void clean_string(char *ptr_str)
