@@ -62,7 +62,7 @@ if(DOXYGEN)
 endif()
 
 # Generate pkg-config files
-configure_file(${CMAKE_SOURCE_DIR}/libgcal.pc.in libgcal.pc @ONLY)
+configure_file(${CMAKE_SOURCE_DIR}/libgcal.pc.in ${CMAKE_BINARY_DIR}/libgcal.pc @ONLY)
 install(
 	FILES "${CMAKE_BINARY_DIR}/libgcal.pc"
 	DESTINATION "${GCAL_LIBRARY_INSTALL_DIR}/pkgconfig"
