@@ -1,6 +1,39 @@
 libgcal changelog
 Adenilson Cavalcanti (adenilson.silva@indt.org.br)
 
+== libgcal 0.9 (2009-04-20) ==
+
+- porting to google data protocol 2.0;
+
+- support for more contacts fields. Currently supported fields are:
+  name, email, telephone, job title, organization, address, notes, photo;
+
+- support for retrieve/add/edit contact's photos;
+
+- cmake based buildsystem (probably will migrate away from autotools
+  in next release). For while, both are shipped;
+
+- small changes to make it compile/run happily with a C++ application;
+
+- fix for non-ordered operations (I was testing sequence:
+  add/edit/delete). Non-ordered operations trigged a bug where
+  operations would fail because default package header was not correct;
+
+- fix for using correct atom feed url for contacts;
+
+- workaround for really weird situation where google calendar server
+  answers requests directly *without* a redirect (reported by Tasaki,
+  I was not able to reproduce the error but the code has some
+  workaround for that);
+
+- fixing a potential SEGFAULT condition (where a failed XPath
+  expression could set a DOM node to NULL). Never happened, but
+  fortune favors the prepared;
+
+- fix for deleted flag (it was not being setted always, made a valid
+  contact appear as deleted);
+
+
 == libgcal 0.8 (2008-10-03) ==
 
 - support to store and access RAW XML of each entry;
