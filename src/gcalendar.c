@@ -47,6 +47,7 @@ POSSIBILITY OF SUCH DAMAGE.
 #include "gcalendar.h"
 #include "internal_gcal.h"
 #include "gcal_parser.h"
+#include "msvc_hacks.h"
 
 gcal_t gcal_new(gservice mode)
 {

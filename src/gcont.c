@@ -43,6 +43,7 @@ POSSIBILITY OF SUCH DAMAGE.
 #include "internal_gcal.h"
 #include "gcontact.h"
 #include "gcal_parser.h"
+#include "msvc_hacks.h"
 
 
 static size_t write_cb_binary(void *ptr, size_t count, size_t chunk_size,
