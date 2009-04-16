@@ -31,20 +31,20 @@ adenilson.silva@indt.org.br
 
  - query for updated events/contacts
 
+ - timezone support
+
  - operate using only raw XML (without creating gcal_event or gcal_contact
  objects).
 
  - use of http proxy
 
- - Contact photo upload
+ - Contact photo upload/download
 
 
 === Missing ===
 
 
  - batch commit
-
- - Contacts: download of photos
 
  - Calendar: creation of recurrent events (should use libical)
 
