@@ -19,6 +19,10 @@ set(GCAL_VERSION_COUNT 3)
 
 message(STATUS "Building ${PROJECT_NAME} ${GCAL_VERSION}")
 
+set(LIB_SUFFIX "" CACHE STRING
+	"Define suffix of library directory name (e.g. 32/64 for lib32/lib64)"
+)
+
 option(ENABLE_TESTS "Build unit tests" ON)
 option(CURL_DEBUG "Enable cURL debugging" OFF)
 if(CURL_DEBUG)
@@ -43,7 +47,7 @@ set(GCAL_SOURCE_DIR "${CMAKE_SOURCE_DIR}/src")
 set(GCAL_HEADER_DIR "${CMAKE_SOURCE_DIR}/inc")
 set(GCAL_TEST_DIR "${CMAKE_SOURCE_DIR}/utests")
 
-set(GCAL_LIBRARY_INSTALL_DIR "lib")
+set(GCAL_LIBRARY_INSTALL_DIR "lib${LIB_SUFFIX}")
 set(GCAL_INCLUDE_INSTALL_DIR "include")
 set(GCAL_CMAKE_MODULE_INSTALL_DIR "share/cmake-2.6/Modules")
 
