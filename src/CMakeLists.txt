@@ -17,6 +17,11 @@ endif()
 
 add_library(gcal SHARED ${GCAL_SOURCE_FILES})
 target_link_libraries(gcal ${CURL_LIBRARIES} ${LIBXML2_LIBRARIES})
+set_target_properties(
+	gcal PROPERTIES
+	VERSION "${GCAL_VERSION}"
+	SOVERSION "${GCAL_VERSION_MAJOR}"
+)
 
 install(
 	TARGETS gcal
