@@ -65,6 +65,7 @@ POSSIBILITY OF SUCH DAMAGE.
 #include "internal_gcal.h"
 #include "gcal.h"
 #include "gcal_parser.h"
+#include "msvc_hacks.h"
 
 #ifdef GCAL_DEBUG_CURL
 #include "curl_debug_gcal.h"
