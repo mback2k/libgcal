@@ -49,7 +49,7 @@ set(GCAL_TEST_DIR "${CMAKE_SOURCE_DIR}/utests")
 
 set(GCAL_LIBRARY_INSTALL_DIR "lib${LIB_SUFFIX}")
 set(GCAL_INCLUDE_INSTALL_DIR "include")
-set(GCAL_CMAKE_MODULE_INSTALL_DIR "share/cmake-2.6/Modules")
+set(GCAL_CMAKE_MODULE_INSTALL_DIR "${CMAKE_ROOT}/Modules")
 
 include(SetAutotoolsVariables)
 
