@@ -226,12 +226,13 @@ int gcal_create_contact(struct gcal_resource *gcalobj,
 
 	/* Mounts URL */
 	length = sizeof(GCONTACT_START) + sizeof(GCONTACT_END) +
-		strlen(gcalobj->user) + 1;
+		strlen(gcalobj->user) + sizeof(GCAL_DELIMITER) +
+		strlen(gcalobj->domain) + 1;
 	buffer = (char *) malloc(length);
 	if (!buffer)
 		goto cleanup;
-	snprintf(buffer, length - 1, "%s%s%s", GCONTACT_START,
-		 gcalobj->user, GCONTACT_END);
+	snprintf(buffer, length - 1, "%s%s%s%s%s", GCONTACT_START,
+		 gcalobj->user, GCAL_DELIMITER, gcalobj->domain, GCONTACT_END);
 
 	result = up_entry(xml_contact, strlen(xml_contact), gcalobj,
 			  buffer, NULL, POST, NULL, GCAL_EDIT_ANSWER);
