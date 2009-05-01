@@ -142,12 +142,14 @@ int gcal_add_xmlentry(gcal_t gcal_obj, char *xml_entry, char **xml_updated)
 	else {
 		/* Mounts URL */
 		length = sizeof(GCONTACT_START) + sizeof(GCONTACT_END) +
-			strlen(gcal_obj->user) + 1;
+			strlen(gcal_obj->user) + sizeof(GCAL_DELIMITER) +
+			strlen(gcal_obj->domain) + 1;
 		buffer = (char *) malloc(length);
 		if (!buffer)
 			goto cleanup;
-		snprintf(buffer, length - 1, "%s%s%s", GCONTACT_START,
-			 gcal_obj->user, GCONTACT_END);
+		snprintf(buffer, length - 1, "%s%s%s%s%s", GCONTACT_START,
+			 gcal_obj->user, GCAL_DELIMITER, gcal_obj->domain,
+			 GCONTACT_END);
 
 		result = up_entry(xml_entry, strlen(xml_entry), gcal_obj,
 				  buffer, NULL,
