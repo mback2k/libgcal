@@ -224,8 +224,8 @@ START_TEST (test_get_contacts)
 
 	result = gcal_get_contacts(gcal, &contact_array);
 	fail_if(result == -1, "Failed downloading contacts!");
-	fail_if(contact_array.length != 2, "gcal4tester must have only"
-		"2 contacts!");
+	fail_if(contact_array.length != 3, "gcal4tester must have only"
+		"3 contacts!");
 
 	/* Cleanup */
 	gcal_cleanup_contacts(&contact_array);
