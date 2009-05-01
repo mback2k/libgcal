@@ -90,6 +90,7 @@ struct gcal_resource *gcal_construct(gservice mode)
 	ptr->has_xml = 0;
 	ptr->document = NULL;
 	ptr->user = NULL;
+	ptr->domain = NULL;
 	ptr->url = NULL;
 	ptr->auth = NULL;
 	ptr->buffer = NULL;
@@ -177,6 +178,8 @@ void gcal_destroy(struct gcal_resource *gcal_obj)
 		free(gcal_obj->timezone);
 	if (gcal_obj->location)
 		free(gcal_obj->location);
+	if (gcal_obj->domain)
+		free(gcal_obj->domain);
 
 	free(gcal_obj);
 }
