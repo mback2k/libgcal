@@ -68,7 +68,7 @@ START_TEST (test_contact_entries)
 	char *ptr;
 	int contacts_count = 3;
 
-	result = gcal_get_authentication(ptr_gcal, "gcalntester", "77libgcal");
+	result = gcal_get_authentication(ptr_gcal, "gcal4tester", "66libgcal");
 	if (result)
 		fail_if(1, "Authentication should work");
 
@@ -98,11 +98,11 @@ START_TEST (test_contact_extract)
 				   "gcalntester@gmail.com",
 				   "cavalcantii@gmail.com" };
 	char *contacts_name[] = { "", /* its valid not having a name */
-				  "gcalntester gcalntester",
+				  "gcalntester",
 				  "Adenilson Cavalcanti" };
 	size_t contacts_count = 3, found_count = 0;;
 
-	result = gcal_get_authentication(ptr_gcal, "gcalntester", "77libgcal");
+	result = gcal_get_authentication(ptr_gcal, "gcal4tester", "66libgcal");
 	fail_if(result == -1, "Authentication should work");
 
 	result = gcal_dump(ptr_gcal);
