@@ -382,6 +382,7 @@ int gcal_get_authentication(struct gcal_resource *gcalobj,
 	char *post = NULL;
 	int result = -1;
 	char *tmp = NULL;
+	char *buffer = NULL;
 
 	if (!gcalobj || !user || !password)
 		goto exit;
@@ -389,22 +390,23 @@ int gcal_get_authentication(struct gcal_resource *gcalobj,
 	/* Must cleanup HTTP buffer between requests */
 	clean_buffer(gcalobj);
 
-	gcalobj->user = strdup(user);
-	post_len = strlen(user) + strlen(password) +
-		sizeof(EMAIL_FIELD) + sizeof(EMAIL_ADDRESS) +
+	post_len = strlen(user) + strlen(password) + sizeof(ACCOUNT_TYPE) +
+		sizeof(EMAIL_FIELD) +
 		sizeof(PASSWD_FIELD) + sizeof(SERVICE_FIELD) +
 		strlen(gcalobj->service) + sizeof(CLIENT_SOURCE)
-		+ 4; /* thanks to 3 '&' between fields + null character */
+		+ 5; /* thanks to 4 '&' between fields + null character */
 	post = (char *) malloc(post_len);
-	if (!post || !gcalobj->user)
+	if (!post || !user)
 		goto exit;
 
 	snprintf(post, post_len - 1,
-		 "%s%s%s&"
+                 "%s&"
+		 "%s%s&"
 		 "%s%s&"
 		 "%s%s&"
 		 "%s",
-		 EMAIL_FIELD, user, EMAIL_ADDRESS,
+                 ACCOUNT_TYPE,
+		 EMAIL_FIELD, user,
 		 PASSWD_FIELD, password,
 		 SERVICE_FIELD, gcalobj->service,
 		 CLIENT_SOURCE);
@@ -413,6 +415,25 @@ int gcal_get_authentication(struct gcal_resource *gcalobj,
 			   "Content-Type: application/x-www-form-urlencoded",
 			   NULL, NULL, NULL, post, strlen(post),
 			   GCAL_DEFAULT_ANSWER);
+
+	if ((tmp = strstr(user, "@"))) {
+		if (!(buffer = strdup(user)))
+			goto cleanup;
+
+		buffer[tmp - user] = '\0';
+		if (!(gcalobj->user = strdup(buffer)))
+			goto cleanup;
+
+		++tmp;
+		if (!(gcalobj->domain = strdup(tmp)))
+			goto cleanup;
+
+		free(buffer);
+	} else {
+		gcalobj->user = strdup(user);
+		gcalobj->domain = strdup("gmail.com");
+	}
+
 	if (result)
 		goto cleanup;
 
@@ -560,12 +581,16 @@ static char *mount_query_url(struct gcal_resource *gcalobj,
 	if (!(strcmp(gcalobj->service, "cl"))) {
 		if (gcalobj->max_results)
 			length = sizeof(GCAL_EVENT_START) +
+                                sizeof(GCAL_DELIMITER) +
+                                strlen(gcalobj->domain) +
 				sizeof(GCAL_EVENT_END) +
 				sizeof(query_init) +
 				strlen(gcalobj->max_results) +
 				strlen(gcalobj->user) + 1;
 		else
 			length = sizeof(GCAL_EVENT_START) +
+                                sizeof(GCAL_DELIMITER) +
+                                strlen(gcalobj->domain) +
 				sizeof(GCAL_EVENT_END) +
 				sizeof(query_init) +
 				strlen(gcalobj->user) + 1;
@@ -574,6 +599,8 @@ static char *mount_query_url(struct gcal_resource *gcalobj,
 	else if (!(strcmp(gcalobj->service, "cp"))) {
 		if (gcalobj->max_results)
 			length = sizeof(GCONTACT_START) +
+                                sizeof(GCAL_DELIMITER) +
+                                strlen(gcalobj->domain) +
 				sizeof(GCONTACT_END) +
 				sizeof(query_init) +
 				strlen(gcalobj->max_results) +
@@ -581,6 +608,8 @@ static char *mount_query_url(struct gcal_resource *gcalobj,
 				sizeof(contact_order) + 1;
 		else
 			length = sizeof(GCONTACT_START) +
+                                sizeof(GCAL_DELIMITER) +
+                                strlen(gcalobj->domain) +
 				sizeof(GCONTACT_END) +
 				sizeof(query_init) +
 				strlen(gcalobj->user) + 1;
@@ -597,27 +626,30 @@ static char *mount_query_url(struct gcal_resource *gcalobj,
 		 * address plus the number of max-results returned.
 		 */
 		if (gcalobj->max_results)
-			snprintf(result, length - 1, "%s%s%s%s%s",
+			snprintf(result, length - 1, "%s%s%s%s%s%s%s",
 				 GCAL_EVENT_START, gcalobj->user,
+                                 GCAL_DELIMITER, gcalobj->domain,
 				 GCAL_EVENT_END, query_init,
 				 gcalobj->max_results);
 		else
-			snprintf(result, length - 1, "%s%s%s%s",
+			snprintf(result, length - 1, "%s%s%s%s%s%s",
 				 GCAL_EVENT_START, gcalobj->user,
+                                 GCAL_DELIMITER, gcalobj->domain,
 				 GCAL_EVENT_END, query_init);
 
 	} else if (!(strcmp(gcalobj->service, "cp"))) {
 		if (gcalobj->max_results)
-			snprintf(result, length - 1, "%s%s%s%s%s%s",
+			snprintf(result, length - 1, "%s%s%s%s%s%s%s%s",
 				 GCONTACT_START, gcalobj->user,
+                                 GCAL_DELIMITER, gcalobj->domain,
 				 GCONTACT_END, query_init,
 				 gcalobj->max_results,
 				 contact_order);
 		else
-			snprintf(result, length - 1, "%s%s%s%s",
+			snprintf(result, length - 1, "%s%s%s%s%s%s",
 				 GCONTACT_START, gcalobj->user,
+                                 GCAL_DELIMITER, gcalobj->domain,
 				 GCONTACT_END, query_init);
-
 	}
 
 	/* For extra query parameters, add "&param_1&param_2&...&param_n" */

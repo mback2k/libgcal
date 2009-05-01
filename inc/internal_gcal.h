@@ -48,6 +48,7 @@ POSSIBILITY OF SUCH DAMAGE.
  */
 typedef xmlDoc dom_document;
 
+static const char GCAL_DELIMITER[] = "%40";
 static const char GCAL_URL[] = "https://www.google.com/accounts/ClientLogin";
 static const char GCAL_LIST[] = "http://www.google.com/calendar/feeds/"
 	"default/allcalendars/full";
@@ -61,11 +62,11 @@ static const char GCONTACT_EDIT_END[] = "%40gmail.com/full";
 
 /* Google calendar query URL */
 static const char GCAL_EVENT_START[] = "http://www.google.com/calendar/feeds/";
-static const char GCAL_EVENT_END[] = "%40gmail.com/private/full";
+static const char GCAL_EVENT_END[] = "/private/full";
 
 /* Google contact query URL */
 static const char GCONTACT_START[] = "http://www.google.com/m8/feeds/contacts/";
-static const char GCONTACT_END[] = "%40gmail.com/full";
+static const char GCONTACT_END[] = "/full";
 
 /* Google 'pages' results in a range pages of 25 entries. But for downloading
  * all results its requirement to set a 'good enough' upper limit of range of
@@ -78,8 +79,8 @@ static const int GCAL_REDIRECT_ANSWER = 302;
 static const int GCAL_EDIT_ANSWER = 201;
 static const int GCAL_CONFLICT = 409;
 
+static const char ACCOUNT_TYPE[] = "accountType=HOSTED_OR_GOOGLE";
 static const char EMAIL_FIELD[] = "Email=";
-static const char EMAIL_ADDRESS[] = "@gmail.com";
 static const char PASSWD_FIELD[] = "Passwd=";
 static const char SERVICE_FIELD[] = "service=";
 static const char CLIENT_SOURCE[] = "source=libgcal";
@@ -105,6 +106,8 @@ struct gcal_resource {
 	char *url;
 	/** The user name */
 	char *user;
+        /** The domain */
+        char *domain;
 	/** DOM xml tree (an abstract type so I can plug another xml parser) */
 	dom_document *document;
 	/** A flag to control if the buffer has XML atom stream */
