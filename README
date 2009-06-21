@@ -40,6 +40,8 @@ adenilson.silva@indt.org.br
 
  - Contact photo upload/download
 
+ - Hosted accounts
+
 
 === Missing ===
 
@@ -47,8 +49,6 @@ adenilson.silva@indt.org.br
  - batch commit
 
  - Calendar: creation of recurrent events (should use libical)
-
- - Hosted accounts
 
 
 === Dependencies ===
