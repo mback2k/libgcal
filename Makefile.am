@@ -14,7 +14,8 @@ include_HEADERS = $(headerdir)/internal_gcal.h \
 if GCAL_DEBUG_CURL
 include_HEADERS += $(headerdir)/curl_debug_gcal.h
 endif
-libgcal_la_SOURCES = $(csourcedir)/gcal.c $(csourcedir)/atom_parser.c \
+libgcal_la_SOURCES = $(csourcedir)/msvc_hacks.h \
+		$(csourcedir)/gcal.c $(csourcedir)/atom_parser.c \
 		$(csourcedir)/xml_aux.c $(csourcedir)/gcal_parser.c \
 		$(csourcedir)/gcont.c $(csourcedir)/gcal_status.c \
 		$(csourcedir)/gcalendar.c $(csourcedir)/gcontact.c
