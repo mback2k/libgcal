@@ -114,10 +114,11 @@ struct gcal_contact *gcal_get_all_contacts(struct gcal_resource *gcalobj,
 	if (result == -1) {
 		free(ptr_res);
 		ptr_res = NULL;
+		goto cleanup;
 	}
 
 	/* Check contacts with photo and download the pictures */
-	for (i = 0; i < *length; ++i)
+	for (i = 0; i < *length; ++i){
 		if (ptr_res[i].photo_length) {
 			if (gcalobj->fout_log)
 				fprintf(gcalobj->fout_log,
@@ -138,7 +139,7 @@ struct gcal_contact *gcal_get_all_contacts(struct gcal_resource *gcalobj,
 
 		} else if (gcalobj->fout_log)
 			fprintf(gcalobj->fout_log, "contact without photo!\n");
-
+	}
 	goto exit;
 
 cleanup:

@@ -428,7 +428,7 @@ int extract_all_contacts(dom_document *doc,
 
 	if (length != nodes->nodeNr) {
 		/* FIXME: don't print to terminal! */
-		fprintf(stderr, "extract_all_contacts: Size mismatch!");
+		fprintf(stderr, "extract_all_contacts: Size mismatch!\n");
 		goto cleanup;
 	}
 
