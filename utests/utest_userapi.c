@@ -490,11 +490,90 @@ START_TEST (test_contact_photo)
 }
 END_TEST
 
+START_TEST (test_url_sanity_calendar)
+{
+	gcal_t gcal;
+	gcal_event_t event;
+	struct gcal_event_array all_events;
+	int result;
+	event = gcal_event_new(NULL);
+
+	gcal = gcal_new(GCALENDAR);
+	gcal_set_store_xml(gcal, 1);
+	result = gcal_get_authentication(gcal, "gcalntester", "77libgcal");
+	fail_if(result == -1, "Cannot authenticate!");
+
+	char start[] = "2009-03-26T11:00:00.000Z";
+	char end[] = "2009-03-26T12:00:00.000Z";
+  	gcal_event_set_title(event, "Insanity in edit URL");
+	gcal_event_set_content(event, "I'm bored of gcalendar bugs");
+	gcal_event_set_where(event, "someplace");
+	gcal_event_set_start(event, start);
+	gcal_event_set_end(event, end);
+
+	fail_if((result = gcal_add_event(gcal, event)) != 0,
+		"Failed adding new event!");
+	fail_if((result = gcal_get_events(gcal, &all_events)) != 0,
+		 "Failed retrieving all events!");
+	fail_if((strcmp(gcal_event_get_url(event),
+			gcal_event_get_url(gcal_event_element(&all_events, 0)))
+		 != 0), "Edit url is different!");
+
+/* 	fprintf(stderr, "add: %s\nretrieve: %s\n", gcal_event_get_url(event), */
+/* 		gcal_event_get_url(gcal_event_element(&all_events, 0))); */
+
+	fail_if((result = gcal_erase_event(gcal, event)) != 0,
+		"Failed deleting test event!");
+
+	gcal_event_delete(event);
+	gcal_cleanup_events(&all_events);
+	gcal_delete(gcal);
+
+}
+END_TEST
+
+START_TEST (test_url_sanity_contact)
+{
+	gcal_t gcal;
+	gcal_contact_t contact;
+	struct gcal_contact_array all_contacts;
+	int result;
+	contact = gcal_contact_new(NULL);
+
+	gcal = gcal_new(GCONTACT);
+	gcal_set_store_xml(gcal, 1);
+	result = gcal_get_authentication(gcal, "gcalntester", "77libgcal");
+	fail_if(result == -1, "Cannot authenticate!");
+
+  	gcal_contact_set_title(contact, "Insanity in edit URL");
+	gcal_contact_set_email(contact, "prooftest@add.get.com");
+
+	fail_if((result = gcal_add_contact(gcal, contact)) != 0,
+		"Failed adding new contact!");
+	fail_if((result = gcal_get_contacts(gcal, &all_contacts)) != 0,
+		 "Failed retrieving all contacts!");
+	fail_if((strcmp(gcal_contact_get_url(contact),
+			gcal_contact_get_url(gcal_contact_element(&all_contacts,  all_contacts.length - 1)))
+		 != 0), "Edit url is different!");
+
+/* 	fprintf(stderr, "add: %s\nretrieve: %s\n", */
+/* 		gcal_contact_get_url(contact), */
+/* 		gcal_contact_get_url(gcal_contact_element(&all_contacts,  all_contacts.length - 1))); */
+
+	fail_if((result = gcal_erase_contact(gcal, contact)) != 0,
+		"Failed deleting test contact!");
+
+	gcal_contact_delete(contact);
+	gcal_cleanup_contacts(&all_contacts);
+	gcal_delete(gcal);
+
+}
+END_TEST
 
 TCase *gcal_userapi(void)
 {
 	TCase *tc = NULL;
-	int timeout_seconds = 50;
+	int timeout_seconds = 60;
 	tc = tcase_create("gcaluserapi");
 	tcase_set_timeout (tc, timeout_seconds);
 
@@ -507,5 +586,7 @@ TCase *gcal_userapi(void)
 	tcase_add_test(tc, test_oper_contact);
 	tcase_add_test(tc, test_query_contact_updated);
 	tcase_add_test(tc, test_contact_photo);
+	tcase_add_test(tc, test_url_sanity_calendar);
+	tcase_add_test(tc, test_url_sanity_contact);
 	return tc;
 }
