@@ -13,28 +13,6 @@
 #include "gcontact.h"
 /* XXX: API violation for forcing an error condition in 'mount_query_url' */
 #include "internal_gcal.h"
-#include "atom_parser.h"
-#include <string.h>
-
-START_TEST (test_normalize_url)
-{
-	char *copy;
-	const char * const added = "http://www.google.com/calendar/feeds/"
-		"default/private/full/ujq52gb0lggdjb0qqi10nt07m8";
-
-	char retrieved[] = "http://www.google.com/calendar/feeds/"
-		"gcalntester%40gmail.com/private/full/ujq52gb0lggdjb0qqi10nt07m8";
-	workaround_edit_url(retrieved);
-	fail_if(strcmp(added, retrieved) != 0, "String is not normalized!");
-
-	copy = strdup(added);
-	workaround_edit_url(copy);
-	fail_if(strcmp(copy, added) != 0, "String should be equal!");
-	free(copy);
-
-}
-END_TEST
-
 
 START_TEST (test_usercalendarapi)
 {
@@ -132,6 +110,5 @@ TCase *gcal_screw(void)
 
 	tcase_add_test(tc, test_usercalendarapi);
 	tcase_add_test(tc, test_usermismatch);
-	tcase_add_test(tc, test_normalize_url);
 	return tc;
 }
