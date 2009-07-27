@@ -14,6 +14,21 @@
 /* XXX: API violation for forcing an error condition in 'mount_query_url' */
 #include "internal_gcal.h"
 
+
+START_TEST (test_normalize_url)
+{
+	const char * const added = "http://www.google.com/calendar/feeds/"
+		"default/private/full/ujq52gb0lggdjb0qqi10nt07m8";
+	char retrieved[] = "http://www.google.com/calendar/feeds/"
+		"gcalntester%40gmail.com/private/full/ujq52gb0lggdjb0qqi10nt07m8";
+
+	workaround_edit_url(retrieved);
+	fail_if(strcmp(added, retrieved) != 0,
+		"String is not normalized!");
+}
+END_TEST
+
+
 START_TEST (test_usercalendarapi)
 {
 	gcal_t gcal;
@@ -110,5 +125,6 @@ TCase *gcal_screw(void)
 
 	tcase_add_test(tc, test_usercalendarapi);
 	tcase_add_test(tc, test_usermismatch);
+	tcase_add_test(tc, test_normalize_url);
 	return tc;
 }

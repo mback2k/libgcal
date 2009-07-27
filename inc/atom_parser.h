@@ -47,6 +47,19 @@ POSSIBILITY OF SUCH DAMAGE.
 #include "gcal.h"
 #include "gcontact.h"
 
+/** Normalizes the edit url of an event (replaces "useraccount@address"
+ * for "default".
+ *
+ * Reason: gcalendar 2.1 has a different edit URL when you just add
+ * an event versus retriving by querying. Each link works just fine, but
+ * if using it as an ID, will create problems.
+ * The only workaround that I found was to change the url by hand (yeah,
+ * pretty lame!).
+ *
+ * @param inplace The url to be changed.
+ */
+void workaround_edit_url(char *inplace);
+
 /** Creates a document tree (required by other operations).
  *
  *

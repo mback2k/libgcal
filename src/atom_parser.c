@@ -44,6 +44,13 @@ POSSIBILITY OF SUCH DAMAGE.
 #include "internal_gcal.h"
 #include <string.h>
 
+
+void workaround_edit_url(char *inplace)
+{
+
+	(void)inplace;
+}
+
 int build_doc_tree(xmlDoc **document, char *xml_data)
 {
 	int result = -1;
