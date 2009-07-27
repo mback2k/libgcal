@@ -47,8 +47,42 @@ POSSIBILITY OF SUCH DAMAGE.
 
 void workaround_edit_url(char *inplace)
 {
+	char *aux, *aux2, *tmp;
+	int length_user, length_original = 0;
+	const char start[] = "feeds/";
+	const char end[] = "/private/";
 
-	(void)inplace;
+	const char target[] = "%40";
+	/* It is save, since it has 7 characters and an email
+	 * will have at least 9 (e.g. "a%40f.com")
+	 */
+	const char *replacement = "default";
+
+
+	if (!strstr(inplace, target))
+		return;
+
+	length_original = strlen(inplace);
+
+	if (!(aux = strstr(inplace, start)))
+		return;
+	aux += sizeof(start) - 1;
+
+	if (!(tmp = strstr(inplace, end)))
+		return;
+
+	/* The lenght of user account substring */
+	length_user = tmp - aux;
+
+	/* Replace the stuff */
+	aux2 = replacement;
+	while (*aux2)
+		*aux++ = *aux2++;
+
+	while (*tmp)
+		*aux++ = *tmp++;
+
+	inplace[length_original - (length_user - strlen(replacement))] = NULL;
 }
 
 int build_doc_tree(xmlDoc **document, char *xml_data)
