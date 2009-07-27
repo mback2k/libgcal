@@ -310,6 +310,16 @@ int atom_extract_data(xmlNode *entry, struct gcal_event *ptr_entry)
 						"href");
 	if (!ptr_entry->common.edit_uri)
 		goto cleanup;
+	/* XXX: Starting with gcalendar protocol 2.1, the edit URL is
+	 * different between a just added event versus a retrieved event.
+	 * This makes the same event to have 2 distinct urls and breaks
+	 * the akonadi resource (because I use it as the remoteID of
+	 * item).
+	 * The 'alternate' link is the same but doesn't work.
+	 * See further info here:
+	 * http://groups.google.com/group/google-calendar-help-dataapi/browse_thread/thread/a5cb021dd6fa5d9c
+	 */
+	workaround_edit_url(ptr_entry->common.edit_uri);
 
 	/* Gets the 'content' calendar field */
 	ptr_entry->content = extract_and_check(doc,
