@@ -37,7 +37,7 @@ POSSIBILITY OF SUCH DAMAGE.
  * High priority
  * - retrieve a single event
  * - soft/hard edits/deletes (use 'If-Match: *' instead of ETag)
- * - test and support languages with special characters
+ * - unit test for languages with special characters (it works already)
  * - batch operation (add/edit/delete): will require some new public functions
  *
  * Lower priority
