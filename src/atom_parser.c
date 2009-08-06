@@ -47,7 +47,8 @@ POSSIBILITY OF SUCH DAMAGE.
 
 void workaround_edit_url(char *inplace)
 {
-	char *aux, *aux2, *tmp;
+	char *aux, *tmp;
+	const char *aux2;
 	int length_user, length_original = 0;
 	const char start[] = "feeds/";
 	const char end[] = "/private/";
@@ -82,7 +83,7 @@ void workaround_edit_url(char *inplace)
 	while (*tmp)
 		*aux++ = *tmp++;
 
-	inplace[length_original - (length_user - strlen(replacement))] = NULL;
+	inplace[length_original - (length_user - strlen(replacement))] = '\0';
 }
 
 int build_doc_tree(xmlDoc **document, char *xml_data)
