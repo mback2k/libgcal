@@ -4,8 +4,8 @@ Adenilson Cavalcanti (adenilson.silva@indt.org.br)
 == libgcal 0.9.2 (2009-07-27) ==
 
 - workaround for change in gcalendar (normalizes edit_url for added X
-retrieved event)
-
+retrieved event). Details here:
+http://groups.google.com/group/google-calendar-help-dataapi/browse_thread/thread/a5cb021dd6fa5d9c/3443b934a6da0948?lnk=gst&q=alternate+link#3443b934a6da0948
 
 == libgcal 0.9.1 (2009-06-22) ==
 
