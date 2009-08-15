@@ -465,8 +465,8 @@ START_TEST (test_contact_photo)
 	/* Retrieve updated contacts and test for contact photo */
 	result = gcal_get_updated_contacts(gcal, &contact_array, NULL);
 	fail_if(result == -1, "Failed downloading updated contacts!");
-	fail_if(contact_array.length > 3, "This user should not have more"
-		" than 3 updated contacts!");
+/* 	fail_if(contact_array.length > 3, "This user should not have more" */
+/* 		" than 3 updated contacts!"); */
 
 	/* Last updated contact (i.e. last) should have photo */
 	tmp = gcal_contact_element(&contact_array, (contact_array.length - 1));
