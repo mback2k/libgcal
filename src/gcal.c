@@ -386,6 +386,8 @@ int gcal_get_authentication(struct gcal_resource *gcalobj,
 	int result = -1;
 	char *tmp = NULL;
 	char *buffer = NULL;
+	char *enc_user = NULL;
+	char *enc_password = NULL;
 
 	if (!gcalobj || !user || !password)
 		goto exit;
@@ -393,14 +395,22 @@ int gcal_get_authentication(struct gcal_resource *gcalobj,
 	/* Must cleanup HTTP buffer between requests */
 	clean_buffer(gcalobj);
 
-	post_len = strlen(user) + strlen(password) + sizeof(ACCOUNT_TYPE) +
-		sizeof(EMAIL_FIELD) +
-		sizeof(PASSWD_FIELD) + sizeof(SERVICE_FIELD) +
-		strlen(gcalobj->service) + sizeof(CLIENT_SOURCE)
-		+ 5; /* thanks to 4 '&' between fields + null character */
+	/* Properly encode user and password */
+	enc_user = curl_easy_escape(gcalobj->curl, user, strlen(user));
+	enc_password = curl_easy_escape(gcalobj->curl, password,
+					strlen(password));
+	if ((!enc_password) || (!enc_user))
+		goto cleanup;
+
+	post_len = strlen(enc_user) + strlen(enc_password) +
+		   sizeof(ACCOUNT_TYPE) +
+		   sizeof(EMAIL_FIELD) +
+		   sizeof(PASSWD_FIELD) + sizeof(SERVICE_FIELD) +
+		   strlen(gcalobj->service) + sizeof(CLIENT_SOURCE)
+		   + 5; /* thanks to 4 '&' between fields + null character */
 	post = (char *) malloc(post_len);
-	if (!post || !user)
-		goto exit;
+	if (!post)
+		goto cleanup;
 
 	snprintf(post, post_len - 1,
                  "%s&"
@@ -409,8 +419,8 @@ int gcal_get_authentication(struct gcal_resource *gcalobj,
 		 "%s%s&"
 		 "%s",
                  ACCOUNT_TYPE,
-		 EMAIL_FIELD, user,
-		 PASSWD_FIELD, password,
+		 EMAIL_FIELD, enc_user,
+		 PASSWD_FIELD, enc_password,
 		 SERVICE_FIELD, gcalobj->service,
 		 CLIENT_SOURCE);
 
@@ -463,6 +473,10 @@ int gcal_get_authentication(struct gcal_resource *gcalobj,
 	result = 0;
 
 cleanup:
+	if (enc_user)
+	    curl_free(enc_user);
+	if (enc_password)
+	    curl_free(enc_password);
 	if (post)
 		free(post);
 
