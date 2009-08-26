@@ -1,7 +1,7 @@
-libgcal changelog
+j2libgcal changelog
 Adenilson Cavalcanti (adenilson.silva@indt.org.br)
 
-== libgcal 0.9.3 (2009-08-xx) ==
+== libgcal 0.9.3 (2009-08-26) ==
 
 - Patch for encoding user name and password (if the user is using non
   ASCII characters) by lemma.
