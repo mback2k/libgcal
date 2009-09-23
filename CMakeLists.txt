@@ -1,6 +1,6 @@
 # Copyright (c) 2009 Mike Arthur <mike@mikearthur.co.uk>
 
-project("libgcal" C)
+project("LibGCal" C)
 cmake_minimum_required(VERSION 2.6)
 set(CMAKE_MODULE_PATH 
 	"${CMAKE_SOURCE_DIR}/cmake/modules"
@@ -72,6 +72,16 @@ install(
 	DESTINATION "${GCAL_LIBRARY_INSTALL_DIR}/pkgconfig"
 )
 
+
+# Generate CMake package configuration file
+configure_file(${CMAKE_SOURCE_DIR}/cmake/LibGCalConfig.cmake.in ${CMAKE_BINARY_DIR}/cmake/LibGCalConfig.cmake @ONLY)
+# TODO: Install this to ${GCAL_LIBRARY_INSTALL_DIR}/cmake/LibGCal when we 
+# depend on CMake >= 2.6.3
+install(
+	FILES "${CMAKE_BINARY_DIR}/cmake/LibGCalConfig.cmake"
+	DESTINATION "${GCAL_LIBRARY_INSTALL_DIR}/LibGCal/cmake"
+)
+
 if(CTAGS)
 	add_custom_target(tags
 		COMMAND ${CTAGS} ${GCAL_SOURCE_DIR}/*.c ${GCAL_HEADER_DIR}/*.h ${GCAL_TEST_DIR}/*.?
@@ -102,12 +112,6 @@ install(
 	DIRECTORY "${GCAL_HEADER_DIR}/"
         DESTINATION "${GCAL_INCLUDE_INSTALL_DIR}"
 	FILES_MATCHING PATTERN "*.h"
-)
-
-# Install CMake module
-install(
-	FILES "${CMAKE_SOURCE_DIR}/cmake/modules/FindLibGCal.cmake"
-	DESTINATION "${GCAL_CMAKE_MODULE_INSTALL_DIR}"
 )
 
 # Add uninstall
