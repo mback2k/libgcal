@@ -57,6 +57,41 @@ struct gcal_contact_array {
 	size_t length;
 };
 
+/** Phone number types allowed by Google API */
+typedef enum {
+	P_INVALID = -1,
+	P_ASSISTANT,
+	P_CALLBACK,
+	P_CAR,
+	P_COMPANY_MAIN,
+	P_FAX,
+	P_HOME,
+	P_HOME_FAX,
+	P_ISDN,
+	P_MAIN,
+	P_MOBILE,
+	P_OTHER,
+	P_OTHER_FAX,
+	P_PAGER,
+	P_RADIO,
+	P_TELEX,
+	P_TTY_TDD,
+	P_WORK,
+	P_WORK_FAX,
+	P_WORK_MOBILE,
+	P_WORK_PAGER,
+	P_ITEMS_COUNT			// must be the last one!
+} gcal_phone_type;
+	
+/** Email types allowed by Google API */
+typedef enum {
+	E_INVALID = -1,
+	E_HOME,
+	E_OTHER,
+	E_WORK,
+	E_ITEMS_COUNT			// must be the last one!
+} gcal_email_type;
+	
 
 /** Creates a new google contact object.
  *
@@ -303,7 +338,10 @@ char gcal_contact_is_deleted(gcal_contact_t contact);
  * atom stream, it will be set to an empty string (i.e. "").
 
  */
-char *gcal_contact_get_email(gcal_contact_t contact);
+int gcal_contact_get_emails_count(gcal_contact_t contact);
+int gcal_contact_get_pref_email(gcal_contact_t contact);
+char *gcal_contact_get_email_address(gcal_contact_t contact, int i);
+gcal_email_type gcal_contact_get_email_address_type(gcal_contact_t contact, int i);
 
 /** Access contact description.
  *
@@ -362,7 +400,9 @@ char *gcal_contact_get_im(gcal_contact_t contact);
  * atom stream, it will be set to an empty string (i.e. "").
 
  */
-char *gcal_contact_get_phone(gcal_contact_t contact);
+int gcal_contact_get_phone_numbers_count(gcal_contact_t contact);
+char *gcal_contact_get_phone_number(gcal_contact_t contact, int i);
+gcal_phone_type gcal_contact_get_phone_number_type(gcal_contact_t contact, int i);
 
 /** Access contact telephone.
  *
@@ -376,6 +416,18 @@ char *gcal_contact_get_phone(gcal_contact_t contact);
 
  */
 char *gcal_contact_get_address(gcal_contact_t contact);
+
+/** Access Google group membership info.
+ *
+ * @param contact A contact object, see \ref gcal_contact.
+ *
+ * @return Pointer to internal object field (dont free it!) or NULL (in error
+ * case or if the field is not set). If the entry hasn't this field in the
+ * atom stream, it will be set to an empty string (i.e. "").
+
+ */
+int gcal_contact_get_groupMembership_count(gcal_contact_t contact);
+char *gcal_contact_get_groupMembership(gcal_contact_t contact, int i);
 
 /** Access contact photo data.
  *
@@ -417,19 +469,23 @@ int gcal_contact_set_title(gcal_contact_t contact, const char *field);
 /** Sets contact email.
  *
  * This field is a hard requirement to create a new contact. Google server
- * supports more e-mails with special tags too, but its not supported
- * for while using gcal_contact object.
+ * supports more e-mails with special tags too.
  *
  * If you need to add a contact entry with all optional fields, an
  * alternative is to use \ref gcal_add_xmlentry.
  *
  * @param contact A contact object, see \ref gcal_contact.
  *
- * @param field String with contact email (e.g. "joe.doe@nobody.com").
+ * @param field Email address..
  *
- * @return 0 for sucess, -1 otherwise.
+ * @param type Email address type.
+ *
+ * @param pref Preferred email address (0=no, 1=yes).
+ *
+ * @return 0 for success, -1 otherwise
  */
-int gcal_contact_set_email(gcal_contact_t contact, const char *field);
+int gcal_contact_delete_email_addresses(gcal_contact_t contact);
+int gcal_contact_add_email_address(gcal_contact_t contact, const char *field, gcal_email_type type, int pref);
 
 /** Sets contact edit url.
  *
@@ -482,9 +538,12 @@ int gcal_contact_set_etag(gcal_contact_t contact, const char *field);
  *
  * @param field Phone number.
  *
+ * @param type Phone number type.
+ *
  * @return 0 for success, -1 otherwise
  */
-int gcal_contact_set_phone(gcal_contact_t contact, const char *field);
+int gcal_contact_delete_phone_numbers(gcal_contact_t contact);
+int gcal_contact_add_phone_number(gcal_contact_t contact, const char *field, gcal_phone_type type);
 
 /** Sets the contact address (for while only a single address is supported).
  *
@@ -497,6 +556,17 @@ int gcal_contact_set_phone(gcal_contact_t contact, const char *field);
  * @return 0 for success, -1 otherwise
  */
 int gcal_contact_set_address(gcal_contact_t contact, const char *field);
+
+/** Sets the contact group membership info.
+ *
+ * @param contact A contact object, see \ref gcal_contact.
+ *
+ * @param field Group name.
+ *
+ * @return 0 for success, -1 otherwise
+ */
+int gcal_contact_delete_groupMembership(gcal_contact_t contact);
+int gcal_contact_add_groupMembership(gcal_contact_t contact, char *field);
 
 /** Sets the organization title.
  *

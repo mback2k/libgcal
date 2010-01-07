@@ -188,8 +188,14 @@ struct gcal_contact {
 	/** Has the common entry data fields (id, updated, title, edit_uri) */
 	struct gcal_entry common;
 	/* Here starts google contact unique fields */
-	/** Contact email */
-	char *email;
+	/** Contact emails */
+	char **emails_field;
+	/** Contact email types */
+	char **emails_type;
+	/** Number of contact emails */
+	int emails_nr;
+	/** Index of the preferred email */
+	int pref_email;
 
 	/* Here starts the extra fields */
 	/** Notes about contact */
@@ -200,10 +206,18 @@ struct gcal_contact {
 	char *org_title;
 	/** IM contact */
 	char *im;
-	/** Phone number */
-	char *phone_number;
+	/** Phone numbers */
+	char **phone_numbers_field;
+	/** Phone number types */
+	char **phone_numbers_type;
+	/** Number of phone numbers */
+	int phone_numbers_nr;
 	/** Address */
 	char *post_address;
+	/** Google group membership info */
+	char **groupMembership;
+	/** Google group membership info */
+	int groupMembership_nr;
 	/** Photo edit url */
 	char *photo;
 	/** Photo byte array */

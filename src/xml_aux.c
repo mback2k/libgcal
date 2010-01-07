@@ -61,6 +61,7 @@ int register_namespaces(xmlXPathContext *xpathCtx, const xmlChar *name_space,
 	else {
 		if (register_namespaces(xpathCtx, atom_ns, atom_href) ||
 		    register_namespaces(xpathCtx, gd_ns, gd_href) ||
+		    register_namespaces(xpathCtx, gContact_ns, gContact_href) ||
 		    register_namespaces(xpathCtx, open_search_ns,
 					open_search_href))
 			goto exit;

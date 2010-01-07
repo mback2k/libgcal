@@ -48,6 +48,38 @@ POSSIBILITY OF SUCH DAMAGE.
 #include "gcal_parser.h"
 #include "internal_gcal.h"
 
+
+/** Strings associated with phone number types */
+const char* gcal_phone_type_str[] = {
+	"assistant",		// P_ASSISTANT
+	"callback",		// P_CALLBACK
+	"car",			// P_CAR
+	"company_main",		// P_COMPANY_MAIN
+	"fax",			// P_FAX
+	"home",			// P_HOME
+	"home_fax",		// P_HOME_FAX
+	"isdn",			// P_ISDN
+	"main",			// P_MAIN
+	"mobile",		// P_MOBILE
+	"other",		// P_OTHER
+	"other_fax",		// P_OTHER_FAX
+	"pager",		// P_PAGER
+	"radio",		// P_RADIO
+	"telex",		// P_TELEX
+	"tty_tdd",		// P_TTY_TDD
+	"work",			// P_WORK
+	"work_fax",		// P_WORK_FAX
+	"work_mobile",		// P_WORK_MOBILE
+	"work_pager"		// P_WORK_PAGER
+};
+
+/** Strings associated with email types */
+const char* gcal_email_type_str[] = {
+	"home",				// E_HOME
+	"other",				// E_OTHER
+	"work"				// E_WORK
+};
+
 gcal_contact_t gcal_contact_new(char *raw_xml)
 {
 	gcal_contact_t contact = NULL;
@@ -317,11 +349,42 @@ char gcal_contact_is_deleted(gcal_contact_t contact)
 
 
 /* This are the fields unique to calendar contacts */
-char *gcal_contact_get_email(gcal_contact_t contact)
+int gcal_contact_get_emails_count(gcal_contact_t contact)
+{
+	if ((!contact))
+		return -1;
+	return contact->emails_nr;
+}
+
+int gcal_contact_get_pref_email(gcal_contact_t contact)
+{
+	if ((!contact))
+		return -1;
+	return contact->pref_email;
+}
+
+char *gcal_contact_get_email_address(gcal_contact_t contact, int i)
 {
 	if ((!contact))
 		return NULL;
-	return contact->email;
+	if (!(contact->emails_field) || (i >= contact->emails_nr))
+		return NULL;
+	return contact->emails_field[i];
+}
+
+gcal_email_type gcal_contact_get_email_address_type(gcal_contact_t contact, int i)
+{
+	gcal_email_type result = E_INVALID;
+	int j;
+	
+	if ((!contact))
+		return result;
+	if (!(contact->emails_type) || (i >= contact->emails_nr))
+		return result;
+	for (j = 0; j < E_ITEMS_COUNT; j++)
+		if (!strcmp(contact->emails_type[i], gcal_email_type_str[j]))
+			result = j;
+	return result;
 }
 
 char *gcal_contact_get_content(gcal_contact_t contact)
@@ -352,11 +415,35 @@ char *gcal_contact_get_im(gcal_contact_t contact)
 	return contact->im;
 }
 
-char *gcal_contact_get_phone(gcal_contact_t contact)
+int gcal_contact_get_phone_numbers_count(gcal_contact_t contact)
+{
+	if ((!contact))
+		return -1;
+	return contact->phone_numbers_nr;
+}
+
+char *gcal_contact_get_phone_number(gcal_contact_t contact, int i)
 {
 	if ((!contact))
 		return NULL;
-	return contact->phone_number;
+	if (!(contact->phone_numbers_field) || (i >= contact->phone_numbers_nr))
+		return NULL;
+	return contact->phone_numbers_field[i];
+}
+
+gcal_phone_type gcal_contact_get_phone_number_type(gcal_contact_t contact, int i)
+{
+	gcal_phone_type result = P_INVALID;
+	int j;
+	
+	if ((!contact))
+		return result;
+	if (!(contact->phone_numbers_type) || (i >= contact->phone_numbers_nr))
+		return result;
+	for (j = 0; j < P_ITEMS_COUNT; j++)
+		if (!strcmp(contact->phone_numbers_type[i], gcal_phone_type_str[j]))
+			result = j;
+	return result;
 }
 
 char *gcal_contact_get_address(gcal_contact_t contact)
@@ -364,6 +451,22 @@ char *gcal_contact_get_address(gcal_contact_t contact)
 	if ((!contact))
 		return NULL;
 	return contact->post_address;
+}
+
+int gcal_contact_get_groupMembership_count(gcal_contact_t contact)
+{
+	if ((!contact))
+		return -1;
+	return contact->groupMembership_nr;
+}
+
+char *gcal_contact_get_groupMembership(gcal_contact_t contact, int i)
+{
+	if ((!contact))
+		return NULL;
+	if (!(contact->groupMembership) || (i >= contact->groupMembership_nr))
+		return NULL;
+	return contact->groupMembership[i];
 }
 
 char *gcal_contact_get_photo(gcal_contact_t contact)
@@ -400,19 +503,51 @@ int gcal_contact_set_title(gcal_contact_t contact, const char *field)
 	return result;
 }
 
-int gcal_contact_set_email(gcal_contact_t contact, const char *field)
+int gcal_contact_delete_email_addresses(gcal_contact_t contact)
+{
+	int result = -1;
+	int temp;
+
+	if (!contact)
+		return result;
+
+	if (contact->emails_nr > 0) {
+		for (temp = 0; temp < contact->emails_nr; temp++) {
+			if (contact->emails_field[temp])
+				free(contact->emails_field[temp]);
+			if (contact->emails_type[temp])
+				free(contact->emails_type[temp]);
+		}
+		free(contact->emails_field);
+		free(contact->emails_type);
+	}
+
+	contact->emails_nr = contact->pref_email = 0;
+
+	result = 0;
+
+	return result;
+}
+
+int gcal_contact_add_email_address(gcal_contact_t contact, const char *field, gcal_email_type type, int pref)
 {
 	int result = -1;
 
-	if ((!contact) || (!field))
+	if ((!contact) || (!field) || (type<0) || (type>=E_ITEMS_COUNT))
 		return result;
 
-	if (contact->email)
-		free(contact->email);
+	contact->emails_field = (char**) realloc(contact->emails_field, (contact->emails_nr+1) * sizeof(char*));
+	contact->emails_field[contact->emails_nr] = strdup(field);
 
-	contact->email = strdup(field);
-	if (contact->email)
-		result = 0;
+	contact->emails_type = (char**) realloc(contact->emails_type, (contact->emails_nr+1) * sizeof(char*));
+	contact->emails_type[contact->emails_nr] = strdup(gcal_email_type_str[type]);
+
+	if (pref)
+		contact->pref_email = contact->emails_nr;
+
+	contact->emails_nr++;
+
+	result = 0;
 
 	return result;
 }
@@ -470,19 +605,48 @@ int gcal_contact_set_etag(gcal_contact_t contact, const char *field)
 	return result;
 }
 
-int gcal_contact_set_phone(gcal_contact_t contact, const char *field)
+int gcal_contact_delete_phone_numbers(gcal_contact_t contact)
+{
+	int result = -1;
+	int temp;
+
+	if (!contact)
+		return result;
+
+	if (contact->phone_numbers_nr > 0) {
+		for (temp = 0; temp < contact->phone_numbers_nr; temp++) {
+			if (contact->phone_numbers_field[temp])
+				free(contact->phone_numbers_field[temp]);
+			if (contact->phone_numbers_type[temp])
+				free(contact->phone_numbers_type[temp]);
+		}
+		free(contact->phone_numbers_field);
+		free(contact->phone_numbers_type);
+	}
+
+	contact->phone_numbers_nr = 0;
+
+	result = 0;
+
+	return result;
+}
+
+int gcal_contact_add_phone_number(gcal_contact_t contact, const char *field, gcal_phone_type type)
 {
 	int result = -1;
 
-	if ((!contact) || (!field))
+	if ((!contact) || (!field) || (type<0) || (type>=P_ITEMS_COUNT))
 		return result;
 
-	if (contact->phone_number)
-		free(contact->phone_number);
+	contact->phone_numbers_field = (char**) realloc(contact->phone_numbers_field, (contact->phone_numbers_nr+1) * sizeof(char*));
+	contact->phone_numbers_field[contact->phone_numbers_nr] = strdup(field);
 
-	contact->phone_number = strdup(field);
-	if (contact->phone_number)
-		result = 0;
+	contact->phone_numbers_type = (char**) realloc(contact->phone_numbers_type, (contact->phone_numbers_nr+1) * sizeof(char*));
+	contact->phone_numbers_type[contact->phone_numbers_nr] = strdup(gcal_phone_type_str[type]);
+
+	contact->phone_numbers_nr++;
+
+	result = 0;
 
 	return result;
 }
@@ -500,6 +664,46 @@ int gcal_contact_set_address(gcal_contact_t contact, const char *field)
 	contact->post_address = strdup(field);
 	if (contact->post_address)
 		result = 0;
+
+	return result;
+}
+
+int gcal_contact_delete_groupMembership(gcal_contact_t contact)
+{
+	int result = -1;
+	int temp;
+
+	if (!contact)
+		return result;
+
+	if (contact->groupMembership_nr > 0) {
+		for (temp = 0; temp < contact->groupMembership_nr; temp++) {
+			if (contact->groupMembership[temp])
+				free(contact->groupMembership[temp]);
+		}
+		free(contact->groupMembership);
+	}
+
+	contact->groupMembership_nr = 0;
+
+	result = 0;
+
+	return result;
+}
+
+int gcal_contact_add_groupMembership(gcal_contact_t contact, char *field)
+{
+	int result = -1;
+
+	if ((!contact) || (!field))
+		return result;
+
+	contact->groupMembership = (char**) realloc(contact->groupMembership, (contact->groupMembership_nr+1) * sizeof(char*));
+	contact->groupMembership[contact->groupMembership_nr] = strdup(field);
+
+	contact->groupMembership_nr++;
+
+	result = 0;
 
 	return result;
 }

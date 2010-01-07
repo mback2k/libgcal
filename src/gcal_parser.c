@@ -457,12 +457,16 @@ int xmlcontact_create(struct gcal_contact *contact, char **xml_contact,
 	 * contact X calendar.
 	 */
 	int result = -1;
+	int i;
 	xmlDoc *doc = NULL;
 	xmlNode *root = NULL;
 	xmlNode *node = NULL;
 	xmlNode *child = NULL;
 	xmlNs *ns;
+	xmlNs *ns2;
 	xmlChar *xml_str = NULL;
+	char *temp;
+	const char * rel_prefix = "http://schemas.google.com/g/2005#";
 
 	doc = xmlNewDoc(BAD_CAST "1.0");
 	root = xmlNewNode(NULL, BAD_CAST "entry");
@@ -477,6 +481,9 @@ int xmlcontact_create(struct gcal_contact *contact, char **xml_contact,
 			   BAD_CAST contact->common.etag);
 
 	ns =  xmlNewNs(root, BAD_CAST gd_href, BAD_CAST "gd");
+
+	/* Google contact group */
+	ns2 =  xmlNewNs(root, BAD_CAST gContact_href, BAD_CAST "gContact");
 
 	xmlDocSetRootElement(doc, root);
 
@@ -522,18 +529,25 @@ int xmlcontact_create(struct gcal_contact *contact, char **xml_contact,
 		xmlAddChild(root, node);
 
 	}
-
-	/* There are 3 types of e-mail: other, work, home */
-	node = xmlNewNode(ns, "email");
-	if (!node)
-		goto cleanup;
-
-	xmlSetProp(node, BAD_CAST "rel",
-		   BAD_CAST "http://schemas.google.com/g/2005#other");
-	xmlSetProp(node, BAD_CAST "address",
-		   BAD_CAST contact->email);
-	xmlAddChild(root, node);
-
+	/* email addresses */
+	if (contact->emails_nr > 0) {
+		for (i = 0; i < contact->emails_nr; i++) {
+			if (!(node = xmlNewNode(ns, "email")))
+				goto cleanup;
+			temp = (char *)malloc((strlen(contact->emails_type[i])+strlen(rel_prefix)+1) * sizeof(char));
+			strcpy(temp, rel_prefix);
+			strcat(temp, contact->emails_type[i]);
+			xmlSetProp(node, BAD_CAST "rel",
+				  BAD_CAST temp);
+			xmlSetProp(node, BAD_CAST "address",
+				  BAD_CAST contact->emails_field[i]);
+			if (i == contact->pref_email)
+				xmlSetProp(node, BAD_CAST "primary",
+					  BAD_CAST "true");
+			xmlAddChild(root, node);
+			free(temp);
+		}
+	}
 
 	/* Here begin extra fields */
 	/* content element */
@@ -569,18 +583,23 @@ int xmlcontact_create(struct gcal_contact *contact, char **xml_contact,
 		xmlAddChild(root, node);
 	}
 
-	/* For while I will get only the first phone number
-	 * TODO: use an array in gcal_contact to support multiple
-	 */
-	if (contact->phone_number) {
-		if (!(node = xmlNewNode(ns, "phoneNumber")))
-			goto cleanup;
-		/* TODO: support user settting phone type */
-		xmlSetProp(node, BAD_CAST "rel",
-			   BAD_CAST "http://schemas.google.com/g/2005#other");
-		xmlNodeAddContent(node, contact->phone_number);
-		xmlAddChild(root, node);
+	/* Get phone numbers */
+	if (contact->phone_numbers_nr > 0) {
+		for (i = 0; i < contact->phone_numbers_nr; i++) {
+			if (!(node = xmlNewNode(ns, "phoneNumber")))
+				goto cleanup;
+			/* TODO: support user settting phone type */
 
+			temp = (char *)malloc((strlen(contact->phone_numbers_type[i])+strlen(rel_prefix)+1) * sizeof(char));
+			strcpy(temp, rel_prefix);
+			strcat(temp, contact->phone_numbers_type[i]);
+			xmlSetProp(node, BAD_CAST "rel",
+				  BAD_CAST temp);
+
+			xmlNodeAddContent(node, contact->phone_numbers_field[i]);
+			xmlAddChild(root, node);
+			free(temp);
+		}
 	}
 
 	/* For while I will get only the first postal address
@@ -596,6 +615,18 @@ int xmlcontact_create(struct gcal_contact *contact, char **xml_contact,
 		xmlAddChild(root, node);
 	}
 
+	/* Google group membership info */
+	if (contact->groupMembership_nr > 0) {
+		for (i = 0; i < contact->groupMembership_nr; i++) {
+			if (!(node = xmlNewNode(ns2, "groupMembershipInfo")))
+				goto cleanup;
+			xmlSetProp(node, BAD_CAST "deleted",
+				  BAD_CAST "false");
+			xmlSetProp(node, BAD_CAST "href",
+				  BAD_CAST contact->groupMembership[i]);
+			xmlAddChild(root, node);
+		}
+	}
 
 	/* TODO: implement missing fields (im)
 	 */

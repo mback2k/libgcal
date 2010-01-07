@@ -57,6 +57,10 @@ static const char atom_ns[] = "atom";
 static const char gd_href[] = "http://schemas.google.com/g/2005";
 static const char gd_ns[] = "gd";
 
+/** Google group membership URL/URI */
+static const char gContact_href[] = "http://schemas.google.com/contact/2008";
+static const char gContact_ns[] = "gContact";
+
 /** Opensearch URL/URI */
 static const char open_search_href[] = "http://a9.com/-/spec/opensearch/1.1/";
 static const char open_search_ns[] = "openSearch";

@@ -226,6 +226,74 @@ exit:
 	return result;
 }
 
+static int extract_and_check_multi(xmlDoc *doc, char *xpath_expression, int getContent, char *attr1, char *attr2, char* attr3, char ***values, char ***types, int *pref)
+{
+	xmlXPathObject *xpath_obj;
+	xmlNodeSet *node;
+	xmlChar *tmp;
+	int result = -1;
+	int i;
+	
+	xpath_obj = execute_xpath_expression(doc,
+					     xpath_expression,
+					     NULL);
+
+	if ( (!values) || (attr2 && !types) || (attr3 && !pref) ) {
+		fprintf(stderr, "extract_and_check: null pointers received");
+		goto exit;
+	}
+
+	if (!xpath_obj) {
+		fprintf(stderr, "extract_and_check: failed to extract data");
+		goto exit;
+	}
+
+	node = xpath_obj->nodesetval;
+
+	if (!node) { 
+		result = 0;
+		goto cleanup;
+	} 
+	result = node->nodeNr;
+
+	*values = (char **)malloc( node->nodeNr * sizeof(char*) );
+	if (attr2)
+		*types = (char **)malloc( node->nodeNr * sizeof(char*) );
+
+	for (i = 0; i < node->nodeNr; i++) {
+		if (getContent)
+			(*values)[i] = xmlNodeGetContent(node->nodeTab[i]);
+		else if (xmlHasProp(node->nodeTab[i],attr1))
+			(*values)[i] = xmlGetProp(node->nodeTab[i],attr1);
+		else
+			(*values)[i] = strdup(" ");
+
+		if (attr2) {
+			if (xmlHasProp(node->nodeTab[i],attr2)) {
+				tmp = xmlGetProp(node->nodeTab[i], attr2);
+				(*types)[i] = strdup(strchr(tmp,'#')+1);
+				xmlFree(tmp);
+			}
+			else
+				(*types)[i] = strdup("");
+		}
+
+		if (attr3) {
+			if (xmlHasProp(node->nodeTab[i],attr3)) {
+				tmp = xmlGetProp(node->nodeTab[i], attr3);
+				if (!strcmp(tmp,"true"))
+					*pref = i;
+				xmlFree(tmp);
+			}
+		}
+	}
+
+cleanup:
+	xmlXPathFreeObject(xpath_obj);
+exit:
+	return result;
+}
+
 char *get_etag_attribute(xmlNode * a_node)
 {
 	xmlChar *uri = NULL;
@@ -478,12 +546,21 @@ int atom_extract_contact(xmlNode *entry, struct gcal_contact *ptr_entry)
 	if (!ptr_entry->common.edit_uri)
 		goto cleanup;
 
-	/* Gets the email contact field */
-	ptr_entry->email = extract_and_check(doc, "//atom:entry/"
-						"gd:email",
-						"address");
+	/* Gets email addressess */
+	ptr_entry->emails_nr = extract_and_check_multi(doc,
+						    "//atom:entry/"
+						    "gd:email",
+						    0,
+						    "address",
+						    "rel",
+						    "primary",
+						    &ptr_entry->emails_field,
+						    &ptr_entry->emails_type,
+						    &ptr_entry->pref_email);
+
+	/* TODO Commented to allow contacts without an email address
 	if (!ptr_entry->email)
-		goto cleanup;
+		goto cleanup; */
 
 	/* Here begins extra fields */
 
@@ -508,10 +585,16 @@ int atom_extract_contact(xmlNode *entry, struct gcal_contact *ptr_entry)
 						NULL);
 
 
-	/* Gets contact first phone number */
-	ptr_entry->phone_number = extract_and_check(doc,
+	/* Gets contact phone numbers */
+	ptr_entry->phone_numbers_nr = extract_and_check_multi(doc,
 						    "//atom:entry/"
-						    "gd:phoneNumber/text()",
+						    "gd:phoneNumber",
+						    1,
+						    NULL,
+						    "rel",
+						    NULL,
+						    &ptr_entry->phone_numbers_field,
+						    &ptr_entry->phone_numbers_type,
 						    NULL);
 
 	/* Gets contact first address */
@@ -520,6 +603,17 @@ int atom_extract_contact(xmlNode *entry, struct gcal_contact *ptr_entry)
 						    "gd:postalAddress/text()",
 						    NULL);
 
+	/* Gets contact group membership info */
+	ptr_entry->groupMembership_nr = extract_and_check_multi(doc,
+						    "//atom:entry/"
+						    "gContact:groupMembershipInfo[@deleted='false']",
+						    0,
+						    "href",
+						    NULL,
+						    NULL,
+						    &ptr_entry->groupMembership,
+						    NULL,
+						    NULL);
 
 	/* Gets contact photo edit url and test for etag */
 	ptr_entry->photo = extract_and_check(doc, "//atom:entry/"

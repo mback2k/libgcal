@@ -156,6 +156,18 @@ static void clean_string(char *ptr_str)
 		free(ptr_str);
 }
 
+static void clean_multi_string(char **ptr_str, int n)
+{
+	int i;
+
+	if (ptr_str) {
+		for (i = 0; i < n; i++)
+			if (ptr_str[i])
+				free(ptr_str[i]);
+		free(ptr_str);
+	}
+}
+
 void gcal_init_contact(struct gcal_contact *contact)
 {
 	if (!contact)
@@ -165,9 +177,13 @@ void gcal_init_contact(struct gcal_contact *contact)
 	contact->common.id = contact->common.updated = NULL;
 	contact->common.title = contact->common.xml = NULL;
 	contact->common.edit_uri = contact->common.etag = NULL;
-	contact->email = contact->content = NULL;
+	contact->emails_field = contact->emails_type = NULL;
+	contact->emails_nr = contact->pref_email = 0;
+	contact->content = NULL;
 	contact->org_name = contact->org_title = contact->im = NULL;
-	contact->phone_number = contact->post_address = NULL;
+	contact->phone_numbers_field = contact->phone_numbers_type = NULL;
+	contact->phone_numbers_nr = contact->groupMembership_nr = 0;
+	contact->post_address = contact->groupMembership = NULL;
 	contact->photo = contact->photo_data = NULL;
 	contact->photo_length = 0;
 }
@@ -182,7 +198,9 @@ void gcal_destroy_contact(struct gcal_contact *contact)
 	clean_string(contact->common.title);
 	clean_string(contact->common.edit_uri);
 	clean_string(contact->common.etag);
-	clean_string(contact->email);
+	clean_multi_string(contact->emails_field, contact->emails_nr);
+	clean_multi_string(contact->emails_type, contact->emails_nr);
+	contact->emails_nr = contact->pref_email = 0;
 	clean_string(contact->common.xml);
 
 	/* Extra fields */
@@ -190,7 +208,10 @@ void gcal_destroy_contact(struct gcal_contact *contact)
 	clean_string(contact->org_name);
 	clean_string(contact->org_title);
 	clean_string(contact->im);
-	clean_string(contact->phone_number);
+	clean_multi_string(contact->phone_numbers_field, contact->phone_numbers_nr);
+	clean_multi_string(contact->phone_numbers_type, contact->phone_numbers_nr);
+	clean_multi_string(contact->groupMembership, contact->groupMembership_nr);
+	contact->phone_numbers_nr = contact->groupMembership_nr = 0;
 	clean_string(contact->post_address);
 	clean_string(contact->photo);
 	clean_string(contact->photo_data);
