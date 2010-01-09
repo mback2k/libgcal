@@ -200,7 +200,8 @@ START_TEST (test_query_contact)
 	gcal_init_contact(&updated);
 
 	contact.common.title = "John Doe Query";
-	contact.email = "john.doe.query@foo.bar.com";
+	contact.emails_field = malloc(sizeof(char*));
+	contact.emails_field[0] = "john.doe.query@foo.bar.com";
 
 	obj_gcal = gcal_construct(GCONTACT);
 	fail_if(obj_gcal == NULL, "Failed to create gcal resource!");
@@ -256,7 +257,8 @@ START_TEST (test_query_delcontact)
 	gcal_init_contact(&contact);
 
 	contact.common.title = "John Doe Query";
-	contact.email = "john.doe.query@foo.bar.com";
+	contact.emails_field = malloc(sizeof(char*));
+	contact.emails_field[0] = "john.doe.query@foo.bar.com";
 
 	obj_gcal = gcal_construct(GCONTACT);
 	fail_if(obj_gcal == NULL, "Failed to create gcal resource!");

@@ -113,7 +113,7 @@ START_TEST (test_contact_extract)
 
 	for (i = 0; i < contacts_count; ++i)
 		for (j = 0; j < count; ++j)
-			if ((!(strcmp(contacts[i].email,
+			if ((!(strcmp(contacts[i].emails_field[0],
 				      contacts_email[j]))) &&
 			    (!(strcmp(contacts[i].common.title,
 				      contacts_name[j]))))
@@ -133,7 +133,8 @@ START_TEST (test_contact_xml)
 
 
 	contact.common.title = "John Doe";
-	contact.email = "john.doe@foo.bar.com";
+	contact.emails_field = malloc(sizeof(char*));
+	contact.emails_field[0] = "john.doe@foo.bar.com";
 	/* TODO: set etag as NULL in all utests here */
 	contact.common.id = contact.common.updated = contact.common.edit_uri = contact.common.etag = NULL;
 	contact.photo = contact.photo_data = NULL;
@@ -141,7 +142,8 @@ START_TEST (test_contact_xml)
 	contact.content = "A very interesting person";
 	contact.org_name = "Foo software";
 	contact.org_title = "Software engineer";
-	contact.phone_number = "+9977554422119900";
+	contact.phone_numbers_field = malloc(sizeof(char*));
+	contact.phone_numbers_field[0] = "+9977554422119900";
 	contact.post_address = "Unknown Av. St., n. 69, Someplace";
 	contact.im = "john_skype";
 
@@ -153,16 +155,16 @@ START_TEST (test_contact_xml)
 
 	ptr = strstr(xml, contact.common.title);
 	fail_if(ptr == NULL, "XML lacks a field: %s\n", contact.common.title);
-	ptr = strstr(xml, contact.email);
-	fail_if(ptr == NULL, "XML lacks a field: %s\n", contact.email);
+	ptr = strstr(xml, contact.emails_field[0]);
+	fail_if(ptr == NULL, "XML lacks a field: %s\n", contact.emails_field[0]);
 	ptr = strstr(xml, contact.content);
 	fail_if(ptr == NULL, "XML lacks a field: %s\n", contact.content);
 	ptr = strstr(xml, contact.org_name);
 	fail_if(ptr == NULL, "XML lacks a field: %s\n", contact.org_name);
 	ptr = strstr(xml, contact.org_title);
 	fail_if(ptr == NULL, "XML lacks a field: %s\n", contact.org_title);
-	ptr = strstr(xml, contact.phone_number);
-	fail_if(ptr == NULL, "XML lacks a field: %s\n", contact.phone_number);
+	ptr = strstr(xml, contact.phone_numbers_field[0]);
+	fail_if(ptr == NULL, "XML lacks a field: %s\n", contact.phone_numbers_field[0]);
 	ptr = strstr(xml, contact.post_address);
 	fail_if(ptr == NULL, "XML lacks a field: %s\n", contact.post_address);
 	/* TODO: im requires a new field for service type (i.e. AIM, yahoo,
@@ -183,7 +185,8 @@ START_TEST (test_contact_add)
 	struct gcal_contact contact;
 
 	contact.common.title = "John Doe";
-	contact.email = "john.doe@foo.bar.com";
+	contact.emails_field = malloc(sizeof(char*));
+	contact.emails_field[0] = "john.doe@foo.bar.com";
 	contact.common.id = contact.common.updated = contact.common.edit_uri = contact.common.etag = NULL;
 	contact.photo = contact.photo_data = NULL;
 	/* extra fields */
@@ -191,7 +194,8 @@ START_TEST (test_contact_add)
 	contact.org_name = "Foo software";
 	contact.org_title = "Software engineer";
 	contact.im = "john";
-	contact.phone_number = "+9977554422119900";
+	contact.phone_numbers_field = malloc(sizeof(char*));
+	contact.phone_numbers_field[0] = "+9977554422119900";
 	contact.post_address = "Unknown Av. St., n. 69, Someplace";
 
 	result = gcal_get_authentication(ptr_gcal, "gcalntester", "77libgcal");
@@ -235,7 +239,7 @@ START_TEST (test_contact_delete)
 	fail_if(contacts == NULL, "Failed extracting contacts vector!");
 
 	for (i = 0; i < count; ++i)
-		if ((!(strcmp(contacts[i].email, email))) &&
+		if ((!(strcmp(contacts[i].emails_field[0], email))) &&
 		    (!(strcmp(contacts[i].common.title, title)))) {
 			entry_index = i;
 			break;
@@ -259,14 +263,16 @@ START_TEST (test_contact_edit)
 
 	contact.common.title = "Johny Doe";
 	contact.photo = contact.photo_data = NULL;
-	contact.email = "johny.doe@foo.bar.com";
+	contact.emails_field = malloc(sizeof(char*));
+	contact.emails_field[0] = "johny.doe@foo.bar.com";
 	contact.common.id = contact.common.updated = contact.common.edit_uri = contact.common.etag = NULL;
 	/* extra fields */
 	contact.content = "A very interesting person";
 	contact.org_name = "Foo software";
 	contact.org_title = "Software engineer";
 	contact.im = "johny";
-	contact.phone_number = "+9977554422119900";
+	contact.phone_numbers_field = malloc(sizeof(char*));
+	contact.phone_numbers_field[0] = "+9977554422119900";
 	contact.post_address = "Unknown Av. St., n. 69, Someplace";
 
 	/* Authenticate and add a new contact */

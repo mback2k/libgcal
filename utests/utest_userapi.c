@@ -243,6 +243,9 @@ START_TEST (test_access_contacts)
 	size_t i;
 	int result;
 	char *ptr;
+	int j;
+	gcal_email_type get;
+	gcal_phone_type gpt;
 
 	gcal = gcal_new(GCONTACT);
 	result = gcal_get_authentication(gcal, "gcal4tester", "66libgcal");
@@ -266,12 +269,17 @@ START_TEST (test_access_contacts)
 		fail_if(ptr == NULL, "Can't get edit url!");
 
 		/* This are the fields unique to calendar events */
-		ptr = gcal_contact_get_email(contact);
+		j = gcal_contact_get_emails_count(contact);
+		j = gcal_contact_get_pref_email(contact);
+		ptr = gcal_contact_get_email_address(contact, 0);
+		get = gcal_contact_get_email_address_type(contact, 0);
 		ptr = gcal_contact_get_content(contact);
 		ptr = gcal_contact_get_organization(contact);
 		ptr = gcal_contact_get_profission(contact);
 		ptr = gcal_contact_get_im(contact);
-		ptr = gcal_contact_get_phone(contact);
+		j = gcal_contact_get_phone_numbers_count(contact);
+		ptr = gcal_contact_get_phone_number(contact, 0);
+		gpt = gcal_contact_get_phone_number_type(contact, 0);
 		ptr = gcal_contact_get_address(contact);
 
 	}
@@ -291,8 +299,8 @@ START_TEST (test_access_contacts)
 	ptr = gcal_contact_get_url(gcal_contact_element(&contact_array,
 						    contact_array.length));
 	fail_if(ptr != NULL, "Getting field must fail!");
-	ptr = gcal_contact_get_email(gcal_contact_element(&contact_array,
-							contact_array.length));
+	ptr = gcal_contact_get_email_address(gcal_contact_element(&contact_array,
+							contact_array.length), 0);
 	fail_if(ptr != NULL, "Getting field must fail!");
 	ptr = gcal_contact_get_content(gcal_contact_element(&contact_array,
 							contact_array.length));
@@ -306,8 +314,8 @@ START_TEST (test_access_contacts)
 	ptr = gcal_contact_get_im(gcal_contact_element(&contact_array,
 						      contact_array.length));
 	fail_if(ptr != NULL, "Getting field must fail!");
-	ptr = gcal_contact_get_phone(gcal_contact_element(&contact_array,
-							  contact_array.length));
+	ptr = gcal_contact_get_phone_number(gcal_contact_element(&contact_array,
+							  contact_array.length), 0);
 	fail_if(ptr != NULL, "Getting field must fail!");
 	ptr = gcal_contact_get_address(gcal_contact_element(&contact_array,
 						      contact_array.length));
@@ -331,7 +339,8 @@ START_TEST (test_oper_contact)
 	contact = gcal_contact_new(NULL);
 	fail_if (!contact, "Cannot construct contact object!");
 	gcal_contact_set_title(contact, "John Doe");
-	gcal_contact_set_email(contact, "john.doe@foo.bar.com");
+	gcal_contact_delete_email_addresses(contact);
+	gcal_contact_add_email_address(contact, "john.doe@foo.bar.com", E_OTHER, 1);
 
 	/* Create a gcal object and authenticate */
 	gcal = gcal_new(GCONTACT);
@@ -345,7 +354,8 @@ START_TEST (test_oper_contact)
 	/* Edit this contact */
 	gcal_contact_set_title(contact, "John 'The Generic' Doe");
 	fail_if(result == -1, "Failed editing contact!");
-	gcal_contact_set_email(contact, "john.super.doe@foo.bar.com");
+	gcal_contact_delete_email_addresses(contact);
+	gcal_contact_add_email_address(contact, "john.super.doe@foo.bar.com", E_OTHER, 1);
 	fail_if(result == -1, "Failed editing contact!");
 	result = gcal_update_contact(gcal, contact);
 	fail_if(result == -1, "Failed uploading edited contact!");
@@ -436,7 +446,8 @@ START_TEST (test_contact_photo)
 	contact = gcal_contact_new(NULL);
 	fail_if (!contact, "Cannot construct contact object!");
 	gcal_contact_set_title(contact, "Gromit");
-	gcal_contact_set_email(contact, "gromit@wallace.com");
+	gcal_contact_delete_email_addresses(contact);
+	gcal_contact_add_email_address(contact, "gromit@wallace.com", E_OTHER, 1);
 	fail_if(gcal_contact_set_photo(contact, photo_data, result),
 		"Failed copying photo data");
 
@@ -455,7 +466,8 @@ START_TEST (test_contact_photo)
 	if (find_load_photo("/utests/images/hutch.png",  &photo_data, &result))
 		fail_if(1, "Cannot load photo!");
 	gcal_contact_set_title(contact, "hutch");
-	gcal_contact_set_email(contact, "hutch@wallace.com");
+	gcal_contact_delete_email_addresses(contact);
+	gcal_contact_add_email_address(contact, "hutch@wallace.com", E_OTHER, 1);
 	fail_if(gcal_contact_set_photo(contact, photo_data, result),
 		"Failed copying photo data");
 	result = gcal_update_contact(gcal, contact);
@@ -546,7 +558,8 @@ START_TEST (test_url_sanity_contact)
 	fail_if(result == -1, "Cannot authenticate!");
 
   	gcal_contact_set_title(contact, "Insanity in edit URL");
-	gcal_contact_set_email(contact, "prooftest@add.get.com");
+	gcal_contact_delete_email_addresses(contact);
+	gcal_contact_add_email_address(contact, "prooftest@add.get.com", E_OTHER, 1);
 
 	fail_if((result = gcal_add_contact(gcal, contact)) != 0,
 		"Failed adding new contact!");

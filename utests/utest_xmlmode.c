@@ -165,7 +165,8 @@ START_TEST (test_oper_xmlcontact)
 	contact = gcal_contact_new(NULL);
 	fail_if(!contact, "Cannot construct contact object!");
 	gcal_contact_set_title(contact, "Jonhy Generic Guy");
-	gcal_contact_set_email(contact, "johnthedoe@nobody.com");
+	gcal_contact_delete_email_addresses(contact);
+	gcal_contact_add_email_address(contact, "johnthedoe@nobody.com", E_OTHER, 1);
 
 
 	/* Add a new contact */
