@@ -135,6 +135,7 @@ START_TEST (test_contact_xml)
 	contact.common.title = "John Doe";
 	contact.emails_field = malloc(sizeof(char*));
 	contact.emails_field[0] = "john.doe@foo.bar.com";
+	contact.emails_nr = 1;
 	/* TODO: set etag as NULL in all utests here */
 	contact.common.id = contact.common.updated = contact.common.edit_uri = contact.common.etag = NULL;
 	contact.photo = contact.photo_data = NULL;
@@ -144,14 +145,21 @@ START_TEST (test_contact_xml)
 	contact.org_title = "Software engineer";
 	contact.phone_numbers_field = malloc(sizeof(char*));
 	contact.phone_numbers_field[0] = "+9977554422119900";
+	contact.emails_type = malloc(sizeof(char*));
+	contact.emails_type[0] = "Home";
+	contact.phone_numbers_nr = 1;
 	contact.post_address = "Unknown Av. St., n. 69, Someplace";
+	contact.phone_numbers_type = malloc(sizeof(char*));
+	contact.phone_numbers_type[0] = "Home";
+	contact.groupMembership = malloc(sizeof(char*));
+	contact.groupMembership[0] = "Devel";
+	contact.groupMembership_nr = 1;
 	contact.im = "john_skype";
 
 	result = xmlcontact_create(&contact, &xml, &length);
 	fail_if(result == -1 || xml == NULL,
 		"Failed creating XML for a new contact!");
 
-	/* fprintf(stderr, "at: %s is nice\n", xml); */
 
 	ptr = strstr(xml, contact.common.title);
 	fail_if(ptr == NULL, "XML lacks a field: %s\n", contact.common.title);
@@ -187,6 +195,10 @@ START_TEST (test_contact_add)
 	contact.common.title = "John Doe";
 	contact.emails_field = malloc(sizeof(char*));
 	contact.emails_field[0] = "john.doe@foo.bar.com";
+	contact.emails_type = malloc(sizeof(char*));
+	contact.emails_type[0] = "home";
+	contact.emails_nr = 1;
+	contact.pref_email = 0;
 	contact.common.id = contact.common.updated = contact.common.edit_uri = contact.common.etag = NULL;
 	contact.photo = contact.photo_data = NULL;
 	/* extra fields */
@@ -196,6 +208,12 @@ START_TEST (test_contact_add)
 	contact.im = "john";
 	contact.phone_numbers_field = malloc(sizeof(char*));
 	contact.phone_numbers_field[0] = "+9977554422119900";
+	contact.phone_numbers_type = malloc(sizeof(char*));
+	contact.phone_numbers_type[0] = "home";
+	contact.phone_numbers_nr = 1;
+	contact.groupMembership = malloc(sizeof(char*));
+	contact.groupMembership[0] = "Devel";
+	contact.groupMembership_nr = 1;
 	contact.post_address = "Unknown Av. St., n. 69, Someplace";
 
 	result = gcal_get_authentication(ptr_gcal, "gcalntester", "77libgcal");
@@ -239,11 +257,13 @@ START_TEST (test_contact_delete)
 	fail_if(contacts == NULL, "Failed extracting contacts vector!");
 
 	for (i = 0; i < count; ++i)
+	    if (contacts[i].emails_field) {
 		if ((!(strcmp(contacts[i].emails_field[0], email))) &&
 		    (!(strcmp(contacts[i].common.title, title)))) {
 			entry_index = i;
 			break;
 		    }
+	    }
 	fail_if(entry_index == -1, "Cannot locate the newly added contact!");
 /* 	fprintf(stderr, "index = %d\tname = %s\n", entry_index, */
 /* 		contacts[entry_index].common.title); */
@@ -265,6 +285,10 @@ START_TEST (test_contact_edit)
 	contact.photo = contact.photo_data = NULL;
 	contact.emails_field = malloc(sizeof(char*));
 	contact.emails_field[0] = "johny.doe@foo.bar.com";
+	contact.emails_nr = 1;
+	contact.pref_email = 0;
+	contact.emails_type = malloc(sizeof(char*));
+	contact.emails_type[0] = "home";
 	contact.common.id = contact.common.updated = contact.common.edit_uri = contact.common.etag = NULL;
 	/* extra fields */
 	contact.content = "A very interesting person";
@@ -273,6 +297,12 @@ START_TEST (test_contact_edit)
 	contact.im = "johny";
 	contact.phone_numbers_field = malloc(sizeof(char*));
 	contact.phone_numbers_field[0] = "+9977554422119900";
+	contact.phone_numbers_type= malloc(sizeof(char*));
+	contact.phone_numbers_type[0] = "home";
+	contact.phone_numbers_nr = 1;
+	contact.groupMembership = malloc(sizeof(char*));
+	contact.groupMembership[0] = "Devel";
+	contact.groupMembership_nr = 1;
 	contact.post_address = "Unknown Av. St., n. 69, Someplace";
 
 	/* Authenticate and add a new contact */

@@ -523,6 +523,7 @@ int gcal_contact_delete_email_addresses(gcal_contact_t contact)
 	}
 
 	contact->emails_nr = contact->pref_email = 0;
+	contact->emails_field = contact->emails_type = 0;
 
 	result = 0;
 

@@ -39,6 +39,7 @@ static void teardown(void)
 
 START_TEST (test_normalize_url)
 {
+
 	char *copy;
 	const char * const added = "http://www.google.com/calendar/feeds/"
 		"default/private/full/ujq52gb0lggdjb0qqi10nt07m8";
@@ -237,7 +238,6 @@ START_TEST (test_get_contact_deleted)
 
 	xpath_obj = atom_get_entries(doc);
 	fail_if(xpath_obj == NULL, "failed to get entry node list!");
-
 	nodes = xpath_obj->nodesetval;
 	res = atom_extract_contact(nodes->nodeTab[0], &extracted);
 	fail_if(res == -1, "failed to extract data from node!");
@@ -247,7 +247,7 @@ START_TEST (test_get_contact_deleted)
 
 	free(file_contents);
 	if (xpath_obj)
-		xmlXPathFreeObject(xpath_obj);
+	    xmlXPathFreeObject(xpath_obj);
 
 	gcal_destroy_contact(&extracted);
 	clean_doc_tree(&doc);
@@ -257,20 +257,20 @@ END_TEST
 
 START_TEST (test_get_contact_nophoto)
 {
-	xmlXPathObject *xpath_obj = NULL;
-	xmlDoc *doc = NULL;
-	xmlNodeSet *nodes;
-	struct gcal_contact extracted;
-	char *file_contents = NULL;
-	int res;
+    xmlXPathObject *xpath_obj = NULL;
+    xmlDoc *doc = NULL;
+    xmlNodeSet *nodes;
+    struct gcal_contact extracted;
+    char *file_contents = NULL;
+    int res;
 
-	gcal_init_contact(&extracted);
+    gcal_init_contact(&extracted);
 
-	if (find_load_file("/utests/empty_photo.xml", &file_contents))
-		fail_if(1, "Cannot load test XML file!");
+    if (find_load_file("/utests/empty_photo.xml", &file_contents))
+	fail_if(1, "Cannot load test XML file!");
 
-	res = build_doc_tree(&doc, file_contents);
-	fail_if(res == -1, "failed to build document tree!");
+    res = build_doc_tree(&doc, file_contents);
+    fail_if(res == -1, "failed to build document tree!");
 
 	xpath_obj = atom_get_entries(doc);
 	fail_if(xpath_obj == NULL, "failed to get entry node list!");

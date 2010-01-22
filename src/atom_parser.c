@@ -226,7 +226,10 @@ exit:
 	return result;
 }
 
-static int extract_and_check_multi(xmlDoc *doc, char *xpath_expression, int getContent, char *attr1, char *attr2, char* attr3, char ***values, char ***types, int *pref)
+static int extract_and_check_multi(xmlDoc *doc, char *xpath_expression,
+				   int getContent, char *attr1, char *attr2,
+				   char* attr3, char ***values, char ***types,
+				   int *pref)
 {
 	xmlXPathObject *xpath_obj;
 	xmlNodeSet *node;
@@ -239,26 +242,30 @@ static int extract_and_check_multi(xmlDoc *doc, char *xpath_expression, int getC
 					     NULL);
 
 	if ( (!values) || (attr2 && !types) || (attr3 && !pref) ) {
-		fprintf(stderr, "extract_and_check: null pointers received");
+		fprintf(stderr, "extract_and_check_multi: null pointers received");
 		goto exit;
 	}
 
 	if (!xpath_obj) {
-		fprintf(stderr, "extract_and_check: failed to extract data");
+		fprintf(stderr, "extract_and_check_multi: failed to extract data");
 		goto exit;
 	}
 
 	node = xpath_obj->nodesetval;
 
-	if (!node) { 
+	if (!node) {
 		result = 0;
 		goto cleanup;
-	} 
+	}
 	result = node->nodeNr;
+
+	if (result == 0) {
+		goto exit;
+	}
 
 	*values = (char **)malloc( node->nodeNr * sizeof(char*) );
 	if (attr2)
-		*types = (char **)malloc( node->nodeNr * sizeof(char*) );
+		*types = (char **)malloc(node->nodeNr * sizeof(char*));
 
 	for (i = 0; i < node->nodeNr; i++) {
 		if (getContent)
