@@ -152,7 +152,7 @@ START_TEST (test_contact_xml)
 	contact.phone_numbers_type = malloc(sizeof(char*));
 	contact.phone_numbers_type[0] = "Home";
 	contact.groupMembership = malloc(sizeof(char*));
-	contact.groupMembership[0] = "Devel";
+	contact.groupMembership[0] = "http://www.google.com/m8/feeds/groups/gcal4tester%40gmail.com/base/6";
 	contact.groupMembership_nr = 1;
 	contact.im = "john_skype";
 
@@ -212,7 +212,7 @@ START_TEST (test_contact_add)
 	contact.phone_numbers_type[0] = "home";
 	contact.phone_numbers_nr = 1;
 	contact.groupMembership = malloc(sizeof(char*));
-	contact.groupMembership[0] = "Devel";
+	contact.groupMembership[0] = "http://www.google.com/m8/feeds/groups/gcalntester%40gmail.com/base/6";
 	contact.groupMembership_nr = 1;
 	contact.post_address = "Unknown Av. St., n. 69, Someplace";
 
@@ -301,7 +301,7 @@ START_TEST (test_contact_edit)
 	contact.phone_numbers_type[0] = "home";
 	contact.phone_numbers_nr = 1;
 	contact.groupMembership = malloc(sizeof(char*));
-	contact.groupMembership[0] = "Devel";
+	contact.groupMembership[0] = "http://www.google.com/m8/feeds/groups/gcalntester%40gmail.com/base/6";
 	contact.groupMembership_nr = 1;
 	contact.post_address = "Unknown Av. St., n. 69, Someplace";
 
