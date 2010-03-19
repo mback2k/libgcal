@@ -236,12 +236,12 @@ static int extract_and_check_multi(xmlDoc *doc, char *xpath_expression,
 	xmlChar *tmp;
 	int result = -1;
 	int i;
-	
+
 	xpath_obj = execute_xpath_expression(doc,
 					     xpath_expression,
 					     NULL);
 
-	if ( (!values) || (attr2 && !types) || (attr3 && !pref) ) {
+	if ((!values) || (attr2 && !types) || (attr3 && !pref)) {
 		fprintf(stderr, "extract_and_check_multi: null pointers received");
 		goto exit;
 	}
@@ -263,22 +263,22 @@ static int extract_and_check_multi(xmlDoc *doc, char *xpath_expression,
 		goto exit;
 	}
 
-	*values = (char **)malloc( node->nodeNr * sizeof(char*) );
+	*values = (char **)malloc(node->nodeNr * sizeof(char*));
 	if (attr2)
 		*types = (char **)malloc(node->nodeNr * sizeof(char*));
 
 	for (i = 0; i < node->nodeNr; i++) {
 		if (getContent)
 			(*values)[i] = xmlNodeGetContent(node->nodeTab[i]);
-		else if (xmlHasProp(node->nodeTab[i],attr1))
-			(*values)[i] = xmlGetProp(node->nodeTab[i],attr1);
+		else if (xmlHasProp(node->nodeTab[i], attr1))
+			(*values)[i] = xmlGetProp(node->nodeTab[i], attr1);
 		else
 			(*values)[i] = strdup(" ");
 
 		if (attr2) {
-			if (xmlHasProp(node->nodeTab[i],attr2)) {
+			if (xmlHasProp(node->nodeTab[i], attr2)) {
 				tmp = xmlGetProp(node->nodeTab[i], attr2);
-				(*types)[i] = strdup(strchr(tmp,'#')+1);
+				(*types)[i] = strdup(strchr(tmp,'#') + 1);
 				xmlFree(tmp);
 			}
 			else
@@ -286,7 +286,7 @@ static int extract_and_check_multi(xmlDoc *doc, char *xpath_expression,
 		}
 
 		if (attr3) {
-			if (xmlHasProp(node->nodeTab[i],attr3)) {
+			if (xmlHasProp(node->nodeTab[i], attr3)) {
 				tmp = xmlGetProp(node->nodeTab[i], attr3);
 				if (!strcmp(tmp,"true"))
 					*pref = i;

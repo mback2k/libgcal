@@ -97,7 +97,6 @@ xmlXPathObject* execute_xpath_expression(xmlDoc *doc,
 	if (ownership && (xpathCtx != NULL))
 		xmlXPathFreeContext(xpathCtx);
 
-
 exit:
 	return xpath_obj;
 
