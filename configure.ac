@@ -6,7 +6,7 @@ dnl Process this file with autoconf to produce a configure script.
 # Based on sniffdet configure.ac: http://sniffdet.sourceforge.net
 # Licensed under GNU-GPL
 
-AC_INIT(Library gcalendar, 0.9.3,[], libgcal)
+AC_INIT(Library gcalendar, 0.9.4,[], libgcal)
 AC_PREREQ(2.58)
 
 AC_CONFIG_SRCDIR([src/gcal.c])
