@@ -58,7 +58,8 @@ END_TEST
 
 START_TEST (test_debug_logfile)
 {
-	int result, length;
+	int result;
+	size_t length;
 	char *file_path = "/tmp/libgcal.log";
 	char *error_line = "code: 403";
 	char *file_content = NULL;

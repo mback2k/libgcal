@@ -190,7 +190,8 @@ static char *extract_and_check(xmlDoc *doc, char *xpath_expression, char *attr)
 					     NULL);
 
 	if (!xpath_obj) {
-		fprintf(stderr, "extract_and_check: failed to extract data");
+		fprintf(stderr, "extract_and_check: failed to extract data\n");
+		fprintf(stderr, "xpath_expression: ---%s---\n",xpath_expression);
 		goto exit;
 	}
 
@@ -468,11 +469,22 @@ exit:
 
 int atom_extract_contact(xmlNode *entry, struct gcal_contact *ptr_entry)
 {
-	int result = -1, length = 0;
-	char *tmp = NULL;
+	int result = -1, length = 0, j;
+	char *tmp, *atom_str = NULL;
 	xmlChar *xml_str = NULL;
 	xmlDoc *doc = NULL;
 	xmlNode *copy = NULL;
+	
+	/** Strings associated with address fields, see gcal_structured_postal_address_fields in gcontact.h */
+	const char* gcal_structured_postal_address_fields_str[] = {
+		"street",
+		"pobox",
+		"city",
+		"region",
+		"postcode",
+		"country",
+		"formattedAddress"
+	};
 
 	if (!entry || !ptr_entry)
 		goto exit;
@@ -577,6 +589,16 @@ int atom_extract_contact(xmlNode *entry, struct gcal_contact *ptr_entry)
 					       "atom:content/text()",
 					       NULL);
 
+	/* Gets the 'homepage' contact field */
+	ptr_entry->homepage = extract_and_check(doc, "//atom:entry/"
+						"gContact:website[@rel='home-page']",
+						"href");
+	
+	/* Gets the 'blog' contact field */
+	ptr_entry->blog = extract_and_check(doc, "//atom:entry/"
+						"gContact:website[@rel='blog']",
+						"href");
+	
 	/* Gets the organization contact field */
 	ptr_entry->org_name = extract_and_check(doc,
 						"//atom:entry/"
@@ -604,12 +626,26 @@ int atom_extract_contact(xmlNode *entry, struct gcal_contact *ptr_entry)
 						    &ptr_entry->phone_numbers_type,
 						    NULL);
 
-	/* Gets contact first address */
+	/* Gets contact postal address */
 	ptr_entry->post_address = extract_and_check(doc,
-						    "//atom:entry/"
-						    "gd:postalAddress/text()",
-						    NULL);
-
+				"//atom:entry/"
+				"gd:postalAddress/text()",
+				NULL);
+	
+	/* Gets contact first address: formattedAddress of 3.0 structuredPostalAddress */
+	for (j = 0; j < F_ITEMS_COUNT; j++)
+	{
+		atom_str = (char *)alloca(strlen("//atom:entry/gd:structuredPostalAddress/gd:")+strlen(gcal_structured_postal_address_fields_str[j])+strlen("/text()")+3);
+		sprintf(atom_str,"//atom:entry/gd:structuredPostalAddress/gd:%s/text()",gcal_structured_postal_address_fields_str[j]);
+		
+		tmp = extract_and_check(doc, atom_str, NULL);
+		if(tmp)
+		{
+			gcal_contact_set_structured_address(ptr_entry,gcal_structured_postal_address_fields_str[j],tmp);
+			free(tmp);
+		}
+	}
+	
 	/* Gets contact group membership info */
 	ptr_entry->groupMembership_nr = extract_and_check_multi(doc,
 						    "//atom:entry/"
@@ -621,6 +657,12 @@ int atom_extract_contact(xmlNode *entry, struct gcal_contact *ptr_entry)
 						    &ptr_entry->groupMembership,
 						    NULL,
 						    NULL);
+
+	/* Gets contact birthday */
+	ptr_entry->birthday = extract_and_check(doc,
+					            "//atom:entry/"
+						    "gContact:birthday",
+						    "when");
 
 	/* Gets contact photo edit url and test for etag */
 	ptr_entry->photo = extract_and_check(doc, "//atom:entry/"

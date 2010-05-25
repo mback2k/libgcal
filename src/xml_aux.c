@@ -63,7 +63,8 @@ int register_namespaces(xmlXPathContext *xpathCtx, const xmlChar *name_space,
 		    register_namespaces(xpathCtx, gd_ns, gd_href) ||
 		    register_namespaces(xpathCtx, gContact_ns, gContact_href) ||
 		    register_namespaces(xpathCtx, open_search_ns,
-					open_search_href))
+					open_search_href) ||
+		    register_namespaces(xpathCtx, gContact_ns, gContact_href))
 			goto exit;
 	}
 

@@ -183,6 +183,15 @@ struct gcal_event {
 	char *status;
 };
 
+/** Address structure, represents each structuredPostalAddress.
+ */
+
+struct gcal_structured_postal_address {
+	struct gcal_structured_postal_address *next_address_field;
+	char *address_field_key;
+	char *address_field_value;
+};
+	
 /** Contact data type */
 struct gcal_contact {
 	/** Has the common entry data fields (id, updated, title, edit_uri) */
@@ -200,6 +209,10 @@ struct gcal_contact {
 	/* Here starts the extra fields */
 	/** Notes about contact */
 	char *content;
+	/** Homepage */
+	char *homepage;
+	/** Blog */
+	char *blog;
 	/** Company name */
 	char *org_name;
 	/** Job title */
@@ -214,10 +227,14 @@ struct gcal_contact {
 	int phone_numbers_nr;
 	/** Address */
 	char *post_address;
+	/** Full Address */
+	struct gcal_structured_postal_address *structured_address;
 	/** Google group membership info */
 	char **groupMembership;
 	/** Google group membership info */
 	int groupMembership_nr;
+	/** Birthday */
+	char *birthday;
 	/** Photo edit url */
 	char *photo;
 	/** Photo byte array */

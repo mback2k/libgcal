@@ -92,7 +92,7 @@ int find_load_file(char *path, char **file_content)
 	return res;
 }
 
-int find_load_photo(char *path, char **file_content, int *length)
+int find_load_photo(char *path, char **file_content, size_t *length)
 {
   	int fd, res;
 	char *file_name = path;

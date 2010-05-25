@@ -133,7 +133,7 @@ START_TEST (test_edit_delete)
 	result = gcal_create_event(ptr_gcal, &event, NULL);
 	fail_if(result == -1, "Failed creating a new event!");
 
-	result = gcal_dump(ptr_gcal);
+	result = gcal_dump(ptr_gcal, "GData-Version: 2");
 	fail_if(result == -1, "Failed dumping events");
 
 	entries = gcal_get_entries(ptr_gcal, &result);
@@ -214,7 +214,7 @@ START_TEST (test_edit_stress)
 	sleep(10);
 
 	/* Delete all test events */
-	result = gcal_dump(ptr_gcal);
+	result = gcal_dump(ptr_gcal, "GData-Version: 2");
 	fail_if(result == -1, "Failed dumping events");
 
 	entries = gcal_get_entries(ptr_gcal, &total);

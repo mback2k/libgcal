@@ -91,7 +91,34 @@ typedef enum {
 	E_WORK,
 	E_ITEMS_COUNT			// must be the last one!
 } gcal_email_type;
-	
+
+/** Address structure, represents each structuredPostalAddress, same names like in Google API 
+ * see Array in atom_parser.c  -> atom_extract_contact() */
+/*
+F_AGENT,			not used
+F_HOUSENAME,			not used
+F_STREET,
+F_POBOX,
+F_NEIGHBORHOOD,			not used
+F_CITY,
+F_SUBREGION,			not used
+F_REGION,
+F_POSTCODE,
+F_COUNTRY,
+F_FORMATTEDADDRESS,
+*/
+typedef enum {
+	F_INVALID = -1,
+	F_STREET,
+	F_POBOX,
+	F_CITY,
+	F_REGION,
+	F_POSTCODE,
+	F_COUNTRY,
+	F_FORMATTEDADDRESS,
+	F_ITEMS_COUNT			// must be the last one!
+} gcal_structured_postal_address_fields;
+
 
 /** Creates a new google contact object.
  *
@@ -389,6 +416,22 @@ char *gcal_contact_get_profission(gcal_contact_t contact);
  */
 char *gcal_contact_get_im(gcal_contact_t contact);
 
+/** Access contact website.
+ *
+ * @param contact A contact object, see \ref gcal_contact.
+ *
+ * @return Pointer to internal object field 
+ */
+char *gcal_contact_get_homepage(gcal_contact_t contact);
+
+/** Access contact blog.
+ *
+ * @param contact A contact object, see \ref gcal_contact.
+ *
+ * @return Pointer to internal object field 
+ */
+char *gcal_contact_get_blog(gcal_contact_t contact);
+
 /** Access contact telephone.
  *
  * \todo Implement support for multiple phones.
@@ -404,7 +447,7 @@ int gcal_contact_get_phone_numbers_count(gcal_contact_t contact);
 char *gcal_contact_get_phone_number(gcal_contact_t contact, int i);
 gcal_phone_type gcal_contact_get_phone_number_type(gcal_contact_t contact, int i);
 
-/** Access contact telephone.
+/** Access contact address (structuredPostalAddress.formattedAddress).
  *
  * \todo Implement support for multiple addresses.
  *
@@ -416,6 +459,16 @@ gcal_phone_type gcal_contact_get_phone_number_type(gcal_contact_t contact, int i
 
  */
 char *gcal_contact_get_address(gcal_contact_t contact);
+
+/** Access contact full address (structuredPostalAddress).
+ *
+ * \todo Implement support for multiple addresses.
+ *
+ * @param contact A contact object, see \ref gcal_contact.
+ *
+ * @return Pointer to internal object field 
+ */
+char *gcal_contact_get_structured_address(gcal_contact_t contact, const char *address_field_key);
 
 /** Access Google group membership info.
  *
@@ -429,7 +482,21 @@ char *gcal_contact_get_address(gcal_contact_t contact);
 int gcal_contact_get_groupMembership_count(gcal_contact_t contact);
 char *gcal_contact_get_groupMembership(gcal_contact_t contact, int i);
 
+/** Access contact birthday.
+ *
+ * @param contact A contact object, see \ref gcal_contact.
+ *
+ * @return Pointer to internal object field (dont free it!) or NULL (in error
+ * case or if the field is not set). If the entry hasn't this field in the
+ * atom stream, it will be set to an empty string (i.e. "").
+ 
+
+ */
+char *gcal_contact_get_birthday(gcal_contact_t contact);
+
 /** Access contact photo data.
+ *
+ * When no year is set in Google, Year is set to 1900 in KABC
  *
  * @param contact A contact object, see \ref gcal_contact.
  *
@@ -545,7 +612,7 @@ int gcal_contact_set_etag(gcal_contact_t contact, const char *field);
 int gcal_contact_delete_phone_numbers(gcal_contact_t contact);
 int gcal_contact_add_phone_number(gcal_contact_t contact, const char *field, gcal_phone_type type);
 
-/** Sets the contact address (for while only a single address is supported).
+/** Sets the contact address (structuredPostalAddress.formattedAddress).
  *
  * \todo Implement multiple address support
  *
@@ -557,6 +624,18 @@ int gcal_contact_add_phone_number(gcal_contact_t contact, const char *field, gca
  */
 int gcal_contact_set_address(gcal_contact_t contact, const char *field);
 
+/** Sets the contact full address (structuredPostalAddress).
+ *
+ * \todo Implement support for multiple addresses.
+ *
+ * @param contact A contact object, see \ref gcal_contact.
+ *
+ * @param field Address string.
+ *
+ * @return 0 for success, -1 otherwise
+ */
+int gcal_contact_set_structured_address(gcal_contact_t contact, const char *address_field_key, const char *address_field_value );
+
 /** Sets the contact group membership info.
  *
  * @param contact A contact object, see \ref gcal_contact.
@@ -567,6 +646,18 @@ int gcal_contact_set_address(gcal_contact_t contact, const char *field);
  */
 int gcal_contact_delete_groupMembership(gcal_contact_t contact);
 int gcal_contact_add_groupMembership(gcal_contact_t contact, char *field);
+
+/** Sets the contact birthday
+ *
+ * When no year is set in Google, Year is set to 1900 in KABC
+ *
+ * @param contact A contact object, see \ref gcal_contact.
+ *
+ * @param field birthday string.
+ *
+ * @return 0 for success, -1 otherwise
+ */
+int gcal_contact_set_birthday(gcal_contact_t contact, const char *field);
 
 /** Sets the organization title.
  *
@@ -592,7 +683,6 @@ int gcal_contact_set_organization(gcal_contact_t contact, const char *field);
 
 /** Sets contact description.
  *
- *
  * @param contact A contact object, see \ref gcal_contact.
  *
  * @param field A note, description (i.e. "Really funny guy")
@@ -600,6 +690,26 @@ int gcal_contact_set_organization(gcal_contact_t contact, const char *field);
  * @return 0 for success, -1 otherwise
  */
 int gcal_contact_set_content(gcal_contact_t contact, const char *field);
+
+/** Sets contact website.
+ *
+ * @param contact A contact object, see \ref gcal_contact.
+ *
+ * @param field URL
+ *
+ * @return 0 for success, -1 otherwise
+ */
+int gcal_contact_set_homepage(gcal_contact_t contact, const char *field);
+
+/** Sets contact blog.
+ *
+ * @param contact A contact object, see \ref gcal_contact.
+ *
+ * @param field URL
+ *
+ * @return 0 for success, -1 otherwise
+ */
+int gcal_contact_set_blog(gcal_contact_t contact, const char *field);
 
 int gcal_contact_set_photo(gcal_contact_t contact, const char *field,
 			   int length);

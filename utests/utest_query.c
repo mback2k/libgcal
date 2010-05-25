@@ -65,7 +65,7 @@ START_TEST (test_query_updated)
 		msg = "Cannot create timestamp!";
 		goto cleanup;
 	}
-	result = gcal_query_updated(ptr_gcal, current_timestamp);
+	result = gcal_query_updated(ptr_gcal, current_timestamp, "GData-Version: 2");
 
 	if (result == -1) {
 		msg = "Failed querying!";
@@ -82,7 +82,7 @@ START_TEST (test_query_updated)
 	 * the timezone.
 	 */
 	result = gcal_set_timezone(ptr_gcal, "-04:00");
-	result = gcal_query_updated(ptr_gcal, NULL);
+	result = gcal_query_updated(ptr_gcal, NULL, "GData-Version: 2");
 	if (result == -1) {
 		msg = "Failed querying!";
 		goto cleanup;
@@ -122,7 +122,7 @@ START_TEST (test_query_nulltz)
 	result = gcal_get_authentication(ptr_gcal, "gcalntester", "77libgcal");
 	fail_if(result == -1, "Authentication should work.");
 
-	result = gcal_query_updated(ptr_gcal, NULL);
+	result = gcal_query_updated(ptr_gcal, NULL, "GData-Version: 2");
 	if (result == -1) {
 		msg = "Failed querying!";
 		goto cleanup;
@@ -160,7 +160,7 @@ START_TEST (test_query_locationtz)
 	result = gcal_set_timezone(ptr_gcal, "-04:00");
 	result = gcal_set_location(ptr_gcal, "America/Manaus");
 
-	result = gcal_query_updated(ptr_gcal, NULL);
+	result = gcal_query_updated(ptr_gcal, NULL, "GData-Version: 2");
 	if (result == -1) {
 		msg = "Failed querying!";
 		goto cleanup;
@@ -216,7 +216,7 @@ START_TEST (test_query_contact)
 	result = gcal_create_contact(obj_gcal, &contact, &updated);
 	fail_if(result == -1, "Failed creating a new contact!");
 
-	result = gcal_query_updated(obj_gcal, NULL);
+	result = gcal_query_updated(obj_gcal, NULL, "GData-Version: 3.0");
 	if (result == -1) {
 		msg = "Failed querying for updated contacts!";
 		flag = 1;
@@ -279,7 +279,7 @@ START_TEST (test_query_delcontact)
 	 * unit test).
 	 */
 	gcal_deleted(obj_gcal, SHOW);
-	result = gcal_query_updated(obj_gcal, NULL);
+	result = gcal_query_updated(obj_gcal, NULL, "GData-Version: 3.0");
 	if (result == -1) {
 		msg = "Failed querying for updated contacts!";
 		flag = 1;
@@ -296,7 +296,7 @@ START_TEST (test_query_delcontact)
 	/* Default will not show deleted contacts */
 	gcal_destroy_contacts(contacts, count);
 	gcal_deleted(obj_gcal, HIDE);
-	result = gcal_query_updated(obj_gcal, NULL);
+	result = gcal_query_updated(obj_gcal, NULL, "GData-Version: 3.0");
 	if (result == -1) {
 		msg = "Failed querying for updated contacts!";
 		flag = 1;
@@ -337,7 +337,7 @@ START_TEST (test_query_generic)
 	result = gcal_get_authentication(obj_gcal, "gcalntester", "77libgcal");
 	fail_if(result == -1, "Authentication should work.");
 
-	result = gcal_query(obj_gcal, query);
+	result = gcal_query(obj_gcal, query, "GData-Version: 2");
 	if ((result == -1) || (gcal_status_httpcode(obj_gcal) != 200)) {
 		msg = "Failed using generic query!";
 		flag = 1;

@@ -19,8 +19,10 @@
   <gd:im address='liz@gmail.com'
     protocol='http://schemas.google.com/g/2005#GOOGLE_TALK'
     rel='http://schemas.google.com/g/2005#home' />
-  <gd:postalAddress rel='http://schemas.google.com/g/2005#work'
-    primary='true'>
-    1600 Amphitheatre Pkwy Mountain View
-  </gd:postalAddress>
+  <gd:structuredPostalAddress rel='http://schemas.google.com/g/2005#work'>
+    <gd:street>1600 Amphitheatre Parkway</gd:street>
+    <gd:city>Mountain View</gd:city>
+    <gd:region>CA</gd:region>
+    <gd:postcode>94043</gd:postcode>
+  </gd:structuredPostalAddress>
 </atom:entry>

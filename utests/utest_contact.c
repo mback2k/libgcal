@@ -9,6 +9,7 @@
 #include "utest_contact.h"
 #include "gcal.h"
 #include "gcont.h"
+#include "gcontact.h"
 #include "gcal_parser.h"
 #include <string.h>
 #include <stdio.h>
@@ -36,7 +37,7 @@ START_TEST (test_contact_dump)
 	if (result)
 		fail_if(1, "Authentication should work");
 
-	result = gcal_dump(ptr_gcal);
+	result = gcal_dump(ptr_gcal, "GData-Version: 3.0");
 	fail_if(result != 0, "Failed dumping contacts");
 
 }
@@ -72,7 +73,7 @@ START_TEST (test_contact_entries)
 	if (result)
 		fail_if(1, "Authentication should work");
 
-	result = gcal_dump(ptr_gcal);
+	result = gcal_dump(ptr_gcal, "GData-Version: 3.0");
 	fail_if(result != 0, "Failed dumping contacts");
 
 	result = gcal_entry_number(ptr_gcal);
@@ -105,7 +106,7 @@ START_TEST (test_contact_extract)
 	result = gcal_get_authentication(ptr_gcal, "gcal4tester", "66libgcal");
 	fail_if(result == -1, "Authentication should work");
 
-	result = gcal_dump(ptr_gcal);
+	result = gcal_dump(ptr_gcal, "GData-Version: 3.0");
 	fail_if(result != 0, "Failed dumping contacts");
 
 	contacts = gcal_get_all_contacts(ptr_gcal, &count);
@@ -148,13 +149,21 @@ START_TEST (test_contact_xml)
 	contact.emails_type = malloc(sizeof(char*));
 	contact.emails_type[0] = "Home";
 	contact.phone_numbers_nr = 1;
-	contact.post_address = "Unknown Av. St., n. 69, Someplace";
 	contact.phone_numbers_type = malloc(sizeof(char*));
 	contact.phone_numbers_type[0] = "Home";
 	contact.groupMembership = malloc(sizeof(char*));
 	contact.groupMembership[0] = "http://www.google.com/m8/feeds/groups/gcal4tester%40gmail.com/base/6";
 	contact.groupMembership_nr = 1;
+	contact.birthday = "1980-10-10";
 	contact.im = "john_skype";
+	contact.homepage = "www.homegage.com";
+	contact.homepage = "myblog.homegage.com";
+	gcal_contact_set_structured_address(&contact,"street","Unknown Av St, n 69");
+	gcal_contact_set_structured_address(&contact,"pobox","PO BOX 123 456");
+	gcal_contact_set_structured_address(&contact,"city","Dirty Old Town");
+	gcal_contact_set_structured_address(&contact,"region","Somewhere");
+	gcal_contact_set_structured_address(&contact,"postcode","ABC 12345-D");
+	gcal_contact_set_structured_address(&contact,"country","Madagascar");
 
 	result = xmlcontact_create(&contact, &xml, &length);
 	fail_if(result == -1 || xml == NULL,
@@ -175,6 +184,8 @@ START_TEST (test_contact_xml)
 	fail_if(ptr == NULL, "XML lacks a field: %s\n", contact.phone_numbers_field[0]);
 	ptr = strstr(xml, contact.post_address);
 	fail_if(ptr == NULL, "XML lacks a field: %s\n", contact.post_address);
+	ptr = strstr(xml, contact.birthday);
+	fail_if(ptr == NULL, "XML lacks a field: %s\n", contact.birthday);
 	/* TODO: im requires a new field for service type (i.e. AIM, yahoo,
 	 * skype, etc)
 	 */
@@ -214,7 +225,15 @@ START_TEST (test_contact_add)
 	contact.groupMembership = malloc(sizeof(char*));
 	contact.groupMembership[0] = "http://www.google.com/m8/feeds/groups/gcalntester%40gmail.com/base/6";
 	contact.groupMembership_nr = 1;
-	contact.post_address = "Unknown Av. St., n. 69, Someplace";
+	contact.birthday = "1980-10-10";
+	contact.homepage = "www.homegage.com";
+	contact.homepage = "myblog.homegage.com";
+	gcal_contact_set_structured_address(&contact,"street","Unknown Av St, n 69");
+	gcal_contact_set_structured_address(&contact,"pobox","PO BOX 123 456");
+	gcal_contact_set_structured_address(&contact,"city","Dirty Old Town");
+	gcal_contact_set_structured_address(&contact,"region","Somewhere");
+	gcal_contact_set_structured_address(&contact,"postcode","ABC 12345-D");
+	gcal_contact_set_structured_address(&contact,"country","Madagascar");
 
 	result = gcal_get_authentication(ptr_gcal, "gcalntester", "77libgcal");
 	fail_if(result == -1, "Authentication should work.");
@@ -245,18 +264,19 @@ START_TEST (test_contact_delete)
 	char *title = "John Doe";
 	char *email = "john.doe@foo.bar.com";
 	struct gcal_contact *contacts;
-	int count = 0, i, result, entry_index = -1;
+	int i, result, entry_index = -1;
+	size_t count = 0;
 
 	result = gcal_get_authentication(ptr_gcal, "gcalntester", "77libgcal");
 	fail_if(result == -1, "Authentication should work.");
 
-	result = gcal_dump(ptr_gcal);
+	result = gcal_dump(ptr_gcal, "GData-Version: 3.0");
 	fail_if(result != 0, "Failed dumping contacts");
 
 	contacts = gcal_get_all_contacts(ptr_gcal, &count);
 	fail_if(contacts == NULL, "Failed extracting contacts vector!");
 
-	for (i = 0; i < count; ++i)
+	for (i = 0; i < (int)count; ++i)
 	    if (contacts[i].emails_field) {
 		if ((!(strcmp(contacts[i].emails_field[0], email))) &&
 		    (!(strcmp(contacts[i].common.title, title)))) {
@@ -303,7 +323,15 @@ START_TEST (test_contact_edit)
 	contact.groupMembership = malloc(sizeof(char*));
 	contact.groupMembership[0] = "http://www.google.com/m8/feeds/groups/gcalntester%40gmail.com/base/6";
 	contact.groupMembership_nr = 1;
-	contact.post_address = "Unknown Av. St., n. 69, Someplace";
+	contact.birthday = "1980-10-10";
+	contact.homepage = "www.homegage.com";
+	contact.homepage = "myblog.homegage.com";
+	gcal_contact_set_structured_address(&contact,"street","Unknown Av St, n 69");
+	gcal_contact_set_structured_address(&contact,"pobox","PO BOX 123 456");
+	gcal_contact_set_structured_address(&contact,"city","Dirty Old Town");
+	gcal_contact_set_structured_address(&contact,"region","Somewhere");
+	gcal_contact_set_structured_address(&contact,"postcode","ABC 12345-D");
+	gcal_contact_set_structured_address(&contact,"country","Madagascar");
 
 	/* Authenticate and add a new contact */
 	result = gcal_get_authentication(ptr_gcal, "gcalntester", "77libgcal");

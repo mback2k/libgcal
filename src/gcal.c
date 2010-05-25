@@ -249,7 +249,8 @@ static int check_request_error(struct gcal_resource *gcalobj, int code,
 static int common_upload(struct gcal_resource *gcalobj,
 			 char *header, char *header2, char *header3,
 			 char *header4,
-			 struct curl_slist **curl_headers)
+			 struct curl_slist **curl_headers,
+			 const char *gdata_version)
 {
 	int result = -1;
 	CURL *curl_ctx = gcalobj->curl;
@@ -266,7 +267,7 @@ static int common_upload(struct gcal_resource *gcalobj,
 
 	/* To support Google Data API 2.0 */
 	response_headers = curl_slist_append(response_headers,
-					     "GData-Version: 2");
+					     gdata_version);
 
 	if (header)
 		response_headers = curl_slist_append(response_headers, header);
@@ -293,7 +294,8 @@ int http_post(struct gcal_resource *gcalobj, const char *url,
 	      char *header, char *header2, char *header3,
 	      char *header4,
 	      char *post_data, unsigned int length,
-	      const int expected_answer)
+	      const int expected_answer,
+	      const char *gdata_version)
 {
 	int result = -1;
 	CURLcode res;
@@ -304,7 +306,8 @@ int http_post(struct gcal_resource *gcalobj, const char *url,
 
 	curl_ctx = gcalobj->curl;
 	result = common_upload(gcalobj, header, header2, header3, header4,
-			       &response_headers);
+			       &response_headers,
+			       gdata_version);
 	if (result)
 		goto exit;
 
@@ -334,7 +337,8 @@ static int http_put(struct gcal_resource *gcalobj, const char *url,
 		    char *header, char *header2, char *header3,
 		    char *header4,
 		    char *post_data, unsigned int length,
-		    const int expected_answer)
+		    const int expected_answer,
+		    const char *gdata_version)
 {
 	int result = -1;
 	CURLcode res;
@@ -345,7 +349,8 @@ static int http_put(struct gcal_resource *gcalobj, const char *url,
 
 	curl_ctx = gcalobj->curl;
 	result = common_upload(gcalobj, header, header2, header3, header4,
-			       &response_headers);
+			       &response_headers,
+			       gdata_version);
 	if (result)
 		goto exit;
 
@@ -427,7 +432,8 @@ int gcal_get_authentication(struct gcal_resource *gcalobj,
 	result = http_post(gcalobj, GCAL_URL,
 			   "Content-Type: application/x-www-form-urlencoded",
 			   NULL, NULL, NULL, post, strlen(post),
-			   GCAL_DEFAULT_ANSWER);
+			   GCAL_DEFAULT_ANSWER,
+			   "GData-Version: 2");
 
 	if ((tmp = strstr(user, "@"))) {
 		if (!(buffer = strdup(user)))
@@ -486,7 +492,7 @@ exit:
 }
 
 int get_follow_redirection(struct gcal_resource *gcalobj, const char *url,
-			   void *cb_download)
+			   void *cb_download, const char *gdata_version)
 {
 	struct curl_slist *response_headers = NULL;
 	int length = 0;
@@ -512,7 +518,7 @@ int get_follow_redirection(struct gcal_resource *gcalobj, const char *url,
 
 	/* To support Google Data API 2.0 */
 	response_headers = curl_slist_append(response_headers,
-					     "GData-Version: 2");
+					     gdata_version);
 
 	response_headers = curl_slist_append(response_headers, tmp_buffer);
 	if (!response_headers)
@@ -706,7 +712,7 @@ exit:
 	return result;
 }
 
-int gcal_dump(struct gcal_resource *gcalobj)
+int gcal_dump(struct gcal_resource *gcalobj, const char *gdata_version)
 {
 	int result = -1;
 	char *buffer = NULL;
@@ -721,7 +727,7 @@ int gcal_dump(struct gcal_resource *gcalobj)
 	if (!buffer)
 		goto exit;
 
-	result =  get_follow_redirection(gcalobj, buffer, NULL);
+	result =  get_follow_redirection(gcalobj, buffer, NULL, gdata_version);
 
 	if (!result)
 		gcalobj->has_xml = 1;
@@ -735,7 +741,8 @@ exit:
 int gcal_calendar_list(struct gcal_resource *gcalobj)
 {
 	int result;
-	result =  get_follow_redirection(gcalobj, GCAL_LIST, NULL);
+	result =  get_follow_redirection(gcalobj, GCAL_LIST, NULL,
+			"GData-Version: 2");
 	/* TODO: parse the Atom feed */
 
 	return result;
@@ -885,7 +892,8 @@ int up_entry(char *data2post, unsigned int m_length,
 	const char header[] = "Content-length: ";
 	int (*up_callback)(struct gcal_resource *, const char *,
 			   char *, char *, char *, char *,
-			   char *, unsigned int, const int);
+			   char *, unsigned int, const int,
+			   const char *);
 
 	if (!data2post || !gcalobj)
 		goto exit;
@@ -934,7 +942,8 @@ int up_entry(char *data2post, unsigned int m_length,
 				     h_auth,
 				     etag,
 				     data2post, m_length,
-				     expected_code);
+				     expected_code,
+				     "GData-Version: 3.0");
 		if (!result) {
 
 			result = 0;
@@ -948,7 +957,8 @@ int up_entry(char *data2post, unsigned int m_length,
 				     h_auth,
 				     etag,
 				     data2post, m_length,
-				     GCAL_REDIRECT_ANSWER);
+				     GCAL_REDIRECT_ANSWER,
+				     "GData-Version: 2");
 		if (result == -1) {
 			/* XXX: there is one report where google server
 			 * doesn't always return redirection.
@@ -973,13 +983,26 @@ int up_entry(char *data2post, unsigned int m_length,
 	clean_buffer(gcalobj);
 
 	/* Add gsessionid to post URL */
-	result = up_callback(gcalobj, gcalobj->url,
-			     "Content-Type: application/atom+xml",
-			     h_length,
-			     h_auth,
-			     etag,
-			     data2post, m_length,
-			     expected_code);
+	if (!(strcmp(gcalobj->service, "cp"))) {
+		result = up_callback(gcalobj, gcalobj->url,
+				"Content-Type: application/atom+xml",
+				h_length,
+				h_auth,
+				etag,
+				data2post, m_length,
+				expected_code,
+				"GData-Version: 3.0");
+	} else if (!(strcmp(gcalobj->service, "cl"))) {
+		result = up_callback(gcalobj, gcalobj->url,
+				"Content-Type: application/atom+xml",
+				h_length,
+				h_auth,
+				etag,
+				data2post, m_length,
+				expected_code,
+				"GData-Version: 2");
+	} else
+		goto cleanup;
 
 	if (result == -1) {
 		if (gcalobj->fout_log) {
@@ -1084,7 +1107,8 @@ int gcal_delete_event(struct gcal_resource *gcalobj,
 			   /* Google Data API 2.0 requires ETag */
 			   "If-Match: *",
 			   h_auth,
-			   NULL, NULL, 0, GCAL_REDIRECT_ANSWER);
+			   NULL, NULL, 0, GCAL_REDIRECT_ANSWER,
+			   "GData-Version: 2");
 
 	if (result == -1) {
 		/* XXX: there is one report where google server
@@ -1110,7 +1134,8 @@ int gcal_delete_event(struct gcal_resource *gcalobj,
 			   /* Google Data API 2.0 requires ETag */
 			   "If-Match: *",
 			   h_auth,
-			   NULL, NULL, 0, GCAL_DEFAULT_ANSWER);
+			   NULL, NULL, 0, GCAL_DEFAULT_ANSWER,
+			   "GData-Version: 2");
 
 cleanup:
 	/* Restores curl context to previous standard mode */
@@ -1228,7 +1253,8 @@ int get_mili_timestamp(char *timestamp, size_t length, char *atimezone)
  * quering for updated entries is just a query with a set of
  * parameters.
  */
-int gcal_query_updated(struct gcal_resource *gcalobj, char *timestamp)
+int gcal_query_updated(struct gcal_resource *gcalobj, char *timestamp,
+		const char *gdata_version)
 {
 	int result = -1;
 	char *query_url = NULL;
@@ -1327,7 +1353,7 @@ int gcal_query_updated(struct gcal_resource *gcalobj, char *timestamp)
 	if (!query_url)
 		goto cleanup;
 
-	result = get_follow_redirection(gcalobj, query_url, NULL);
+	result = get_follow_redirection(gcalobj, query_url, NULL, gdata_version);
 	if (!result)
 		gcalobj->has_xml = 1;
 
@@ -1421,7 +1447,8 @@ void gcal_deleted(struct gcal_resource *gcalobj, display_deleted_entries opt)
 
 }
 
-int gcal_query(struct gcal_resource *gcalobj, const char *parameters)
+int gcal_query(struct gcal_resource *gcalobj, const char *parameters,
+		const char *gdata_version)
 {
 	char *query_url = NULL, *ptr_tmp;
 	int result = -1;
@@ -1439,7 +1466,9 @@ int gcal_query(struct gcal_resource *gcalobj, const char *parameters)
 	if (!query_url)
 		goto exit;
 
-	result = get_follow_redirection(gcalobj, query_url, NULL);
+	result = get_follow_redirection(gcalobj, query_url, NULL, 
+			gdata_version);
+
 	if (!result)
 		gcalobj->has_xml = 1;
 

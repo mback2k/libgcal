@@ -76,7 +76,7 @@ const char* gcal_phone_type_str[] = {
 /** Strings associated with email types */
 const char* gcal_email_type_str[] = {
 	"home",				// E_HOME
-	"other",				// E_OTHER
+	"other",			// E_OTHER
 	"work"				// E_WORK
 };
 
@@ -89,7 +89,7 @@ gcal_contact_t gcal_contact_new(char *raw_xml)
 	contact = (gcal_contact_t) malloc(sizeof(struct gcal_contact));
 	if (!contact)
 		goto exit;
-
+	
 	gcal_init_contact(contact);
 	if (!raw_xml)
 		goto exit;
@@ -130,7 +130,7 @@ int gcal_get_contacts(gcal_t gcalobj, struct gcal_contact_array *contact_array)
 	if ((!gcalobj) || (!contact_array))
 		return result;
 
-	result = gcal_dump(gcalobj);
+	result = gcal_dump(gcalobj, "GData-Version: 3.0");
 	if (result == -1) {
 		contact_array->entries = NULL;
 		contact_array->length = 0;
@@ -271,7 +271,7 @@ int gcal_get_updated_contacts(gcal_t gcal_obj,
 	if ((!gcal_obj) || (!contacts))
 		return result;
 
-	result = gcal_query_updated(gcal_obj, timestamp);
+	result = gcal_query_updated(gcal_obj, timestamp, "GData-Version: 3.0");
 	if (result) {
 		contacts->entries = NULL;
 		contacts->length = 0;
@@ -415,6 +415,20 @@ char *gcal_contact_get_im(gcal_contact_t contact)
 	return contact->im;
 }
 
+char *gcal_contact_get_homepage(gcal_contact_t contact)
+{
+	if ((!contact))
+		return NULL;
+	return contact->homepage;
+}
+
+char *gcal_contact_get_blog(gcal_contact_t contact)
+{
+	if ((!contact))
+		return NULL;
+	return contact->blog;
+}
+
 int gcal_contact_get_phone_numbers_count(gcal_contact_t contact)
 {
 	if ((!contact))
@@ -453,6 +467,21 @@ char *gcal_contact_get_address(gcal_contact_t contact)
 	return contact->post_address;
 }
 
+char *gcal_contact_get_structured_address(gcal_contact_t contact, const char *address_field_key)
+{
+	struct gcal_structured_postal_address *temp_structured_address;
+	
+	if ((!contact))
+		return NULL;
+	
+	for(temp_structured_address = contact->structured_address; temp_structured_address != NULL; temp_structured_address = temp_structured_address->next_address_field)
+	{
+		if(!strcmp(address_field_key,temp_structured_address->address_field_key))
+			return temp_structured_address->address_field_value;
+	}
+	return NULL;
+}
+
 int gcal_contact_get_groupMembership_count(gcal_contact_t contact)
 {
 	if ((!contact))
@@ -483,6 +512,13 @@ unsigned int gcal_contact_get_photolength(gcal_contact_t contact)
 		return -1;
 
 	return contact->photo_length;
+}
+
+char *gcal_contact_get_birthday(gcal_contact_t contact)
+{
+	if ((!contact))
+		return NULL;
+	return contact->birthday;
 }
 
 /* Here starts the gcal_contact setters */
@@ -669,6 +705,53 @@ int gcal_contact_set_address(gcal_contact_t contact, const char *field)
 	return result;
 }
 
+int gcal_contact_set_structured_address(gcal_contact_t contact, const char *address_field_key, const char *address_field_value )
+{
+	struct gcal_structured_postal_address *temp_structured_address;
+	
+	if (!contact)
+		return -1;
+	
+	if(address_field_value == NULL)
+		address_field_value = "";
+	
+	if(contact->structured_address->address_field_key == NULL) {
+		contact->structured_address->address_field_key = (char *)malloc(strlen(address_field_key)+1);
+		strcpy(contact->structured_address->address_field_key,address_field_key);
+		
+		contact->structured_address->address_field_value = (char *)malloc(strlen(address_field_value)+1);
+		strcpy(contact->structured_address->address_field_value,address_field_value);
+		
+		contact->structured_address->next_address_field = NULL;
+		return 0;
+	}
+	for(temp_structured_address = contact->structured_address; ; temp_structured_address = temp_structured_address->next_address_field) {
+		if(!strcmp(address_field_key,temp_structured_address->address_field_key)) {
+			if(temp_structured_address->address_field_value != NULL) {
+				free(temp_structured_address->address_field_value);
+				temp_structured_address->address_field_value = (char *)malloc(strlen(address_field_value)+1);
+				strcpy(temp_structured_address->address_field_value,address_field_value);
+				return 0;
+			}
+		}
+		if(temp_structured_address->next_address_field == NULL) {
+			temp_structured_address->next_address_field = (struct gcal_structured_postal_address *)malloc(sizeof(struct gcal_structured_postal_address));
+			temp_structured_address = temp_structured_address->next_address_field;
+			
+			temp_structured_address->address_field_key = (char *)malloc(strlen(address_field_key)+1);
+			strcpy(temp_structured_address->address_field_key,address_field_key);
+			
+			temp_structured_address->address_field_value = (char *)malloc(strlen(address_field_value)+1);
+			strcpy(temp_structured_address->address_field_value,address_field_value);
+			
+			temp_structured_address->next_address_field = NULL;
+			return 0;
+		}
+	}
+	
+	return -1;
+}
+
 int gcal_contact_delete_groupMembership(gcal_contact_t contact)
 {
 	int result = -1;
@@ -716,11 +799,11 @@ int gcal_contact_set_profission(gcal_contact_t contact, const char *field)
 	if ((!contact) || (!field))
 		return result;
 
-	if (contact->org_name)
-		free(contact->org_name);
+	if (contact->org_title)
+		free(contact->org_title);
 
-	contact->org_name = strdup(field);
-	if (contact->org_name)
+	contact->org_title = strdup(field);
+	if (contact->org_title)
 		result = 0;
 
 	return result;
@@ -734,11 +817,11 @@ int gcal_contact_set_organization(gcal_contact_t contact, const char *field)
 	if ((!contact) || (!field))
 		return result;
 
-	if (contact->org_title)
-		free(contact->org_title);
+	if (contact->org_name)
+		free(contact->org_name);
 
-	contact->org_title = strdup(field);
-	if (contact->org_title)
+	contact->org_name = strdup(field);
+	if (contact->org_name)
 		result = 0;
 
 	return result;
@@ -780,6 +863,57 @@ int gcal_contact_set_photo(gcal_contact_t contact, const char *field,
 	memcpy(contact->photo_data, field, length);
 	contact->photo_length = length;
 	result = 0;
+
+	return result;
+}
+
+int gcal_contact_set_birthday(gcal_contact_t contact, const char *field)
+{
+	int result = -1;
+
+	if ((!contact) || (!field))
+		return result;
+
+	if (contact->birthday)
+		free(contact->birthday);
+
+	contact->birthday = strdup(field);
+	if (contact->birthday)
+		result = 0;
+
+	return result;
+}
+
+int gcal_contact_set_homepage(gcal_contact_t contact, const char *field)
+{
+	int result = -1;
+
+	if ((!contact) || (!field))
+		return result;
+
+	if (contact->homepage)
+		free(contact->homepage);
+
+	contact->homepage = strdup(field);
+	if (contact->homepage)
+		result = 0;
+
+	return result;
+}
+
+int gcal_contact_set_blog(gcal_contact_t contact, const char *field)
+{
+	int result = -1;
+
+	if ((!contact) || (!field))
+		return result;
+
+	if (contact->blog)
+		free(contact->blog);
+
+	contact->blog = strdup(field);
+	if (contact->blog)
+		result = 0;
 
 	return result;
 }

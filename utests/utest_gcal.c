@@ -118,7 +118,7 @@ START_TEST (test_gcal_dump)
 	if (result)
 		fail_if(1, "Authentication should work");
 
-	result = gcal_dump(ptr_gcal);
+	result = gcal_dump(ptr_gcal, "GData-Version: 2");
 	fail_if(result != 0, "Failed dumping events");
 
 }
@@ -138,7 +138,7 @@ START_TEST (test_gcal_event)
 	if (result)
 		fail_if(1, "Authentication should work");
 
-	result = gcal_dump(ptr_gcal);
+	result = gcal_dump(ptr_gcal, "GData-Version: 2");
 	fail_if(result != 0, "Failed dumping events");
 
 	result = gcal_entry_number(ptr_gcal);
@@ -171,7 +171,7 @@ START_TEST (test_gcal_naive)
 	result = gcal_get_authentication(local_gcal, "username", "a_password");
 	fail_if((signed)result != -1, "Authentication must fail!");
 
-	result = gcal_dump(local_gcal);
+	result = gcal_dump(local_gcal, "GData-Version: 2");
 	fail_if((signed)result != -1, "Dump must fail!");
 
 	entries = gcal_get_entries(local_gcal, &result);

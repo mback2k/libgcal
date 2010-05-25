@@ -160,9 +160,11 @@ int gcal_get_authentication(struct gcal_resource *gcalobj,
  *                 previously got the authentication using
  *                 \ref gcal_get_authentication.
  *
+ * @param gdata_version Version of Data API.
+ *
  * @return Returns 0 on success, -1 otherwise.
  */
-int gcal_dump(struct gcal_resource *gcalobj);
+int gcal_dump(struct gcal_resource *gcalobj, const char *gdata_version);
 
 /** Get a list of users calendars (gcalendar supports multiple calendars
  * besides the default calendar).
@@ -247,10 +249,12 @@ void gcal_destroy_entry(struct gcal_event *entry);
  * @param cb_download Callback used for writing downloaded data. Must
  * be of type: size_t()(void *, size_t, size_t, void*)
  *
+ * @param gdata_version Version of Data API.
+ *
  * @return 0 for success, -1 for error.
  */
 int get_follow_redirection(struct gcal_resource *gcalobj, const char *url,
-			   void *cb_download);
+			   void *cb_download, const char *gdata_version);
 
 
 /** Cleanup the memory of a vector of calendar entries created using
@@ -289,7 +293,8 @@ int http_post(struct gcal_resource *gcalobj, const char *url,
 	      char *header, char *header2, char *header3,
 	      char *header4,
 	      char *post_data, unsigned int length,
-	      const int expected_answer);
+	      const int expected_answer,
+	      const char *gdata_version);
 
 
 /** Uploads an entry (calendar or contact) to a server URL
@@ -435,9 +440,12 @@ int get_mili_timestamp(char *timestamp, size_t length, char *atimezone);
  * @param timestamp A timestamp in RFC 3339 format yyyy-mm-ddThh:mm:ss
  *(if NULL, this function will use current day, with time set to 06:00AM).
  *
+ * @param gdata_version Version of Data API.
+ *
  * @return -1 on error, 0 on success.
  */
-int gcal_query_updated(struct gcal_resource *gcalobj, char *timestamp);
+int gcal_query_updated(struct gcal_resource *gcalobj, char *timestamp,
+		const char *gdata_version);
 
 /** Set a timezone, following the RFC 3339 format +/-hh:mm.
  *
@@ -534,9 +542,12 @@ void gcal_deleted(struct gcal_resource *gcalobj, display_deleted_entries opt);
  * gcal_query(gcal, "updated-min=2008-06-20T06:00:00Z&"
  *                  "alt=atom&max-results=500&showdeleted=true");
  *
+ * @param gdata_version Version of Data API.
+ *
  * @return -1 on error, 0 on success.
  */
-int gcal_query(struct gcal_resource *gcalobj, const char *parameters);
+int gcal_query(struct gcal_resource *gcalobj, const char *parameters,
+		const char *gdata_version);
 
 
 /* Common fields between calendar and contacts are

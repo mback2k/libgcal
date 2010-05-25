@@ -101,7 +101,7 @@ struct gcal_contact *gcal_get_all_contacts(struct gcal_resource *gcalobj,
 	if (!ptr_res)
 		goto cleanup;
 	memset(ptr_res, 0, sizeof(struct gcal_contact) * result);
-
+	
 	*length = result;
 	for (i = 0; i < *length; ++i) {
 		gcal_init_contact((ptr_res + i));
@@ -125,7 +125,8 @@ struct gcal_contact *gcal_get_all_contacts(struct gcal_resource *gcalobj,
 
  			result = get_follow_redirection(gcalobj,
  							ptr_res[i].photo,
-							write_cb_binary);
+							write_cb_binary,
+							"GData-Version: 3.0");
 			ptr_res[i].photo_data = malloc(sizeof(char) *
 						       gcalobj->length);
 			if (!ptr_res[i].photo_data)
@@ -172,7 +173,12 @@ void gcal_init_contact(struct gcal_contact *contact)
 {
 	if (!contact)
 		return;
-
+	
+	contact->structured_address=(struct gcal_structured_postal_address *)malloc(sizeof(struct gcal_structured_postal_address));
+	contact->structured_address->address_field_key = NULL;
+	contact->structured_address->address_field_value = NULL;
+	contact->structured_address->next_address_field = NULL;
+	
 	contact->common.store_xml = 0;
 	contact->common.id = contact->common.updated = NULL;
 	contact->common.title = contact->common.xml = NULL;
@@ -183,13 +189,18 @@ void gcal_init_contact(struct gcal_contact *contact)
 	contact->org_name = contact->org_title = contact->im = NULL;
 	contact->phone_numbers_field = contact->phone_numbers_type = NULL;
 	contact->phone_numbers_nr = contact->groupMembership_nr = 0;
-	contact->post_address = contact->groupMembership = NULL;
+	contact->post_address = NULL;
+	contact->groupMembership = NULL;
+	contact->homepage = NULL;
+	contact->blog = NULL;
 	contact->photo = contact->photo_data = NULL;
 	contact->photo_length = 0;
+	contact->birthday = NULL;
 }
 
 void gcal_destroy_contact(struct gcal_contact *contact)
 {
+	struct gcal_structured_postal_address *temp_structured_address = contact->structured_address;
 	if (!contact)
 		return;
 
@@ -213,9 +224,21 @@ void gcal_destroy_contact(struct gcal_contact *contact)
 	clean_multi_string(contact->groupMembership, contact->groupMembership_nr);
 	contact->phone_numbers_nr = contact->groupMembership_nr = 0;
 	clean_string(contact->post_address);
+	clean_string(contact->homepage);
+	clean_string(contact->blog);
 	clean_string(contact->photo);
 	clean_string(contact->photo_data);
 	contact->photo_length = 0;
+	clean_string(contact->birthday);
+	
+	while (temp_structured_address != NULL)
+	{
+		struct gcal_structured_postal_address *next_structured_address = temp_structured_address->next_address_field;
+		clean_string(temp_structured_address->address_field_value);
+		clean_string(temp_structured_address->address_field_key);
+		free(temp_structured_address);
+		temp_structured_address = next_structured_address;
+	}
 }
 
 void gcal_destroy_contacts(struct gcal_contact *contacts, size_t length)
@@ -336,7 +359,8 @@ int gcal_delete_contact(struct gcal_resource *gcalobj,
 			   /* Google Data API 2.0 requires ETag */
 			   "If-Match: *",
 			   h_auth,
-			   NULL, NULL, 0, GCAL_DEFAULT_ANSWER);
+			   NULL, NULL, 0, GCAL_DEFAULT_ANSWER,
+			   "GData-Version: 3.0");
 
 	/* Restores curl context to previous standard mode */
 	curl_easy_setopt(gcalobj->curl, CURLOPT_CUSTOMREQUEST, NULL);

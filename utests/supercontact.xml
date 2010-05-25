@@ -9,14 +9,18 @@
   <gd:im address="ms_doe" label="CUSTOM" protocol="http://schemas.google.com/g/2005#MSN"/>
   <gd:im address="icq_doe" label="CUSTOM" protocol="http://schemas.google.com/g/2005#ICQ"/>
   <gd:im address="jab_doe" label="CUSTOM" protocol="http://schemas.google.com/g/2005#JABBER"/>
-  <gd:postalAddress rel="http://schemas.google.com/g/2005#home">Nowhere St., n. 777
-St. James
-Springfield - NI
-USA</gd:postalAddress>
-  <gd:postalAddress primary="true" rel="http://schemas.google.com/g/2005#work">Nowhere St., n. 777
-St. James
-Springfield - NI
-USA</gd:postalAddress>
+  <gd:structuredPostalAddress rel='http://schemas.google.com/g/2005#work'>
+    <gd:street>1600 Amphitheatre Parkway</gd:street>
+    <gd:city>Mountain View</gd:city>
+    <gd:region>CA</gd:region>
+    <gd:postcode>94043</gd:postcode>
+  </gd:structuredPostalAddress>
+  <gd:structuredPostalAddress rel='http://schemas.google.com/g/2005#home'>
+    <gd:street>27, rue Pasteur</gd:street>
+    <gd:city>CABOURG</gd:city>
+    <gd:postcode>14390</gd:postcode>
+    <gd:country>FRANCE</gd:country>
+  </gd:structuredPostalAddress>
   <gd:phoneNumber primary="true" rel="http://schemas.google.com/g/2005#mobile">66666</gd:phoneNumber>
   <gd:phoneNumber rel="http://schemas.google.com/g/2005#home">55555</gd:phoneNumber>
   <gd:phoneNumber rel="http://schemas.google.com/g/2005#home_fax">44444</gd:phoneNumber>

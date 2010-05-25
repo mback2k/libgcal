@@ -350,7 +350,7 @@ int gcal_get_updated_events(gcal_t gcal_obj, struct gcal_event_array *events,
 	if ((!gcal_obj) || (!events))
 		return result;
 
-	result = gcal_query_updated(gcal_obj, timestamp);
+	result = gcal_query_updated(gcal_obj, timestamp, "GData-Version: 2");
 	if (result) {
 		events->entries = NULL;
 		events->length = 0;
@@ -373,7 +373,7 @@ int gcal_get_events(gcal_t gcalobj, struct gcal_event_array *events_array)
 	if ((!gcalobj) || (!events_array))
 		goto exit;
 
-	result = gcal_dump(gcalobj);
+	result = gcal_dump(gcalobj, "GData-Version: 2");
 	if (result == -1) {
 		events_array->entries = NULL;
 		events_array->length = 0;
