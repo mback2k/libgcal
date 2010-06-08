@@ -206,6 +206,7 @@ START_TEST (test_oper_purexml)
 {
 	char *super_contact = NULL, *edit_url = NULL, *etag = NULL;
 	char *updated1 = NULL, *updated2 = NULL, *updated3 = NULL;
+	char *temp;
 	gcal_t gcal;
 	gcal_contact_t contact;
 	int result;
@@ -218,26 +219,39 @@ START_TEST (test_oper_purexml)
 
 	if (find_load_file("/utests/supercontact.xml", &super_contact))
 		fail_if(1, "Cannot load contact XML file!");
-
+	contact = gcal_contact_new(super_contact);
+	gcal_contact_delete(contact);
+	
 	/* Add and update */
 	result = gcal_add_xmlentry(gcal, super_contact, &updated1);
 	fail_if(result == -1, "Failed adding a new contact! HTTP code: %d"
 		"\nmsg: %s\n", gcal_status_httpcode(gcal),
 		gcal_status_msg(gcal));
-
+	contact = gcal_contact_new(updated1);
+	gcal_contact_delete(contact);
+	
 	result = gcal_update_xmlentry(gcal, updated1, &updated2, NULL, NULL);
 	fail_if(result == -1, "Failed editing a new contact! HTTP code: %d"
 		"\nmsg: %s\n", gcal_status_httpcode(gcal),
 		gcal_status_msg(gcal));
+	contact = gcal_contact_new(updated2);
+	gcal_contact_delete(contact);
 
 	/* Create a contact object out of raw XML: useful to get the
 	 * updated edit_url, id, etc.
 	 */
 	contact = gcal_contact_new(updated2);
+	gcal_structured_subvalues_t structured_entry;
+	structured_entry = gcal_contact_get_structured_name(contact);
+	temp = (char *)malloc(sizeof(char *));
+	temp = gcal_contact_get_structured_entry(structured_entry,0,1,"fullName");
+	
 	fail_if(!contact, "Cannot create contact object!\n");
-	fail_if(strcmp("John 'Super' Doe", gcal_contact_get_title(contact)),
-		"Failure parsing contact XML: title!\n");
 
+	fail_if(strcmp("John 'Super' Doe", temp),
+		"Failure parsing contact XML: fullName!");
+	if(temp)
+		free(temp);
 	/* update corner case where the new XML doesn't have the edit URL */
 	free(super_contact);
 	if (find_load_file("/utests/contact_documentation.xml", &super_contact))
@@ -268,7 +282,6 @@ START_TEST (test_oper_purexml)
 	free(edit_url);
 	gcal_delete(gcal);
 	gcal_contact_delete(contact);
-
 }
 END_TEST
 

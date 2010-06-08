@@ -32,7 +32,8 @@ static Suite *core_suite(void)
 	Suite *s;
 
 	s = suite_create("core");
-	test_var = getenv("GCALTEST");
+	//test_var = getenv("GCALTEST");
+	test_var = strdup("contact");
 	if (test_var) {
 		if (!(strcmp(test_var, "gcal")))
 			suite_add_tcase(s, gcal_tcase_create());

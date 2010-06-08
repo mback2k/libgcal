@@ -183,13 +183,14 @@ struct gcal_event {
 	char *status;
 };
 
-/** Address structure, represents each structuredPostalAddress.
+/** Sub structures, e.g. represents each field of gd:structuredPostalAddress or gd:name.
  */
 
-struct gcal_structured_postal_address {
-	struct gcal_structured_postal_address *next_address_field;
-	char *address_field_key;
-	char *address_field_value;
+struct gcal_structured_subvalues {
+	struct gcal_structured_subvalues *next_field;
+	int field_typenr;
+	char *field_key;
+	char *field_value;
 };
 	
 /** Contact data type */
@@ -197,6 +198,10 @@ struct gcal_contact {
 	/** Has the common entry data fields (id, updated, title, edit_uri) */
 	struct gcal_entry common;
 	/* Here starts google contact unique fields */
+	/** Structured name */
+	struct gcal_structured_subvalues *structured_name;
+	/** Number of structured names (it's 1, but let's use it) */
+	int structured_name_nr;
 	/** Contact emails */
 	char **emails_field;
 	/** Contact email types */
@@ -209,6 +214,8 @@ struct gcal_contact {
 	/* Here starts the extra fields */
 	/** Notes about contact */
 	char *content;
+	/** Nickname */
+	char *nickname;
 	/** Homepage */
 	char *homepage;
 	/** Blog */
@@ -227,8 +234,12 @@ struct gcal_contact {
 	int phone_numbers_nr;
 	/** Address */
 	char *post_address;
-	/** Full Address */
-	struct gcal_structured_postal_address *structured_address;
+	/** Structured postal address address */
+	struct gcal_structured_subvalues *structured_address;
+	/** Structured postal address types */
+	char **structured_address_type;
+	/** Number of structured postal addressees */
+	int structured_address_nr;
 	/** Google group membership info */
 	char **groupMembership;
 	/** Google group membership info */

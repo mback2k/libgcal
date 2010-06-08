@@ -127,7 +127,8 @@ END_TEST
 
 START_TEST (test_gcal_event)
 {
-	int result, i;
+	int i;
+	size_t result;
 	struct gcal_event *entries;
 	char *entries_update[] = { "2008-03-26T20:20:51.000Z",
 				   "2008-03-26T12:30:06.000Z",
@@ -148,7 +149,7 @@ START_TEST (test_gcal_event)
 	fail_if(entries == NULL, "Failed extracting the entries vector");
 
 	if (entries != NULL)
-		for (i = 0; i < result; ++i)
+		for (i = 0; i < (int)result; ++i)
 			fail_if(strcmp(entries[i].common.updated, entries_update[i]),
 				"extracted data differs from expected");
 	/* Cleanup */

@@ -302,6 +302,108 @@ exit:
 	return result;
 }
 
+static int extract_and_check_multisub(xmlDoc *doc, char *xpath_expression,
+				   int getContent, char *attr1, char *attr2,
+				   char* attr3, struct gcal_structured_subvalues **values, char ***types,
+				   int *pref)
+{
+	xmlXPathObject *xpath_obj;
+	xmlNodeSet *node;
+	xmlNode *child, *cur_node;
+	xmlChar *tmp;
+	struct gcal_structured_subvalues *tempstradr,*tempval;
+	int result = -1;
+	int i,k=0;
+	
+	xpath_obj = execute_xpath_expression(doc,
+					     xpath_expression,
+					     NULL);
+
+	if ((!values) || (attr2 && !types) || (attr3 && !pref)) {
+		fprintf(stderr, "extract_and_check_multisub: null pointers received");
+		goto exit;
+	}
+
+	if (!xpath_obj) {
+		fprintf(stderr, "extract_and_check_multisub: failed to extract data");
+		fprintf(stderr, "xpath_expression: ---%s---\n",xpath_expression);
+		goto exit;
+	}
+
+	node = xpath_obj->nodesetval;
+
+	if (!node)
+	{
+		result = 0;
+		goto cleanup;
+	}
+	result = node->nodeNr;
+
+	if (result == 0)
+	{
+		goto exit;
+	}
+	
+	tempval = (struct gcal_structured_subvalues *)malloc(sizeof(struct gcal_structured_subvalues));
+	tempval->next_field = NULL;
+	(*values) = tempval;
+	if (attr2)
+		*types = (char **)malloc(node->nodeNr * sizeof(char*));
+	
+	for (i = 0; i < node->nodeNr; i++)
+	{
+		if (getContent)
+		{
+			cur_node = node->nodeTab[i]->children;
+			for(child = cur_node; child; child = child->next)
+			{
+				if (tempval->next_field == NULL)
+				{
+					tempval->next_field = (struct gcal_structured_subvalues *)malloc(sizeof(struct gcal_structured_subvalues));
+					tempval->field_typenr = i;
+					tempval->field_key = strdup(child->name);
+					tmp = xmlNodeGetContent(child);
+					tempval->field_value = strdup(tmp);
+					free(tmp);
+					tempval = tempval->next_field;
+					/* init next entry */
+					tempval->field_typenr = 0;
+					tempval->field_key = NULL;
+					tempval->field_value = NULL;
+					tempval->next_field = NULL;
+				}
+			}
+		}
+		
+		if (attr2) {
+			if (xmlHasProp(node->nodeTab[i], attr2))
+			{
+				tmp = xmlGetProp(node->nodeTab[i], attr2);
+				(*types)[i] = strdup(strchr(tmp,'#') + 1);
+				xmlFree(tmp);
+			}
+			else
+				(*types)[i] = strdup("");
+		}
+
+		if (attr3)
+		{
+			if (xmlHasProp(node->nodeTab[i], attr3))
+			{
+				tmp = xmlGetProp(node->nodeTab[i], attr3);
+				if (!strcmp(tmp,"true"))
+					*pref = i;
+				xmlFree(tmp);
+			}
+		}
+	}
+
+cleanup:
+	xmlXPathFreeObject(xpath_obj);
+exit:
+	return result;
+}
+
 char *get_etag_attribute(xmlNode * a_node)
 {
 	xmlChar *uri = NULL;
@@ -469,23 +571,14 @@ exit:
 
 int atom_extract_contact(xmlNode *entry, struct gcal_contact *ptr_entry)
 {
-	int result = -1, length = 0, j;
-	char *tmp, *atom_str = NULL;
+	int result = -1, length = 0;
+	//int j, t;
+	//char *atom_str = NULL;
+	char *tmp;
 	xmlChar *xml_str = NULL;
 	xmlDoc *doc = NULL;
 	xmlNode *copy = NULL;
 	
-	/** Strings associated with address fields, see gcal_structured_postal_address_fields in gcontact.h */
-	const char* gcal_structured_postal_address_fields_str[] = {
-		"street",
-		"pobox",
-		"city",
-		"region",
-		"postcode",
-		"country",
-		"formattedAddress"
-	};
-
 	if (!entry || !ptr_entry)
 		goto exit;
 
@@ -550,14 +643,27 @@ int atom_extract_contact(xmlNode *entry, struct gcal_contact *ptr_entry)
 					       NULL);
 
 
-	/* Gets the 'who' contact field */
-	ptr_entry->common.title = extract_and_check(doc,
-					     "//atom:entry/atom:title/text()",
-					     NULL);
-	if (!ptr_entry->common.title)
+	ptr_entry->structured_name_nr = extract_and_check_multisub(doc,
+						    "//atom:entry/"
+						    "gd:name",
+						    1,
+						    NULL,
+						    NULL,
+						    NULL,
+						    &ptr_entry->structured_name,
+						    NULL,
+						    NULL);
+	if(!ptr_entry->structured_name_nr)
+	{
+		/* Gets the 'who' contact field */
+		ptr_entry->common.title = extract_and_check(doc,
+						    "//atom:entry/atom:title/text()",
+						    NULL);
+	}
+	
+	if (!ptr_entry->common.title && !ptr_entry->structured_name_nr)
 		goto cleanup;
-
-
+	
 	/* Gets the 'edit url' contact field */
 	ptr_entry->common.edit_uri = extract_and_check(doc, "//atom:entry/"
 						"atom:link[@rel='edit']",
@@ -588,6 +694,12 @@ int atom_extract_contact(xmlNode *entry, struct gcal_contact *ptr_entry)
 					       "//atom:entry/"
 					       "atom:content/text()",
 					       NULL);
+	
+	/* Gets contact nickname */
+	ptr_entry->nickname = extract_and_check(doc,
+					            "//atom:entry/"
+						    "gContact:nickname/text()",
+						    NULL);
 
 	/* Gets the 'homepage' contact field */
 	ptr_entry->homepage = extract_and_check(doc, "//atom:entry/"
@@ -632,19 +744,17 @@ int atom_extract_contact(xmlNode *entry, struct gcal_contact *ptr_entry)
 				"gd:postalAddress/text()",
 				NULL);
 	
-	/* Gets contact first address: formattedAddress of 3.0 structuredPostalAddress */
-	for (j = 0; j < F_ITEMS_COUNT; j++)
-	{
-		atom_str = (char *)alloca(strlen("//atom:entry/gd:structuredPostalAddress/gd:")+strlen(gcal_structured_postal_address_fields_str[j])+strlen("/text()")+3);
-		sprintf(atom_str,"//atom:entry/gd:structuredPostalAddress/gd:%s/text()",gcal_structured_postal_address_fields_str[j]);
-		
-		tmp = extract_and_check(doc, atom_str, NULL);
-		if(tmp)
-		{
-			gcal_contact_set_structured_address(ptr_entry,gcal_structured_postal_address_fields_str[j],tmp);
-			free(tmp);
-		}
-	}
+	/* Gets contact structured postal addressees (Google API 3.0) */
+	ptr_entry->structured_address_nr = extract_and_check_multisub(doc,
+						    "//atom:entry/"
+						    "gd:structuredPostalAddress",
+						    1,
+						    NULL,
+						    "rel",
+						    NULL,
+						    &ptr_entry->structured_address,
+						    &ptr_entry->structured_address_type,
+						    NULL);
 	
 	/* Gets contact group membership info */
 	ptr_entry->groupMembership_nr = extract_and_check_multi(doc,

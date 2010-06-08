@@ -47,6 +47,8 @@
  */
 typedef struct gcal_contact* gcal_contact_t;
 
+typedef struct gcal_structured_subvalues *gcal_structured_subvalues_t;
+
 /** Contact entries array. Its used to hold retrieved contacts
  * retrieved from google server.
  */
@@ -92,8 +94,17 @@ typedef enum {
 	E_ITEMS_COUNT			// must be the last one!
 } gcal_email_type;
 
-/** Address structure, represents each structuredPostalAddress, same names like in Google API 
- * see Array in atom_parser.c  -> atom_extract_contact() */
+/** Address types allowed by Google API */
+typedef enum {
+	A_INVALID = -1,
+	A_HOME,
+	A_WORK,
+	A_OTHER,
+	A_ITEMS_COUNT			// must be the last one!
+} gcal_address_type;
+
+
+/** Address structure, represents each field in structuredPostalAddress (Google API 3.0) */
 /*
 F_AGENT,			not used
 F_HOUSENAME,			not used
@@ -382,6 +393,14 @@ gcal_email_type gcal_contact_get_email_address_type(gcal_contact_t contact, int 
  */
 char *gcal_contact_get_content(gcal_contact_t contact);
 
+/** Access contact nickname.
+ *
+ * @param contact A contact object, see \ref gcal_contact.
+ *
+ * @return  Pointer to internal object field 
+ */
+char *gcal_contact_get_nickname(gcal_contact_t contact);
+
 /** Access contact organization name.
  *
  *
@@ -434,8 +453,6 @@ char *gcal_contact_get_blog(gcal_contact_t contact);
 
 /** Access contact telephone.
  *
- * \todo Implement support for multiple phones.
- *
  * @param contact A contact object, see \ref gcal_contact.
  *
  * @return Pointer to internal object field (dont free it!) or NULL (in error
@@ -449,8 +466,6 @@ gcal_phone_type gcal_contact_get_phone_number_type(gcal_contact_t contact, int i
 
 /** Access contact address (structuredPostalAddress.formattedAddress).
  *
- * \todo Implement support for multiple addresses.
- *
  * @param contact A contact object, see \ref gcal_contact.
  *
  * @return Pointer to internal object field (dont free it!) or NULL (in error
@@ -460,15 +475,52 @@ gcal_phone_type gcal_contact_get_phone_number_type(gcal_contact_t contact, int i
  */
 char *gcal_contact_get_address(gcal_contact_t contact);
 
-/** Access contact full address (structuredPostalAddress).
- *
- * \todo Implement support for multiple addresses.
+/** Access structured entry objects.
  *
  * @param contact A contact object, see \ref gcal_contact.
  *
  * @return Pointer to internal object field 
  */
-char *gcal_contact_get_structured_address(gcal_contact_t contact, const char *address_field_key);
+gcal_structured_subvalues_t gcal_contact_get_structured_address(gcal_contact_t contact);
+gcal_structured_subvalues_t gcal_contact_get_structured_name(gcal_contact_t contact);
+
+/** Get one structured entry.
+ *
+ * @param structured_entry A structured entry object, see \ref gcal_structured_subvalues.
+ *
+ * @param structured_entry_nr Index of the entry.
+ *
+ * @param structured_entry_count Number of all entries.
+ *
+ * @param field_key Key of the structured entry.
+ *
+ * @return Pointer to internal object field 
+ */
+char *gcal_contact_get_structured_entry(gcal_structured_subvalues_t structured_entry, int structured_entry_nr, int structured_entry_count, const char *field_key);
+
+/** Access structured entry count.
+ *
+ * @param contact A contact object, see \ref gcal_contact.
+ *
+ * @return Number of structured entries
+ * @return Pointer to internal object field 
+ */
+int gcal_contact_get_structured_address_count(gcal_contact_t contact);
+int *gcal_contact_get_structured_address_count_obj(gcal_contact_t contact);
+
+/** Access structured entry type.
+ *
+ * @param contact A contact object, see \ref gcal_contact.
+ *
+ * @param structured_entry_nr The number of the specific entry.
+ *
+ * @param structured_entry_count Number of all entries.
+ *
+ * @return Type of entry
+ * @return Pointer to internal object field 
+ */
+gcal_address_type gcal_contact_get_structured_address_type(gcal_contact_t contact, int structured_entry_nr, int structured_entry_count);
+char ***gcal_contact_get_structured_address_type_obj(gcal_contact_t contact);
 
 /** Access Google group membership info.
  *
@@ -624,17 +676,45 @@ int gcal_contact_add_phone_number(gcal_contact_t contact, const char *field, gca
  */
 int gcal_contact_set_address(gcal_contact_t contact, const char *field);
 
-/** Sets the contact full address (structuredPostalAddress).
- *
- * \todo Implement support for multiple addresses.
+/** Sets the contact full address number (structuredPostalAddress).
  *
  * @param contact A contact object, see \ref gcal_contact.
  *
- * @param field Address string.
+ * @param type Address type.
  *
  * @return 0 for success, -1 otherwise
  */
-int gcal_contact_set_structured_address(gcal_contact_t contact, const char *address_field_key, const char *address_field_value );
+int gcal_contact_set_structured_address_nr(gcal_contact_t contact, gcal_address_type type);
+
+/** Sets a structured entry.
+ *
+ * @param structured_entry A structured entry object, see \ref gcal_structured_subvalues.
+ *
+ * @param structured_entry_nr Index of the entry.
+ *
+ * @param structured_entry_count Number of all entries.
+ *
+ * @param field_key Key of the structured entry.
+ *
+ * @param field_value Corresponding value.
+ *
+ * @param structured_entry_type Structured entry type.
+ *
+ * @return 0 for success, -1 otherwise
+ */
+int gcal_contact_set_structured_entry(gcal_structured_subvalues_t structured_entry, int structured_entry_nr, int structured_entry_count, const char *field_key, const char *field_value );
+
+/** Deletes a structured entry.
+ *
+ * @param structured_entry A structured entry object, see \ref gcal_structured_subvalues.
+ *
+ * @param *structured_entry_count Pointer to the structured entry count object.
+ *
+ * @param ***structured_entry_type Pointer to the structured entry type object.
+ *
+ * @return 0 for success, -1 otherwise
+ */
+int gcal_contact_delete_structured_entry(gcal_structured_subvalues_t structured_entry, int *structured_entry_count, char ***structured_entry_type);
 
 /** Sets the contact group membership info.
  *
@@ -690,6 +770,16 @@ int gcal_contact_set_organization(gcal_contact_t contact, const char *field);
  * @return 0 for success, -1 otherwise
  */
 int gcal_contact_set_content(gcal_contact_t contact, const char *field);
+
+/** Sets contact nickname.
+ *
+ * @param contact A contact object, see \ref gcal_contact.
+ *
+ * @param field The nickname
+ *
+ * @return 0 for success, -1 otherwise
+ */
+int gcal_contact_set_nickname(gcal_contact_t contact, const char *field);
 
 /** Sets contact website.
  *

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<entry xmlns="http://www.w3.org/2005/Atom" xmlns:gd="http://schemas.google.com/g/2005">
-  <category scheme="http://schemas.google.com/g/2005#kind" term="http://schemas.google.com/contact/2008#contact"/>
-  <title type="text">John 'Super' Doe</title>
+<entry xmlns="http://www.w3.org/2005/Atom" xmlns:gd="http://schemas.google.com/g/2005"  gd:etag='W/"CUMBRHo_fip7ImA9WxRbGU0."' >
+  <category scheme="http://schemas.google.com/g/2005#kind" term="http://schemas.google.com/g/2005#contact"/>
+  <title>John 'Super' Doe</title>
   <gd:email rel="http://schemas.google.com/g/2005#home" address="doe@nobody.com" primary="true"/>
   <gd:im address="gdoe" label="CUSTOM" protocol="http://schemas.google.com/g/2005#GOOGLE_TALK"/>
   <gd:im address="aim_doe" label="CUSTOM" protocol="http://schemas.google.com/g/2005#AIM"/>
