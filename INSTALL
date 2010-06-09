@@ -60,4 +60,6 @@ ps3: ATTENTION utest will not run on source directory.
 ps4: Currently I have being using cmake as the official development buildsystem
 (just run: make build; cd build; cmake ..; make)
 
-ps5:
+ps5: Libgcal is already included in major Linux distros (Debian, OpenSuse,
+Ubuntu, etc) and FreeBSD
+
