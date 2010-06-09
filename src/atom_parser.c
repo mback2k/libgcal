@@ -304,23 +304,23 @@ exit:
 }
 
 static int extract_and_check_multisub(xmlDoc *doc, char *xpath_expression,
-				   int getContent, char *attr1, char *attr2,
-				   char* attr3, struct gcal_structured_subvalues **values, char ***types,
+				   int getContent, char *attr1,
+				   char* attr2, struct gcal_structured_subvalues **values, char ***types,
 				   int *pref)
 {
 	xmlXPathObject *xpath_obj;
 	xmlNodeSet *node;
 	xmlNode *child, *cur_node;
 	xmlChar *tmp;
-	struct gcal_structured_subvalues *tempstradr,*tempval;
+	struct gcal_structured_subvalues *tempval;
 	int result = -1;
-	int i,k=0;
-	
+	int i;
+
 	xpath_obj = execute_xpath_expression(doc,
 					     xpath_expression,
 					     NULL);
 
-	if ((!values) || (attr2 && !types) || (attr3 && !pref)) {
+	if ((!values) || (attr1 && !types) || (attr2 && !pref)) {
 		fprintf(stderr, "extract_and_check_multisub: null pointers received");
 		goto exit;
 	}
@@ -333,33 +333,26 @@ static int extract_and_check_multisub(xmlDoc *doc, char *xpath_expression,
 
 	node = xpath_obj->nodesetval;
 
-	if (!node)
-	{
+	if (!node) {
 		result = 0;
 		goto cleanup;
 	}
 	result = node->nodeNr;
 
 	if (result == 0)
-	{
 		goto exit;
-	}
-	
+
 	tempval = (struct gcal_structured_subvalues *)malloc(sizeof(struct gcal_structured_subvalues));
 	tempval->next_field = NULL;
 	(*values) = tempval;
-	if (attr2)
+	if (attr1)
 		*types = (char **)malloc(node->nodeNr * sizeof(char*));
-	
-	for (i = 0; i < node->nodeNr; i++)
-	{
-		if (getContent)
-		{
+
+	for (i = 0; i < node->nodeNr; i++) {
+		if (getContent) {
 			cur_node = node->nodeTab[i]->children;
-			for(child = cur_node; child; child = child->next)
-			{
-				if (tempval->next_field == NULL)
-				{
+			for (child = cur_node; child; child = child->next) {
+				if (tempval->next_field == NULL) {
 					tempval->next_field = (struct gcal_structured_subvalues *)malloc(sizeof(struct gcal_structured_subvalues));
 					tempval->field_typenr = i;
 					tempval->field_key = strdup(child->name);
@@ -375,23 +368,19 @@ static int extract_and_check_multisub(xmlDoc *doc, char *xpath_expression,
 				}
 			}
 		}
-		
-		if (attr2) {
-			if (xmlHasProp(node->nodeTab[i], attr2))
-			{
-				tmp = xmlGetProp(node->nodeTab[i], attr2);
+
+		if (attr1) {
+			if (xmlHasProp(node->nodeTab[i], attr1)) {
+				tmp = xmlGetProp(node->nodeTab[i], attr1);
 				(*types)[i] = strdup(strchr(tmp,'#') + 1);
 				xmlFree(tmp);
-			}
-			else
+			} else
 				(*types)[i] = strdup("");
 		}
 
-		if (attr3)
-		{
-			if (xmlHasProp(node->nodeTab[i], attr3))
-			{
-				tmp = xmlGetProp(node->nodeTab[i], attr3);
+		if (attr2) {
+			if (xmlHasProp(node->nodeTab[i], attr2)) {
+				tmp = xmlGetProp(node->nodeTab[i], attr2);
 				if (!strcmp(tmp,"true"))
 					*pref = i;
 				xmlFree(tmp);
@@ -650,7 +639,6 @@ int atom_extract_contact(xmlNode *entry, struct gcal_contact *ptr_entry)
 						    1,
 						    NULL,
 						    NULL,
-						    NULL,
 						    &ptr_entry->structured_name,
 						    NULL,
 						    NULL);
@@ -750,7 +738,6 @@ int atom_extract_contact(xmlNode *entry, struct gcal_contact *ptr_entry)
 						    "//atom:entry/"
 						    "gd:structuredPostalAddress",
 						    1,
-						    NULL,
 						    "rel",
 						    NULL,
 						    &ptr_entry->structured_address,
