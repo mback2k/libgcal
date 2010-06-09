@@ -2,12 +2,14 @@ j2libgcal changelog
 Adenilson Cavalcanti (adenilson.silva@indt.org.br)
 
 
-== libgcal 0.9.4 (2010-03-19) ==
+== libgcal 0.9.4 (2010-06-09) ==
+
+- Adding support for structured name (Google Contact API 3.0),
+  nickname, blog, structured address. Patch by Holger Kral <holger.kral@gmx.net>
 
 - Adding support for multiple email adresses and cellphones patch by
 Stefano Avallone <stavallo@unina.it> and Andre Loureiro
 <loureiro.andrew@gmail.com>>
-
 
 == libgcal 0.9.3 (2009-08-26) ==
 
