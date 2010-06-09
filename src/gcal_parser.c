@@ -431,7 +431,7 @@ int extract_all_contacts(dom_document *doc,
 		fprintf(stderr, "extract_all_contacts: Size mismatch!\n");
 		goto cleanup;
 	}
-	
+
 	/* extract the fields */
 	for (i = 0; i < length; ++i) {
 		result = atom_extract_contact(nodes->nodeTab[i],
@@ -440,7 +440,7 @@ int extract_all_contacts(dom_document *doc,
 		if (result == -1)
 			goto cleanup;
 	}
-	
+
 	result = 0;
 
 cleanup:
@@ -474,10 +474,10 @@ int xmlcontact_create(struct gcal_contact *contact, char **xml_contact,
 
 	doc = xmlNewDoc(BAD_CAST "1.0");
 	root = xmlNewNode(NULL, BAD_CAST "atom:entry");
-	
+
 	if (!doc || !root)
 		goto exit;
-	
+
 	xmlSetProp(root, BAD_CAST "xmlns:atom", BAD_CAST atom_href);
 	/* Google Data API 2.0 requires ETag to edit an entry */
 	if (contact->common.etag)
@@ -510,33 +510,30 @@ int xmlcontact_create(struct gcal_contact *contact, char **xml_contact,
 		xmlNodeAddContent(node, contact->common.id);
 		xmlAddChild(root, node);
 	}
-	
+
 	/* Sets contact structured name (Google API 3.0) */
-	if(contact->structured_name_nr)
-	{
+	if (contact->structured_name_nr) {
 		set_structured_entry = 0;
-		for(this_structured_entry = contact->structured_name; this_structured_entry != NULL; this_structured_entry = this_structured_entry->next_field)
-		{
-			if((this_structured_entry->field_value != NULL))
-			{
-				if( !set_structured_entry )
-				{
+		for (this_structured_entry = contact->structured_name;
+		     this_structured_entry != NULL;
+		     this_structured_entry = this_structured_entry->next_field) {
+			if ((this_structured_entry->field_value != NULL)) {
+				if( !set_structured_entry ) {
 					if (!(node = xmlNewNode(ns, "name")))
 						goto cleanup;
 					set_structured_entry = 1;
 				}
-				
+
 				if (!(child = xmlNewNode(ns, BAD_CAST this_structured_entry->field_key)))
 					goto cleanup;
 				xmlNodeAddContent(child, BAD_CAST this_structured_entry->field_value);
 				xmlAddChild(node, child);
 			}
 		}
+
 		if( set_structured_entry )
 			xmlAddChild(root, node);
-	}
-	else
-	{
+	} else {
 		/* title element */
 		node = xmlNewNode(NULL, "gd:name");
 		if (!node)
@@ -546,7 +543,7 @@ int xmlcontact_create(struct gcal_contact *contact, char **xml_contact,
 		xmlAddChild(node, node2);
 		xmlAddChild(root, node);
 	}
-	
+
 	/* entry edit URL, only if the 'entry' is already existant.
 	 */
 	if (contact->common.edit_uri) {
@@ -591,8 +588,7 @@ int xmlcontact_create(struct gcal_contact *contact, char **xml_contact,
 		xmlNodeAddContent(node, contact->content);
 		xmlAddChild(root, node);
 	}
-	
-	/* nickname */
+
 	if (contact->nickname) {
 		node = xmlNewNode(NULL, "gContact:nickname");
 		if (!node)
@@ -600,7 +596,7 @@ int xmlcontact_create(struct gcal_contact *contact, char **xml_contact,
 		xmlNodeAddContent(node, contact->nickname);
 		xmlAddChild(root, node);
 	}
-	
+
 	if (contact->homepage) {
 		if (!(node = xmlNewNode(NULL, "gContact:website")))
 			goto cleanup;
@@ -608,7 +604,7 @@ int xmlcontact_create(struct gcal_contact *contact, char **xml_contact,
 		xmlSetProp(node, BAD_CAST "href", BAD_CAST contact->homepage);
 		xmlAddChild(root, node);
 	}
-	
+
 	if (contact->blog) {
 		if (!(node = xmlNewNode(NULL, "gContact:website")))
 			goto cleanup;
@@ -616,7 +612,7 @@ int xmlcontact_create(struct gcal_contact *contact, char **xml_contact,
 		xmlSetProp(node, BAD_CAST "href", BAD_CAST contact->blog);
 		xmlAddChild(root, node);
 	}
-	
+
 	/* organization (it has 2 subelements: orgName, orgTitle) */
 	if (contact->org_name || contact->org_title) {
 		if (!(node = xmlNewNode(ns, "organization")))
@@ -660,19 +656,19 @@ int xmlcontact_create(struct gcal_contact *contact, char **xml_contact,
 			free(temp);
 		}
 	}
-	
+
 	/* Sets contact structured postal addressees (Google API 3.0) */
-	if( contact->structured_address_nr > 0 )
-	{
-		for (i = 0; i < contact->structured_address_nr; i++)
-		{
+	/* TODO: move this to another function (identation is looking bad) */
+	if (contact->structured_address_nr > 0) {
+		for (i = 0; i < contact->structured_address_nr; i++) {
 			set_structured_entry = 0;
-			for(this_structured_entry = contact->structured_address; this_structured_entry != NULL; this_structured_entry = this_structured_entry->next_field)
-			{
-				if(this_structured_entry->field_value && this_structured_entry->field_key && (this_structured_entry->field_typenr == i))
-				{
-					if( !set_structured_entry )
-					{
+			for (this_structured_entry = contact->structured_address;
+			     this_structured_entry != NULL;
+			     this_structured_entry = this_structured_entry->next_field) {
+				if (this_structured_entry->field_value &&
+				    this_structured_entry->field_key &&
+				    (this_structured_entry->field_typenr == i)) {
+					if (!set_structured_entry) {
 						if (!(node = xmlNewNode(ns, "structuredPostalAddress")))
 							goto cleanup;
 						// TODO: support user settting address type
@@ -683,14 +679,15 @@ int xmlcontact_create(struct gcal_contact *contact, char **xml_contact,
 						set_structured_entry = 1;
 						free(temp);
 					}
-					
+
 					if (!(child = xmlNewNode(ns, BAD_CAST this_structured_entry->field_key)))
 						goto cleanup;
 					xmlNodeAddContent(child, BAD_CAST this_structured_entry->field_value);
 					xmlAddChild(node, child);
 				}
 			}
-			if( set_structured_entry )
+
+			if (set_structured_entry)
 				xmlAddChild(root, node);
 			/* There can only be structuredPostalAddress OR postalAddress
 			* TODO: support user settting address type
@@ -736,7 +733,7 @@ int xmlcontact_create(struct gcal_contact *contact, char **xml_contact,
 		xmlAddChild(root, node);
 	}
 
-	/* TODO: implement missing fields (im)
+	/* TODO: implement missing fields (im, what else?)
 	 */
 
 	xmlDocDumpMemory(doc, &xml_str, length);

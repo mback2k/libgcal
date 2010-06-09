@@ -604,7 +604,8 @@ int gcal_contact_set_title(gcal_contact_t contact, const char *field);
  * @return 0 for success, -1 otherwise
  */
 int gcal_contact_delete_email_addresses(gcal_contact_t contact);
-int gcal_contact_add_email_address(gcal_contact_t contact, const char *field, gcal_email_type type, int pref);
+int gcal_contact_add_email_address(gcal_contact_t contact, const char *field,
+				   gcal_email_type type, int pref);
 
 /** Sets contact edit url.
  *
@@ -662,7 +663,8 @@ int gcal_contact_set_etag(gcal_contact_t contact, const char *field);
  * @return 0 for success, -1 otherwise
  */
 int gcal_contact_delete_phone_numbers(gcal_contact_t contact);
-int gcal_contact_add_phone_number(gcal_contact_t contact, const char *field, gcal_phone_type type);
+int gcal_contact_add_phone_number(gcal_contact_t contact, const char *field,
+				  gcal_phone_type type);
 
 /** Sets the contact address (structuredPostalAddress.formattedAddress).
  *
@@ -684,7 +686,8 @@ int gcal_contact_set_address(gcal_contact_t contact, const char *field);
  *
  * @return 0 for success, -1 otherwise
  */
-int gcal_contact_set_structured_address_nr(gcal_contact_t contact, gcal_address_type type);
+int gcal_contact_set_structured_address_nr(gcal_contact_t contact,
+					   gcal_address_type type);
 
 /** Sets a structured entry.
  *
@@ -702,7 +705,11 @@ int gcal_contact_set_structured_address_nr(gcal_contact_t contact, gcal_address_
  *
  * @return 0 for success, -1 otherwise
  */
-int gcal_contact_set_structured_entry(gcal_structured_subvalues_t structured_entry, int structured_entry_nr, int structured_entry_count, const char *field_key, const char *field_value );
+int gcal_contact_set_structured_entry(gcal_structured_subvalues_t structured_entry,
+				      int structured_entry_nr,
+				      int structured_entry_count,
+				      const char *field_key,
+				      const char *field_value );
 
 /** Deletes a structured entry.
  *
@@ -714,7 +721,9 @@ int gcal_contact_set_structured_entry(gcal_structured_subvalues_t structured_ent
  *
  * @return 0 for success, -1 otherwise
  */
-int gcal_contact_delete_structured_entry(gcal_structured_subvalues_t structured_entry, int *structured_entry_count, char ***structured_entry_type);
+int gcal_contact_delete_structured_entry(gcal_structured_subvalues_t structured_entry,
+					 int *structured_entry_count,
+					 char ***structured_entry_type);
 
 /** Sets the contact group membership info.
  *

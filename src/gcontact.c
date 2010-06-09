@@ -96,7 +96,7 @@ gcal_contact_t gcal_contact_new(char *raw_xml)
 	contact = (gcal_contact_t) malloc(sizeof(struct gcal_contact));
 	if (!contact)
 		goto exit;
-	
+
 	gcal_init_contact(contact);
 	if (!raw_xml)
 		goto exit;
@@ -355,7 +355,7 @@ char gcal_contact_is_deleted(gcal_contact_t contact)
 }
 
 
-/* This are the fields unique to calendar contacts */
+/* This are the fields unique to contacts */
 int gcal_contact_get_emails_count(gcal_contact_t contact)
 {
 	if ((!contact))
@@ -383,7 +383,7 @@ gcal_email_type gcal_contact_get_email_address_type(gcal_contact_t contact, int 
 {
 	gcal_email_type result = E_INVALID;
 	int j;
-	
+
 	if ((!contact))
 		return result;
 	if (!(contact->emails_type) || (i >= contact->emails_nr))
@@ -463,7 +463,7 @@ gcal_phone_type gcal_contact_get_phone_number_type(gcal_contact_t contact, int i
 {
 	gcal_phone_type result = P_INVALID;
 	int j;
-	
+
 	if ((!contact))
 		return result;
 	if (!(contact->phone_numbers_type) || (i >= contact->phone_numbers_nr))
@@ -512,24 +512,25 @@ int *gcal_contact_get_structured_address_count_obj(gcal_contact_t contact)
 char *gcal_contact_get_structured_entry(gcal_structured_subvalues_t structured_entry, int structured_entry_nr, int structured_entry_count, const char *field_key)
 {
 	struct gcal_structured_subvalues *temp_structured_entry;
-	
+
 	if(field_key == NULL)
 		field_key = "";
-	
+
 	if (!structured_entry || (structured_entry_nr >= structured_entry_count))
 		return NULL;
-	
-	for(temp_structured_entry = structured_entry; temp_structured_entry != NULL; temp_structured_entry = temp_structured_entry->next_field)
-	{
-		
-		if(temp_structured_entry->next_field != NULL)
-		{
-			if(!strcmp(temp_structured_entry->field_key,field_key) && (temp_structured_entry->field_typenr == structured_entry_nr))
-			{
+
+	for (temp_structured_entry = structured_entry;
+	     temp_structured_entry != NULL;
+	     temp_structured_entry = temp_structured_entry->next_field) {
+
+		if (temp_structured_entry->next_field != NULL) {
+			if (!strcmp(temp_structured_entry->field_key, field_key)
+			    && (temp_structured_entry->field_typenr == structured_entry_nr)) {
 				return temp_structured_entry->field_value;
 			}
 		}
 	}
+
 	return NULL;
 }
 
@@ -544,14 +545,18 @@ gcal_address_type gcal_contact_get_structured_address_type(gcal_contact_t contac
 {
 	gcal_address_type result = A_INVALID;
 	int j;
-	
+
 	if ((!contact))
 		return result;
-	if (!(contact->structured_address_type) || (structured_entry_nr >= structured_entry_count))
+
+	if (!(contact->structured_address_type) ||
+	    (structured_entry_nr >= structured_entry_count))
 		return result;
+
 	for (j = 0; j < A_ITEMS_COUNT; j++)
 		if (!strcmp(contact->structured_address_type[structured_entry_nr], gcal_address_type_str[j]))
 			result = j;
+
 	return result;
 }
 
@@ -627,6 +632,7 @@ int gcal_contact_delete_email_addresses(gcal_contact_t contact)
 			if (contact->emails_type[temp])
 				free(contact->emails_type[temp]);
 		}
+
 		free(contact->emails_field);
 		free(contact->emails_type);
 	}
@@ -639,17 +645,24 @@ int gcal_contact_delete_email_addresses(gcal_contact_t contact)
 	return result;
 }
 
-int gcal_contact_add_email_address(gcal_contact_t contact, const char *field, gcal_email_type type, int pref)
+int gcal_contact_add_email_address(gcal_contact_t contact, const char *field,
+				   gcal_email_type type, int pref)
 {
 	int result = -1;
 
 	if ((!contact) || (!field) || (type<0) || (type>=E_ITEMS_COUNT))
 		return result;
 
-	contact->emails_field = (char**) realloc(contact->emails_field, (contact->emails_nr+1) * sizeof(char*));
+	contact->emails_field = (char**) realloc(contact->emails_field,
+						 (contact->emails_nr+1) *
+						 sizeof(char*));
+
 	contact->emails_field[contact->emails_nr] = strdup(field);
 
-	contact->emails_type = (char**) realloc(contact->emails_type, (contact->emails_nr+1) * sizeof(char*));
+	contact->emails_type = (char**) realloc(contact->emails_type,
+						(contact->emails_nr+1) *
+						sizeof(char*));
+
 	contact->emails_type[contact->emails_nr] = strdup(gcal_email_type_str[type]);
 
 	if (pref)
@@ -730,6 +743,7 @@ int gcal_contact_delete_phone_numbers(gcal_contact_t contact)
 			if (contact->phone_numbers_type[temp])
 				free(contact->phone_numbers_type[temp]);
 		}
+
 		free(contact->phone_numbers_field);
 		free(contact->phone_numbers_type);
 	}
@@ -741,7 +755,8 @@ int gcal_contact_delete_phone_numbers(gcal_contact_t contact)
 	return result;
 }
 
-int gcal_contact_add_phone_number(gcal_contact_t contact, const char *field, gcal_phone_type type)
+int gcal_contact_add_phone_number(gcal_contact_t contact, const char *field,
+				  gcal_phone_type type)
 {
 	int result = -1;
 
@@ -778,102 +793,109 @@ int gcal_contact_set_address(gcal_contact_t contact, const char *field)
 	return result;
 }
 
-int gcal_contact_set_structured_address_nr(gcal_contact_t contact, gcal_address_type type)
+int gcal_contact_set_structured_address_nr(gcal_contact_t contact,
+					   gcal_address_type type)
 {
 	int entry_nr, result = -1;
-	
-	if (!contact || (type<0) || (type>=A_ITEMS_COUNT))
+
+	if (!contact || (type < 0) || (type >= A_ITEMS_COUNT))
 		return result;
-	
+
 	entry_nr = contact->structured_address_nr;
 	contact->structured_address_type = (char**) realloc(contact->structured_address_type, (entry_nr + 1) * sizeof(char*));
 	contact->structured_address_type[entry_nr] = strdup(gcal_address_type_str[type]);
 	contact->structured_address_nr++;
-	
+
 	result = entry_nr;
-	
+
 	return result;
 }
 
-int gcal_contact_set_structured_entry(gcal_structured_subvalues_t structured_entry, int structured_entry_nr, int structured_entry_count, const char *field_key, const char *field_value )
+int gcal_contact_set_structured_entry(gcal_structured_subvalues_t structured_entry,
+				      int structured_entry_nr,
+				      int structured_entry_count,
+				      const char *field_key,
+				      const char *field_value )
 {
 	struct gcal_structured_subvalues *temp_structured_entry;
-	
-	if (!structured_entry || (!field_value) || (!field_key) || (structured_entry_nr < 0) || (structured_entry_nr >= structured_entry_count))
+
+	if (!structured_entry || (!field_value) || (!field_key) ||
+	    (structured_entry_nr < 0) ||
+	    (structured_entry_nr >= structured_entry_count))
 		return -1;
-	
-	if(field_value == NULL)
+
+	if (field_value == NULL)
 		field_value = "";
-	
-	if(structured_entry->field_key == NULL)
-	{
+
+	if (structured_entry->field_key == NULL) {
 		structured_entry->field_typenr = structured_entry_nr;
 		structured_entry->field_key = strdup(field_key);
 		structured_entry->field_value = strdup(field_value);
 		structured_entry->next_field = NULL;
 		return 0;
 	}
-	
-	for(temp_structured_entry = structured_entry; ; temp_structured_entry = temp_structured_entry->next_field)
-	{
-		if(!strcmp(temp_structured_entry->field_key,field_key) && (temp_structured_entry->field_typenr == structured_entry_nr))
-		{
-			if(temp_structured_entry->field_value != NULL)
-			{
+
+	//XXX: is this right?
+	for (temp_structured_entry = structured_entry; ;
+	     temp_structured_entry = temp_structured_entry->next_field) {
+		if (!strcmp(temp_structured_entry->field_key,field_key) &&
+		    (temp_structured_entry->field_typenr == structured_entry_nr)) {
+			if (temp_structured_entry->field_value != NULL) {
 				free(temp_structured_entry->field_value);
 				temp_structured_entry->field_value = strdup(field_value);
 				return 0;
 			}
 		}
-		
-		if(temp_structured_entry->next_field == NULL)
-		{
+
+		if (temp_structured_entry->next_field == NULL) {
 			temp_structured_entry->next_field = (struct gcal_structured_subvalues *)malloc(sizeof(struct gcal_structured_subvalues));
 			temp_structured_entry = temp_structured_entry->next_field;
-			
+
 			temp_structured_entry->field_typenr = structured_entry_nr;
 			temp_structured_entry->field_key = strdup(field_key);
 			temp_structured_entry->field_value = strdup(field_value);
 			temp_structured_entry->next_field = NULL;
-			
+
 			return 0;
 		}
 	}
 	return -1;
 }
 
-int gcal_contact_delete_structured_entry(gcal_structured_subvalues_t structured_entry, int *structured_entry_count, char ***structured_entry_type)
+int gcal_contact_delete_structured_entry(gcal_structured_subvalues_t structured_entry,
+					 int *structured_entry_count,
+					 char ***structured_entry_type)
 {
 	int i, result = -1;
 	struct gcal_structured_subvalues *temp_structured_entry;
 
 	if (!structured_entry)
 		return result;
-	
-	for(temp_structured_entry = structured_entry; temp_structured_entry != NULL; temp_structured_entry = temp_structured_entry->next_field)
-	{
-		if(temp_structured_entry->field_typenr)
+
+	for (temp_structured_entry = structured_entry;
+	     temp_structured_entry != NULL;
+	     temp_structured_entry = temp_structured_entry->next_field) {
+
+		if (temp_structured_entry->field_typenr)
 			temp_structured_entry->field_typenr = 0;
-		if(temp_structured_entry->field_key)
+		if (temp_structured_entry->field_key)
 			free(temp_structured_entry->field_key);
-		if(temp_structured_entry->field_value)
+		if (temp_structured_entry->field_value)
 			free(temp_structured_entry->field_value);
 	}
-	
-	if(structured_entry_count && structured_entry_type)
-	{
-		if((*structured_entry_count) > 0)
-		{
+
+	if (structured_entry_count && structured_entry_type) {
+		if ((*structured_entry_count) > 0) {
 			for (i = 0; i < (*structured_entry_count); i++)
 				if ((*structured_entry_type)[i])
 					free((*structured_entry_type)[i]);
 			free((*structured_entry_type));
 		}
+
 		(*structured_entry_count) = 0;
 	}
-	
-	result = 0;
 
+	result = 0;
 	return result;
 }
 
@@ -890,13 +912,12 @@ int gcal_contact_delete_groupMembership(gcal_contact_t contact)
 			if (contact->groupMembership[temp])
 				free(contact->groupMembership[temp]);
 		}
+
 		free(contact->groupMembership);
 	}
 
 	contact->groupMembership_nr = 0;
-
 	result = 0;
-
 	return result;
 }
 

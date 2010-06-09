@@ -187,12 +187,13 @@ struct gcal_event {
  */
 
 struct gcal_structured_subvalues {
+	/* TODO: insert missing documentation here */
 	struct gcal_structured_subvalues *next_field;
 	int field_typenr;
 	char *field_key;
 	char *field_value;
 };
-	
+
 /** Contact data type */
 struct gcal_contact {
 	/** Has the common entry data fields (id, updated, title, edit_uri) */

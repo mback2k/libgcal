@@ -191,7 +191,8 @@ static char *extract_and_check(xmlDoc *doc, char *xpath_expression, char *attr)
 
 	if (!xpath_obj) {
 		fprintf(stderr, "extract_and_check: failed to extract data\n");
-		fprintf(stderr, "xpath_expression: ---%s---\n",xpath_expression);
+		fprintf(stderr, "xpath_expression: ---%s---\n",
+			xpath_expression);
 		goto exit;
 	}
 
@@ -578,7 +579,7 @@ int atom_extract_contact(xmlNode *entry, struct gcal_contact *ptr_entry)
 	xmlChar *xml_str = NULL;
 	xmlDoc *doc = NULL;
 	xmlNode *copy = NULL;
-	
+
 	if (!entry || !ptr_entry)
 		goto exit;
 
@@ -660,10 +661,10 @@ int atom_extract_contact(xmlNode *entry, struct gcal_contact *ptr_entry)
 						    "//atom:entry/atom:title/text()",
 						    NULL);
 	}
-	
+
 	if (!ptr_entry->common.title && !ptr_entry->structured_name_nr)
 		goto cleanup;
-	
+
 	/* Gets the 'edit url' contact field */
 	ptr_entry->common.edit_uri = extract_and_check(doc, "//atom:entry/"
 						"atom:link[@rel='edit']",
@@ -694,7 +695,7 @@ int atom_extract_contact(xmlNode *entry, struct gcal_contact *ptr_entry)
 					       "//atom:entry/"
 					       "atom:content/text()",
 					       NULL);
-	
+
 	/* Gets contact nickname */
 	ptr_entry->nickname = extract_and_check(doc,
 					            "//atom:entry/"
@@ -743,7 +744,7 @@ int atom_extract_contact(xmlNode *entry, struct gcal_contact *ptr_entry)
 				"//atom:entry/"
 				"gd:postalAddress/text()",
 				NULL);
-	
+
 	/* Gets contact structured postal addressees (Google API 3.0) */
 	ptr_entry->structured_address_nr = extract_and_check_multisub(doc,
 						    "//atom:entry/"
@@ -755,7 +756,7 @@ int atom_extract_contact(xmlNode *entry, struct gcal_contact *ptr_entry)
 						    &ptr_entry->structured_address,
 						    &ptr_entry->structured_address_type,
 						    NULL);
-	
+
 	/* Gets contact group membership info */
 	ptr_entry->groupMembership_nr = extract_and_check_multi(doc,
 						    "//atom:entry/"

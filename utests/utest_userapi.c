@@ -9,7 +9,7 @@
  * operations are covered:
  * - authentication
  * - getting all calendar events
- * - accessing then
+ * - accessing them
  * - adding a new calendar event
  * - editing and deleting an event
  * - querying for updated calendar events
@@ -597,7 +597,6 @@ TCase *gcal_userapi(void)
 	tcase_add_test(tc, test_get_contacts);
 	tcase_add_test(tc, test_access_contacts);
 	tcase_add_test(tc, test_oper_contact);
-
 	tcase_add_test(tc, test_query_contact_updated);
 	tcase_add_test(tc, test_contact_photo);
 	tcase_add_test(tc, test_url_sanity_calendar);

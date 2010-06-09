@@ -101,7 +101,7 @@ struct gcal_contact *gcal_get_all_contacts(struct gcal_resource *gcalobj,
 	if (!ptr_res)
 		goto cleanup;
 	memset(ptr_res, 0, sizeof(struct gcal_contact) * result);
-	
+
 	*length = result;
 	for (i = 0; i < *length; ++i) {
 		gcal_init_contact((ptr_res + i));
@@ -173,21 +173,23 @@ void gcal_init_contact(struct gcal_contact *contact)
 {
 	if (!contact)
 		return;
-	
-	contact->structured_address=(struct gcal_structured_subvalues *)malloc(sizeof(struct gcal_structured_subvalues));
+
+	contact->structured_address = (struct gcal_structured_subvalues *)malloc(
+	    sizeof(struct gcal_structured_subvalues));
 	contact->structured_address->field_typenr = 0;
 	contact->structured_address->field_key = NULL;
 	contact->structured_address->field_value = NULL;
 	contact->structured_address->next_field = NULL;
 	contact->structured_address_nr = 0;
 	contact->structured_address_type = NULL;
-	
-	contact->structured_name=(struct gcal_structured_subvalues *)malloc(sizeof(struct gcal_structured_subvalues));
+
+	contact->structured_name = (struct gcal_structured_subvalues *)malloc(
+	    sizeof(struct gcal_structured_subvalues));
 	contact->structured_name->field_typenr = 0;
 	contact->structured_name->field_key = NULL;
 	contact->structured_name->field_value = NULL;
 	contact->structured_name->next_field = NULL;
-	
+
 	contact->common.store_xml = 0;
 	contact->common.id = contact->common.updated = NULL;
 	contact->common.title = contact->common.xml = NULL;
@@ -211,10 +213,10 @@ void gcal_init_contact(struct gcal_contact *contact)
 void gcal_destroy_contact(struct gcal_contact *contact)
 {
 	struct gcal_structured_subvalues *temp_structured_entry;
-	
+
 	if (!contact)
 		return;
-	
+
 	clean_string(contact->common.id);
 	clean_string(contact->common.updated);
 	clean_string(contact->common.title);
@@ -242,29 +244,32 @@ void gcal_destroy_contact(struct gcal_contact *contact)
 	clean_string(contact->photo_data);
 	contact->photo_length = 0;
 	clean_string(contact->birthday);
-	
-	if(contact->structured_address)
-	{
-		for(temp_structured_entry = contact->structured_address; temp_structured_entry != NULL; temp_structured_entry = temp_structured_entry->next_field)
-		{
+
+	if (contact->structured_address) {
+		for (temp_structured_entry = contact->structured_address;
+		     temp_structured_entry != NULL;
+		     temp_structured_entry = temp_structured_entry->next_field) {
 			temp_structured_entry->field_typenr = 0;
 			clean_string(temp_structured_entry->field_key);
 			clean_string(temp_structured_entry->field_value);
 		}
+
 		free(contact->structured_address);
 	}
+
 	clean_multi_string(contact->structured_address_type,contact->structured_address_nr);
 	contact->structured_address_nr = 0;
-	
-	if(contact->structured_name)
-	{
-	  
-		for(temp_structured_entry = contact->structured_name; temp_structured_entry != NULL; temp_structured_entry = temp_structured_entry->next_field)
-		{
+
+	if (contact->structured_name) {
+
+		for (temp_structured_entry = contact->structured_name;
+		     temp_structured_entry != NULL;
+		     temp_structured_entry = temp_structured_entry->next_field) {
 			temp_structured_entry->field_typenr = 0;
 			clean_string(temp_structured_entry->field_key);
 			clean_string(temp_structured_entry->field_value);
 		}
+
 		free(contact->structured_name);
 	}
 }
@@ -295,7 +300,7 @@ int gcal_create_contact(struct gcal_resource *gcalobj,
 	result = xmlcontact_create(contact, &xml_contact, &length);
 	if (result == -1)
 		goto exit;
-	
+
 	/* Mounts URL */
 	length = sizeof(GCONTACT_START) + sizeof(GCONTACT_END) +
 		strlen(gcalobj->user) + sizeof(GCAL_DELIMITER) +
@@ -303,15 +308,15 @@ int gcal_create_contact(struct gcal_resource *gcalobj,
 	buffer = (char *) malloc(length);
 	if (!buffer)
 		goto cleanup;
-	
+
 	snprintf(buffer, length - 1, "%s%s%s%s%s", GCONTACT_START,
 		 gcalobj->user, GCAL_DELIMITER, gcalobj->domain, GCONTACT_END);
-	
+
 	result = up_entry(xml_contact, strlen(xml_contact), gcalobj,
 			  buffer, NULL, POST, NULL, GCAL_EDIT_ANSWER);
 	if (result)
 		goto cleanup;
-	
+
 	/* Copy raw XML */
 	if (gcalobj->store_xml_entry) {
 		if (contact->common.xml)
@@ -319,7 +324,7 @@ int gcal_create_contact(struct gcal_resource *gcalobj,
 		if (!(contact->common.xml = strdup(gcalobj->buffer)))
 			goto cleanup;
 	}
-	
+
 	/* Parse buffer and create the new contact object */
 	if (!updated)
 		goto cleanup;
@@ -327,7 +332,7 @@ int gcal_create_contact(struct gcal_resource *gcalobj,
 	gcalobj->document = build_dom_document(gcalobj->buffer);
 	if (!gcalobj->document)
 		goto cleanup;
-	
+
 	/* There is only one 'entry' in the buffer */
 	gcal_init_contact(updated);
 	result = extract_all_contacts(gcalobj->document, updated, 1);
@@ -347,17 +352,17 @@ int gcal_create_contact(struct gcal_resource *gcalobj,
 	}
 
 	result = 0;
-	
+
 xmlclean:
 	clean_dom_document(gcalobj->document);
 	gcalobj->document = NULL;
-	
+
 cleanup:
 	if (xml_contact)
 		free(xml_contact);
 	if (buffer)
 		free(buffer);
-	
+
 exit:
 	return result;
 

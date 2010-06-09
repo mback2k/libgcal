@@ -109,14 +109,12 @@ START_TEST (test_contact_extract)
 
 	result = gcal_dump(ptr_gcal, "GData-Version: 3.0");
 	fail_if(result != 0, "Failed dumping contacts");
-	
+
 	contacts = gcal_get_all_contacts(ptr_gcal, &count);
 	fail_if(contacts == NULL, "Failed extracting the contacts vector!");
-	
-	for (i = 0; i < contacts_count; ++i)
-	{
-		for (j = 0; j < count; ++j)
-		{
+
+	for (i = 0; i < contacts_count; ++i) {
+		for (j = 0; j < count; ++j) {
 			if(contacts[i].structured_name)
 				temp = gcal_contact_get_structured_entry(contacts[i].structured_name,0,1,"fullName");
 			if(!temp)
@@ -143,7 +141,7 @@ START_TEST (test_contact_xml)
 
 // 	contact.common.title = "John Doe";
 	contact.common.title = NULL;
-	
+
 	contact.structured_name=(struct gcal_structured_subvalues *)malloc(sizeof(struct gcal_structured_subvalues));
 	contact.structured_name->field_typenr = 0;
 	contact.structured_name->field_key = malloc(sizeof(char*));
@@ -155,7 +153,7 @@ START_TEST (test_contact_xml)
 	gcal_contact_set_structured_entry(contact.structured_name,0,1,"additionalName","W.");
 	gcal_contact_set_structured_entry(contact.structured_name,0,1,"familyName","Doe");
 	gcal_contact_set_structured_entry(contact.structured_name,0,1,"namePrefix","Dr.");
-	
+
 	contact.emails_field = malloc(sizeof(char*));
 	contact.emails_field[0] = "john.doe@foo.bar.com";
 	contact.emails_nr = 1;
@@ -206,7 +204,7 @@ START_TEST (test_contact_xml)
 	gcal_contact_set_structured_entry(contact.structured_address,address_nr,address_count,"region","Hereorthere");
 	gcal_contact_set_structured_entry(contact.structured_address,address_nr,address_count,"postcode","XYZ 98765-C");
 	gcal_contact_set_structured_entry(contact.structured_address,address_nr,address_count,"country","Island");
-	
+
 	result = xmlcontact_create(&contact, &xml, &length);
 	fail_if(result == -1 || xml == NULL,
 		"Failed creating XML for a new contact!");
@@ -308,7 +306,7 @@ START_TEST (test_contact_add)
 	gcal_contact_set_structured_entry(contact.structured_address,address_nr,address_count,"region","Hereorthere");
 	gcal_contact_set_structured_entry(contact.structured_address,address_nr,address_count,"postcode","XYZ 98765-C");
 	gcal_contact_set_structured_entry(contact.structured_address,address_nr,address_count,"country","Island");
-	
+
 	result = gcal_get_authentication(ptr_gcal, "gcalntester", "77libgcal");
 	fail_if(result == -1, "Authentication should work.");
 
@@ -342,20 +340,19 @@ START_TEST (test_contact_delete)
 
 	result = gcal_get_authentication(ptr_gcal, "gcalntester", "77libgcal");
 	fail_if(result == -1, "Authentication should work.");
-	
+
 	result = gcal_dump(ptr_gcal, "GData-Version: 3.0");
 	fail_if(result != 0, "Failed dumping contacts");
-	
+
 	contacts = gcal_get_all_contacts(ptr_gcal, &count);
 	fail_if(contacts == NULL, "Failed extracting contacts vector!");
-	
-	for (i = 0; i < (int)count; ++i)
-	{
-		if(contacts[i].structured_name)
+
+	for (i = 0; i < (int)count; ++i) {
+		if (contacts[i].structured_name)
 			temp = gcal_contact_get_structured_entry(contacts[i].structured_name,0,1,"fullName");
-		if(!temp)
+		if (!temp)
 			temp = "";
-	  
+
 		if (contacts[i].emails_field && temp) {
 		    if ((!(strcmp(contacts[i].emails_field[0], test_email))) &&
 			(!(strcmp(temp, test_title)))) {
@@ -364,16 +361,16 @@ START_TEST (test_contact_delete)
 			}
 		}
 	}
-	
+
 	temp = (char *)malloc(255);
 	sprintf(temp, "Cannot locate the newly added contact!\nindex = %d\tname = %s\n", entry_index,
 		contacts[entry_index].common.title);
 	fail_if(entry_index == -1, temp);
 	free(temp);
-	
+
 	result = gcal_delete_contact(ptr_gcal, (contacts + entry_index));
 	fail_if(result == -1, "Failed deleting contact!");
-	
+
 	gcal_destroy_contacts(contacts, count);
 }
 END_TEST
@@ -397,7 +394,7 @@ START_TEST (test_contact_edit)
 	gcal_contact_set_structured_entry(contact.structured_name,0,1,"additionalName","W.");
 	gcal_contact_set_structured_entry(contact.structured_name,0,1,"familyName","Doe");
 	gcal_contact_set_structured_entry(contact.structured_name,0,1,"namePrefix","Dr.");
-	
+
 	contact.photo = contact.photo_data = NULL;
 	contact.photo_length = 0;
 	contact.emails_field = malloc(sizeof(char*));
@@ -448,13 +445,12 @@ START_TEST (test_contact_edit)
 	gcal_contact_set_structured_entry(contact.structured_address,address_nr,address_count,"region","Hereorthere");
 	gcal_contact_set_structured_entry(contact.structured_address,address_nr,address_count,"postcode","XYZ 98765-C");
 	gcal_contact_set_structured_entry(contact.structured_address,address_nr,address_count,"country","Island");
-	
-	
+
 	/* Authenticate and add a new contact */
 	result = gcal_get_authentication(ptr_gcal, "gcalntester", "77libgcal");
 	fail_if(result == -1, "Authentication should work.");
 	result = gcal_create_contact(ptr_gcal, &contact, &contact_new);
-	
+
 	/* Edit this guy */
 // 	if(contact_new.common.title)
 // 		free(contact_new.common.title);
@@ -469,18 +465,18 @@ START_TEST (test_contact_edit)
 	gcal_contact_set_structured_entry(contact_new.structured_name,0,1,"givenName","Johny");
 	gcal_contact_set_structured_entry(contact_new.structured_name,0,1,"additionalName","'the mad'");
 	gcal_contact_set_structured_entry(contact_new.structured_name,0,1,"familyName","Doe");
-	
+
 	result = gcal_edit_contact(ptr_gcal, &contact_new, &updated);
 	fail_if(result == -1, "Failed editing contact!");
-	
+
 	gcal_structured_subvalues_t structured_entry;
-	
+
 	structured_entry = gcal_contact_get_structured_address(&contact);
 	gcal_contact_delete_structured_entry(structured_entry,gcal_contact_get_structured_address_count_obj(&contact),gcal_contact_get_structured_address_type_obj(&contact));
-	
+
 	structured_entry = gcal_contact_get_structured_name(&contact);
 	gcal_contact_delete_structured_entry(structured_entry,NULL,NULL);
-	
+
 	/* Delete the contact: pay attention that each edit changes
 	 * the "edit_url" field!
 	 */
