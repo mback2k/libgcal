@@ -642,8 +642,7 @@ int atom_extract_contact(xmlNode *entry, struct gcal_contact *ptr_entry)
 						    &ptr_entry->structured_name,
 						    NULL,
 						    NULL);
-	if(!ptr_entry->structured_name_nr)
-	{
+	if (!ptr_entry->structured_name_nr) {
 		/* Gets the 'who' contact field */
 		ptr_entry->common.title = extract_and_check(doc,
 						    "//atom:entry/atom:title/text()",
@@ -694,12 +693,12 @@ int atom_extract_contact(xmlNode *entry, struct gcal_contact *ptr_entry)
 	ptr_entry->homepage = extract_and_check(doc, "//atom:entry/"
 						"gContact:website[@rel='home-page']",
 						"href");
-	
+
 	/* Gets the 'blog' contact field */
 	ptr_entry->blog = extract_and_check(doc, "//atom:entry/"
 						"gContact:website[@rel='blog']",
 						"href");
-	
+
 	/* Gets the organization contact field */
 	ptr_entry->org_name = extract_and_check(doc,
 						"//atom:entry/"
