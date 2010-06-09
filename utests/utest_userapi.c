@@ -371,7 +371,7 @@ START_TEST (test_oper_contact)
 	 */
 	result = gcal_erase_contact(gcal, contact);
 	fail_if(result == -1, "Failed deleting contact!");
-	
+
 	/* Cleanup */
 	gcal_contact_delete(contact);
 	gcal_delete(gcal);

@@ -2,7 +2,7 @@
 
 project("LibGCal" C)
 cmake_minimum_required(VERSION 2.6)
-set(CMAKE_MODULE_PATH 
+set(CMAKE_MODULE_PATH
 	"${CMAKE_SOURCE_DIR}/cmake/modules"
 	"${CMAKE_SOURCE_DIR}/cmake/3rd-party-modules/opensync"
 )
