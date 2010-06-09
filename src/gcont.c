@@ -245,33 +245,33 @@ void gcal_destroy_contact(struct gcal_contact *contact)
 	contact->photo_length = 0;
 	clean_string(contact->birthday);
 
-	if (contact->structured_address) {
-		for (temp_structured_entry = contact->structured_address;
-		     temp_structured_entry != NULL;
-		     temp_structured_entry = temp_structured_entry->next_field) {
-			temp_structured_entry->field_typenr = 0;
-			clean_string(temp_structured_entry->field_key);
-			clean_string(temp_structured_entry->field_value);
-		}
+	do {
 
-		free(contact->structured_address);
-	}
+	    temp_structured_entry = contact->structured_address;
+	    if (temp_structured_entry) {
+		temp_structured_entry->field_typenr = 0;
+		clean_string(temp_structured_entry->field_key);
+		clean_string(temp_structured_entry->field_value);
+		contact->structured_address = temp_structured_entry->next_field;
+		free(temp_structured_entry);
+	    }
 
-	clean_multi_string(contact->structured_address_type,contact->structured_address_nr);
+	} while (contact->structured_address);
+
+	clean_multi_string(contact->structured_address_type, contact->structured_address_nr);
 	contact->structured_address_nr = 0;
 
-	if (contact->structured_name) {
+	do {
+	    temp_structured_entry = contact->structured_name;
+	    if (temp_structured_entry) {
+		temp_structured_entry->field_typenr = 0;
+		clean_string(temp_structured_entry->field_key);
+		clean_string(temp_structured_entry->field_value);
+		contact->structured_name = temp_structured_entry->next_field;
+		free(temp_structured_entry);
+	    }
 
-		for (temp_structured_entry = contact->structured_name;
-		     temp_structured_entry != NULL;
-		     temp_structured_entry = temp_structured_entry->next_field) {
-			temp_structured_entry->field_typenr = 0;
-			clean_string(temp_structured_entry->field_key);
-			clean_string(temp_structured_entry->field_value);
-		}
-
-		free(contact->structured_name);
-	}
+	} while (contact->structured_name);
 }
 
 void gcal_destroy_contacts(struct gcal_contact *contacts, size_t length)
