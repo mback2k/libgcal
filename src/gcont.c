@@ -173,7 +173,7 @@ void gcal_init_contact(struct gcal_contact *contact)
 {
 	if (!contact)
 		return;
-
+	//FIXME: valgrind says this guy is leaking
 	contact->structured_address = (struct gcal_structured_subvalues *)malloc(
 	    sizeof(struct gcal_structured_subvalues));
 	contact->structured_address->field_typenr = 0;
@@ -183,6 +183,7 @@ void gcal_init_contact(struct gcal_contact *contact)
 	contact->structured_address_nr = 0;
 	contact->structured_address_type = NULL;
 
+	//FIXME: valgrind says this guy is leaking
 	contact->structured_name = (struct gcal_structured_subvalues *)malloc(
 	    sizeof(struct gcal_structured_subvalues));
 	contact->structured_name->field_typenr = 0;
