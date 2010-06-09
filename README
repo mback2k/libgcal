@@ -1,5 +1,5 @@
 libgcal README
-adenilson.silva@indt.org.br
+cavalcantii@gmail.com
 
 == About ==
 
@@ -12,7 +12,8 @@ adenilson.silva@indt.org.br
 
    - have few dependencies (up until now, only requires libcurl and libxml)
 
-   It implements Google Data API 2.0 and is tested on Linux and MacOSX.
+   It implements Google Data API 2.0 for Calendar and API version 3.0
+   for contacts. It is tested on Linux and MacOSX.
 
 
 == Status ==

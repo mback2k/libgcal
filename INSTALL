@@ -1,5 +1,5 @@
 libgcal INSTALL
-adenilson.silva@indt.org.br
+cavalcantii@gmail.com
 
 == Compile and install ==
 
@@ -45,8 +45,9 @@ $make lcov #runs unit test and create coverage reports
 $make doxygen #generates API documentation
 
 
-ps1: If you wish just to run just a suite case, set GCAL environment variable
-(core|user|xml|screw).
+ps1: If you wish just to run just a suite case, set GCAL environment
+variable (core|user|xml|screw) and GCALTEST variable for core module
+testing (gcal|xpath|edit|contact|debug|query).
 
 
 ps2: you can format this document to HTML running
@@ -55,3 +56,8 @@ $txt2tags -t html INSTALL
 
 
 ps3: ATTENTION utest will not run on source directory.
+
+ps4: Currently I have being using cmake as the official development buildsystem
+(just run: make build; cd build; cmake ..; make)
+
+ps5:
