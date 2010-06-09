@@ -397,7 +397,7 @@ char *gcal_contact_get_content(gcal_contact_t contact);
  *
  * @param contact A contact object, see \ref gcal_contact.
  *
- * @return  Pointer to internal object field 
+ * @return  Pointer to internal object field
  */
 char *gcal_contact_get_nickname(gcal_contact_t contact);
 
@@ -439,7 +439,7 @@ char *gcal_contact_get_im(gcal_contact_t contact);
  *
  * @param contact A contact object, see \ref gcal_contact.
  *
- * @return Pointer to internal object field 
+ * @return Pointer to internal object field
  */
 char *gcal_contact_get_homepage(gcal_contact_t contact);
 
@@ -447,7 +447,7 @@ char *gcal_contact_get_homepage(gcal_contact_t contact);
  *
  * @param contact A contact object, see \ref gcal_contact.
  *
- * @return Pointer to internal object field 
+ * @return Pointer to internal object field
  */
 char *gcal_contact_get_blog(gcal_contact_t contact);
 
@@ -460,6 +460,7 @@ char *gcal_contact_get_blog(gcal_contact_t contact);
  * atom stream, it will be set to an empty string (i.e. "").
 
  */
+/* TODO: document new functions */
 int gcal_contact_get_phone_numbers_count(gcal_contact_t contact);
 char *gcal_contact_get_phone_number(gcal_contact_t contact, int i);
 gcal_phone_type gcal_contact_get_phone_number_type(gcal_contact_t contact, int i);
@@ -479,8 +480,9 @@ char *gcal_contact_get_address(gcal_contact_t contact);
  *
  * @param contact A contact object, see \ref gcal_contact.
  *
- * @return Pointer to internal object field 
+ * @return Pointer to internal object field
  */
+/* TODO: document new functions */
 gcal_structured_subvalues_t gcal_contact_get_structured_address(gcal_contact_t contact);
 gcal_structured_subvalues_t gcal_contact_get_structured_name(gcal_contact_t contact);
 
@@ -494,8 +496,9 @@ gcal_structured_subvalues_t gcal_contact_get_structured_name(gcal_contact_t cont
  *
  * @param field_key Key of the structured entry.
  *
- * @return Pointer to internal object field 
+ * @return Pointer to internal object field
  */
+/* TODO: document new functions */
 char *gcal_contact_get_structured_entry(gcal_structured_subvalues_t structured_entry, int structured_entry_nr, int structured_entry_count, const char *field_key);
 
 /** Access structured entry count.
@@ -503,8 +506,9 @@ char *gcal_contact_get_structured_entry(gcal_structured_subvalues_t structured_e
  * @param contact A contact object, see \ref gcal_contact.
  *
  * @return Number of structured entries
- * @return Pointer to internal object field 
+ * @return Pointer to internal object field
  */
+/* TODO: document new functions */
 int gcal_contact_get_structured_address_count(gcal_contact_t contact);
 int *gcal_contact_get_structured_address_count_obj(gcal_contact_t contact);
 
@@ -517,9 +521,10 @@ int *gcal_contact_get_structured_address_count_obj(gcal_contact_t contact);
  * @param structured_entry_count Number of all entries.
  *
  * @return Type of entry
- * @return Pointer to internal object field 
+ * @return Pointer to internal object field
  */
 gcal_address_type gcal_contact_get_structured_address_type(gcal_contact_t contact, int structured_entry_nr, int structured_entry_count);
+/* TODO: document new functions */
 char ***gcal_contact_get_structured_address_type_obj(gcal_contact_t contact);
 
 /** Access Google group membership info.
@@ -532,6 +537,7 @@ char ***gcal_contact_get_structured_address_type_obj(gcal_contact_t contact);
 
  */
 int gcal_contact_get_groupMembership_count(gcal_contact_t contact);
+/* TODO: document new functions */
 char *gcal_contact_get_groupMembership(gcal_contact_t contact, int i);
 
 /** Access contact birthday.
@@ -541,8 +547,6 @@ char *gcal_contact_get_groupMembership(gcal_contact_t contact, int i);
  * @return Pointer to internal object field (dont free it!) or NULL (in error
  * case or if the field is not set). If the entry hasn't this field in the
  * atom stream, it will be set to an empty string (i.e. "").
- 
-
  */
 char *gcal_contact_get_birthday(gcal_contact_t contact);
 
@@ -603,9 +607,13 @@ int gcal_contact_set_title(gcal_contact_t contact, const char *field);
  *
  * @return 0 for success, -1 otherwise
  */
-int gcal_contact_delete_email_addresses(gcal_contact_t contact);
+
 int gcal_contact_add_email_address(gcal_contact_t contact, const char *field,
 				   gcal_email_type type, int pref);
+
+/* TODO: document new functions */
+int gcal_contact_delete_email_addresses(gcal_contact_t contact);
+
 
 /** Sets contact edit url.
  *
@@ -662,9 +670,11 @@ int gcal_contact_set_etag(gcal_contact_t contact, const char *field);
  *
  * @return 0 for success, -1 otherwise
  */
-int gcal_contact_delete_phone_numbers(gcal_contact_t contact);
 int gcal_contact_add_phone_number(gcal_contact_t contact, const char *field,
 				  gcal_phone_type type);
+
+/* TODO: document new functions */
+int gcal_contact_delete_phone_numbers(gcal_contact_t contact);
 
 /** Sets the contact address (structuredPostalAddress.formattedAddress).
  *
@@ -733,8 +743,11 @@ int gcal_contact_delete_structured_entry(gcal_structured_subvalues_t structured_
  *
  * @return 0 for success, -1 otherwise
  */
-int gcal_contact_delete_groupMembership(gcal_contact_t contact);
 int gcal_contact_add_groupMembership(gcal_contact_t contact, char *field);
+
+/* TODO: document new functions */
+int gcal_contact_delete_groupMembership(gcal_contact_t contact);
+
 
 /** Sets the contact birthday
  *
@@ -810,6 +823,7 @@ int gcal_contact_set_homepage(gcal_contact_t contact, const char *field);
  */
 int gcal_contact_set_blog(gcal_contact_t contact, const char *field);
 
+/* TODO: document new functions */
 int gcal_contact_set_photo(gcal_contact_t contact, const char *field,
 			   int length);
 
