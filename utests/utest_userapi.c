@@ -597,11 +597,11 @@ TCase *gcal_userapi(void)
 	tcase_add_test(tc, test_get_contacts);
 	tcase_add_test(tc, test_access_contacts);
 	tcase_add_test(tc, test_oper_contact);
-	/* memory failure from here
+
 	tcase_add_test(tc, test_query_contact_updated);
 	tcase_add_test(tc, test_contact_photo);
 	tcase_add_test(tc, test_url_sanity_calendar);
 	tcase_add_test(tc, test_url_sanity_contact);
-	*/
+
 	return tc;
 }
