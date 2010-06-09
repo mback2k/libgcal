@@ -642,12 +642,12 @@ int atom_extract_contact(xmlNode *entry, struct gcal_contact *ptr_entry)
 						    &ptr_entry->structured_name,
 						    NULL,
 						    NULL);
-	if (!ptr_entry->structured_name_nr) {
-		/* Gets the 'who' contact field */
-		ptr_entry->common.title = extract_and_check(doc,
+
+	/* Gets the 'who' contact field */
+	ptr_entry->common.title = extract_and_check(doc,
 						    "//atom:entry/atom:title/text()",
 						    NULL);
-	}
+
 
 	if (!ptr_entry->common.title && !ptr_entry->structured_name_nr)
 		goto cleanup;
