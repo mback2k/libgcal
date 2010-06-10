@@ -538,7 +538,7 @@ int xmlcontact_create(struct gcal_contact *contact, char **xml_contact,
 		node = xmlNewNode(NULL, "gd:name");
 		if (!node)
 			goto cleanup;
-		node2 = xmlNewNode(NULL, "gd:givenName");
+		node2 = xmlNewNode(NULL, "gd:fullName");
 		xmlNodeAddContent(node2, contact->common.title);
 		xmlAddChild(node, node2);
 		xmlAddChild(root, node);
