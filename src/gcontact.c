@@ -379,6 +379,16 @@ char *gcal_contact_get_email_address(gcal_contact_t contact, int i)
 	return contact->emails_field[i];
 }
 
+char *gcal_contact_get_email(gcal_contact_t contact)
+{
+	int tmp;
+	if ((!contact))
+		return NULL;
+
+	tmp = gcal_contact_get_pref_email(contact);
+	return gcal_contact_get_email_address(contact, tmp);
+}
+
 gcal_email_type gcal_contact_get_email_address_type(gcal_contact_t contact, int i)
 {
 	gcal_email_type result = E_INVALID;

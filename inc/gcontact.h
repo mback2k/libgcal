@@ -381,6 +381,7 @@ int gcal_contact_get_pref_email(gcal_contact_t contact);
 char *gcal_contact_get_email_address(gcal_contact_t contact, int i);
 gcal_email_type gcal_contact_get_email_address_type(gcal_contact_t contact, int i);
 
+char *gcal_contact_get_email(gcal_contact_t contact);
 /** Access contact description.
  *
  * This the place where contacts notes can be retrieved.
