@@ -643,9 +643,12 @@ int atom_extract_contact(xmlNode *entry, struct gcal_contact *ptr_entry)
 						    NULL,
 						    NULL);
 
-	/* Gets the 'who' contact field */
-	ptr_entry->common.title = extract_and_check(doc,
-						    "//atom:entry/atom:title/text()",
+	/* The 'who' contact field changed in GData-Version: 3.0 API, see:
+	 * http://code.google.com/intl/en-EN/apis/contacts/docs/3.0/
+	 * migration_guide.html#Protocol
+	 */
+	ptr_entry->common.title = extract_and_check(doc, "//atom:entry"
+						    "/gd:name/gd:fullName/text()",
 						    NULL);
 
 
