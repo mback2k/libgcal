@@ -707,6 +707,16 @@ int xmlcontact_create(struct gcal_contact *contact, char **xml_contact,
 			}
 			*/
 		}
+	} else {
+		node = xmlNewNode(NULL, "gd:structuredPostalAddress");
+		if (!node)
+			goto cleanup;
+		node2 = xmlNewNode(NULL, "gd:formattedAddress");
+		xmlNodeAddContent(node2, contact->post_address);
+		xmlAddChild(node, node2);
+		xmlAddChild(root, node);
+
+
 	}
 
 	/* Google group membership info */
