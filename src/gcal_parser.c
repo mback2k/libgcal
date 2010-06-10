@@ -707,7 +707,7 @@ int xmlcontact_create(struct gcal_contact *contact, char **xml_contact,
 			}
 			*/
 		}
-	} else {
+	} else if (contact->post_address) {
 		node = xmlNewNode(NULL, "gd:structuredPostalAddress");
 		if (!node)
 			goto cleanup;
