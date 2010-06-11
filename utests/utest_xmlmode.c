@@ -206,9 +206,9 @@ START_TEST (test_oper_purexml)
 {
 	char *super_contact = NULL, *edit_url = NULL, *etag = NULL;
 	char *updated1 = NULL, *updated2 = NULL, *updated3 = NULL;
-	char *temp;
 	gcal_t gcal;
 	gcal_contact_t contact;
+	gcal_structured_subvalues_t structured_entry;
 	int result;
 
 	gcal = gcal_new(GCONTACT);
@@ -241,17 +241,12 @@ START_TEST (test_oper_purexml)
 	 * updated edit_url, id, etc.
 	 */
 	contact = gcal_contact_new(updated2);
-	gcal_structured_subvalues_t structured_entry;
-	structured_entry = gcal_contact_get_structured_name(contact);
-	temp = (char *)malloc(sizeof(char *));
-	temp = gcal_contact_get_structured_entry(structured_entry,0,1,"fullName");
-	
 	fail_if(!contact, "Cannot create contact object!\n");
-
-	fail_if(strcmp("John 'Super' Doe", temp),
+	
+	structured_entry = gcal_contact_get_structured_name(contact);
+	fail_if(strcmp("John 'Super' Doe", gcal_contact_get_structured_entry(structured_entry,0,1,"fullName")),
 		"Failure parsing contact XML: fullName!");
-	if(temp)
-		free(temp);
+
 	/* update corner case where the new XML doesn't have the edit URL */
 	free(super_contact);
 	if (find_load_file("/utests/contact_documentation.xml", &super_contact))

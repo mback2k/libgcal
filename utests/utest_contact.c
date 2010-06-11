@@ -153,6 +153,7 @@ START_TEST (test_contact_xml)
 	gcal_contact_set_structured_entry(contact.structured_name,0,1,"additionalName","W.");
 	gcal_contact_set_structured_entry(contact.structured_name,0,1,"familyName","Doe");
 	gcal_contact_set_structured_entry(contact.structured_name,0,1,"namePrefix","Dr.");
+	gcal_contact_set_structured_entry(contact.structured_name,0,1,"fullName","Dr. John W. Doe");
 
 	contact.emails_field = malloc(sizeof(char*));
 	contact.emails_field[0] = "john.doe@foo.bar.com";
@@ -165,6 +166,7 @@ START_TEST (test_contact_xml)
 	contact.content = "A very interesting person";
 	contact.org_name = "Foo software";
 	contact.org_title = "Software engineer";
+	contact.occupation = "Programmer";
 	contact.phone_numbers_field = malloc(sizeof(char*));
 	contact.phone_numbers_field[0] = "+9977554422119900";
 	contact.emails_type = malloc(sizeof(char*));
@@ -209,8 +211,8 @@ START_TEST (test_contact_xml)
 	fail_if(result == -1 || xml == NULL,
 		"Failed creating XML for a new contact!");
 
-// 	ptr = strstr(xml, contact.common.title);
-// 	fail_if(ptr == NULL, "XML lacks a field: %s\n", contact.common.title);
+	ptr = strstr(xml, "Dr. John W. Doe");
+	fail_if(ptr == NULL, "XML lacks a field: gd:name/gd:fullName\n");
 	ptr = strstr(xml, contact.emails_field[0]);
 	fail_if(ptr == NULL, "XML lacks a field: %s\n", contact.emails_field[0]);
 	ptr = strstr(xml, contact.content);
@@ -221,8 +223,18 @@ START_TEST (test_contact_xml)
 	fail_if(ptr == NULL, "XML lacks a field: %s\n", contact.org_title);
 	ptr = strstr(xml, contact.phone_numbers_field[0]);
 	fail_if(ptr == NULL, "XML lacks a field: %s\n", contact.phone_numbers_field[0]);
-// 	ptr = strstr(xml, contact.post_address);
-// 	fail_if(ptr == NULL, "XML lacks a field: %s\n", contact.post_address);
+	ptr = strstr(xml, "This One St, n 23");
+	fail_if(ptr == NULL, "XML lacks a field: street\n");
+	ptr = strstr(xml, "PO BOX 333 444 5");
+	fail_if(ptr == NULL, "XML lacks a field: pobox\n");
+	ptr = strstr(xml, "My Hometown");
+	fail_if(ptr == NULL, "XML lacks a field: city\n");
+	ptr = strstr(xml, "Hereorthere");
+	fail_if(ptr == NULL, "XML lacks a field: region\n");
+	ptr = strstr(xml, "XYZ 98765-C");
+	fail_if(ptr == NULL, "XML lacks a field: postcode\n");
+	ptr = strstr(xml, "Island");
+	fail_if(ptr == NULL, "XML lacks a field: country\n");
 	ptr = strstr(xml, contact.birthday);
 	fail_if(ptr == NULL, "XML lacks a field: %s\n", contact.birthday);
 	/* TODO: im requires a new field for service type (i.e. AIM, yahoo,
@@ -270,6 +282,7 @@ START_TEST (test_contact_add)
 	contact.content = "A very interesting person";
 	contact.org_name = "Foo software";
 	contact.org_title = "Software engineer";
+	contact.occupation = "Programmer";
 	contact.im = "john";
 	contact.phone_numbers_field = malloc(sizeof(char*));
 	contact.phone_numbers_field[0] = "+9977554422119900";
@@ -409,6 +422,7 @@ START_TEST (test_contact_edit)
 	contact.content = "A very interesting person";
 	contact.org_name = "Foo software";
 	contact.org_title = "Software engineer";
+	contact.occupation = "Programmer";
 	contact.im = "johny";
 	contact.phone_numbers_field = malloc(sizeof(char*));
 	contact.phone_numbers_field[0] = "+9977554422119900";

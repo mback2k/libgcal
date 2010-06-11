@@ -19,6 +19,7 @@
 #include "utest_userapi.h"
 #include "gcalendar.h"
 #include "gcontact.h"
+#include "gcal_parser.h"
 #include "utils.h"
 #include <stdio.h>
 #include <string.h>
@@ -338,7 +339,12 @@ START_TEST (test_oper_contact)
 	/* Create a new contact object */
 	contact = gcal_contact_new(NULL);
 	fail_if (!contact, "Cannot construct contact object!");
-	gcal_contact_set_title(contact, "John Doe");
+// 	gcal_contact_set_title(contact, "John Doe");
+	
+	contact->structured_name_nr = 1;
+	gcal_contact_set_structured_entry(contact->structured_name,0,1,"givenName","John");
+	gcal_contact_set_structured_entry(contact->structured_name,0,1,"familyName","Doe");
+	
 	gcal_contact_delete_email_addresses(contact);
 	gcal_contact_add_email_address(contact, "john.doe@foo.bar.com", E_OTHER, 1);
 
@@ -352,7 +358,12 @@ START_TEST (test_oper_contact)
 	fail_if(result == -1, "Failed adding a new contact!");
 
 	/* Edit this contact */
-	gcal_contact_set_title(contact, "John 'The Generic' Doe");
+// 	gcal_contact_set_title(contact, "John 'The Generic' Doe");
+	
+	gcal_contact_set_structured_entry(contact->structured_name,0,1,"givenName","John");
+	gcal_contact_set_structured_entry(contact->structured_name,0,1,"additionalName","'The Generic'");
+	gcal_contact_set_structured_entry(contact->structured_name,0,1,"familyName","Doe");
+	
 	fail_if(result == -1, "Failed editing contact!");
 	gcal_contact_delete_email_addresses(contact);
 	gcal_contact_add_email_address(contact, "john.super.doe@foo.bar.com", E_OTHER, 1);
