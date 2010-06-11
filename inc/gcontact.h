@@ -467,6 +467,9 @@ int gcal_contact_get_phone_numbers_count(gcal_contact_t contact);
 char *gcal_contact_get_phone_number(gcal_contact_t contact, int i);
 gcal_phone_type gcal_contact_get_phone_number_type(gcal_contact_t contact, int i);
 
+
+char *gcal_contact_get_phone(gcal_contact_t contact);
+
 /** Access contact address (structuredPostalAddress.formattedAddress).
  *
  * @param contact A contact object, see \ref gcal_contact.
@@ -618,6 +621,8 @@ int gcal_contact_add_email_address(gcal_contact_t contact, const char *field,
  * This is a convenience function, it is implemented internally using
  * \ref gcal_contact_add_email_address.
  *
+ * The email type defauls to HOME.
+ *
  * @param contact A contact object, see \ref gcal_contact.
  *
  * @param pref_email Email address.
@@ -688,6 +693,25 @@ int gcal_contact_set_etag(gcal_contact_t contact, const char *field);
  */
 int gcal_contact_add_phone_number(gcal_contact_t contact, const char *field,
 				  gcal_phone_type type);
+
+
+/** Sets contact prefered phone.
+ *
+ * This is a convenience function, it is implemented internally using
+ * \ref gcal_contact_add_phone_number. Pay attention that when this
+ * function is called, it will destroy all the contact's phone list
+ * to ensure that the prefered email will be the first to be added.
+ *
+ * The phone type default to P_MOBILE.
+ *
+ * @param contact A contact object, see \ref gcal_contact.
+ *
+ * @param phone A phone number (e.g. "+551132314412")
+ *
+ * @return 0 for success, -1 otherwise
+ */
+int gcal_contact_set_phone(gcal_contact_t contact, const char *phone);
+
 
 /* TODO: document new functions */
 int gcal_contact_delete_phone_numbers(gcal_contact_t contact);

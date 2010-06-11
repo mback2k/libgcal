@@ -341,6 +341,7 @@ START_TEST (test_oper_contact)
 	gcal_contact_set_title(contact, "John Doe");
 	gcal_contact_set_email(contact, "john.doe@foo.bar.com");
 	gcal_contact_add_email_address(contact, "jonny@theman.com", E_OTHER, 0);
+	gcal_contact_set_phone(contact, "111-2222-3333-888");
 
 
 	/* Create a gcal object and authenticate */
@@ -351,6 +352,12 @@ START_TEST (test_oper_contact)
 	/* Add a new contact */
 	result = gcal_add_contact(gcal, contact);
 	fail_if(result == -1, "Failed adding a new contact!");
+
+
+	/* Tests integraty */
+	result = strcmp(gcal_contact_get_phone(contact), "111-2222-3333-888");
+	fail_if(result != 0, "Failed to extract phone from gcal_contact_t!");
+
 
 	/* Edit this contact */
 	gcal_contact_set_title(contact, "John 'The Generic' Doe");

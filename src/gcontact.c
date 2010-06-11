@@ -469,6 +469,17 @@ char *gcal_contact_get_phone_number(gcal_contact_t contact, int i)
 	return contact->phone_numbers_field[i];
 }
 
+char *gcal_contact_get_phone(gcal_contact_t contact)
+{
+	if ((!contact))
+		return NULL;
+
+	char *res;
+	/* The prefered phone is *always* the first */
+	res = gcal_contact_get_phone_number(contact, 0);
+	return res;
+}
+
 gcal_phone_type gcal_contact_get_phone_number_type(gcal_contact_t contact, int i)
 {
 	gcal_phone_type result = P_INVALID;
@@ -791,6 +802,17 @@ int gcal_contact_add_phone_number(gcal_contact_t contact, const char *field,
 	result = 0;
 
 	return result;
+}
+
+int gcal_contact_set_phone(gcal_contact_t contact, const char *phone)
+{
+	int res;
+	res = gcal_contact_delete_phone_numbers(contact);
+	if (res)
+		return res;
+
+	res = gcal_contact_add_phone_number(contact, phone, P_MOBILE);
+	return res;
 }
 
 int gcal_contact_set_address(gcal_contact_t contact, const char *field)
