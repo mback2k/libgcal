@@ -339,8 +339,9 @@ START_TEST (test_oper_contact)
 	contact = gcal_contact_new(NULL);
 	fail_if (!contact, "Cannot construct contact object!");
 	gcal_contact_set_title(contact, "John Doe");
-	gcal_contact_delete_email_addresses(contact);
-	gcal_contact_add_email_address(contact, "john.doe@foo.bar.com", E_OTHER, 1);
+	gcal_contact_set_email(contact, "john.doe@foo.bar.com");
+	gcal_contact_add_email_address(contact, "jonny@theman.com", E_OTHER, 0);
+
 
 	/* Create a gcal object and authenticate */
 	gcal = gcal_new(GCONTACT);
@@ -355,7 +356,7 @@ START_TEST (test_oper_contact)
 	gcal_contact_set_title(contact, "John 'The Generic' Doe");
 	fail_if(result == -1, "Failed editing contact!");
 	gcal_contact_delete_email_addresses(contact);
-	gcal_contact_add_email_address(contact, "john.super.doe@foo.bar.com", E_OTHER, 1);
+	gcal_contact_set_email(contact, "john.super.doe@foo.bar.com");
 	fail_if(result == -1, "Failed editing contact!");
 	result = gcal_update_contact(gcal, contact);
 	fail_if(result == -1, "Failed uploading edited contact!");

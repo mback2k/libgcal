@@ -84,7 +84,7 @@ typedef enum {
 	P_WORK_PAGER,
 	P_ITEMS_COUNT			// must be the last one!
 } gcal_phone_type;
-	
+
 /** Email types allowed by Google API */
 typedef enum {
 	E_INVALID = -1,
@@ -382,6 +382,7 @@ char *gcal_contact_get_email_address(gcal_contact_t contact, int i);
 gcal_email_type gcal_contact_get_email_address_type(gcal_contact_t contact, int i);
 
 char *gcal_contact_get_email(gcal_contact_t contact);
+
 /** Access contact description.
  *
  * This the place where contacts notes can be retrieved.
@@ -600,7 +601,7 @@ int gcal_contact_set_title(gcal_contact_t contact, const char *field);
  *
  * @param contact A contact object, see \ref gcal_contact.
  *
- * @param field Email address..
+ * @param field Email address.
  *
  * @param type Email address type.
  *
@@ -611,6 +612,20 @@ int gcal_contact_set_title(gcal_contact_t contact, const char *field);
 
 int gcal_contact_add_email_address(gcal_contact_t contact, const char *field,
 				   gcal_email_type type, int pref);
+
+/** Sets the prefered email.
+ *
+ * This is a convenience function, it is implemented internally using
+ * \ref gcal_contact_add_email_address.
+ *
+ * @param contact A contact object, see \ref gcal_contact.
+ *
+ * @param pref_email Email address.
+ *
+ * @return 0 for success, -1 otherwise
+ */
+int gcal_contact_set_email(gcal_contact_t contact, const char *pref_email);
+
 
 /* TODO: document new functions */
 int gcal_contact_delete_email_addresses(gcal_contact_t contact);

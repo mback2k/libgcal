@@ -685,6 +685,13 @@ int gcal_contact_add_email_address(gcal_contact_t contact, const char *field,
 	return result;
 }
 
+int gcal_contact_set_email(gcal_contact_t contact, const char *pref_email)
+{
+	int res;
+	res = gcal_contact_add_email_address(contact, pref_email, E_HOME, 1);
+	return res;
+}
+
 int gcal_contact_set_url(gcal_contact_t contact, const char *field)
 {
 	int result = -1;
