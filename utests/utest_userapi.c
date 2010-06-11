@@ -447,7 +447,6 @@ START_TEST (test_contact_photo)
 	contact = gcal_contact_new(NULL);
 	fail_if (!contact, "Cannot construct contact object!");
 	gcal_contact_set_title(contact, "Gromit");
-	gcal_contact_delete_email_addresses(contact);
 	gcal_contact_add_email_address(contact, "gromit@wallace.com", E_OTHER, 1);
 	fail_if(gcal_contact_set_photo(contact, photo_data, result),
 		"Failed copying photo data");
@@ -559,7 +558,6 @@ START_TEST (test_url_sanity_contact)
 	fail_if(result == -1, "Cannot authenticate!");
 
   	gcal_contact_set_title(contact, "Insanity in edit URL");
-	gcal_contact_delete_email_addresses(contact);
 	gcal_contact_add_email_address(contact, "prooftest@add.get.com", E_OTHER, 1);
 
 	fail_if((result = gcal_add_contact(gcal, contact)) != 0,
