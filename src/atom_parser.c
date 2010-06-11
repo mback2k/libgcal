@@ -733,11 +733,15 @@ int atom_extract_contact(xmlNode *entry, struct gcal_contact *ptr_entry)
 						    &ptr_entry->phone_numbers_field,
 						    &ptr_entry->phone_numbers_type,
 						    NULL);
-
-	/* Gets contact postal address */
+	
+	/* The 'postalAddress' contact field changed in GData-Version: 3.0 API, see:
+	 * http://code.google.com/intl/en-EN/apis/contacts/docs/3.0/
+	 * migration_guide.html#Protocol
+	 */
 	ptr_entry->post_address = extract_and_check(doc,
 				"//atom:entry/"
-				"gd:postalAddress/text()",
+				"gd:structuredPostalAddress/"
+				"gd:formattedAddress/text()",
 				NULL);
 
 	/* Gets contact structured postal addressees (Google API 3.0) */
