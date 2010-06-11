@@ -533,12 +533,11 @@ int xmlcontact_create(struct gcal_contact *contact, char **xml_contact,
 
 		if( set_structured_entry )
 			xmlAddChild(root, node);
-	} else {
-		/* title element */
+	} else if (contact->common.title) {
 		node = xmlNewNode(NULL, "gd:name");
 		if (!node)
 			goto cleanup;
-		node2 = xmlNewNode(NULL, "gd:givenName");
+		node2 = xmlNewNode(NULL, "gd:fullName");
 		xmlNodeAddContent(node2, contact->common.title);
 		xmlAddChild(node, node2);
 		xmlAddChild(root, node);
@@ -579,7 +578,6 @@ int xmlcontact_create(struct gcal_contact *contact, char **xml_contact,
 	}
 
 	/* Here begin extra fields */
-	/* content element */
 	if (contact->content) {
 		node = xmlNewNode(NULL, "atom:content");
 		if (!node)
@@ -637,6 +635,14 @@ int xmlcontact_create(struct gcal_contact *contact, char **xml_contact,
 
 		xmlAddChild(root, node);
 	}
+	
+	if (contact->occupation) {
+		node = xmlNewNode(NULL, "gContact:occupation");
+		if (!node)
+			goto cleanup;
+		xmlNodeAddContent(node, contact->occupation);
+		xmlAddChild(root, node);
+	}
 
 	/* Get phone numbers */
 	if (contact->phone_numbers_nr > 0) {
@@ -689,24 +695,15 @@ int xmlcontact_create(struct gcal_contact *contact, char **xml_contact,
 
 			if (set_structured_entry)
 				xmlAddChild(root, node);
-			/* There can only be structuredPostalAddress OR postalAddress
-			* TODO: support user settting address type
-			*/
-			/*
-			else
-			{
-				if (contact->post_address) {
-					if (!(node = xmlNewNode(ns, "postalAddress")))
-						goto cleanup;
-					sprintf(temp,"http://schemas.google.com/g/2005#%s",contact->structured_address_type[i]);
-					xmlSetProp(node, BAD_CAST "rel", BAD_CAST temp);
-					xmlNodeAddContent(node, contact->post_address);
-					xmlAddChild(root, node);
-					free(temp);
-				}
-			}
-			*/
 		}
+	} else if (contact->post_address) {
+		node = xmlNewNode(NULL, "gd:structuredPostalAddress");
+		if (!node)
+			goto cleanup;
+		node2 = xmlNewNode(NULL, "gd:formattedAddress");
+		xmlNodeAddContent(node2, contact->post_address);
+		xmlAddChild(node, node2);
+		xmlAddChild(root, node);
 	}
 
 	/* Google group membership info */
@@ -733,7 +730,7 @@ int xmlcontact_create(struct gcal_contact *contact, char **xml_contact,
 		xmlAddChild(root, node);
 	}
 
-	/* TODO: implement missing fields (im, what else?)
+	/* TODO: implement missing fields (im, geo location, what else?)
 	 */
 
 	xmlDocDumpMemory(doc, &xml_str, length);

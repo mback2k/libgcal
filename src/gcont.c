@@ -173,7 +173,7 @@ void gcal_init_contact(struct gcal_contact *contact)
 {
 	if (!contact)
 		return;
-	//FIXME: valgrind says this guy is leaking
+	
 	contact->structured_address = (struct gcal_structured_subvalues *)malloc(
 	    sizeof(struct gcal_structured_subvalues));
 	contact->structured_address->field_typenr = 0;
@@ -182,8 +182,7 @@ void gcal_init_contact(struct gcal_contact *contact)
 	contact->structured_address->next_field = NULL;
 	contact->structured_address_nr = 0;
 	contact->structured_address_type = NULL;
-
-	//FIXME: valgrind says this guy is leaking
+	
 	contact->structured_name = (struct gcal_structured_subvalues *)malloc(
 	    sizeof(struct gcal_structured_subvalues));
 	contact->structured_name->field_typenr = 0;
@@ -199,6 +198,7 @@ void gcal_init_contact(struct gcal_contact *contact)
 	contact->emails_nr = contact->pref_email = 0;
 	contact->content = NULL;
 	contact->nickname = NULL;
+	contact->occupation = NULL;
 	contact->org_name = contact->org_title = contact->im = NULL;
 	contact->phone_numbers_field = contact->phone_numbers_type = NULL;
 	contact->phone_numbers_nr = contact->groupMembership_nr = 0;
@@ -231,6 +231,7 @@ void gcal_destroy_contact(struct gcal_contact *contact)
 	/* Extra fields */
 	clean_string(contact->content);
 	clean_string(contact->nickname);
+	clean_string(contact->occupation);
 	clean_string(contact->org_name);
 	clean_string(contact->org_title);
 	clean_string(contact->im);
@@ -247,7 +248,6 @@ void gcal_destroy_contact(struct gcal_contact *contact)
 	clean_string(contact->birthday);
 
 	do {
-
 	    temp_structured_entry = contact->structured_address;
 	    if (temp_structured_entry) {
 		temp_structured_entry->field_typenr = 0;
@@ -256,7 +256,6 @@ void gcal_destroy_contact(struct gcal_contact *contact)
 		contact->structured_address = temp_structured_entry->next_field;
 		free(temp_structured_entry);
 	    }
-
 	} while (contact->structured_address);
 
 	clean_multi_string(contact->structured_address_type, contact->structured_address_nr);
@@ -271,7 +270,6 @@ void gcal_destroy_contact(struct gcal_contact *contact)
 		contact->structured_name = temp_structured_entry->next_field;
 		free(temp_structured_entry);
 	    }
-
 	} while (contact->structured_name);
 }
 

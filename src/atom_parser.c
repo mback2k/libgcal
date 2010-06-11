@@ -688,9 +688,9 @@ int atom_extract_contact(xmlNode *entry, struct gcal_contact *ptr_entry)
 
 	/* Gets contact nickname */
 	ptr_entry->nickname = extract_and_check(doc,
-					            "//atom:entry/"
-						    "gContact:nickname/text()",
-						    NULL);
+						"//atom:entry/"
+						"gContact:nickname/text()",
+						NULL);
 
 	/* Gets the 'homepage' contact field */
 	ptr_entry->homepage = extract_and_check(doc, "//atom:entry/"
@@ -716,6 +716,11 @@ int atom_extract_contact(xmlNode *entry, struct gcal_contact *ptr_entry)
 						"gd:orgTitle/text()",
 						NULL);
 
+	/* Gets the occupation/profession contact field */
+	ptr_entry->occupation = extract_and_check(doc,
+						"//atom:entry/"
+						"gContact:occupation/text()",
+						NULL);
 
 	/* Gets contact phone numbers */
 	ptr_entry->phone_numbers_nr = extract_and_check_multi(doc,

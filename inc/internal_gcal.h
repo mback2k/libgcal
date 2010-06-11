@@ -225,6 +225,8 @@ struct gcal_contact {
 	char *org_name;
 	/** Job title */
 	char *org_title;
+	/** Occupation/Profession */
+	char *occupation;
 	/** IM contact */
 	char *im;
 	/** Phone numbers */

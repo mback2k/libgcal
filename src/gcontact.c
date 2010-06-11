@@ -422,6 +422,13 @@ char *gcal_contact_get_profission(gcal_contact_t contact)
 	return contact->org_title;
 }
 
+char *gcal_contact_get_occupation(gcal_contact_t contact)
+{
+	if ((!contact))
+		return NULL;
+	return contact->occupation;
+}
+
 char *gcal_contact_get_im(gcal_contact_t contact)
 {
 	if ((!contact))
@@ -509,7 +516,10 @@ int *gcal_contact_get_structured_address_count_obj(gcal_contact_t contact)
 	return &contact->structured_address_nr;
 }
 
-char *gcal_contact_get_structured_entry(gcal_structured_subvalues_t structured_entry, int structured_entry_nr, int structured_entry_count, const char *field_key)
+char *gcal_contact_get_structured_entry(gcal_structured_subvalues_t structured_entry,
+					int structured_entry_nr,
+					int structured_entry_count,
+					const char *field_key)
 {
 	struct gcal_structured_subvalues *temp_structured_entry;
 
@@ -541,7 +551,9 @@ char ***gcal_contact_get_structured_address_type_obj(gcal_contact_t contact)
 	return &contact->structured_address_type;
 }
 
-gcal_address_type gcal_contact_get_structured_address_type(gcal_contact_t contact, int structured_entry_nr, int structured_entry_count)
+gcal_address_type gcal_contact_get_structured_address_type(gcal_contact_t contact,
+							   int structured_entry_nr,
+							   int structured_entry_count)
 {
 	gcal_address_type result = A_INVALID;
 	int j;
@@ -835,9 +847,7 @@ int gcal_contact_set_structured_entry(gcal_structured_subvalues_t structured_ent
 		return 0;
 	}
 
-	//XXX: is this right?
-	for (temp_structured_entry = structured_entry; ;
-	     temp_structured_entry = temp_structured_entry->next_field) {
+	for (temp_structured_entry = structured_entry; temp_structured_entry; temp_structured_entry = temp_structured_entry->next_field) {
 		if (!strcmp(temp_structured_entry->field_key,field_key) &&
 		    (temp_structured_entry->field_typenr == structured_entry_nr)) {
 			if (temp_structured_entry->field_value != NULL) {
@@ -871,7 +881,7 @@ int gcal_contact_delete_structured_entry(gcal_structured_subvalues_t structured_
 
 	if (!structured_entry)
 		return result;
-
+	
 	for (temp_structured_entry = structured_entry;
 	     temp_structured_entry != NULL;
 	     temp_structured_entry = temp_structured_entry->next_field) {
@@ -883,7 +893,7 @@ int gcal_contact_delete_structured_entry(gcal_structured_subvalues_t structured_
 		if (temp_structured_entry->field_value)
 			free(temp_structured_entry->field_value);
 	}
-
+	
 	if (structured_entry_count && structured_entry_type) {
 		if ((*structured_entry_count) > 0) {
 			for (i = 0; i < (*structured_entry_count); i++)
@@ -968,6 +978,23 @@ int gcal_contact_set_organization(gcal_contact_t contact, const char *field)
 
 	contact->org_name = strdup(field);
 	if (contact->org_name)
+		result = 0;
+
+	return result;
+}
+
+int gcal_contact_set_occupation(gcal_contact_t contact, const char *field)
+{
+	int result = -1;
+
+	if ((!contact) || (!field))
+		return result;
+
+	if (contact->occupation)
+		free(contact->occupation);
+
+	contact->occupation = strdup(field);
+	if (contact->occupation)
 		result = 0;
 
 	return result;

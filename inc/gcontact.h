@@ -425,6 +425,18 @@ char *gcal_contact_get_organization(gcal_contact_t contact);
  */
 char *gcal_contact_get_profission(gcal_contact_t contact);
 
+/** Access contact occupation/profession.
+ *
+ * @param contact A contact object, see \ref gcal_contact.
+ *
+ * @return Pointer to internal object field (dont free it!) or NULL (in error
+ * case or if the field is not set). If the entry hasn't this field in the
+ * atom stream, it will be set to an empty string (i.e. "").
+
+ */
+char *gcal_contact_get_occupation(gcal_contact_t contact);
+
+
 /** Missing implementation.
  *
  * \todo Implement retrieve of extra fields in \ref atom_parser.c
@@ -476,14 +488,20 @@ gcal_phone_type gcal_contact_get_phone_number_type(gcal_contact_t contact, int i
  */
 char *gcal_contact_get_address(gcal_contact_t contact);
 
-/** Access structured entry objects.
+/** Access structured address objects.
  *
  * @param contact A contact object, see \ref gcal_contact.
  *
  * @return Pointer to internal object field
  */
-/* TODO: document new functions */
 gcal_structured_subvalues_t gcal_contact_get_structured_address(gcal_contact_t contact);
+
+/** Access structured name object.
+ *
+ * @param contact A contact object, see \ref gcal_contact.
+ *
+ * @return Pointer to internal object field
+ */
 gcal_structured_subvalues_t gcal_contact_get_structured_name(gcal_contact_t contact);
 
 /** Get one structured entry.
@@ -498,7 +516,6 @@ gcal_structured_subvalues_t gcal_contact_get_structured_name(gcal_contact_t cont
  *
  * @return Pointer to internal object field
  */
-/* TODO: document new functions */
 char *gcal_contact_get_structured_entry(gcal_structured_subvalues_t structured_entry, int structured_entry_nr, int structured_entry_count, const char *field_key);
 
 /** Access structured entry count.
@@ -506,10 +523,15 @@ char *gcal_contact_get_structured_entry(gcal_structured_subvalues_t structured_e
  * @param contact A contact object, see \ref gcal_contact.
  *
  * @return Number of structured entries
+ */
+int gcal_contact_get_structured_address_count(gcal_contact_t contact);
+
+/** Access structured address count object.
+ *
+ * @param contact A contact object, see \ref gcal_contact.
+ *
  * @return Pointer to internal object field
  */
-/* TODO: document new functions */
-int gcal_contact_get_structured_address_count(gcal_contact_t contact);
 int *gcal_contact_get_structured_address_count_obj(gcal_contact_t contact);
 
 /** Access structured entry type.
@@ -521,10 +543,15 @@ int *gcal_contact_get_structured_address_count_obj(gcal_contact_t contact);
  * @param structured_entry_count Number of all entries.
  *
  * @return Type of entry
- * @return Pointer to internal object field
  */
 gcal_address_type gcal_contact_get_structured_address_type(gcal_contact_t contact, int structured_entry_nr, int structured_entry_count);
-/* TODO: document new functions */
+
+/** Access structured address type object.
+ *
+ * @param contact A contact object, see \ref gcal_contact.
+ *
+ * @return Pointer to internal object field
+ */
 char ***gcal_contact_get_structured_address_type_obj(gcal_contact_t contact);
 
 /** Access Google group membership info.
@@ -676,9 +703,7 @@ int gcal_contact_add_phone_number(gcal_contact_t contact, const char *field,
 /* TODO: document new functions */
 int gcal_contact_delete_phone_numbers(gcal_contact_t contact);
 
-/** Sets the contact address (structuredPostalAddress.formattedAddress).
- *
- * \todo Implement multiple address support
+/** Sets the contact address (Google API v2.0 gd:postalAddress).
  *
  * @param contact A contact object, see \ref gcal_contact.
  *
@@ -782,6 +807,17 @@ int gcal_contact_set_profission(gcal_contact_t contact, const char *field);
  * @return 0 for success, -1 otherwise
  */
 int gcal_contact_set_organization(gcal_contact_t contact, const char *field);
+
+/** Sets the occupation/profession.
+ *
+ *
+ * @param contact A contact object, see \ref gcal_contact.
+ *
+ * @param field occupation/profession name string (i.e. "Carpenter").
+ *
+ * @return 0 for success, -1 otherwise
+ */
+int gcal_contact_set_occupation(gcal_contact_t contact, const char *field);
 
 /** Sets contact description.
  *
