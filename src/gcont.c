@@ -92,7 +92,6 @@ struct gcal_contact *gcal_get_all_contacts(struct gcal_resource *gcalobj,
 	if (!gcalobj->document)
 		goto exit;
 
-
 	result = get_entries_number(gcalobj->document);
 	if (result == -1)
 		goto cleanup;
@@ -173,7 +172,7 @@ void gcal_init_contact(struct gcal_contact *contact)
 {
 	if (!contact)
 		return;
-	
+
 	contact->structured_address = (struct gcal_structured_subvalues *)malloc(
 	    sizeof(struct gcal_structured_subvalues));
 	contact->structured_address->field_typenr = 0;
@@ -182,7 +181,7 @@ void gcal_init_contact(struct gcal_contact *contact)
 	contact->structured_address->next_field = NULL;
 	contact->structured_address_nr = 0;
 	contact->structured_address_type = NULL;
-	
+
 	contact->structured_name = (struct gcal_structured_subvalues *)malloc(
 	    sizeof(struct gcal_structured_subvalues));
 	contact->structured_name->field_typenr = 0;
@@ -199,9 +198,11 @@ void gcal_init_contact(struct gcal_contact *contact)
 	contact->content = NULL;
 	contact->nickname = NULL;
 	contact->occupation = NULL;
-	contact->org_name = contact->org_title = contact->im = NULL;
+	contact->org_name = contact->org_title = NULL;
 	contact->phone_numbers_field = contact->phone_numbers_type = NULL;
 	contact->phone_numbers_nr = contact->groupMembership_nr = 0;
+	contact->im_protocol = contact->im_address = contact->im_type = NULL;
+	contact->im_nr = contact->im_pref = 0;
 	contact->post_address = NULL;
 	contact->groupMembership = NULL;
 	contact->homepage = NULL;
@@ -234,11 +235,14 @@ void gcal_destroy_contact(struct gcal_contact *contact)
 	clean_string(contact->occupation);
 	clean_string(contact->org_name);
 	clean_string(contact->org_title);
-	clean_string(contact->im);
 	clean_multi_string(contact->phone_numbers_field, contact->phone_numbers_nr);
 	clean_multi_string(contact->phone_numbers_type, contact->phone_numbers_nr);
 	clean_multi_string(contact->groupMembership, contact->groupMembership_nr);
 	contact->phone_numbers_nr = contact->groupMembership_nr = 0;
+	clean_multi_string(contact->im_protocol, contact->im_nr);
+	clean_multi_string(contact->im_address, contact->im_nr);
+	clean_multi_string(contact->im_type, contact->im_nr);
+	contact->im_nr = contact->im_pref = 0;
 	clean_string(contact->post_address);
 	clean_string(contact->homepage);
 	clean_string(contact->blog);
@@ -257,6 +261,7 @@ void gcal_destroy_contact(struct gcal_contact *contact)
 		free(temp_structured_entry);
 	    }
 	} while (contact->structured_address);
+	free(contact->structured_address);
 
 	clean_multi_string(contact->structured_address_type, contact->structured_address_nr);
 	contact->structured_address_nr = 0;
@@ -271,6 +276,7 @@ void gcal_destroy_contact(struct gcal_contact *contact)
 		free(temp_structured_entry);
 	    }
 	} while (contact->structured_name);
+	free(contact->structured_name);
 }
 
 void gcal_destroy_contacts(struct gcal_contact *contacts, size_t length)

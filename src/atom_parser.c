@@ -230,8 +230,8 @@ exit:
 
 static int extract_and_check_multi(xmlDoc *doc, char *xpath_expression,
 				   int getContent, char *attr1, char *attr2,
-				   char* attr3, char ***values, char ***types,
-				   int *pref)
+				   char* attr3, char* attr4, char ***values,
+				   char ***types, char ***protocols, int *pref)
 {
 	xmlXPathObject *xpath_obj;
 	xmlNodeSet *node;
@@ -243,7 +243,7 @@ static int extract_and_check_multi(xmlDoc *doc, char *xpath_expression,
 					     xpath_expression,
 					     NULL);
 
-	if ((!values) || (attr2 && !types) || (attr3 && !pref)) {
+	if ((!values) || (attr2 && !types) || (attr3 && !protocols) || (attr4 && !pref)) {
 		fprintf(stderr, "extract_and_check_multi: null pointers received");
 		goto exit;
 	}
@@ -268,6 +268,8 @@ static int extract_and_check_multi(xmlDoc *doc, char *xpath_expression,
 	*values = (char **)malloc(node->nodeNr * sizeof(char*));
 	if (attr2)
 		*types = (char **)malloc(node->nodeNr * sizeof(char*));
+	if (attr3)
+		*protocols = (char **)malloc(node->nodeNr * sizeof(char*));
 
 	for (i = 0; i < node->nodeNr; i++) {
 		if (getContent)
@@ -290,6 +292,16 @@ static int extract_and_check_multi(xmlDoc *doc, char *xpath_expression,
 		if (attr3) {
 			if (xmlHasProp(node->nodeTab[i], attr3)) {
 				tmp = xmlGetProp(node->nodeTab[i], attr3);
+				(*protocols)[i] = strdup(strchr(tmp,'#') + 1);
+				xmlFree(tmp);
+			}
+			else
+				(*protocols)[i] = strdup("");
+		}
+
+		if (attr4) {
+			if (xmlHasProp(node->nodeTab[i], attr4)) {
+				tmp = xmlGetProp(node->nodeTab[i], attr4);
 				if (!strcmp(tmp,"true"))
 					*pref = i;
 				xmlFree(tmp);
@@ -342,9 +354,7 @@ static int extract_and_check_multisub(xmlDoc *doc, char *xpath_expression,
 	if (result == 0)
 		goto exit;
 
-	tempval = (struct gcal_structured_subvalues *)malloc(sizeof(struct gcal_structured_subvalues));
-	tempval->next_field = NULL;
-	(*values) = tempval;
+	tempval = (*values);
 	if (attr1)
 		*types = (char **)malloc(node->nodeNr * sizeof(char*));
 
@@ -353,18 +363,19 @@ static int extract_and_check_multisub(xmlDoc *doc, char *xpath_expression,
 			cur_node = node->nodeTab[i]->children;
 			for (child = cur_node; child; child = child->next) {
 				if (tempval->next_field == NULL) {
-					tempval->next_field = (struct gcal_structured_subvalues *)malloc(sizeof(struct gcal_structured_subvalues));
-					tempval->field_typenr = i;
-					tempval->field_key = strdup(child->name);
-					tmp = xmlNodeGetContent(child);
-					tempval->field_value = strdup(tmp);
-					free(tmp);
-					tempval = tempval->next_field;
-					/* init next entry */
-					tempval->field_typenr = 0;
-					tempval->field_key = NULL;
-					tempval->field_value = NULL;
-					tempval->next_field = NULL;
+					if((tmp = xmlNodeGetContent(child))) {
+						tempval->next_field = (struct gcal_structured_subvalues *)malloc(sizeof(struct gcal_structured_subvalues));
+						tempval->field_typenr = i;
+						tempval->field_key = strdup(child->name);
+						tempval->field_value = strdup(tmp);
+						xmlFree(tmp);
+						/* init next entry */
+						tempval = tempval->next_field;
+						tempval->field_typenr = 0;
+						tempval->field_key = NULL;
+						tempval->field_value = NULL;
+						tempval->next_field = NULL;
+					}
 				}
 			}
 		}
@@ -669,9 +680,11 @@ int atom_extract_contact(xmlNode *entry, struct gcal_contact *ptr_entry)
 						    0,
 						    "address",
 						    "rel",
+						    NULL,
 						    "primary",
 						    &ptr_entry->emails_field,
 						    &ptr_entry->emails_type,
+						    NULL,
 						    &ptr_entry->pref_email);
 
 	/* TODO Commented to allow contacts without an email address
@@ -730,10 +743,26 @@ int atom_extract_contact(xmlNode *entry, struct gcal_contact *ptr_entry)
 						    NULL,
 						    "rel",
 						    NULL,
+						    NULL,
 						    &ptr_entry->phone_numbers_field,
 						    &ptr_entry->phone_numbers_type,
+						    NULL,
 						    NULL);
-	
+
+	/* Gets contact IM addresses */
+	ptr_entry->im_nr = extract_and_check_multi(doc,
+						    "//atom:entry/"
+						    "gd:im",
+						    0,
+						    "address",
+						    "rel",
+						    "protocol",
+						    "primary",
+						    &ptr_entry->im_address,
+						    &ptr_entry->im_type,
+						    &ptr_entry->im_protocol,
+						    &ptr_entry->im_pref);
+
 	/* The 'postalAddress' contact field changed in GData-Version: 3.0 API, see:
 	 * http://code.google.com/intl/en-EN/apis/contacts/docs/3.0/
 	 * migration_guide.html#Protocol
@@ -763,7 +792,9 @@ int atom_extract_contact(xmlNode *entry, struct gcal_contact *ptr_entry)
 						    "href",
 						    NULL,
 						    NULL,
+						    NULL,
 						    &ptr_entry->groupMembership,
+						    NULL,
 						    NULL,
 						    NULL);
 
@@ -784,11 +815,6 @@ int atom_extract_contact(xmlNode *entry, struct gcal_contact *ptr_entry)
 		ptr_entry->photo_length = 1;
 		free(tmp);
 	}
-
-
-	/* TODO: implement remaining extra fields */
-	ptr_entry->im = NULL;
-
 
 	result = 0;
 

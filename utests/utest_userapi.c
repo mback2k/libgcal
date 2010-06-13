@@ -247,6 +247,7 @@ START_TEST (test_access_contacts)
 	int j;
 	gcal_email_type get;
 	gcal_phone_type gpt;
+	gcal_im_type git;
 
 	gcal = gcal_new(GCONTACT);
 	result = gcal_get_authentication(gcal, "gcal4tester", "66libgcal");
@@ -277,7 +278,10 @@ START_TEST (test_access_contacts)
 		ptr = gcal_contact_get_content(contact);
 		ptr = gcal_contact_get_organization(contact);
 		ptr = gcal_contact_get_profission(contact);
-		ptr = gcal_contact_get_im(contact);
+		j = gcal_contact_get_im_count(contact);
+		ptr = gcal_contact_get_im_address(contact, 0);
+		ptr = gcal_contact_get_im_protocol(contact, 0);
+		git = gcal_contact_get_im_type(contact, 0);
 		j = gcal_contact_get_phone_numbers_count(contact);
 		ptr = gcal_contact_get_phone_number(contact, 0);
 		gpt = gcal_contact_get_phone_number_type(contact, 0);
@@ -312,8 +316,8 @@ START_TEST (test_access_contacts)
 	ptr = gcal_contact_get_profission(gcal_contact_element(&contact_array,
 						      contact_array.length));
 	fail_if(ptr != NULL, "Getting field must fail!");
-	ptr = gcal_contact_get_im(gcal_contact_element(&contact_array,
-						      contact_array.length));
+	ptr = gcal_contact_get_im_address(gcal_contact_element(&contact_array,
+						      contact_array.length), 0);
 	fail_if(ptr != NULL, "Getting field must fail!");
 	ptr = gcal_contact_get_phone_number(gcal_contact_element(&contact_array,
 							  contact_array.length), 0);
@@ -321,7 +325,6 @@ START_TEST (test_access_contacts)
 	ptr = gcal_contact_get_address(gcal_contact_element(&contact_array,
 						      contact_array.length));
 	fail_if(ptr != NULL, "Getting field must fail!");
-
 
 	/* Cleanup */
 	gcal_cleanup_contacts(&contact_array);
@@ -386,6 +389,7 @@ START_TEST (test_oper_contact)
 	/* Cleanup */
 	gcal_contact_delete(contact);
 	gcal_delete(gcal);
+
 }
 END_TEST
 
