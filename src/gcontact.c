@@ -87,6 +87,14 @@ const char* gcal_address_type_str[] = {
 	"other"				// A_OTHER
 };
 
+/** Strings associated with im types */
+const char* gcal_im_type_str[] = {
+	"home",				// I_HOME
+	"work",				// I_WORK
+	"netmeeting",			// I_NETMEETING
+	"other"				// I_OTHER
+};
+
 gcal_contact_t gcal_contact_new(char *raw_xml)
 {
 	gcal_contact_t contact = NULL;
@@ -432,11 +440,11 @@ char *gcal_contact_get_profission(gcal_contact_t contact)
 	return contact->org_title;
 }
 
-char *gcal_contact_get_im(gcal_contact_t contact)
+char *gcal_contact_get_occupation(gcal_contact_t contact)
 {
 	if ((!contact))
 		return NULL;
-	return contact->im;
+	return contact->occupation;
 }
 
 char *gcal_contact_get_homepage(gcal_contact_t contact)
@@ -495,6 +503,53 @@ gcal_phone_type gcal_contact_get_phone_number_type(gcal_contact_t contact, int i
 	return result;
 }
 
+int gcal_contact_get_im_count(gcal_contact_t contact)
+{
+	if ((!contact))
+		return -1;
+	return contact->im_nr;
+}
+
+int gcal_contact_get_pref_im(gcal_contact_t contact)
+{
+	if ((!contact))
+		return -1;
+	return contact->im_pref;
+}
+
+char *gcal_contact_get_im_protocol(gcal_contact_t contact, int i)
+{
+	if ((!contact))
+		return NULL;
+	if (!(contact->im_protocol) || (i >= contact->im_nr))
+		return NULL;
+	return contact->im_protocol[i];
+}
+
+char *gcal_contact_get_im_address(gcal_contact_t contact, int i)
+{
+	if ((!contact))
+		return NULL;
+	if (!(contact->im_address) || (i >= contact->im_nr))
+		return NULL;
+	return contact->im_address[i];
+}
+
+gcal_phone_type gcal_contact_get_im_type(gcal_contact_t contact, int i)
+{
+	gcal_im_type result = P_INVALID;
+	int j;
+
+	if ((!contact))
+		return result;
+	if (!(contact->im_type) || (i >= contact->im_nr))
+		return result;
+	for (j = 0; j < I_ITEMS_COUNT; j++)
+		if (!strcmp(contact->im_type[i], gcal_im_type_str[j]))
+			result = j;
+	return result;
+}
+
 gcal_structured_subvalues_t gcal_contact_get_structured_name(gcal_contact_t contact)
 {
 	if ((!contact) || (!contact->structured_name))
@@ -530,7 +585,10 @@ int *gcal_contact_get_structured_address_count_obj(gcal_contact_t contact)
 	return &contact->structured_address_nr;
 }
 
-char *gcal_contact_get_structured_entry(gcal_structured_subvalues_t structured_entry, int structured_entry_nr, int structured_entry_count, const char *field_key)
+char *gcal_contact_get_structured_entry(gcal_structured_subvalues_t structured_entry,
+					int structured_entry_nr,
+					int structured_entry_count,
+					const char *field_key)
 {
 	struct gcal_structured_subvalues *temp_structured_entry;
 
@@ -562,7 +620,9 @@ char ***gcal_contact_get_structured_address_type_obj(gcal_contact_t contact)
 	return &contact->structured_address_type;
 }
 
-gcal_address_type gcal_contact_get_structured_address_type(gcal_contact_t contact, int structured_entry_nr, int structured_entry_count)
+gcal_address_type gcal_contact_get_structured_address_type(gcal_contact_t contact,
+							   int structured_entry_nr,
+							   int structured_entry_count)
 {
 	gcal_address_type result = A_INVALID;
 	int j;
@@ -659,6 +719,8 @@ int gcal_contact_delete_email_addresses(gcal_contact_t contact)
 	}
 
 	contact->emails_nr = contact->pref_email = 0;
+	
+	/* XXX: Think, this is obsolete??? */
 	contact->emails_field = contact->emails_type = 0;
 
 	result = 0;
@@ -815,6 +877,62 @@ int gcal_contact_set_phone(gcal_contact_t contact, const char *phone)
 	return res;
 }
 
+int gcal_contact_delete_im(gcal_contact_t contact)
+{
+	int result = -1;
+	int temp;
+
+	if (!contact)
+		return result;
+
+	if (contact->im_nr > 0) {
+		for (temp = 0; temp < contact->im_nr; temp++) {
+			if (contact->im_protocol[temp])
+				free(contact->im_protocol[temp]);
+			if (contact->im_address[temp])
+				free(contact->im_address[temp]);
+			if (contact->im_type[temp])
+				free(contact->im_type[temp]);
+		}
+		free(contact->im_protocol);
+		free(contact->im_address);
+		free(contact->im_type);
+	}
+
+	contact->im_nr = contact->im_pref = 0;
+
+	result = 0;
+
+	return result;
+}
+
+int gcal_contact_add_im(gcal_contact_t contact, const char *protcol,
+			const char *address, gcal_im_type type, int pref)
+{
+	int result = -1;
+
+	if ((!contact) || (!protcol) || (!address) || (type<0) || (type>=I_ITEMS_COUNT))
+		return result;
+
+	contact->im_protocol = (char**) realloc(contact->im_protocol, (contact->im_nr+1) * sizeof(char*));
+	contact->im_protocol[contact->im_nr] = strdup(protcol);
+
+	contact->im_address = (char**) realloc(contact->im_address, (contact->im_nr+1) * sizeof(char*));
+	contact->im_address[contact->im_nr] = strdup(address);
+
+	contact->im_type = (char**) realloc(contact->im_type, (contact->im_nr+1) * sizeof(char*));
+	contact->im_type[contact->im_nr] = strdup(gcal_im_type_str[type]);
+
+	if (pref)
+		contact->im_pref = contact->im_nr;
+
+	contact->im_nr++;
+
+	result = 0;
+
+	return result;
+}
+
 int gcal_contact_set_address(gcal_contact_t contact, const char *field)
 {
 	int result = -1;
@@ -874,9 +992,7 @@ int gcal_contact_set_structured_entry(gcal_structured_subvalues_t structured_ent
 		return 0;
 	}
 
-	//XXX: is this right?
-	for (temp_structured_entry = structured_entry; ;
-	     temp_structured_entry = temp_structured_entry->next_field) {
+	for (temp_structured_entry = structured_entry; temp_structured_entry; temp_structured_entry = temp_structured_entry->next_field) {
 		if (!strcmp(temp_structured_entry->field_key,field_key) &&
 		    (temp_structured_entry->field_typenr == structured_entry_nr)) {
 			if (temp_structured_entry->field_value != NULL) {
@@ -914,7 +1030,6 @@ int gcal_contact_delete_structured_entry(gcal_structured_subvalues_t structured_
 	for (temp_structured_entry = structured_entry;
 	     temp_structured_entry != NULL;
 	     temp_structured_entry = temp_structured_entry->next_field) {
-
 		if (temp_structured_entry->field_typenr)
 			temp_structured_entry->field_typenr = 0;
 		if (temp_structured_entry->field_key)
@@ -1007,6 +1122,23 @@ int gcal_contact_set_organization(gcal_contact_t contact, const char *field)
 
 	contact->org_name = strdup(field);
 	if (contact->org_name)
+		result = 0;
+
+	return result;
+}
+
+int gcal_contact_set_occupation(gcal_contact_t contact, const char *field)
+{
+	int result = -1;
+
+	if ((!contact) || (!field))
+		return result;
+
+	if (contact->occupation)
+		free(contact->occupation);
+
+	contact->occupation = strdup(field);
+	if (contact->occupation)
 		result = 0;
 
 	return result;

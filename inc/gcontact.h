@@ -103,33 +103,15 @@ typedef enum {
 	A_ITEMS_COUNT			// must be the last one!
 } gcal_address_type;
 
-
-/** Address structure, represents each field in structuredPostalAddress (Google API 3.0) */
-/*
-F_AGENT,			not used
-F_HOUSENAME,			not used
-F_STREET,
-F_POBOX,
-F_NEIGHBORHOOD,			not used
-F_CITY,
-F_SUBREGION,			not used
-F_REGION,
-F_POSTCODE,
-F_COUNTRY,
-F_FORMATTEDADDRESS,
-*/
+/** IM types allowed by Google API */
 typedef enum {
-	F_INVALID = -1,
-	F_STREET,
-	F_POBOX,
-	F_CITY,
-	F_REGION,
-	F_POSTCODE,
-	F_COUNTRY,
-	F_FORMATTEDADDRESS,
-	F_ITEMS_COUNT			// must be the last one!
-} gcal_structured_postal_address_fields;
-
+	I_INVALID = -1,
+	I_HOME,
+	I_WORK,
+	I_NETMEETING,
+	I_OTHER,
+	I_ITEMS_COUNT			// must be the last one!
+} gcal_im_type;
 
 /** Creates a new google contact object.
  *
@@ -376,6 +358,7 @@ char gcal_contact_is_deleted(gcal_contact_t contact);
  * atom stream, it will be set to an empty string (i.e. "").
 
  */
+/* TODO: document new functions */
 int gcal_contact_get_emails_count(gcal_contact_t contact);
 int gcal_contact_get_pref_email(gcal_contact_t contact);
 char *gcal_contact_get_email_address(gcal_contact_t contact, int i);
@@ -427,15 +410,16 @@ char *gcal_contact_get_organization(gcal_contact_t contact);
  */
 char *gcal_contact_get_profission(gcal_contact_t contact);
 
-/** Missing implementation.
- *
- * \todo Implement retrieve of extra fields in \ref atom_parser.c
+/** Access contact occupation/profession.
  *
  * @param contact A contact object, see \ref gcal_contact.
  *
- * @return Will only return NULL.
+ * @return Pointer to internal object field (dont free it!) or NULL (in error
+ * case or if the field is not set). If the entry hasn't this field in the
+ * atom stream, it will be set to an empty string (i.e. "").
+
  */
-char *gcal_contact_get_im(gcal_contact_t contact);
+char *gcal_contact_get_occupation(gcal_contact_t contact);
 
 /** Access contact website.
  *
@@ -466,9 +450,55 @@ char *gcal_contact_get_blog(gcal_contact_t contact);
 int gcal_contact_get_phone_numbers_count(gcal_contact_t contact);
 char *gcal_contact_get_phone_number(gcal_contact_t contact, int i);
 gcal_phone_type gcal_contact_get_phone_number_type(gcal_contact_t contact, int i);
-
-
 char *gcal_contact_get_phone(gcal_contact_t contact);
+
+/** Access contact IM count.
+ *
+ * @param contact A contact object, see \ref gcal_contact.
+ *
+ * @return Number of IM entries.
+ *
+ */
+int gcal_contact_get_im_count(gcal_contact_t contact);
+
+/** Access contact preferred IM account.
+ *
+ * @param contact A contact object, see \ref gcal_contact.
+ *
+ * @return Number of preferred IM account.
+ *
+ */
+int gcal_contact_get_pref_im(gcal_contact_t contact);
+
+/** Access contact IM protocol.
+ *
+ * @param contact A contact object, see \ref gcal_contact.
+ *
+ * @param i Number of the IM entry
+ *
+ * @return Pointer to internal object field.
+ */
+char *gcal_contact_get_im_protocol(gcal_contact_t contact, int i);
+
+/** Access contact IM address.
+ *
+ * @param contact A contact object, see \ref gcal_contact.
+ *
+ * @param i Number of the IM entry
+ *
+ * @return Pointer to internal object field.
+ */
+char *gcal_contact_get_im_address(gcal_contact_t contact, int i);
+
+/** Access contact IM type.
+ *
+ * @param contact A contact object, see \ref gcal_contact.
+ *
+ * @param i Number of the IM entry
+ *
+ * @return Type of the IM account.
+ */
+gcal_phone_type gcal_contact_get_im_type(gcal_contact_t contact, int i);
 
 /** Access contact address (structuredPostalAddress.formattedAddress).
  *
@@ -481,14 +511,20 @@ char *gcal_contact_get_phone(gcal_contact_t contact);
  */
 char *gcal_contact_get_address(gcal_contact_t contact);
 
-/** Access structured entry objects.
+/** Access structured address objects.
  *
  * @param contact A contact object, see \ref gcal_contact.
  *
  * @return Pointer to internal object field
  */
-/* TODO: document new functions */
 gcal_structured_subvalues_t gcal_contact_get_structured_address(gcal_contact_t contact);
+
+/** Access structured name object.
+ *
+ * @param contact A contact object, see \ref gcal_contact.
+ *
+ * @return Pointer to internal object field
+ */
 gcal_structured_subvalues_t gcal_contact_get_structured_name(gcal_contact_t contact);
 
 /** Get one structured entry.
@@ -503,7 +539,6 @@ gcal_structured_subvalues_t gcal_contact_get_structured_name(gcal_contact_t cont
  *
  * @return Pointer to internal object field
  */
-/* TODO: document new functions */
 char *gcal_contact_get_structured_entry(gcal_structured_subvalues_t structured_entry, int structured_entry_nr, int structured_entry_count, const char *field_key);
 
 /** Access structured entry count.
@@ -511,10 +546,15 @@ char *gcal_contact_get_structured_entry(gcal_structured_subvalues_t structured_e
  * @param contact A contact object, see \ref gcal_contact.
  *
  * @return Number of structured entries
+ */
+int gcal_contact_get_structured_address_count(gcal_contact_t contact);
+
+/** Access structured address count object.
+ *
+ * @param contact A contact object, see \ref gcal_contact.
+ *
  * @return Pointer to internal object field
  */
-/* TODO: document new functions */
-int gcal_contact_get_structured_address_count(gcal_contact_t contact);
 int *gcal_contact_get_structured_address_count_obj(gcal_contact_t contact);
 
 /** Access structured entry type.
@@ -526,10 +566,15 @@ int *gcal_contact_get_structured_address_count_obj(gcal_contact_t contact);
  * @param structured_entry_count Number of all entries.
  *
  * @return Type of entry
- * @return Pointer to internal object field
  */
 gcal_address_type gcal_contact_get_structured_address_type(gcal_contact_t contact, int structured_entry_nr, int structured_entry_count);
-/* TODO: document new functions */
+
+/** Access structured address type object.
+ *
+ * @param contact A contact object, see \ref gcal_contact.
+ *
+ * @return Pointer to internal object field
+ */
 char ***gcal_contact_get_structured_address_type_obj(gcal_contact_t contact);
 
 /** Access Google group membership info.
@@ -679,9 +724,7 @@ int gcal_contact_set_etag(gcal_contact_t contact, const char *field);
 
 
 
-/** Sets the contact telephone (for while only a single number is supported).
- *
- * \todo Implement multiple numbers support
+/** Sets the contact telephone.
  *
  * @param contact A contact object, see \ref gcal_contact.
  *
@@ -716,9 +759,30 @@ int gcal_contact_set_phone(gcal_contact_t contact, const char *phone);
 /* TODO: document new functions */
 int gcal_contact_delete_phone_numbers(gcal_contact_t contact);
 
-/** Sets the contact address (structuredPostalAddress.formattedAddress).
+/** Sets contact IM.
  *
- * \todo Implement multiple address support
+ * @param contact A contact object, see \ref gcal_contact.
+ *
+ * @param protcol IM protocol.
+ *
+ * @param address IM address.
+ *
+ * @param type IM type.
+ *
+ * @return 0 for success, -1 otherwise
+ */
+int gcal_contact_add_im(gcal_contact_t contact, const char *protcol,
+			const char *address, gcal_im_type type, int pref);
+
+/** Deletes contact IM.
+ *
+ * @param contact A contact object, see \ref gcal_contact.
+ *
+ * @return 0 for success, -1 otherwise
+ */
+int gcal_contact_delete_im(gcal_contact_t contact);
+
+/** Sets the contact address (Google API v2.0 gd:postalAddress).
  *
  * @param contact A contact object, see \ref gcal_contact.
  *
@@ -822,6 +886,17 @@ int gcal_contact_set_profission(gcal_contact_t contact, const char *field);
  * @return 0 for success, -1 otherwise
  */
 int gcal_contact_set_organization(gcal_contact_t contact, const char *field);
+
+/** Sets the occupation/profession.
+ *
+ *
+ * @param contact A contact object, see \ref gcal_contact.
+ *
+ * @param field occupation/profession name string (i.e. "Carpenter").
+ *
+ * @return 0 for success, -1 otherwise
+ */
+int gcal_contact_set_occupation(gcal_contact_t contact, const char *field);
 
 /** Sets contact description.
  *

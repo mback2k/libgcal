@@ -19,6 +19,7 @@
 #include "utest_userapi.h"
 #include "gcalendar.h"
 #include "gcontact.h"
+#include "gcal_parser.h"
 #include "utils.h"
 #include <stdio.h>
 #include <string.h>
@@ -246,6 +247,7 @@ START_TEST (test_access_contacts)
 	int j;
 	gcal_email_type get;
 	gcal_phone_type gpt;
+	gcal_im_type git;
 
 	gcal = gcal_new(GCONTACT);
 	result = gcal_get_authentication(gcal, "gcal4tester", "66libgcal");
@@ -276,7 +278,10 @@ START_TEST (test_access_contacts)
 		ptr = gcal_contact_get_content(contact);
 		ptr = gcal_contact_get_organization(contact);
 		ptr = gcal_contact_get_profission(contact);
-		ptr = gcal_contact_get_im(contact);
+		j = gcal_contact_get_im_count(contact);
+		ptr = gcal_contact_get_im_address(contact, 0);
+		ptr = gcal_contact_get_im_protocol(contact, 0);
+		git = gcal_contact_get_im_type(contact, 0);
 		j = gcal_contact_get_phone_numbers_count(contact);
 		ptr = gcal_contact_get_phone_number(contact, 0);
 		gpt = gcal_contact_get_phone_number_type(contact, 0);
@@ -311,8 +316,8 @@ START_TEST (test_access_contacts)
 	ptr = gcal_contact_get_profission(gcal_contact_element(&contact_array,
 						      contact_array.length));
 	fail_if(ptr != NULL, "Getting field must fail!");
-	ptr = gcal_contact_get_im(gcal_contact_element(&contact_array,
-						      contact_array.length));
+	ptr = gcal_contact_get_im_address(gcal_contact_element(&contact_array,
+						      contact_array.length), 0);
 	fail_if(ptr != NULL, "Getting field must fail!");
 	ptr = gcal_contact_get_phone_number(gcal_contact_element(&contact_array,
 							  contact_array.length), 0);
@@ -320,7 +325,6 @@ START_TEST (test_access_contacts)
 	ptr = gcal_contact_get_address(gcal_contact_element(&contact_array,
 						      contact_array.length));
 	fail_if(ptr != NULL, "Getting field must fail!");
-
 
 	/* Cleanup */
 	gcal_cleanup_contacts(&contact_array);
@@ -338,11 +342,18 @@ START_TEST (test_oper_contact)
 	/* Create a new contact object */
 	contact = gcal_contact_new(NULL);
 	fail_if (!contact, "Cannot construct contact object!");
+
 	gcal_contact_set_title(contact, "John Doe");
 	gcal_contact_set_email(contact, "john.doe@foo.bar.com");
 	gcal_contact_add_email_address(contact, "jonny@theman.com", E_OTHER, 0);
 	gcal_contact_set_phone(contact, "111-2222-3333-888");
 
+	contact->structured_name_nr = 1;
+	gcal_contact_set_structured_entry(contact->structured_name,0,1,"givenName","John");
+	gcal_contact_set_structured_entry(contact->structured_name,0,1,"familyName","Doe");
+	
+	gcal_contact_delete_email_addresses(contact);
+	gcal_contact_add_email_address(contact, "john.doe@foo.bar.com", E_OTHER, 1);
 
 	/* Create a gcal object and authenticate */
 	gcal = gcal_new(GCONTACT);
@@ -360,7 +371,12 @@ START_TEST (test_oper_contact)
 
 
 	/* Edit this contact */
-	gcal_contact_set_title(contact, "John 'The Generic' Doe");
+// 	gcal_contact_set_title(contact, "John 'The Generic' Doe");
+	
+	gcal_contact_set_structured_entry(contact->structured_name,0,1,"givenName","John");
+	gcal_contact_set_structured_entry(contact->structured_name,0,1,"additionalName","'The Generic'");
+	gcal_contact_set_structured_entry(contact->structured_name,0,1,"familyName","Doe");
+	
 	fail_if(result == -1, "Failed editing contact!");
 	gcal_contact_delete_email_addresses(contact);
 	gcal_contact_set_email(contact, "john.super.doe@foo.bar.com");
@@ -383,6 +399,7 @@ START_TEST (test_oper_contact)
 	/* Cleanup */
 	gcal_contact_delete(contact);
 	gcal_delete(gcal);
+
 }
 END_TEST
 

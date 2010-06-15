@@ -185,12 +185,14 @@ struct gcal_event {
 
 /** Sub structures, e.g. represents each field of gd:structuredPostalAddress or gd:name.
  */
-
 struct gcal_structured_subvalues {
-	/* TODO: insert missing documentation here */
+	/** Pointer to the next structured field */
 	struct gcal_structured_subvalues *next_field;
+	/** Number of address */
 	int field_typenr;
+	/** Index key of the entry (e.g. 'street') */
 	char *field_key;
+	/** Value of the entry */
 	char *field_value;
 };
 
@@ -225,14 +227,24 @@ struct gcal_contact {
 	char *org_name;
 	/** Job title */
 	char *org_title;
-	/** IM contact */
-	char *im;
+	/** Occupation/Profession */
+	char *occupation;
 	/** Phone numbers */
 	char **phone_numbers_field;
 	/** Phone number types */
 	char **phone_numbers_type;
 	/** Number of phone numbers */
 	int phone_numbers_nr;
+	/** IM address */
+	char **im_address;
+	/** IM protocol */
+	char **im_protocol;
+	/** IM types */
+	char **im_type;
+	/** Number of IM accounts */
+	int im_nr;
+	/** Number of preferred IM account */
+	int im_pref;
 	/** Address */
 	char *post_address;
 	/** Structured postal address address */
