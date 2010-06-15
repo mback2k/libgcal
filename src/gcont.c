@@ -179,7 +179,7 @@ void gcal_init_contact(struct gcal_contact *contact)
 	contact->structured_address->field_key = NULL;
 	contact->structured_address->field_value = NULL;
 	contact->structured_address->next_field = NULL;
-	contact->structured_address_nr = 0;
+	contact->structured_address_nr = contact->structured_address_pref = 0;
 	contact->structured_address_type = NULL;
 
 	contact->structured_name = (struct gcal_structured_subvalues *)malloc(
@@ -265,6 +265,7 @@ void gcal_destroy_contact(struct gcal_contact *contact)
 
 	clean_multi_string(contact->structured_address_type, contact->structured_address_nr);
 	contact->structured_address_nr = 0;
+	contact->structured_address_pref = 0;
 
 	do {
 	    temp_structured_entry = contact->structured_name;

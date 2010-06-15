@@ -253,6 +253,8 @@ struct gcal_contact {
 	char **structured_address_type;
 	/** Number of structured postal addressees */
 	int structured_address_nr;
+	/** Number of preferred structured postal address */
+	int structured_address_pref;
 	/** Google group membership info */
 	char **groupMembership;
 	/** Google group membership info */

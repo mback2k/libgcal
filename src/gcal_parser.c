@@ -715,6 +715,9 @@ int xmlcontact_create(struct gcal_contact *contact, char **xml_contact,
 					if (!(child = xmlNewNode(ns, BAD_CAST this_structured_entry->field_key)))
 						goto cleanup;
 					xmlNodeAddContent(child, BAD_CAST this_structured_entry->field_value);
+					if (i == contact->structured_address_pref)
+						xmlSetProp(node, BAD_CAST "primary",
+							BAD_CAST "true");
 					xmlAddChild(node, child);
 				}
 			}

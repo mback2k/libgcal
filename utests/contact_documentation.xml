@@ -24,7 +24,7 @@
     protocol='http://schemas.google.com/g/2005#GOOGLE_TALK'
     rel='http://schemas.google.com/g/2005#home' />
   <gContact:occupation>Carpenter</gContact:occupation>
-  <gd:structuredPostalAddress rel='http://schemas.google.com/g/2005#work'>
+  <gd:structuredPostalAddress rel='http://schemas.google.com/g/2005#work' primary='true'>
     <gd:street>1600 Amphitheatre Parkway</gd:street>
     <gd:city>Mountain View</gd:city>
     <gd:region>CA</gd:region>

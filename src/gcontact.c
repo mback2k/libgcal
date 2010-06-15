@@ -641,6 +641,13 @@ gcal_address_type gcal_contact_get_structured_address_type(gcal_contact_t contac
 	return result;
 }
 
+int gcal_contact_get_pref_structured_address(gcal_contact_t contact)
+{
+	if ((!contact))
+		return -1;
+	return contact->structured_address_pref;
+}
+
 int gcal_contact_get_groupMembership_count(gcal_contact_t contact)
 {
 	if ((!contact))
@@ -965,6 +972,20 @@ int gcal_contact_set_structured_address_nr(gcal_contact_t contact,
 
 	result = entry_nr;
 
+	return result;
+}
+
+int gcal_contact_set_pref_structured_address(gcal_contact_t contact, int pref_address)
+{
+	int result = -1;
+
+	if ((!contact) || (pref_address < 0))
+		return result;
+
+	contact->structured_address_pref = pref_address;
+	
+	result = 0;
+	
 	return result;
 }
 

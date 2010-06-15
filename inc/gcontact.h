@@ -577,6 +577,15 @@ gcal_address_type gcal_contact_get_structured_address_type(gcal_contact_t contac
  */
 char ***gcal_contact_get_structured_address_type_obj(gcal_contact_t contact);
 
+/** Access preferred structured address number.
+ *
+ * @param contact A contact object, see \ref gcal_contact.
+ *
+ * @return Number of preferred structured address.
+ *
+ */
+int gcal_contact_get_pref_structured_address(gcal_contact_t contact);
+
 /** Access Google group membership info.
  *
  * @param contact A contact object, see \ref gcal_contact.
@@ -802,6 +811,16 @@ int gcal_contact_set_address(gcal_contact_t contact, const char *field);
  */
 int gcal_contact_set_structured_address_nr(gcal_contact_t contact,
 					   gcal_address_type type);
+
+/** Sets the contact preferred address number (structuredPostalAddress).
+ *
+ * @param contact A contact object, see \ref gcal_contact.
+ *
+ * @param pref_address Number of preferred address.
+ *
+ * @return 0 for success, -1 otherwise
+ */
+int gcal_contact_set_pref_structured_address(gcal_contact_t contact, int pref_address);
 
 /** Sets a structured entry.
  *

@@ -316,9 +316,9 @@ exit:
 }
 
 static int extract_and_check_multisub(xmlDoc *doc, char *xpath_expression,
-				   int getContent, char *attr1,
-				   char* attr2, struct gcal_structured_subvalues **values, char ***types,
-				   int *pref)
+				   int getContent, char *attr1, char* attr2,
+				   struct gcal_structured_subvalues **values,
+				   char ***types, int *pref)
 {
 	xmlXPathObject *xpath_obj;
 	xmlNodeSet *node;
@@ -779,10 +779,10 @@ int atom_extract_contact(xmlNode *entry, struct gcal_contact *ptr_entry)
 						    "gd:structuredPostalAddress",
 						    1,
 						    "rel",
-						    NULL,
+						    "primary",
 						    &ptr_entry->structured_address,
 						    &ptr_entry->structured_address_type,
-						    NULL);
+						    &ptr_entry->structured_address_pref);
 
 	/* Gets contact group membership info */
 	ptr_entry->groupMembership_nr = extract_and_check_multi(doc,
