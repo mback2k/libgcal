@@ -606,6 +606,132 @@ START_TEST (test_url_sanity_contact)
 }
 END_TEST
 
+START_TEST (test_contact_new_fields)
+{
+
+	gcal_t gcal;
+	int result, length, address_nr, address_count;
+	struct gcal_contact_array contact_array;
+	gcal_contact_t contact;
+	gcal_structured_subvalues_t structured_entry;
+	char *xml = NULL, *ptr;
+
+	/* Create a new contact object */
+	contact = gcal_contact_new(NULL);
+	fail_if (!contact, "Cannot construct contact object!");
+
+	contact->structured_name=(struct gcal_structured_subvalues *)malloc(sizeof(struct gcal_structured_subvalues));
+	contact->structured_name->field_typenr = 0;
+	contact->structured_name->field_key = malloc(sizeof(char*));
+	contact->structured_name->field_key = NULL;
+	contact->structured_name->field_value = malloc(sizeof(char*));
+	contact->structured_name->field_value = NULL;
+	contact->structured_name_nr = 1;
+	gcal_contact_set_structured_entry(contact->structured_name,0,1,"givenName","Johnny");
+	gcal_contact_set_structured_entry(contact->structured_name,0,1,"additionalName","W.");
+	gcal_contact_set_structured_entry(contact->structured_name,0,1,"familyName","Doe");
+	gcal_contact_set_structured_entry(contact->structured_name,0,1,"namePrefix","Dr.");
+
+	/* extra fields */
+	gcal_contact_set_nickname(contact,"The Fox");
+	gcal_contact_set_occupation(contact,"Programmer");
+	gcal_contact_set_birthday(contact,"1963-11-11");
+	gcal_contact_add_im(contact,"SKYPE","johnny_skype",I_HOME,1);
+	gcal_contact_add_im(contact,"AIM","johnny_aim",I_HOME,0);
+	gcal_contact_set_homepage(contact,"www.homegage.com");
+	gcal_contact_set_blog(contact,"myblog.homegage.com");
+
+	contact->structured_address=(struct gcal_structured_subvalues *)malloc(sizeof(struct gcal_structured_subvalues));
+	contact->structured_address->field_typenr = 0;
+	contact->structured_address->field_key = malloc(sizeof(char*));
+	contact->structured_address->field_key = NULL;
+	contact->structured_address->field_value = malloc(sizeof(char*));
+	contact->structured_address->field_value = NULL;
+	contact->structured_address_nr = 0;
+	contact->structured_address_type = (char**)malloc(sizeof(char*));
+	address_nr = gcal_contact_set_structured_address_nr(contact,A_HOME);
+	address_count = contact->structured_address_nr;
+	gcal_contact_set_structured_entry(contact->structured_address,address_nr,address_count,"street","Unknown Av St, n 69");
+	gcal_contact_set_structured_entry(contact->structured_address,address_nr,address_count,"pobox","PO BOX 123 456");
+	gcal_contact_set_structured_entry(contact->structured_address,address_nr,address_count,"city","Dirty Old Town");
+	gcal_contact_set_structured_entry(contact->structured_address,address_nr,address_count,"region","Somewhere");
+	gcal_contact_set_structured_entry(contact->structured_address,address_nr,address_count,"postcode","ABC 12345-D");
+	gcal_contact_set_structured_entry(contact->structured_address,address_nr,address_count,"country","Madagascar");
+	address_nr = gcal_contact_set_structured_address_nr(contact,A_WORK);
+	address_count = contact->structured_address_nr;
+	gcal_contact_set_structured_entry(contact->structured_address,address_nr,address_count,"street","This One St, n 23");
+	gcal_contact_set_structured_entry(contact->structured_address,address_nr,address_count,"pobox","PO BOX 333 444 5");
+	gcal_contact_set_structured_entry(contact->structured_address,address_nr,address_count,"city","My Hometown");
+	gcal_contact_set_structured_entry(contact->structured_address,address_nr,address_count,"region","Hereorthere");
+	gcal_contact_set_structured_entry(contact->structured_address,address_nr,address_count,"postcode","XYZ 98765-C");
+	gcal_contact_set_structured_entry(contact->structured_address,address_nr,address_count,"country","Island");
+	gcal_contact_set_pref_structured_address(contact,1);
+
+	gcal = gcal_new(GCONTACT);
+	result = gcal_get_authentication(gcal, "gcalntester", "77libgcal");
+	fail_if(result == -1, "Authentication should work.");
+
+	result = gcal_add_contact(gcal, contact);
+	fail_if(result == -1, "Failed adding a new contact!");
+
+	gcal_contact_set_structured_entry(contact->structured_name,0,1,"givenName","James");
+	gcal_contact_set_structured_entry(contact->structured_name,0,1,"familyName","Dont");
+	gcal_contact_set_structured_entry(contact->structured_name,0,1,"nameSuffix","Jr.");
+
+	structured_entry = gcal_contact_get_structured_address(contact);
+	gcal_contact_delete_structured_entry(structured_entry,gcal_contact_get_structured_address_count_obj(contact),gcal_contact_get_structured_address_type_obj(contact));
+
+	contact->structured_address->field_typenr = 0;
+	contact->structured_address->field_key = malloc(sizeof(char*));
+	contact->structured_address->field_key = NULL;
+	contact->structured_address->field_value = malloc(sizeof(char*));
+	contact->structured_address->field_value = NULL;
+	contact->structured_address_nr = 0;
+	contact->structured_address_type = (char**)malloc(sizeof(char*));
+	address_nr = gcal_contact_set_structured_address_nr(contact,A_HOME);
+	address_count = contact->structured_address_nr;
+	gcal_contact_set_structured_entry(contact->structured_address,address_nr,address_count,"street","New Av St, n 61");
+	gcal_contact_set_structured_entry(contact->structured_address,address_nr,address_count,"pobox","PO BOX 987 654");
+	gcal_contact_set_structured_entry(contact->structured_address,address_nr,address_count,"city","My New Town");
+	gcal_contact_set_structured_entry(contact->structured_address,address_nr,address_count,"region","Hereorthere");
+	gcal_contact_set_structured_entry(contact->structured_address,address_nr,address_count,"postcode","XYZ 987654-V");
+	gcal_contact_set_structured_entry(contact->structured_address,address_nr,address_count,"country","Italy");
+	address_nr = gcal_contact_set_structured_address_nr(contact,A_WORK);
+	address_count = contact->structured_address_nr;
+	gcal_contact_set_structured_entry(contact->structured_address,address_nr,address_count,"street","Longlong St, n 23");
+	gcal_contact_set_structured_entry(contact->structured_address,address_nr,address_count,"pobox","PO BOX 1");
+	gcal_contact_set_structured_entry(contact->structured_address,address_nr,address_count,"city","Smallville");
+	gcal_contact_set_structured_entry(contact->structured_address,address_nr,address_count,"region","Nowhere");
+	gcal_contact_set_structured_entry(contact->structured_address,address_nr,address_count,"postcode","QQQ 112233-WW");
+	gcal_contact_set_structured_entry(contact->structured_address,address_nr,address_count,"country","South Africa");
+
+	result = xmlcontact_create(contact, &xml, &length);
+	fail_if((result == -1) || (xml == NULL),
+		"Failed creating XML for a new contact!");
+
+	ptr = strstr(xml, "Dont");
+	fail_if(ptr == NULL, "XML lacks a field: gd:name/gd:familyName\n");
+
+	result = gcal_update_contact(gcal, contact);
+	fail_if(result == -1, "Failed editing contact!");
+
+	/* Retrieve updated contacts */
+	result = gcal_get_updated_contacts(gcal, &contact_array, NULL);
+	fail_if(result == -1, "Failed downloading updated contacts!");
+
+	/* Delete */
+	result = gcal_erase_contact(gcal, contact);
+	fail_if(result == -1, "Failed deleting contact!");
+
+	/* Cleanup */
+	gcal_contact_delete(contact);
+	gcal_delete(gcal);
+
+	gcal_cleanup_contacts(&contact_array);
+
+}
+END_TEST
+
 TCase *gcal_userapi(void)
 {
 	TCase *tc = NULL;
@@ -624,6 +750,7 @@ TCase *gcal_userapi(void)
 	tcase_add_test(tc, test_contact_photo);
 	tcase_add_test(tc, test_url_sanity_calendar);
 	tcase_add_test(tc, test_url_sanity_contact);
+	tcase_add_test(tc, test_contact_new_fields);
 
 	return tc;
 }
