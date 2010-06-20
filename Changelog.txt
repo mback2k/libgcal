@@ -1,6 +1,14 @@
 j2libgcal changelog
 Adenilson Cavalcanti (adenilson.silva@indt.org.br)
 
+== libgcal 0.9.5 (2010-06-20) ==
+
+- restored ABI
+
+- fixing some memory leaks and unit tests
+
+- IM support
+
 
 == libgcal 0.9.4 (2010-06-09) ==
 
