@@ -161,7 +161,7 @@ START_TEST (test_contact_xml)
 	contact.common.id = contact.common.updated = contact.common.edit_uri = contact.common.etag = NULL;
 	contact.photo = contact.photo_data = NULL;
 	/* extra fields */
-	contact.nickname = "The Fox";
+	contact.nickname = "Johnny";
 	contact.content = "A very interesting person";
 	contact.org_name = "Foo software";
 	contact.org_title = "Software engineer";
@@ -288,7 +288,7 @@ START_TEST (test_contact_add)
 	contact.common.id = contact.common.updated = contact.common.edit_uri = contact.common.etag = NULL;
 	contact.photo = contact.photo_data = NULL;
 	/* extra fields */
-	contact.nickname = "The Fox";
+	contact.nickname = "Doc Doe";
 	contact.content = "A very interesting person";
 	contact.org_name = "Foo software";
 	contact.org_title = "Software engineer";
@@ -399,8 +399,8 @@ START_TEST (test_contact_delete)
 	fail_if(entry_index == -1, temp);
 	free(temp);
 
-// 	result = gcal_delete_contact(ptr_gcal, (contacts + entry_index));
-// 	fail_if(result == -1, "Failed deleting contact!");
+	result = gcal_delete_contact(ptr_gcal, (contacts + entry_index));
+	fail_if(result == -1, "Failed deleting contact!");
 
 	gcal_destroy_contacts(contacts, count);
 }
@@ -424,7 +424,7 @@ START_TEST (test_contact_edit)
 	gcal_contact_set_structured_entry(contact.structured_name,0,1,"givenName","John");
 	gcal_contact_set_structured_entry(contact.structured_name,0,1,"additionalName","W.");
 	gcal_contact_set_structured_entry(contact.structured_name,0,1,"familyName","Doe");
-	gcal_contact_set_structured_entry(contact.structured_name,0,1,"namePrefix","Dr.");
+	gcal_contact_set_structured_entry(contact.structured_name,0,1,"namePrefix","Prof.");
 
 	contact.photo = contact.photo_data = NULL;
 	contact.photo_length = 0;
@@ -436,7 +436,7 @@ START_TEST (test_contact_edit)
 	contact.emails_type[0] = "home";
 	contact.common.id = contact.common.updated = contact.common.edit_uri = contact.common.etag = NULL;
 	/* extra fields */
-	contact.nickname = "The Fox";
+	contact.nickname = "Pro";
 	contact.content = "A very interesting person";
 	contact.org_name = "Foo software";
 	contact.org_title = "Software engineer";

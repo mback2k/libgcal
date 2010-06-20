@@ -759,7 +759,7 @@ int xmlcontact_create(struct gcal_contact *contact, char **xml_contact,
 		xmlAddChild(root, node);
 	}
 
-	/* TODO: implement missing fields (im, geo location, what else?)
+	/* TODO: implement missing fields (which ones? geo location?)
 	 */
 
 	xmlDocDumpMemory(doc, &xml_str, length);

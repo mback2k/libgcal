@@ -610,11 +610,12 @@ START_TEST (test_contact_new_fields)
 {
 
 	gcal_t gcal;
-	int result, length, address_nr, address_count;
+	int result, address_nr, address_count;
 	struct gcal_contact_array contact_array;
-	gcal_contact_t contact;
+	gcal_contact_t contact, contact_temp;
 	gcal_structured_subvalues_t structured_entry;
-	char *xml = NULL, *ptr;
+	char *temp;
+	size_t i;
 
 	/* Create a new contact object */
 	contact = gcal_contact_new(NULL);
@@ -668,12 +669,14 @@ START_TEST (test_contact_new_fields)
 	gcal_contact_set_pref_structured_address(contact,1);
 
 	gcal = gcal_new(GCONTACT);
+        gcal_set_store_xml(gcal, 1);
 	result = gcal_get_authentication(gcal, "gcalntester", "77libgcal");
 	fail_if(result == -1, "Authentication should work.");
 
 	result = gcal_add_contact(gcal, contact);
 	fail_if(result == -1, "Failed adding a new contact!");
 
+	/* Edit the new contact */
 	gcal_contact_set_structured_entry(contact->structured_name,0,1,"givenName","James");
 	gcal_contact_set_structured_entry(contact->structured_name,0,1,"familyName","Dont");
 	gcal_contact_set_structured_entry(contact->structured_name,0,1,"nameSuffix","Jr.");
@@ -705,19 +708,57 @@ START_TEST (test_contact_new_fields)
 	gcal_contact_set_structured_entry(contact->structured_address,address_nr,address_count,"postcode","QQQ 112233-WW");
 	gcal_contact_set_structured_entry(contact->structured_address,address_nr,address_count,"country","South Africa");
 
-	result = xmlcontact_create(contact, &xml, &length);
-	fail_if((result == -1) || (xml == NULL),
-		"Failed creating XML for a new contact!");
-
-	ptr = strstr(xml, "Dont");
-	fail_if(ptr == NULL, "XML lacks a field: gd:name/gd:familyName\n");
-
+	/* Update contact */
 	result = gcal_update_contact(gcal, contact);
 	fail_if(result == -1, "Failed editing contact!");
 
 	/* Retrieve updated contacts */
 	result = gcal_get_updated_contacts(gcal, &contact_array, NULL);
 	fail_if(result == -1, "Failed downloading updated contacts!");
+
+	result = -1;
+	for (i = 0; i < contact_array.length; ++i) {
+		contact_temp = gcal_contact_element(&contact_array, i);
+		if( !strcmp("Dr. James W. Dont Jr.",
+			gcal_contact_get_structured_entry(contact_temp->structured_name,0,1,"fullName")) ) {
+
+			temp = gcal_contact_get_nickname(contact);
+			fail_if(strcmp("The Fox",temp) != 0,
+				"Failed setting/getting right nickname: ---%s---!",temp);
+
+			temp = gcal_contact_get_occupation(contact);
+			fail_if(strcmp("Programmer",temp) != 0,
+				"Failed setting/getting right occupation: ---%s---!",temp);
+
+			temp = gcal_contact_get_birthday(contact);
+			fail_if(strcmp("1963-11-11",temp) != 0,
+				"Failed setting/getting right birthday: ---%s---!",temp);
+
+			temp = gcal_contact_get_im_address(contact,1);
+			fail_if(strcmp("johnny_aim",temp) != 0,
+				"Failed setting/getting right im address: ---%s---!",temp);
+
+			temp = gcal_contact_get_im_protocol(contact,1);
+			fail_if(strcmp("AIM",temp) != 0,
+				"Failed setting/getting right im protocol: ---%s---!",temp);
+
+			temp = gcal_contact_get_homepage(contact);
+			fail_if(strcmp("www.homegage.com",temp) != 0,
+				"Failed setting/getting right homepage: ---%s---!",temp);
+
+			temp = gcal_contact_get_blog(contact);
+			fail_if(strcmp("myblog.homegage.com",temp) != 0,
+				"Failed setting/getting right blog address: ---%s---!",temp);
+
+			temp = gcal_contact_get_structured_entry(contact_temp->structured_address,0,2,"region");
+			fail_if(strcmp("Hereorthere",temp) != 0,
+				"Failed setting/getting right region of first address: ---%s---!",temp);
+
+			temp = gcal_contact_get_structured_entry(contact_temp->structured_address,1,2,"postcode");
+			fail_if(strcmp("QQQ 112233-WW",temp) != 0,
+				"Failed setting/getting right postcode of second address: ---%s---!",temp);
+		}
+	}
 
 	/* Delete */
 	result = gcal_erase_contact(gcal, contact);
@@ -726,7 +767,6 @@ START_TEST (test_contact_new_fields)
 	/* Cleanup */
 	gcal_contact_delete(contact);
 	gcal_delete(gcal);
-
 	gcal_cleanup_contacts(&contact_array);
 
 }
