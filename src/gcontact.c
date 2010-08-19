@@ -503,6 +503,20 @@ gcal_phone_type gcal_contact_get_phone_number_type(gcal_contact_t contact, int i
 	return result;
 }
 
+char *gcal_contact_get_im(gcal_contact_t contact)
+{
+	if ((!contact))
+		return NULL;
+	if (!(contact->im_address))
+		return NULL;
+
+	char *res;
+	int pref_im;
+	pref_im = gcal_contact_get_pref_im(contact);
+	res = gcal_contact_get_im_address(contact, pref_im);
+	return res;
+}
+
 int gcal_contact_get_im_count(gcal_contact_t contact)
 {
 	if ((!contact))

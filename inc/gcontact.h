@@ -452,6 +452,14 @@ char *gcal_contact_get_phone_number(gcal_contact_t contact, int i);
 gcal_phone_type gcal_contact_get_phone_number_type(gcal_contact_t contact, int i);
 char *gcal_contact_get_phone(gcal_contact_t contact);
 
+/** Access contact preferred IM address.
+ *
+ * @param contact A contact object, see \ref gcal_contact.
+ *
+ * @return Pointer to internal object field.
+ */
+char *gcal_contact_get_im(gcal_contact_t contact);
+
 /** Access contact IM count.
  *
  * @param contact A contact object, see \ref gcal_contact.
