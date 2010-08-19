@@ -513,6 +513,8 @@ char *gcal_contact_get_im(gcal_contact_t contact)
 	char *res;
 	int pref_im;
 	pref_im = gcal_contact_get_pref_im(contact);
+	if(pref_im == -1)
+		pref_im = 0;
 	res = gcal_contact_get_im_address(contact, pref_im);
 	return res;
 }

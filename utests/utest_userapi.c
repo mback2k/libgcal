@@ -278,6 +278,7 @@ START_TEST (test_access_contacts)
 		ptr = gcal_contact_get_content(contact);
 		ptr = gcal_contact_get_organization(contact);
 		ptr = gcal_contact_get_profission(contact);
+		ptr = gcal_contact_get_im(contact);
 		j = gcal_contact_get_im_count(contact);
 		ptr = gcal_contact_get_im_address(contact, 0);
 		ptr = gcal_contact_get_im_protocol(contact, 0);
@@ -314,6 +315,9 @@ START_TEST (test_access_contacts)
 							    contact_array.length));
 	fail_if(ptr != NULL, "Getting field must fail!");
 	ptr = gcal_contact_get_profission(gcal_contact_element(&contact_array,
+						      contact_array.length));
+	fail_if(ptr != NULL, "Getting field must fail!");
+	ptr = gcal_contact_get_im(gcal_contact_element(&contact_array,
 						      contact_array.length));
 	fail_if(ptr != NULL, "Getting field must fail!");
 	ptr = gcal_contact_get_im_address(gcal_contact_element(&contact_array,
@@ -733,6 +737,10 @@ START_TEST (test_contact_new_fields)
 			temp = gcal_contact_get_birthday(contact);
 			fail_if(strcmp("1963-11-11",temp) != 0,
 				"Failed setting/getting right birthday: ---%s---!",temp);
+
+			temp = gcal_contact_get_im(contact);
+			fail_if(strcmp("johnny_skype",temp) != 0,
+				"Failed getting right im address (gcal_contact_get_im): ---%s---!",temp);
 
 			temp = gcal_contact_get_im_address(contact,1);
 			fail_if(strcmp("johnny_aim",temp) != 0,
