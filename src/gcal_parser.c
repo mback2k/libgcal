@@ -103,7 +103,6 @@ int get_the_url(char *data, int length, char **url)
 		result = 0;
 
 	xmlFreeDoc(doc);
-	xmlCleanupParser();
 
 exit:
 	return result;
@@ -160,7 +159,6 @@ int get_edit_url(char *data, int length, char **url)
 		result = 0;
 
 	xmlFreeDoc(doc);
-	xmlCleanupParser();
 
 exit:
 	return result;
@@ -183,7 +181,6 @@ int get_edit_etag(char *data, int length, char **url)
 		result = 0;
 
 	xmlFreeDoc(doc);
-	xmlCleanupParser();
 
 exit:
 	return result;
