@@ -77,6 +77,7 @@ AM_CONDITIONAL(GCAL_DEBUG_CURL, test "x$enable_curldebug" = "xyes")
 AC_SUBST(csourcedir, $srcdir/src)
 AC_SUBST(headerdir, $srcdir/inc)
 AC_SUBST(utestdir, $srcdir/utests)
+AC_SUBST(includedir, $includedir/libgcal)
 
 AC_DEVEL_MACROS
 AC_DEVEL_ABSDIRS
