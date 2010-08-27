@@ -7,6 +7,7 @@ int find_load_file(const char *filename, char **result)
         /* find_load_file is a function that will magically load the contents
          * of a XML file into a string. If you want a POSIX only implementation,
 	 * have a look in 'utests/utils.c'
+         * of a XML file into a string.
          */
 	return 1;
 }
