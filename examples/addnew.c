@@ -33,6 +33,7 @@ int main(int argc, char *argv[])
         /* Cleanup */
         free(super_contact);
         gcal_delete(gcal);
+        gcal_final_cleanup();
 
         return 0;
 }

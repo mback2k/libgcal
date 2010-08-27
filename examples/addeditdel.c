@@ -43,6 +43,7 @@ int main(int argc, char *argv[])
         /* Cleanup */
         gcal_event_delete(event);
         gcal_delete(gcal);
+        gcal_final_cleanup();
 
         return 0;
 }

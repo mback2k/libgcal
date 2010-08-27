@@ -38,6 +38,7 @@ int main(int argc, char *argv[])
         /* Cleanup */
         gcal_cleanup_contacts(&all_contacts);
         gcal_delete(gcal);
+        gcal_final_cleanup();
 
         return 0;
 }

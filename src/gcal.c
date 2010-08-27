@@ -1536,3 +1536,9 @@ char *gcal_get_etag(struct gcal_entry *entry)
 
 	return NULL;
 }
+
+void gcal_final_cleanup()
+{
+	xmlCleanupParser();
+}
+

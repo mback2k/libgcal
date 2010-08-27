@@ -638,4 +638,11 @@ char *gcal_get_xml(struct gcal_entry *entry);
  */
 char gcal_get_deleted(struct gcal_entry *entry);
 
+/** Global cleanup (use only at end of program)
+ *
+ * Cleans up any global variables that the library may use, as well as
+ * calls libxml2's xmlCleanupParser().
+ */
+void gcal_final_cleanup();
+
 #endif
