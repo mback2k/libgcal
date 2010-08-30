@@ -1,5 +1,16 @@
-j2libgcal changelog
-Adenilson Cavalcanti (adenilson.silva@indt.org.br)
+libgcal changelog
+Adenilson Cavalcanti (cavalcantii@gmail.com)
+
+== libgcal 0.9.6 (2010-08-30) ==
+
+- fixed premature libxml2 cleanup, which could cause crashes in applications
+
+- added website examples
+
+- added gcal_final_cleanup()
+
+- restored ABI (I hope so!)
+
 
 == libgcal 0.9.5 (2010-06-20) ==
 
