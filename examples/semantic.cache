@@ -4,7 +4,7 @@
   :tables (list 
    (semanticdb-table "addeditdel.c"
     :major-mode 'c-mode
-    :tags '(("stdio.h" include (:system-flag t) nil [1 19]) ("gcalendar.h" include (:system-flag t) nil [20 42]) ("main" function (:arguments (("argc" variable (:type "int") (reparse-symbol arg-sub-list) [53 62]) ("argv" variable (:pointer 1 :dereference 1 :type "char") (reparse-symbol arg-sub-list) [63 76])) :type "int") nil [44 1651]))
+    :tags '(("stdio.h" include (:system-flag t) (dependency-file "/usr/include/stdio.h") [1 19]) ("gcalendar.h" include (:system-flag t) (dependency-file none) [20 42]) ("main" function (:arguments (("argc" variable (:type "int") (reparse-symbol arg-sub-list) [53 62]) ("argv" variable (:pointer 1 :dereference 1 :type "char") (reparse-symbol arg-sub-list) [63 76])) :type "int") nil [44 1651]))
     :file "addeditdel.c"
     :pointmax 1653
     )
@@ -16,9 +16,9 @@
     )
    (semanticdb-table "addnew.c"
     :major-mode 'c-mode
-    :tags '(("stdio.h" include (:system-flag t) nil [1 19]) ("gcalendar.h" include (:system-flag t) nil [20 42]) ("gcal_status.h" include (:system-flag t) nil [43 67]) ("find_load_file" function (:arguments (("filename" variable (:pointer 1 :constant-flag t :type "char") (reparse-symbol arg-sub-list) [88 109]) ("result" variable (:pointer 2 :type "char") (reparse-symbol arg-sub-list) [110 124])) :type "int") nil [69 346]) ("main" function (:arguments (("argc" variable (:type "int") (reparse-symbol arg-sub-list) [357 366]) ("argv" variable (:pointer 1 :dereference 1 :type "char") (reparse-symbol arg-sub-list) [367 380])) :type "int") nil [348 1150]))
+    :tags '(("stdio.h" include (:system-flag t) nil [1 19]) ("gcalendar.h" include (:system-flag t) nil [20 42]) ("gcal_status.h" include (:system-flag t) nil [43 67]) ("find_load_file" function (:arguments (("filename" variable (:pointer 1 :constant-flag t :type "char") (reparse-symbol arg-sub-list) [88 109]) ("result" variable (:pointer 2 :type "char") (reparse-symbol arg-sub-list) [110 124])) :type "int") nil [69 386]) ("main" function (:arguments (("argc" variable (:type "int") (reparse-symbol arg-sub-list) [397 406]) ("argv" variable (:pointer 1 :dereference 1 :type "char") (reparse-symbol arg-sub-list) [407 420])) :type "int") nil [388 1190]))
     :file "addnew.c"
-    :pointmax 1152
+    :pointmax 1192
     :unmatched-syntax 'nil
     )
    (semanticdb-table "getallcontacts.c"

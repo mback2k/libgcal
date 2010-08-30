@@ -27,6 +27,12 @@
     :file "getallcontacts.c"
     :pointmax 1358
     )
+   (semanticdb-table "Makefile"
+    :major-mode 'makefile-gmake-mode
+    :tags '(("CFLAGS" variable (:default-value ("$(shell pkg-config --cflags libgcal)")) nil [1 45]) ("LDLIBS" variable (:default-value ("$(shell pkg-config --libs libgcal)")) nil [45 87]) ("all" function (:arguments ("addeditdel" "addnew" "getallcontacts" "updatecal")) nil [88 137]) ("clean" function nil nil [137 206]) ("addeditdel" function (:arguments ("addeditdel.o")) nil [206 232]) ("addnew" function (:arguments ("addnew.o")) nil [232 250]) ("getallcontacts" function (:arguments ("getallcontacts.o")) nil [250 284]) ("updatecal" function (:arguments ("updatecal.o")) nil [284 308]))
+    :file "Makefile"
+    :pointmax 308
+    )
    )
   :file "semantic.cache"
   :semantic-tag-version "2.0pre4"
