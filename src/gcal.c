@@ -1465,7 +1465,7 @@ int gcal_query(struct gcal_resource *gcalobj, const char *parameters,
 	if (!query_url)
 		goto exit;
 
-	result = get_follow_redirection(gcalobj, query_url, NULL, 
+	result = get_follow_redirection(gcalobj, query_url, NULL,
 			gdata_version);
 
 	if (!result)

@@ -640,8 +640,13 @@ char gcal_get_deleted(struct gcal_entry *entry);
 
 /** Global cleanup (use only at end of program)
  *
- * Cleans up any global variables that the library may use, as well as
- * calls libxml2's xmlCleanupParser().
+ * Cleans up any global variables that the library may use (which currently
+ * it doesn't use), as well as calls libxml2's xmlCleanupParser().
+ *
+ * Rationale: if the linked application is also using libxml and xmlCleanuParser
+ * is called from within libgcal, it will at very best mess up with the
+ * other code. Special thanks for Chris Frey for finding this bug and
+ * fixing.
  */
 void gcal_final_cleanup();
 
