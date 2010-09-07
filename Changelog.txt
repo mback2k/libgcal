@@ -11,6 +11,9 @@ Adenilson Cavalcanti (cavalcantii@gmail.com)
 
 - restored ABI (I hope so!)
 
+- both cmake and autotools should install in $INCLUDE_DIR/libgcal
+  (this should make packagers life easier)
+
 
 == libgcal 0.9.5 (2010-06-20) ==
 
