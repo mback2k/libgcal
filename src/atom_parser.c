@@ -130,24 +130,12 @@ int atom_entries(xmlDoc *document)
 #if defined(LIBXML_XPATH_ENABLED) && defined(LIBXML_SAX1_ENABLED)
 
 	xpath_obj = execute_xpath_expression(document,
-				       "//openSearch:totalResults/text()",
+					   "count(//atom:entry)",
 				       NULL);
 	if (!xpath_obj)
 		goto exit;
 
-	if ((node = xpath_obj->nodesetval)) {
-		/* The expression can only return 1 node */
-		if (node->nodeNr != 1)
-			goto cleanup;
-	} else
-		goto cleanup;
-
-	/* Node type must be 'text' */
-	if (strcmp(node->nodeTab[0]->name, "text") ||
-	    (node->nodeTab[0]->type != XML_TEXT_NODE))
-		goto cleanup;
-
-	result = atoi(node->nodeTab[0]->content);
+	result = xpath_obj->floatval;
 
 cleanup:
 	xmlXPathFreeObject(xpath_obj);
