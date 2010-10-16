@@ -369,8 +369,7 @@ int xmlentry_create(struct gcal_event *entry, char **xml_entry, int *length)
 	}
 
 	/* when */	
-	if(entry->dt_start || entry->dt_end)
-	{
+	if(entry->dt_start || entry->dt_end){
 		node = xmlNewNode(ns, "when");
 		if (!node)
 			goto cleanup;
@@ -383,8 +382,7 @@ int xmlentry_create(struct gcal_event *entry, char **xml_entry, int *length)
 	}
 	
 	/*recurrency*/
-	if(entry->dt_recurrent)
-	{
+	if(entry->dt_recurrent){
 		node = xmlNewNode(ns, "recurrence");
 		if (!node)
 			goto cleanup;
