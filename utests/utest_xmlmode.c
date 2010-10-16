@@ -174,18 +174,19 @@ START_TEST (test_oper_xmlrecurring_events)
 	fail_if(result == -1, "Failed adding a new event!");
 	xml_entry = gcal_event_get_xml(event);
 	fail_if(xml_entry == NULL, "Cannot access raw XML!");
-	tmp = strstr(xml_entry, "<gd:who");
-	fail_if(xml_entry == NULL, "Raw XML lacks field!");
+	tmp = strstr(xml_entry, "<gd:recurrence");
+	fail_if(tmp == NULL, "Raw XML lacks field!");
 
 
 	/* Edit this event */
-	gcal_event_set_title(event, "Changing the title");
+	/* Envent now on tuesdays */
+	gcal_event_set_recurrent(event, "DTSTART;TZID=America/Manaus:20080618T143000\nDTEND;TZID=America/Manaus:20080618T153000\nRRULE:FREQ=WEEKLY;BYDAY=TU;WKST=SU");
 	result = gcal_update_event(gcal, event);
 	fail_if(result == -1, "Failed editing event!");
 	xml_entry = gcal_event_get_xml(event);
 	fail_if(xml_entry == NULL, "Cannot access raw XML!");
-	tmp = strstr(xml_entry, "Changing the title");
-	fail_if(xml_entry == NULL, "Raw XML lacks field!");
+	tmp = strstr(xml_entry, "BYDAY=TU");
+	fail_if(tmp == NULL, "Raw XML lacks field!");
 
 
 	/* Delete this event (note: google doesn't really deletes
