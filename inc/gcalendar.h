@@ -569,7 +569,6 @@ int gcal_event_set_where(gcal_event_t event, const char *field);
 
 /** Sets recurrence rule.
  *
- * \todo implement this method, its just stub now.
  * @param event An event object, see \ref gcal_event and \ref gcal_event_new.
  *
  * @param field A string with google invalid iCalendar format

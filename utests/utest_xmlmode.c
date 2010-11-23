@@ -145,6 +145,64 @@ START_TEST (test_oper_xmlevents)
 }
 END_TEST
 
+START_TEST (test_oper_xmlrecurring_events)
+{
+	gcal_t gcal;
+	gcal_event_t event;
+	int result;
+	char *xml_entry, *tmp;
+
+	gcal = gcal_new(GCALENDAR);
+	fail_if(gcal == NULL, "Failed constructing gcal object!");
+
+	result = gcal_get_authentication(gcal, "gcal4tester", "66libgcal");
+	fail_if(result == -1, "Cannot authenticate!");
+
+	/* Set flag to save XML in internal field of each event */
+	gcal_set_store_xml(gcal, 1);
+
+	/* Create a new event object */
+	event = gcal_event_new(NULL);
+	fail_if (!event, "Cannot construct event object!");
+	gcal_event_set_title(event, "A new recurring event");
+	gcal_event_set_content(event, "Here goes the description");
+	gcal_event_set_where(event, "A nice place for a meeting");
+	gcal_event_set_recurrent(event, "DTSTART;TZID=America/Manaus:20080618T143000\nDTEND;TZID=America/Manaus:20080618T153000\nRRULE:FREQ=WEEKLY;BYDAY=WE;WKST=SU");
+
+	/* Add a new event */
+	result = gcal_add_event(gcal, event);
+	fail_if(result == -1, "Failed adding a new event!");
+	xml_entry = gcal_event_get_xml(event);
+	fail_if(xml_entry == NULL, "Cannot access raw XML!");
+	tmp = strstr(xml_entry, "<gd:recurrence");
+	fail_if(tmp == NULL, "Raw XML lacks field!");
+
+
+	/* Edit this event */
+	/* Envent now on tuesdays */
+	gcal_event_set_recurrent(event, "DTSTART;TZID=America/Manaus:20080618T143000\nDTEND;TZID=America/Manaus:20080618T153000\nRRULE:FREQ=WEEKLY;BYDAY=TU;WKST=SU");
+	result = gcal_update_event(gcal, event);
+	fail_if(result == -1, "Failed editing event!");
+	xml_entry = gcal_event_get_xml(event);
+	fail_if(xml_entry == NULL, "Cannot access raw XML!");
+	tmp = strstr(xml_entry, "BYDAY=TU");
+	fail_if(tmp == NULL, "Raw XML lacks field!");
+
+
+	/* Delete this event (note: google doesn't really deletes
+	 * the event, but set its status to 'cancelled' and keeps
+	 * then for nearly 4 weeks).
+	 */
+	result = gcal_erase_event(gcal, event);
+	fail_if(result == -1, "Failed deleting event!");
+
+	/* Cleanup */
+	gcal_event_delete(event);
+	gcal_delete(gcal);
+
+}
+END_TEST
+
 START_TEST (test_oper_xmlcontact)
 {
 	gcal_t gcal;
@@ -361,6 +419,7 @@ TCase *xmlmode_tcase_create(void)
 	tcase_add_test(tc, test_get_xmlentries);
 	tcase_add_test(tc, test_get_xmlcontacts);
 	tcase_add_test(tc, test_oper_xmlevents);
+	tcase_add_test(tc, test_oper_xmlrecurring_events);
 	tcase_add_test(tc, test_oper_xmlcontact);
 	tcase_add_test(tc, test_oper_purexml);
 	tcase_add_test(tc, test_oper_purexmlcal);

@@ -368,16 +368,28 @@ int xmlentry_create(struct gcal_event *entry, char **xml_entry, int *length)
 		xmlAddChild(root, node);
 	}
 
-	/* when */
-	node = xmlNewNode(ns, "when");
-	if (!node)
-		goto cleanup;
-	if (entry->dt_start)
-		xmlSetProp(node, BAD_CAST "startTime",
-			   BAD_CAST entry->dt_start);
-	if (entry->dt_end)
-		xmlSetProp(node, BAD_CAST "endTime", BAD_CAST entry->dt_end);
-	xmlAddChild(root, node);
+	/* when */	
+	if(entry->dt_start || entry->dt_end){
+		node = xmlNewNode(ns, "when");
+		if (!node)
+			goto cleanup;
+		if (entry->dt_start)
+			xmlSetProp(node, BAD_CAST "startTime",
+				BAD_CAST entry->dt_start);
+		if (entry->dt_end)
+			xmlSetProp(node, BAD_CAST "endTime", BAD_CAST entry->dt_end);
+		xmlAddChild(root, node);
+	}
+	
+	/*recurrency*/
+	if(entry->dt_recurrent){
+		node = xmlNewNode(ns, "recurrence");
+		if (!node)
+			goto cleanup;
+		xmlSetProp(node, BAD_CAST "type", BAD_CAST "text");
+		xmlNodeAddContent(node, entry->dt_recurrent);
+		xmlAddChild(root, node);
+	}
 
 
 	xmlDocDumpMemory(doc, &xml_str, length);
