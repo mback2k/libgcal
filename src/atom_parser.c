@@ -44,7 +44,6 @@ POSSIBILITY OF SUCH DAMAGE.
 #include "internal_gcal.h"
 #include <string.h>
 
-
 void workaround_edit_url(char *inplace)
 {
 	char *aux, *tmp;
@@ -282,7 +281,8 @@ static int extract_and_check_multi(xmlDoc *doc, char *xpath_expression,
 		if (attr2) {
 			if (xmlHasProp(node->nodeTab[i], attr2)) {
 				tmp = xmlGetProp(node->nodeTab[i], attr2);
-				(*types)[i] = strdup(strchr(tmp,'#') + 1);
+				if(strchr(tmp,'#'))
+					(*types)[i] = strdup(strchr(tmp,'#') + 1);
 				xmlFree(tmp);
 			}
 			else
@@ -292,7 +292,8 @@ static int extract_and_check_multi(xmlDoc *doc, char *xpath_expression,
 		if (attr3) {
 			if (xmlHasProp(node->nodeTab[i], attr3)) {
 				tmp = xmlGetProp(node->nodeTab[i], attr3);
-				(*protocols)[i] = strdup(strchr(tmp,'#') + 1);
+				if(strchr(tmp,'#'))
+					(*protocols)[i] = strdup(strchr(tmp,'#') + 1);
 				xmlFree(tmp);
 			}
 			else
@@ -383,7 +384,8 @@ static int extract_and_check_multisub(xmlDoc *doc, char *xpath_expression,
 		if (attr1) {
 			if (xmlHasProp(node->nodeTab[i], attr1)) {
 				tmp = xmlGetProp(node->nodeTab[i], attr1);
-				(*types)[i] = strdup(strchr(tmp,'#') + 1);
+				if(strchr(tmp,'#'))
+					(*types)[i] = strdup(strchr(tmp,'#') + 1);
 				xmlFree(tmp);
 			} else
 				(*types)[i] = strdup("");
