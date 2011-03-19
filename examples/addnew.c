@@ -21,16 +21,21 @@ int main(int argc, char *argv[])
 
         gcal = gcal_new(GCONTACT);
         result = gcal_get_authentication(gcal, "username", "password");
+	if (result) {
+		printf("Failed authentication, exiting...\n");
+		return -1;
+	}
 
-         if (find_load_file(filename, &super_contact))
-                 exit(-1);
+
+	if (find_load_file(filename, &super_contact))
+		exit(-1);
 
         result = gcal_add_xmlentry(gcal, super_contact, NULL);
         if (result == -1)
                 /* Check for errors and print status code */
                 printf("Failed adding a new contact! HTTP code: %d"
-                "\nmsg: %s\n", gcal_status_httpcode(gcal),
-                gcal_status_msg(gcal));
+		       "\nmsg: %s\n", gcal_status_httpcode(gcal),
+		       gcal_status_msg(gcal));
 
         /* Cleanup */
         free(super_contact);

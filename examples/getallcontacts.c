@@ -19,6 +19,11 @@ int main(int argc, char *argv[])
                 result = gcal_get_authentication(gcal, "username",
                                                  "password");
 
+	if (result) {
+		printf("Failed authentication, exiting...\n");
+		return -1;
+	}
+
         /* Get all contacts and print its name/prefered email/updated time */
         result = gcal_get_contacts(gcal, &all_contacts);
 

@@ -16,6 +16,10 @@ int main(int argc, char *argv[])
         else
                 result = gcal_get_authentication(gcal, "username",
                                                  "password");
+	if (result) {
+		printf("Failed authentication, exiting...\n");
+		return -1;
+	}
 
         /* Create an event 'object' and fill in some data */
         if ((event = gcal_event_new(NULL))) {
