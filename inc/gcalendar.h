@@ -565,8 +565,6 @@ int gcal_event_set_end(gcal_event_t event, const char *field);
  */
 int gcal_event_set_where(gcal_event_t event, const char *field);
 
-/* TODO: Not implemented */
-
 /** Sets recurrence rule.
  *
  * @param event An event object, see \ref gcal_event and \ref gcal_event_new.
@@ -577,6 +575,7 @@ int gcal_event_set_where(gcal_event_t event, const char *field);
  * @return 0 for sucess, -1 otherwise.
  */
 int gcal_event_set_recurrent(gcal_event_t event, const char *field);
+
 
 /** Set event status (for while, all then were created as 'confirmed').
  *
