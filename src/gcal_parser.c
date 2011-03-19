@@ -373,11 +373,13 @@ int xmlentry_create(struct gcal_event *entry, char **xml_entry, int *length)
 		node = xmlNewNode(ns, "when");
 		if (!node)
 			goto cleanup;
+
 		if (entry->dt_start)
 			xmlSetProp(node, BAD_CAST "startTime",
-				BAD_CAST entry->dt_start);
+				   BAD_CAST entry->dt_start);
 		if (entry->dt_end)
-			xmlSetProp(node, BAD_CAST "endTime", BAD_CAST entry->dt_end);
+			xmlSetProp(node, BAD_CAST "endTime",
+				   BAD_CAST entry->dt_end);
 		xmlAddChild(root, node);
 	}
 
