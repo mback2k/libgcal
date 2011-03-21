@@ -693,4 +693,55 @@ char gcal_get_deleted(struct gcal_entry *entry);
  */
 void gcal_final_cleanup();
 
+/** Access resource url
+ *
+ * Each resource has a atom's feed url.
+ *
+ * @param res A gcal resource pointer, see \ref gcal_resource.
+ *
+ * @return A pointer to internal field ( *don't* try to free it!).
+ */
+char *gcal_resource_get_url(struct gcal_resource *res);
+
+/** Access resource user
+ *
+ * Each resource has a user associated to the domain field.
+ *
+ * @param res A gcal resource pointer, see \ref gcal_resource.
+ *
+ * @return A pointer to internal field ( *don't* try to free it!).
+ */
+char *gcal_resource_get_user(struct gcal_resource *res);
+
+/** Access resource domain
+ *
+ * Each resource has a domain associated to the user field.
+ *
+ * @param res A gcal resource pointer, see \ref gcal_resource.
+ *
+ * @return A pointer to internal field ( *don't* try to free it!).
+ */
+char *gcal_resource_get_domain(struct gcal_resource *res);
+
+/** Access resource timezone
+ *
+ * Each resource has a timezone
+ *
+ * @param res A gcal resource pointer, see \ref gcal_resource.
+ *
+ * @return A pointer to internal field ( *don't* try to free it!).
+ */
+char *gcal_resource_get_timezone(struct gcal_resource *res);
+
+/** Access resource location
+ *
+ * Each resource has a location.
+ *
+ * @param res A gcal resource pointer, see \ref gcal_resource.
+ *
+ * @return A pointer to internal field ( *don't* try to free it!).
+ */
+char *gcal_resource_get_location(struct gcal_resource *res);
+
+
 #endif

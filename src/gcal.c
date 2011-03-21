@@ -1661,3 +1661,42 @@ void gcal_final_cleanup()
 	xmlCleanupParser();
 }
 
+char *gcal_resource_get_url(struct gcal_resource *res)
+{
+	if (res)
+		return res->url;
+
+	return NULL;
+}
+
+char *gcal_resource_get_user(struct gcal_resource *res)
+{
+	if (res)
+		return res->user;
+
+	return NULL;
+}
+
+char *gcal_resource_get_domain(struct gcal_resource *res)
+{
+	if (res)
+		return res->domain;
+
+	return NULL;
+}
+
+char *gcal_resource_get_timezone(struct gcal_resource *res)
+{
+	if (res)
+		return res->timezone;
+
+	return NULL;
+}
+
+char *gcal_resource_get_location(struct gcal_resource *res)
+{
+	if (res)
+		return res->location;
+
+	return NULL;
+}
