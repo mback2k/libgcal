@@ -572,6 +572,57 @@ exit:
 	return result;
 }
 
+int atom_extract_calendar(xmlNode *entry, struct gcal_resource *ptr_res)
+{
+	int	result = -1;
+	xmlDoc	*doc = NULL;
+	xmlNode	*copy = NULL;
+	char	*url = NULL;
+	char	*username = NULL;
+	char	*domain = NULL;
+	char	*tmp = NULL;
+
+	if (!entry || !ptr_res)
+		goto exit;
+
+	doc = xmlNewDoc("1.0");
+	if (!doc)
+		goto exit;
+
+	copy = xmlCopyNode(entry, 1);
+	if (!copy)
+		goto exit;
+
+	xmlDocSetRootElement(doc, copy);
+	/* xmlSaveFormatFileEnc("-", doc, "UTF-8", 1); */
+
+	url = extract_and_check(doc, "//atom:entry/atom:id/text()",
+					 NULL);
+	if (!url)
+		goto exit;
+
+	domain = strstr(url, GCAL_DELIMITER);
+	domain += strlen(GCAL_DELIMITER);
+
+	tmp = url;
+	username = strstr(tmp, "/calendars/");
+	username += strlen("/calendars/");
+	tmp = username;
+	tmp = strstr(tmp, GCAL_DELIMITER);
+	*tmp = '\0';
+	
+	ptr_res->user = strdup(username);
+	ptr_res->domain = strdup(domain);
+	result = 0;
+
+cleanup:
+	free(url);
+	xmlFreeDoc(doc);
+
+exit:
+	return result;
+}
+
 int atom_extract_contact(xmlNode *entry, struct gcal_contact *ptr_entry)
 {
 	int result = -1, length = 0;

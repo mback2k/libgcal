@@ -229,6 +229,56 @@ exit:
 	return result;
 }
 
+int get_entries_number_xml(dom_document *doc)
+{
+	int		result = -1;
+	xmlXPathObject	*xpath_obj = NULL;
+	xmlNodeSet	*nodes;
+
+	if (!doc) {
+		fprintf(stderr, "get_entry_number: null document!");
+	}
+
+	xpath_obj = atom_get_entries(doc);
+	if (!xpath_obj)
+		goto exit;
+	nodes = xpath_obj->nodesetval;
+	if (!nodes)
+		goto exit;
+
+	result = nodes->nodeNr;
+	xmlXPathFreeObject(xpath_obj);
+
+exit:
+	return result;
+}
+
+int get_calendar_entry(dom_document *doc, int index, struct gcal_resource *res)
+{
+	int			result = -1;
+	xmlXPathObject		*xpath_obj = NULL;
+	xmlNodeSet		*nodes;
+	struct gcal_resource	*resource = NULL;
+
+	xpath_obj = atom_get_entries(doc);
+	if (!xpath_obj)
+		goto exit;
+
+	nodes = xpath_obj->nodesetval;
+	if (!nodes)
+		goto cleanup;
+
+	if (index > nodes->nodeNr) 
+		goto cleanup;
+
+	result = atom_extract_calendar(nodes->nodeTab[index], res);
+
+cleanup:
+	xmlXPathFreeObject(xpath_obj);
+exit:
+	return result;
+}
+
 int extract_all_entries(dom_document *doc,
 			struct gcal_event *data_extract, int length)
 {

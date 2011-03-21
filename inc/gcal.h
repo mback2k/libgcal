@@ -93,6 +93,12 @@ struct gcal_entry;
  */
 typedef struct gcal_resource * gcal_t;
 
+struct gcal_resource_array {
+	/* See \ref gcal_resource. */
+	gcal_t	entries;
+	/** The number of entries */
+	size_t	length;
+};
 
 /** Library structure destructor (use it free its internal resources properly).
  */
@@ -166,21 +172,58 @@ int gcal_get_authentication(struct gcal_resource *gcalobj,
  */
 int gcal_dump(struct gcal_resource *gcalobj, const char *gdata_version);
 
+
+/** Use this function to cleanup an array of calendars.
+ *
+ * See also \ref gcal_calendar_list.
+ *
+ * @param resource_array Pointer to a calendars array structure. See
+ * \ref gcal_resource_array.
+ *
+ * @return 0 on success, -1 otherwise.
+ */
+void gcal_cleanup_calendar(struct gcal_resource_array *resource_array);
+
+
+/** Get a specific calendar object given an index
+ *
+ * @param gcal_array Pointer to a \ref gcal_resource_array structure,
+ *                   which has already been initialized with \ref
+ *                   gcal_calendar_list.
+ * @param index	     The calendar index to retrieve
+ * @param gcalobj Pointer to to a \ref gcal_resource structure used to
+ *		  return the calendar object on success
+ * @return Returns 0 on success, -1 otherwise.
+ */
+int gcal_get_calendar_by_index(struct gcal_resource_array *gcal_array, size_t index, 
+			       gcal_t *gcalobj);
+
+
+/** Get a specific calendar object given username and domain
+ *
+ * @param gcal_array Pointer to a \ref gcal_resource_array structure,
+ *                   which has already been initialized with \ref
+ *                   gcal_calendar_list.
+ * @param user	     Pointer to the calendar user string
+ * @param domain     Pointer to the calendar domain string
+ * @param gcalobj Pointer to to a \ref gcal_resource structure used to
+ *		  return the calendar object on success
+ * @return Returns 0 on success, -1 otherwise.
+ */
+int gcal_get_calendar(struct gcal_resource_array *gcal_array, const char *user, 
+		      const char *domain, gcal_t *gcalobj);
+
+
 /** Get a list of users calendars (gcalendar supports multiple calendars
  * besides the default calendar).
- *
- * I think it would be a good idea to let the library user decide which
- * calendar to get the events. See too \ref gcal_dump.
- *
- * \todo Parse the Atom feed and provide easy access to the calendar lists.
  *
  * @param gcalobj Pointer to a \ref gcal_resource structure, which has
  *                 previously got the authentication using
  *                 \ref gcal_get_authentication.
- *
+ * @param gcal_list Pointer to a \ref gcal_resource array
  * @return Returns 0 on success, -1 otherwise.
  */
-int gcal_calendar_list(struct gcal_resource *gcalobj);
+int gcal_calendar_list(struct gcal_resource *gcalobj, struct gcal_resource_array *gcal_array);
 
 
 /** Return the number of event entries a calendar has (you should
