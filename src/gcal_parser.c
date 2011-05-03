@@ -530,7 +530,7 @@ int xmlcontact_create(struct gcal_contact *contact, char **xml_contact,
 
 		if( set_structured_entry )
 			xmlAddChild(root, node);
-	} else if (contact->common.title) {
+	} else if (contact->common.title && contact->common.title[0]) {
 		node = xmlNewNode(NULL, "gd:name");
 		if (!node)
 			goto cleanup;
@@ -542,7 +542,7 @@ int xmlcontact_create(struct gcal_contact *contact, char **xml_contact,
 
 	/* entry edit URL, only if the 'entry' is already existant.
 	 */
-	if (contact->common.edit_uri) {
+	if (contact->common.edit_uri && contact->common.edit_uri[0]) {
 		node = xmlNewNode(NULL, "link");
 		if (!node)
 			goto cleanup;
@@ -576,7 +576,7 @@ int xmlcontact_create(struct gcal_contact *contact, char **xml_contact,
 	}
 
 	/* Here begin extra fields */
-	if (contact->content) {
+	if (contact->content && contact->content[0]) {
 		node = xmlNewNode(NULL, "atom:content");
 		if (!node)
 			goto cleanup;
@@ -585,7 +585,7 @@ int xmlcontact_create(struct gcal_contact *contact, char **xml_contact,
 		xmlAddChild(root, node);
 	}
 
-	if (contact->nickname) {
+	if (contact->nickname && contact->nickname[0]) {
 		node = xmlNewNode(NULL, "gContact:nickname");
 		if (!node)
 			goto cleanup;
@@ -593,7 +593,7 @@ int xmlcontact_create(struct gcal_contact *contact, char **xml_contact,
 		xmlAddChild(root, node);
 	}
 
-	if (contact->homepage) {
+	if (contact->homepage && contact->homepage[0]) {
 		if (!(node = xmlNewNode(NULL, "gContact:website")))
 			goto cleanup;
 		xmlSetProp(node, BAD_CAST "rel", BAD_CAST "home-page");
@@ -601,7 +601,7 @@ int xmlcontact_create(struct gcal_contact *contact, char **xml_contact,
 		xmlAddChild(root, node);
 	}
 
-	if (contact->blog) {
+	if (contact->blog && contact->blog[0]) {
 		if (!(node = xmlNewNode(NULL, "gContact:website")))
 			goto cleanup;
 		xmlSetProp(node, BAD_CAST "rel", BAD_CAST "blog");
@@ -610,13 +610,13 @@ int xmlcontact_create(struct gcal_contact *contact, char **xml_contact,
 	}
 
 	/* organization (it has 2 subelements: orgName, orgTitle) */
-	if (contact->org_name || contact->org_title) {
+	if (contact->org_name && contact->org_name[0] || contact->org_title && contact->org_title[0]) {
 		if (!(node = xmlNewNode(ns, "organization")))
 			goto cleanup;
 		xmlSetProp(node, BAD_CAST "rel",
 			   BAD_CAST "http://schemas.google.com/g/2005#other");
 
-		if (contact->org_name) {
+		if (contact->org_name && contact->org_name[0]) {
 			if (!(child = xmlNewNode(ns, "orgName")))
 				goto cleanup;
 			xmlNodeAddContent(child, contact->org_name);
@@ -624,7 +624,7 @@ int xmlcontact_create(struct gcal_contact *contact, char **xml_contact,
 		}
 
 
-		if (contact->org_title) {
+		if (contact->org_title && contact->org_title[0]) {
 			if (!(child = xmlNewNode(ns, "orgTitle")))
 				goto cleanup;
 			xmlNodeAddContent(child, contact->org_title);
@@ -634,7 +634,7 @@ int xmlcontact_create(struct gcal_contact *contact, char **xml_contact,
 		xmlAddChild(root, node);
 	}
 
-	if (contact->occupation) {
+	if (contact->occupation && contact->occupation[0]) {
 		node = xmlNewNode(NULL, "gContact:occupation");
 		if (!node)
 			goto cleanup;
@@ -722,7 +722,7 @@ int xmlcontact_create(struct gcal_contact *contact, char **xml_contact,
 			if (set_structured_entry)
 				xmlAddChild(root, node);
 		}
-	} else if (contact->post_address) {
+	} else if (contact->post_address && contact->post_address[0]) {
 		node = xmlNewNode(NULL, "gd:structuredPostalAddress");
 		if (!node)
 			goto cleanup;
@@ -746,7 +746,7 @@ int xmlcontact_create(struct gcal_contact *contact, char **xml_contact,
 	}
 
 	/* birthday */
-	if (contact->birthday) {
+	if (contact->birthday && contact->birthday[0]) {
 		/*if (!(node = xmlNewNode(NULL, BAD_CAST "gContact:birthday")))
 			goto cleanup;
 		xmlSetProp(node, BAD_CAST "xmlns", BAD_CAST "http://schemas.google.com/contact/2008");*/
