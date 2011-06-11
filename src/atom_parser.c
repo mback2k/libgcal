@@ -610,7 +610,7 @@ int atom_extract_calendar(xmlNode *entry, struct gcal_resource *ptr_res)
 	tmp = username;
 	tmp = strstr(tmp, GCAL_DELIMITER);
 	*tmp = '\0';
-	
+
 	ptr_res->user = strdup(username);
 	ptr_res->domain = strdup(domain);
 	result = 0;

@@ -195,7 +195,8 @@ void gcal_cleanup_calendar(struct gcal_resource_array *resource_array);
  *		  return the calendar object on success
  * @return Returns 0 on success, -1 otherwise.
  */
-int gcal_get_calendar_by_index(struct gcal_resource_array *gcal_array, size_t index, 
+int gcal_get_calendar_by_index(struct gcal_resource_array *gcal_array,
+			       size_t index,
 			       gcal_t *gcalobj);
 
 
@@ -210,7 +211,8 @@ int gcal_get_calendar_by_index(struct gcal_resource_array *gcal_array, size_t in
  *		  return the calendar object on success
  * @return Returns 0 on success, -1 otherwise.
  */
-int gcal_get_calendar(struct gcal_resource_array *gcal_array, const char *user, 
+int gcal_get_calendar(struct gcal_resource_array *gcal_array,
+		      const char *user,
 		      const char *domain, gcal_t *gcalobj);
 
 
@@ -223,7 +225,8 @@ int gcal_get_calendar(struct gcal_resource_array *gcal_array, const char *user,
  * @param gcal_list Pointer to a \ref gcal_resource array
  * @return Returns 0 on success, -1 otherwise.
  */
-int gcal_calendar_list(struct gcal_resource *gcalobj, struct gcal_resource_array *gcal_array);
+int gcal_calendar_list(struct gcal_resource *gcalobj,
+		       struct gcal_resource_array *gcal_array);
 
 
 /** Return the number of event entries a calendar has (you should
