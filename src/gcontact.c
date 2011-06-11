@@ -739,12 +739,10 @@ int gcal_contact_delete_email_addresses(gcal_contact_t contact)
 
 		free(contact->emails_field);
 		free(contact->emails_type);
+		contact->emails_field = contact->emails_type = NULL;
 	}
 
 	contact->emails_nr = contact->pref_email = 0;
-	
-	/* XXX: Think, this is obsolete??? */
-	contact->emails_field = contact->emails_type = 0;
 
 	result = 0;
 
@@ -859,6 +857,7 @@ int gcal_contact_delete_phone_numbers(gcal_contact_t contact)
 
 		free(contact->phone_numbers_field);
 		free(contact->phone_numbers_type);
+		contact->phone_numbers_field = contact->phone_numbers_type = NULL;
 	}
 
 	contact->phone_numbers_nr = 0;
@@ -920,6 +919,7 @@ int gcal_contact_delete_im(gcal_contact_t contact)
 		free(contact->im_protocol);
 		free(contact->im_address);
 		free(contact->im_type);
+		contact->im_protocol = contact->im_address = contact->im_type = NULL;
 	}
 
 	contact->im_nr = contact->im_pref = 0;
@@ -1105,6 +1105,7 @@ int gcal_contact_delete_groupMembership(gcal_contact_t contact)
 		}
 
 		free(contact->groupMembership);
+		contact->groupMembership = NULL;
 	}
 
 	contact->groupMembership_nr = 0;
