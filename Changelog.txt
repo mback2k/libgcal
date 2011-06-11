@@ -1,6 +1,11 @@
 libgcal changelog
 Adenilson Cavalcanti (cavalcantii@gmail.com)
 
+== libgcal 0.9.7 (2011-06-15) ==
+
+- support for recurrent events
+
+
 == libgcal 0.9.6 (2010-09-07) ==
 
 - fixed premature libxml2 cleanup, which could cause crashes in applications
