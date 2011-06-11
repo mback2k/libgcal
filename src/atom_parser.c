@@ -591,7 +591,7 @@ int atom_extract_calendar(xmlNode *entry, struct gcal_resource *ptr_res)
 
 	copy = xmlCopyNode(entry, 1);
 	if (!copy)
-		goto exit;
+		goto cleanup;
 
 	xmlDocSetRootElement(doc, copy);
 	/* xmlSaveFormatFileEnc("-", doc, "UTF-8", 1); */
@@ -616,8 +616,10 @@ int atom_extract_calendar(xmlNode *entry, struct gcal_resource *ptr_res)
 	result = 0;
 
 cleanup:
-	free(url);
-	xmlFreeDoc(doc);
+	if (url)
+	    free(url);
+	if (doc)
+	    xmlFreeDoc(doc);
 
 exit:
 	return result;
