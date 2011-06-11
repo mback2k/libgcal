@@ -557,9 +557,12 @@ START_TEST (test_url_sanity_calendar)
 		 "Failed retrieving all events!");
 
 	fail_if(all_events.length == 0, "Events array is empty!");
-	fail_if((strcmp(gcal_event_get_url(event),
-			gcal_event_get_url(gcal_event_element(&all_events, 0)))
-		 != 0), "Edit url is different!");
+	char *tmp = gcal_event_get_url(gcal_event_element(&all_events, 0));
+	if (tmp)
+	    fail_if(strcmp(gcal_event_get_url(event), tmp) != 0,
+		    "Edit url is different!");
+	else
+	    fail_if(1, "unable to get the URL!");
 
 	fail_if((result = gcal_erase_event(gcal, event)) != 0,
 		"Failed deleting test event!");
