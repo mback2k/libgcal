@@ -3,10 +3,24 @@ cavalcantii@gmail.com
 
 == Compile and install ==
 
-Dependencies: gcc, automake, libxml-dev, libcurl-dev, ca-certificates
+Dependencies: gcc, cmake or automake, libxml-dev, libcurl-dev, ca-certificates
 
 
 In the project root directory, run:
+
+=== CMake ===
+
+$mkdir build
+
+$cd build
+
+$cmake ..
+
+$make
+
+
+
+=== Automake ===
 
 $autoreconf -i -f
 
@@ -27,7 +41,9 @@ $sudo make install
 
 Dependencies: lcov, gcov, check, doxygen, dot
 
-Do the same but you can also add:
+In cmake buildsystem, developer compiler flags are turned on by default (you can configure by running "ccmake ." in the build directory).
+
+Or if you using the autotools based build system:
 
 $../configure --enable-devel #enable unit tests and other flags
 
@@ -38,11 +54,11 @@ you should run instead
 **$../configure --enable-warnings --enable-check --enable-lcov**
 
 
+=== Tests and docs ===
 
+Cmake (make test) or autotools (make lcov) it will run unit test and create coverage reports.
 
-$make lcov #runs unit test and create coverage reports
-
-$make doxygen #generates API documentation
+For documentation: make doxygen (generates API documentation)
 
 
 ps1: If you wish just to run just a suite case, set GCAL environment
@@ -61,5 +77,5 @@ ps4: Currently I have being using cmake as the official development buildsystem
 (just run: make build; cd build; cmake ..; make)
 
 ps5: Libgcal is already included in major Linux distros (Debian, OpenSuse,
-Ubuntu, etc) and FreeBSD
+Ubuntu, Fedora, etc) and FreeBSD
 

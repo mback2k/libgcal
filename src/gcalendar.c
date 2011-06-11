@@ -641,3 +641,20 @@ int gcal_event_set_etag(gcal_event_t event, const char *field)
 
 	return result;
 }
+
+int gcal_event_set_recurrent(gcal_event_t event, const char *field)
+{
+	int result = -1;
+
+	if ((!event) || (!field))
+		return result;
+
+	if (event->dt_recurrent)
+		free(event->dt_recurrent);
+
+	event->dt_recurrent = strdup(field);
+	if (event->dt_recurrent)
+		result = 0;
+
+	return result;
+}

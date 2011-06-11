@@ -3,12 +3,12 @@ cavalcantii@gmail.com
 
 == About ==
 
-   This is a library to access google calendar events and contacts,
-   its purpose is
+   This is a library for accessing google calendar events and contacts,
+   enabling:
 
    - provide easy access to available events/contacts
 
-   - enable common operations: add, delete, edit
+   - common operations: add, delete, edit
 
    - have few dependencies (up until now, only requires libcurl and libxml)
 
@@ -43,13 +43,18 @@ cavalcantii@gmail.com
 
  - Hosted accounts
 
+ - Creation of recurrent events (but is up to the user to format the
+ recurrence) e.g.
+    DTSTART;VALUE=DATE:20100505
+    DTEND;VALUE=DATE:20100506
+    RRULE:FREQ=WEEKLY;BYDAY=Tu;UNTIL=20100904
+
 
 === Missing ===
 
-
  - batch commit
 
- - Calendar: creation of recurrent events (should use libical)
+ - support more than only the main calendar of a user
 
 
 === Dependencies ===
