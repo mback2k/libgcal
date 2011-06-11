@@ -115,13 +115,36 @@ void clean_dom_document(dom_document *doc);
 int get_entries_number(dom_document *doc);
 
 
+/** Return the number of calendars in the document.
+ * 
+ * This is a thin wrapper to \ref clean_doc_tree.
+ * @param doc A pointer to a document data type.
+ *
+ * @return -1 on error or the number of calendars.
+ */
+int get_entries_number_xml(dom_document *doc);
+
+
+/** Retrieve a DOM document of the Atom stream, it will extract all
+ *  the calendars and parse them, storing specified indexed entry within
+ *  a \ref gcal_resource.
+ *
+ * @param doc A document pointer to the Atom stream.
+ * @param index the calendar index item to fetch
+ * @param res A pointer to a pre-allocated \erf gcal_resource pointer.
+ *
+ * @return 0 on success, -1 on error.
+ */
+int get_calendar_entry(dom_document *doc, int index, struct gcal_resource *res);
+
+
 /** Receiving a DOM document of the Atom stream, it will extract all the event
- * entries and parse then, storing each entry field in a vector of
+ * entries and parse them, storing each entry field in a vector of
  * \ref gcal_event.
  *
  * It depends on \ref atom_extract_data and \ref atom_get_entries.
  *
- * @param doc A document pointer with the Atom stream.
+ * @param doc A document pointer to the Atom stream.
  *
  * @param data_extract A pointer to a pre-allocated vector \ref gcal_event.
  *

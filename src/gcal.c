@@ -150,14 +150,14 @@ void clean_buffer(struct gcal_resource *gcal_obj)
 	}
 }
 
-void gcal_destroy(struct gcal_resource *gcal_obj)
+static void _gcal_destroy(struct gcal_resource *gcal_obj, int free_obj)
 {
 	if (!gcal_obj)
 		return;
 
 	if (gcal_obj->buffer)
 		free(gcal_obj->buffer);
-	if (gcal_obj->curl)
+	if (gcal_obj->curl && free_obj == 0)
 		curl_easy_cleanup(gcal_obj->curl);
 	if (gcal_obj->auth)
 		free(gcal_obj->auth);
@@ -169,7 +169,7 @@ void gcal_destroy(struct gcal_resource *gcal_obj)
 		clean_dom_document(gcal_obj->document);
 	if (gcal_obj->curl_msg)
 		free(gcal_obj->curl_msg);
-	if (gcal_obj->fout_log)
+	if (gcal_obj->fout_log && free_obj == 0)
 		fclose(gcal_obj->fout_log);
 	if (gcal_obj->max_results)
 		free(gcal_obj->max_results);
@@ -180,9 +180,15 @@ void gcal_destroy(struct gcal_resource *gcal_obj)
 	if (gcal_obj->domain)
 		free(gcal_obj->domain);
 
-	free(gcal_obj);
+	if (free_obj == 0) {
+		free(gcal_obj);
+	}
 }
 
+void gcal_destroy(struct gcal_resource *gcal_obj)
+{
+	_gcal_destroy(gcal_obj, 0);
+}
 
 static size_t write_cb(void *ptr, size_t count, size_t chunk_size, void *data)
 {
@@ -737,12 +743,125 @@ exit:
 	return result;
 }
 
-int gcal_calendar_list(struct gcal_resource *gcalobj)
+void gcal_cleanup_calendar(struct gcal_resource_array *resource_array)
 {
-	int result;
+	size_t		i;
+
+	if (!resource_array)
+		return;
+
+	for(i = 0; i < resource_array->length; i++) {
+		_gcal_destroy(&(resource_array->entries[i]), 1);
+	}
+	
+	free(resource_array->entries);
+
+	resource_array->length = 0;
+	resource_array->entries = NULL;
+}
+
+int gcal_get_calendar_by_index(struct gcal_resource_array *gcal_array, size_t index,
+			       gcal_t *gcalobj)
+{
+	int	result = -1;
+
+	if (!gcal_array || !gcalobj)
+		goto exit;
+
+	if (index > gcal_array->length)
+		goto exit;
+
+	*gcalobj = &gcal_array->entries[index];
+	result = 0;
+
+exit:
+	return result;
+}
+
+int gcal_get_calendar(struct gcal_resource_array *gcal_array,
+		      const char *user, const char *domain,
+		      gcal_t *gcalobj)
+{
+	size_t		i;
+
+	if (!gcal_array || !user || !domain || !gcalobj)
+		goto exit;
+
+	for (i = 0; i < gcal_array->length; i++) {
+		if (gcal_array->entries[i].user && gcal_array->entries[i].domain &&
+		    !strncmp(gcal_array->entries[i].user, user, 
+			     strlen(gcal_array->entries[i].user)) &&
+		    !strncmp(gcal_array->entries[i].domain, domain, 
+			     strlen(gcal_array->entries[i].domain))) {
+			*gcalobj = &gcal_array->entries[i];
+			return 0;
+		}
+	}
+	
+exit:
+	return -1;
+}
+
+int gcal_calendar_list(struct gcal_resource *gcalobj, 
+		       struct gcal_resource_array *gcal_array)
+{
+	int				result;
+	size_t				i;
+
+	if (gcal_array)
+		gcal_array->length = 0;
+
+	if ((!gcalobj) || (!gcal_array))
+		goto exit;
+
 	result =  get_follow_redirection(gcalobj, GCAL_LIST, NULL,
 			"GData-Version: 2");
-	/* TODO: parse the Atom feed */
+	if (!result) {
+		gcalobj->has_xml = 1;
+	}
+
+	gcalobj->document = build_dom_document(gcalobj->buffer);
+	if (!gcalobj->document)
+		goto exit;
+
+	result = get_entries_number_xml(gcalobj->document);
+	if (result == -1)
+		goto exit;
+
+	gcal_array->length = result;
+	result = -1;
+	gcal_array->entries = malloc(sizeof(struct gcal_resource) * gcal_array->length);
+	if (!gcal_array->entries) {
+		goto cleanup;
+	}
+	memset(gcal_array->entries, 0, sizeof(struct gcal_resource) * gcal_array->length);
+
+	for (i = 0; i < gcal_array->length; i++) {
+		gcal_array->entries[i].has_xml = 1;
+		gcal_array->entries[i].curl = gcalobj->curl;
+		gcal_array->entries[i].auth = strdup(gcalobj->auth);
+		gcal_array->entries[i].buffer = NULL;
+		gcal_array->entries[i].document = NULL;
+		reset_buffer(&gcal_array->entries[i]);
+		gcal_array->entries[i].max_results = strdup(GCAL_UPPER);
+		gcal_set_service(&(gcal_array->entries[i]), GCALENDAR);
+
+		result = get_calendar_entry(gcalobj->document, i, &gcal_array->entries[i]);
+		if (result == -1) {
+			free(gcal_array->entries);
+			goto exit;
+		}
+	}
+
+cleanup:
+	clean_dom_document(gcalobj->document);
+	gcalobj->document = NULL;
+
+exit:
+	if (gcalobj->url) {
+		free(gcalobj->url);
+		gcalobj->url = NULL;
+	}
 
 	return result;
 }
@@ -1542,3 +1661,42 @@ void gcal_final_cleanup()
 	xmlCleanupParser();
 }
 
+char *gcal_resource_get_url(struct gcal_resource *res)
+{
+	if (res)
+		return res->url;
+
+	return NULL;
+}
+
+char *gcal_resource_get_user(struct gcal_resource *res)
+{
+	if (res)
+		return res->user;
+
+	return NULL;
+}
+
+char *gcal_resource_get_domain(struct gcal_resource *res)
+{
+	if (res)
+		return res->domain;
+
+	return NULL;
+}
+
+char *gcal_resource_get_timezone(struct gcal_resource *res)
+{
+	if (res)
+		return res->timezone;
+
+	return NULL;
+}
+
+char *gcal_resource_get_location(struct gcal_resource *res)
+{
+	if (res)
+		return res->location;
+
+	return NULL;
+}
