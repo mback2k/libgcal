@@ -49,13 +49,11 @@ cavalcantii@gmail.com
     DTEND;VALUE=DATE:20100506
     RRULE:FREQ=WEEKLY;BYDAY=Tu;UNTIL=20100904
 
+- User's calendar listing and operations on specific calendar.
 
 === Missing ===
 
  - batch commit
-
- - support more than only the main calendar of a user
-
 
 === Dependencies ===
 

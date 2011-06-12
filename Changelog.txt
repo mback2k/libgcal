@@ -3,7 +3,13 @@ Adenilson Cavalcanti (cavalcantii@gmail.com)
 
 == libgcal 0.9.7 (2011-06-15) ==
 
-- support for recurrent events
+- support for recurrent events (patch by Thies Schroder)
+
+- support for multiple calendars (patch by Julien Kerihuel)
+
+- support for basically all calendar fields (patch by Mathieu Bonnet)
+
+- multiple bug fixes (thanks to Bob Bell and others)
 
 
 == libgcal 0.9.6 (2010-09-07) ==
