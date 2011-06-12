@@ -135,6 +135,35 @@ int atom_extract_data(xmlNode *entry, struct gcal_event *ptr_entry);
  */
 int atom_extract_contact(xmlNode *entry, struct gcal_contact *ptr_entry);
 
+/* FIXME: add docs
+ *
+ */
+int atom_extract_calendar(xmlNode *entry, struct gcal_resource *ptr_res);
 
+/** Extract alarms informations of calendars events
+ *
+ * @param doc Pointer to a libxml document.
+ *
+ * @param recurrent Boolean integer (0|1) indicating wether the event is recurrent or not.
+ *
+ * @param alarms Pointer to an array of alarms (see \ref gcal_event_alarms).
+ *
+ * @return 0 on success, -1 otherwise.
+ */
+int extract_and_check_alarms(xmlDoc *doc, const unsigned int recurrent,
+			     struct gcal_event_alarms **alarms);
+
+/** Extract attendees informations of calendars events
+ *
+ * @param doc Pointer to a libxml document.
+ *
+ * @param xpath_expression Pointer to a xpath_expression string.
+ *
+ * @param attendees Pointer to an array of attendees (see \ref gcal_event_attendees).
+ *
+ * @return 0 on sucess, -1 otherwise.
+ */
+int extract_and_check_attendees(xmlDoc *doc, const char *xpath_expression,
+				struct gcal_event_attendees **attendees);
 
 #endif

@@ -268,7 +268,7 @@ int get_calendar_entry(dom_document *doc, int index, struct gcal_resource *res)
 	if (!nodes)
 		goto cleanup;
 
-	if (index > nodes->nodeNr) 
+	if (index > nodes->nodeNr)
 		goto cleanup;
 
 	result = atom_extract_calendar(nodes->nodeTab[index], res);

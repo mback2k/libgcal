@@ -116,7 +116,7 @@ int get_entries_number(dom_document *doc);
 
 
 /** Return the number of calendars in the document.
- * 
+ *
  * This is a thin wrapper to \ref clean_doc_tree.
  * @param doc A pointer to a document data type.
  *

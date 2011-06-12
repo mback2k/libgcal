@@ -39,9 +39,9 @@ POSSIBILITY OF SUCH DAMAGE.
  *
  */
 
-#include "atom_parser.h"
 #include "xml_aux.h"
 #include "internal_gcal.h"
+#include "atom_parser.h"
 #include <string.h>
 
 void workaround_edit_url(char *inplace)
@@ -184,6 +184,10 @@ static char *extract_and_check(xmlDoc *doc, char *xpath_expression, char *attr)
 	char *result = NULL;
 	xmlNodeSet *node;
 	xmlChar *tmp;
+
+	if (!doc) return NULL;
+	if (!xpath_expression) return NULL;
+
 	xpath_obj = execute_xpath_expression(doc,
 					     xpath_expression,
 					     NULL);
@@ -316,6 +320,188 @@ exit:
 	return result;
 }
 
+int extract_and_check_alarms(xmlDoc *doc, const unsigned int recurrent,
+			     struct gcal_event_alarms **alarms)
+{
+  xmlXPathObject		*xpath_obj = NULL;
+  xmlNodeSet			*node;
+   xmlChar			*tmp = NULL;
+  struct gcal_event_alarms	*tempval;
+  int				i;
+  int				result = 0;
+
+  /* Sanity checks */
+  if (!doc) goto exit;
+  if (!recurrent) goto exit;
+  if (!alarms) goto exit;
+
+  if(recurrent == 1) { xpath_obj = execute_xpath_expression(doc, "//atom:entry/gd:reminder", NULL);
+  } else if (recurrent == 0) { xpath_obj = execute_xpath_expression(doc, "//atom:entry/gd:when/gd:reminder", NULL); }
+
+  if(!xpath_obj) {
+	  fprintf(stderr, "extract_and_check_when_and_alarms");
+	  goto exit;
+  }
+
+  node = xpath_obj->nodesetval;
+  result = node->nodeNr;
+
+  tempval = (struct gcal_event_alarms *) malloc (result * sizeof(struct gcal_event_alarms));
+  memset(tempval, 0, sizeof(struct gcal_event_alarms));
+
+  if(!tempval) { goto exit; }
+
+  if((node) && (node->nodeNr > 0)) {
+
+	  for (i = 0; i < node->nodeNr; i++) {
+		  if(xmlHasProp(node->nodeTab[i], "method")) {
+			  tmp = xmlGetProp(node->nodeTab[i], "method");
+			  if(tmp) {
+				  if(!strncmp(tmp, "email", strlen("email"))) { tempval[i].type = GCAL_ALARM_EMAIL; }
+				  else if (!strncmp(tmp, "alert", strlen("alert"))) { tempval[i].type = GCAL_ALARM_ALERT; }
+			  }
+		  }
+		  if(xmlHasProp(node->nodeTab[i], "minutes")) {
+			  tmp = xmlGetProp(node->nodeTab[i], "minutes");
+			  if (tmp) { tempval[i].minutes = atoi(strdup(tmp)); }
+		  }
+	  }
+  }
+
+*alarms = tempval;
+
+exit:
+xmlFree(tmp);
+xmlXPathFreeObject(xpath_obj);
+return result;
+}
+
+int extract_and_check_attendees(xmlDoc *doc, const char *xpath_expression,
+					 struct gcal_event_attendees **attendees)
+{
+	xmlXPathObject		*xpath_obj = NULL;
+	xmlNodeSet		*node;
+	xmlNode			*child;
+	xmlChar			*tmp = NULL ;
+	struct gcal_event_attendees *tempval;
+	int			result = 0;
+	int			i;
+	size_t			j;
+	char			*pRel = NULL;
+
+
+	/* Sanity checks */
+	if (!doc) goto exit;
+	if (!xpath_expression) goto exit;
+	if (!attendees) goto exit;
+
+	xpath_obj = execute_xpath_expression(doc, xpath_expression, NULL);
+	if (!xpath_obj) {
+		fprintf(stderr, "extract_and_check_attendees: failed to extract data");
+		goto exit;
+	}
+
+	node = xpath_obj->nodesetval;
+	result = node->nodeNr;
+
+	if((!node) || (node->nodeNr == 0)) { goto exit; }
+
+	tempval = (struct gcal_event_attendees *) malloc (result * sizeof(struct gcal_event_attendees));
+	memset(tempval, 0, sizeof(struct gcal_event_attendees));
+
+	if(!tempval) { goto exit; }
+
+	for (i = 0; i < node->nodeNr; i++) {
+
+		if (xmlHasProp(node->nodeTab[i], "email")) {
+			tmp = xmlGetProp(node->nodeTab[i], "email");
+			if (tmp) { tempval[i].email = strdup(tmp);
+			} else { tempval[i].email = strdup(" "); }
+		} else { tempval[i].email = strdup(" "); }
+
+		if(xmlHasProp(node->nodeTab[i], "rel")) {
+			tmp = xmlGetProp(node->nodeTab[i], "rel");
+			pRel = strrchr(tmp,'.');
+			pRel+=1;
+			if (pRel) {
+				if (!strncmp(pRel, "attendee", strlen("attendee"))) { tempval[i].rel = GCAL_REL_ATTENDEE; }
+				else if (!strncmp(pRel, "organizer", strlen("organizer"))) { tempval[i].rel = GCAL_REL_ORGANIZER; }
+				else if (!strncmp(pRel, "performer", strlen("performer"))) { tempval[i].rel = GCAL_REL_PERFORMER; }
+				else if (!strncmp(pRel, "speaker", strlen("speaker"))) { tempval[i].rel = GCAL_REL_SPEAKER; }
+			}
+		}
+
+		/* Parsing of the attendee's type & status */
+
+		if(tempval[i].rel == GCAL_REL_ORGANIZER) {
+			/* resolve the status of the organizer that is appart from the those of the attendees */
+			child = node->nodeTab[i]->parent->children;
+
+			for(j= 0;j < xmlChildElementCount(node->nodeTab[i]->parent); j++)
+			{
+				if(!strncmp(child->name, "eventStatus", strlen("eventStatus"))) {
+					if(xmlHasProp(child,"value")) {
+						tmp = xmlGetProp(child,"value");
+						pRel = strrchr(tmp, '.');
+						pRel += 1;
+						if(pRel) {
+							if (!strncmp(pRel, "confirmed", strlen("confirmed"))) { tempval[i].status = GCAL_STATUS_CONFIRMED; }
+							else if (!strncmp(pRel, "busy", strlen("busy"))) { tempval[i].status = GCAL_STATUS_BUSY; }
+							else if (!strncmp(pRel, "canceled", strlen("canceled"))) { tempval[i].status = GCAL_STATUS_CANCELED; }
+						}
+					}
+					break;
+				}
+				child=child->next;
+			}
+
+		} else {
+			if(xmlChildElementCount(node->nodeTab[i]) > 0) {
+				child = (xmlNode *)node->nodeTab[i]->children;
+				//child = xmlFirstElementChild(node->nodeTab[i]->children);
+				for(j = 0;j < xmlChildElementCount(node->nodeTab[i]);j++) {
+					if(!strncmp(child->name, "attendeeStatus", strlen("attendeeStatus"))) {
+						if(xmlHasProp(child,"value")) {
+							tmp = xmlGetProp(child,"value");
+							pRel = strrchr(tmp,'.');
+							pRel += 1;
+							if (pRel) {
+								if (!strncmp(pRel, "accepted", strlen("accepted"))) { tempval[i].status = GCAL_STATUS_ACCEPTED; }
+								else if (!strncmp(pRel, "declined", strlen("declined"))) { tempval[i].status = GCAL_STATUS_DECLINED; }
+								else if (!strncmp(pRel, "invited", strlen("invited"))) { tempval[i].status = GCAL_STATUS_INVITED; }
+								else if (!strncmp(pRel, "tentative", strlen("tentative"))) { tempval[i].status = GCAL_STATUS_TENTATIVE; }
+
+							}
+						}
+						break;
+					} else if(!strncmp(child->name, "attendeeType", strlen("attendeeType"))) {
+
+						if(xmlHasProp(child, "value")) {
+							tmp = xmlGetProp(child, "value");
+							pRel = strrchr(tmp,'.');
+							pRel += 1;
+							if (pRel) {
+								if (!strncmp(pRel, "optional", strlen("optional"))) { tempval[i].type = GCAL_TYPE_OPTIONAL; }
+								else if (!strncmp(pRel, "required", strlen("required"))) { tempval[i].type = GCAL_TYPE_REQUIRED; }
+							}
+						}
+						break;
+					}
+					child=child->next;
+				}
+			}
+		}
+	}
+
+	*attendees = tempval;
+exit:
+	xmlFree(tmp);
+	xmlXPathFreeObject(xpath_obj);
+	return result;
+}
+
+
+
 static int extract_and_check_multisub(xmlDoc *doc, char *xpath_expression,
 				   int getContent, char *attr1, char* attr2,
 				   struct gcal_structured_subvalues **values,
@@ -425,10 +611,12 @@ char *get_etag_attribute(xmlNode * a_node)
 
 int atom_extract_data(xmlNode *entry, struct gcal_event *ptr_entry)
 {
-	int result = -1, length = 0;
+	int	result = -1;
+	int	length = 0;
 	xmlChar *xml_str = NULL;
-	xmlDoc *doc = NULL;
+	xmlDoc	*doc = NULL;
 	xmlNode *copy = NULL;
+
 
 	if (!entry || !ptr_entry)
 		goto exit;
@@ -445,6 +633,7 @@ int atom_extract_data(xmlNode *entry, struct gcal_event *ptr_entry)
 		goto cleanup;
 
 	xmlDocSetRootElement(doc, copy);
+	xmlSaveFormatFileEnc("-", doc, "UTF-8", 1);
 
 	/* Google Data API 2.0 requires ETag to edit an entry */
 	/* //atom:entry/@gd:etag*/
@@ -509,27 +698,6 @@ int atom_extract_data(xmlNode *entry, struct gcal_event *ptr_entry)
 					       "atom:content/text()",
 					       NULL);
 
-	/* Gets the 'recurrent' calendar field */
-	ptr_entry->dt_recurrent = extract_and_check(doc,
-						    "//atom:entry/"
-						    "gd:recurrence/text()",
-						    NULL);
-
-	/* Gets the when 'start' calendar field */
-	ptr_entry->dt_start = extract_and_check(doc,
-						"//atom:entry/gd:when",
-						"startTime");
-	if (!ptr_entry->dt_start)
-		goto cleanup;
-
-	/* Gets the when 'end' calendar field */
-	ptr_entry->dt_end = extract_and_check(doc,
-					      "//atom:entry/gd:when",
-					      "endTime");
-	if (!ptr_entry->dt_end)
-		goto cleanup;
-
-
 	/* Gets the 'where' calendar field */
 	ptr_entry->where = extract_and_check(doc,
 					     "//atom:entry/"
@@ -543,6 +711,69 @@ int atom_extract_data(xmlNode *entry, struct gcal_event *ptr_entry)
 	if (!ptr_entry->status)
 		goto cleanup;
 
+	/* Gets informations about the attendees invited to the event */
+
+	ptr_entry->attendees_nr = extract_and_check_attendees(doc,
+							      "//atom:entry/gd:who",
+							      &ptr_entry->attendees);
+
+	/* Retreive the recurrence pattern */
+	ptr_entry->dt_recurrent = extract_and_check(doc,"//atom:entry/"
+							  "gd:recurrence/text()",
+							  NULL);
+	if (ptr_entry->dt_recurrent[0] != 0) {
+	  ptr_entry->dt_start = strdup("");
+	  ptr_entry->dt_end = strdup("");
+	  ptr_entry->alarms_nr = extract_and_check_alarms(doc, 1, &ptr_entry->alarms);
+	} else {
+	  /* Gets the when 'start' calendar field */
+	  ptr_entry->dt_start = extract_and_check(doc,
+						  "//atom:entry/gd:when",
+						  "startTime");
+
+	  /* Gets the when 'end' calendar field */
+	  ptr_entry->dt_end = extract_and_check(doc,
+						"//atom:entry/gd:when",
+						"endTime");
+
+	  ptr_entry->alarms_nr = extract_and_check_alarms(doc, 0, &ptr_entry->alarms);
+	}
+
+	/* Gets the 'anyoneCanAddSelf' calendar field */
+	ptr_entry->anyoneCanAddSelf = extract_and_check(doc,
+							"//atom:entry/gCal:anyoneCanAddSelf",
+							"value");
+	if (!ptr_entry->anyoneCanAddSelf)
+	  goto cleanup;
+
+	/* Gets the 'guestsCanInviteOthers' calendar field */
+	ptr_entry->guestsCanInviteOthers = extract_and_check(doc,
+							     "//atom:entry/gCal:guestsCanInviteOthers",
+							     "value");
+	if (!ptr_entry->guestsCanInviteOthers)
+	  goto cleanup;
+
+	/* Gets the 'guestsCanModify' calendar field */
+	ptr_entry->guestsCanModify = extract_and_check(doc,
+						       "//atom:entry/gCal:guestsCanModify",
+						       "value");
+	if (!ptr_entry->guestsCanModify)
+	  goto cleanup;
+
+	/* Gets the 'guestsCanSeeGuests' calendar field */
+	ptr_entry->guestsCanSeeGuests = extract_and_check(doc,
+							  "//atom:entry/gCal:guestsCanSeeGuests",
+							  "value");
+	if (!ptr_entry->guestsCanSeeGuests)
+	  goto cleanup;
+
+	/* Gets the 'sequence' calendar field */
+	ptr_entry->sequence = extract_and_check(doc,
+						"//atom:entry/gCal:sequence",
+						"value");
+	if (!ptr_entry->sequence)
+	  goto cleanup;
+
 	/* Detects if event was deleted/canceled and marks the flag */
 	if (!(strcmp("http://schemas.google.com/g/2005#event.canceled",
 		     ptr_entry->status)))
@@ -550,11 +781,27 @@ int atom_extract_data(xmlNode *entry, struct gcal_event *ptr_entry)
 	else
 		ptr_entry->common.deleted = 0;
 
+	/* Gets the 'published' calendar field */
+	ptr_entry->common.published = extract_and_check(doc,
+							"//atom:entry/"
+							"atom:published/text()",
+							NULL);
+	if (!ptr_entry->common.published)
+	  goto cleanup;
+
 	/* Gets the 'updated' calendar field */
 	ptr_entry->common.updated = extract_and_check(doc,
-					       "//atom:entry/"
-					       "atom:updated/text()",
-					       NULL);
+						      "//atom:entry/"
+						      "atom:updated/text()",
+						      NULL);
+	if (!ptr_entry->common.updated)
+		goto cleanup;
+
+	/* Gets the 'visibility' calendar field */
+	ptr_entry->common.visibility = extract_and_check(doc,
+							 "//atom:entry/"
+							 "gd:visibility",
+							 "value");
 	if (!ptr_entry->common.updated)
 		goto cleanup;
 
@@ -591,13 +838,13 @@ int atom_extract_calendar(xmlNode *entry, struct gcal_resource *ptr_res)
 
 	copy = xmlCopyNode(entry, 1);
 	if (!copy)
-		goto cleanup;
+		goto exit;
 
 	xmlDocSetRootElement(doc, copy);
-	/* xmlSaveFormatFileEnc("-", doc, "UTF-8", 1); */
+	//xmlSaveFormatFileEnc("-", doc, "UTF-8", 1);
 
 	url = extract_and_check(doc, "//atom:entry/atom:id/text()",
-					 NULL);
+				NULL);
 	if (!url)
 		goto exit;
 
@@ -855,7 +1102,7 @@ int atom_extract_contact(xmlNode *entry, struct gcal_contact *ptr_entry)
 
 	/* Gets contact birthday */
 	ptr_entry->birthday = extract_and_check(doc,
-					            "//atom:entry/"
+						    "//atom:entry/"
 						    "gContact:birthday",
 						    "when");
 

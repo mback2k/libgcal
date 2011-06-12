@@ -333,6 +333,19 @@ gcal_event_t gcal_event_element(struct gcal_event_array *events, size_t _index);
  */
 char *gcal_event_get_id(gcal_event_t event);
 
+/** Access to publication/creation timestamp of an entry.
+ *
+ * This timestamp is set when you publish/create an entry.
+ * You can access it using this function.
+ *
+ * @param entry A data entry pointer, see \ref gcal_entry.
+ *
+ * @return A pointer to internal field (*dont* try to free it!) or NULL (in error
+ * case or if the field is not set). If the entry hasn't this field in the
+ * atom stream, it will be set to an empty string (i.e. "").
+ */
+char *gcal_event_get_published(gcal_event_t event);
+
 /** Access last updated timestamp.
  *
  * Each operation (add/edit/delete) will set a timestamp to the entry.
@@ -344,6 +357,19 @@ char *gcal_event_get_id(gcal_event_t event);
  * atom stream, it will be set to an empty string (i.e. "").
  */
 char *gcal_event_get_updated(gcal_event_t event);
+
+/** Access visibility level of an entry.
+ *
+ * Google currently provides 3 levels of visibility for an entry.
+ * (default, public, private). You can retreive it by using this function.
+ *
+ * @param entry A data entry pointer, see \ref gcal_entry.
+ *
+ * @return A pointer to internal field (*dont* try to free it!) or NULL (in error
+ * case or if the field is not set). If the entry hasn't this field in the
+ * atom stream, it will be set to an empty string (i.e. "").
+ */
+char *gcal_event_get_visibility(gcal_event_t event);
 
 /** Access event title.
  *
@@ -427,7 +453,7 @@ char gcal_event_is_deleted(gcal_event_t event);
  */
 char *gcal_event_get_content(gcal_event_t event);
 
-/** Checks if this is a recurrent event.
+/** Access the recurrence pattern of an event.
  *
  * Case positive, it will return the string with the representation of recurrence
  * rule. Google calendar uses a subset of iCalendar to represent this (yeah, brain
@@ -481,7 +507,6 @@ char *gcal_event_get_end(gcal_event_t event);
  */
 char *gcal_event_get_where(gcal_event_t event);
 
-
 /** Access event status.
  *
  * An event can have some status (confirmed/cancelled) and its possible to
@@ -497,6 +522,117 @@ char *gcal_event_get_where(gcal_event_t event);
  */
 char *gcal_event_get_status(gcal_event_t event);
 
+/** Access infos about the attendees of an event
+ *
+ * Retreive an attendee given its index, see \ref gcal_event_attendee.
+ *
+ * @param event An event object, see \ref gcal_event.
+ * @param index A positive integer (size_t).
+ *
+ * @return Pointer to internal object field (dont free it!) or NULL (in error
+ * case or if the field is not set).
+ */
+struct gcal_event_attendee *gcal_event_get_attendee_by_index(gcal_event_t event, size_t index);
+
+/** Access the number of attendees
+ *
+ * Using this function with \ref gcal_event_get_attendee_by_index allows you
+ * to access all attendees data.
+ *
+ * @param event An event object, see \ref gcal_event.
+ *
+ * @return The number of attendees for a specific event.
+ */
+size_t gcal_event_get_number_of_attendees(gcal_event_t event);
+
+/** Access alarms of the event
+ *
+ * Retreive an alarm given its index, see \ref gcal_event_alarms.
+ * @param event An event object, see \ref gcal_event.
+ * @param index A positive integer (size_t).
+ *
+ * @return Pointer to internal object field (dont free it!) or NULL (in error
+ * case or if the field is not set).
+ */
+struct gcal_event_alarms *gcal_event_get_alarm_by_index(gcal_event_t event, size_t index);
+
+/** Access the number of alarms
+ *
+ * Using this function with \ref gcal_event_get_alarm_by_index, allows you
+ * to access all alarms data.
+ *
+ * @param event An event object, see \ref gcal_event.
+ *
+ * @return The number of alarms set for an event.
+ */
+size_t gcal_event_get_number_of_alarms(gcal_event_t event);
+
+/** Access boolean value anyoneCanAddSelf
+ *
+ * This boolean indicates whether or not, others
+ * can add themselves to the event.
+ *
+ * @param event An event object, see \ref gcal_event.
+ *
+ * @return Pointer to internal object field (dont free it!) or NULL (in error
+ * case or if the field is not set). If the entry hasn't this field in the
+ * atom stream, it will be set to an empty string (i.e. "").
+ */
+char *gcal_event_get_anyoneCanAddSelf(gcal_event_t event);
+
+/** Access boolean value guestsCanInviteOthers
+ *
+ *  This boolean indicates whether or not, attendees
+ *  can invite other people to the event.
+ *
+ * @param event An event object, see \ref gcal_event.
+ *
+ * @return Pointer to internal object field (dont free it!) or NULL (in error
+ * case or if the field is not set). If the entry hasn't this field in the
+ * atom stream, it will be set to an empty string (i.e. "").
+ */
+char *gcal_event_get_guestsCanInviteOthers(gcal_event_t event);
+
+/** Access boolean value guestsCanModify
+ *
+ * This boolean indicates whether or not, attendees
+ * can modify informations of the event.
+ *
+ * @param event An event object, see \ref gcal_event.
+ *
+ * @return Pointer to internal object field (dont free it!) or NULL (in error
+ * case or if the field is not set). If the entry hasn't this field in the
+ * atom stream, it will be set to an empty string (i.e. "").
+ */
+char *gcal_event_get_guestsCanModify(gcal_event_t event);
+
+/** Access boolean value guestsCanSeeGuests
+ *
+ * This boolean indicates whether or not, attendees
+ * can see other guests invited to the event.
+ *
+ * @param event An event object, see \ref gcal_event.
+ *
+ * @return Pointer to internal object field (dont free it!) or NULL (in error
+ * case or if the field is not set). If the entry hasn't this field in the
+ * atom stream, it will be set to an empty string (i.e. "").
+ */
+char *gcal_event_get_guestsCanSeeGuests(gcal_event_t event);
+
+/** Access sequence number of the event.
+ *
+ * The sequence number is a counter that is incremented everytime main informations
+ * of an event are updated. For more informations take a look at the RFC 2445.
+ *
+ * (Its seems the value isn't correct. Google's fault)
+ *
+ * @param event An event object, see \ref gcal_event.
+ *
+ * @return Pointer to internal object field (dont free it!) or NULL (in error
+ * case or if the field is not set). If the entry hasn't this field in the
+ * atom stream, it will be set to an empty string (i.e. "").
+ */
+char *gcal_event_get_sequence(gcal_event_t event);
 
 /* Here starts the setters */
 

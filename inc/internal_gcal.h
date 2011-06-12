@@ -151,8 +151,12 @@ struct gcal_entry {
 	char deleted;
 	/** element ID */
 	char *id;
+	/** Time when the event was published/created */
+	char *published;
 	/** Time when the event was updated. */
 	char *updated;
+	/** The visibility level of the entry */
+	char *visibility;
 	/** The 'what' field */
 	char *title;
 	/** The edit URL */
@@ -163,8 +167,61 @@ struct gcal_entry {
 	char *xml;
 };
 
+/** Sub structures, e.g. represents each field of gd:structuredPostalAddress or gd:name.
+ */
+struct gcal_structured_subvalues {
+	/** Pointer to the next structured field */
+	struct gcal_structured_subvalues *next_field;
+	/** Number of address */
+	int field_typenr;
+	/** Index key of the entry (e.g. 'street') */
+	char *field_key;
+	/** Value of the entry */
+	char *field_value;
+};
+
 /** Library structure, represents each calendar event entry.
  */
+
+enum gcal_event_alarm_type {
+  GCAL_ALARM_ALERT = 1, /* ALERT MEANS POPUP */
+        GCAL_ALARM_EMAIL = 2,
+};
+
+enum gcal_event_attendee_rel {
+	GCAL_REL_ATTENDEE = 1,
+        GCAL_REL_ORGANIZER = 2,
+	GCAL_REL_PERFORMER = 3,
+	GCAL_REL_SPEAKER = 4,
+};
+
+enum gcal_event_attendee_type {
+	GCAL_TYPE_OPTIONAL = 1,
+	GCAL_TYPE_REQUIRED = 2
+};
+
+enum gcal_event_attendee_status {
+	GCAL_STATUS_ACCEPTED = 1,
+	GCAL_STATUS_DECLINED = 2,
+	GCAL_STATUS_INVITED = 3,
+	GCAL_STATUS_TENTATIVE = 4,
+	GCAL_STATUS_CONFIRMED = 5,
+	GCAL_STATUS_BUSY = 6,
+	GCAL_STATUS_CANCELED = 7
+};
+
+struct gcal_event_alarms {
+        enum gcal_event_alarm_type		type;
+        unsigned int				minutes;
+};
+
+struct gcal_event_attendees {
+	char					*email;
+	enum gcal_event_attendee_rel		rel;
+	enum gcal_event_attendee_type		type;
+	enum gcal_event_attendee_status		status;
+};
+
 struct gcal_event {
 	/** Has the common entry data fields (id, updated, title, edit_uri) */
 	struct gcal_entry common;
@@ -181,19 +238,24 @@ struct gcal_event {
 	char *where;
 	/** Event status */
 	char *status;
-};
-
-/** Sub structures, e.g. represents each field of gd:structuredPostalAddress or gd:name.
- */
-struct gcal_structured_subvalues {
-	/** Pointer to the next structured field */
-	struct gcal_structured_subvalues *next_field;
-	/** Number of address */
-	int field_typenr;
-	/** Index key of the entry (e.g. 'street') */
-	char *field_key;
-	/** Value of the entry */
-	char *field_value;
+	/** Event Attendees */
+	struct gcal_event_attendees *attendees;
+	/** Event Attendees number */
+	unsigned int attendees_nr;
+	/** Event Alarms **/
+	struct gcal_event_alarms *alarms;
+	/** Event Alarms number **/
+	unsigned int alarms_nr;
+	/** AnyoneCanAddSelf boolean */
+	char *anyoneCanAddSelf;
+	/** GuestsCanInviteOthers boolean */
+	char *guestsCanInviteOthers;
+	/** GuestsCanModify boolean */
+	char *guestsCanModify;
+	/** GuestsCanSeeGuests boolean */
+	char *guestsCanSeeGuests;
+	/** Sequence number */
+	char *sequence;
 };
 
 /** Contact data type */

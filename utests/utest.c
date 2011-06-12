@@ -127,7 +127,6 @@ int main(void)
 			 * between each running test.
 			 */
 			srunner_set_fork_status(userapi, CK_NOFORK);
-
 		} else if (!strcmp("xml", env_var)) {
 			/* This one tests for XML api mode */
 			sxml = xml_api();

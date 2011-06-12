@@ -65,6 +65,7 @@ POSSIBILITY OF SUCH DAMAGE.
 #include "gcal.h"
 #include "gcal_parser.h"
 #include "msvc_hacks.h"
+#include "gcontact.h"
 
 #ifdef GCAL_DEBUG_CURL
 #include "curl_debug_gcal.h"
@@ -423,12 +424,12 @@ int gcal_get_authentication(struct gcal_resource *gcalobj,
 		goto cleanup;
 
 	snprintf(post, post_len - 1,
-                 "%s&"
+		 "%s&"
 		 "%s%s&"
 		 "%s%s&"
 		 "%s%s&"
 		 "%s",
-                 ACCOUNT_TYPE,
+		 ACCOUNT_TYPE,
 		 EMAIL_FIELD, enc_user,
 		 PASSWD_FIELD, enc_password,
 		 SERVICE_FIELD, gcalobj->service,
@@ -609,16 +610,16 @@ static char *mount_query_url(struct gcal_resource *gcalobj,
 	if (!(strcmp(gcalobj->service, "cl"))) {
 		if (gcalobj->max_results)
 			length = sizeof(GCAL_EVENT_START) +
-                                sizeof(GCAL_DELIMITER) +
-                                strlen(gcalobj->domain) +
+				sizeof(GCAL_DELIMITER) +
+				strlen(gcalobj->domain) +
 				sizeof(GCAL_EVENT_END) +
 				sizeof(query_init) +
 				strlen(gcalobj->max_results) +
 				strlen(gcalobj->user) + 1;
 		else
 			length = sizeof(GCAL_EVENT_START) +
-                                sizeof(GCAL_DELIMITER) +
-                                strlen(gcalobj->domain) +
+				sizeof(GCAL_DELIMITER) +
+				strlen(gcalobj->domain) +
 				sizeof(GCAL_EVENT_END) +
 				sizeof(query_init) +
 				strlen(gcalobj->user) + 1;
@@ -627,8 +628,8 @@ static char *mount_query_url(struct gcal_resource *gcalobj,
 	else if (!(strcmp(gcalobj->service, "cp"))) {
 		if (gcalobj->max_results)
 			length = sizeof(GCONTACT_START) +
-                                sizeof(GCAL_DELIMITER) +
-                                strlen(gcalobj->domain) +
+				sizeof(GCAL_DELIMITER) +
+				strlen(gcalobj->domain) +
 				sizeof(GCONTACT_END) +
 				sizeof(query_init) +
 				strlen(gcalobj->max_results) +
@@ -636,8 +637,8 @@ static char *mount_query_url(struct gcal_resource *gcalobj,
 				sizeof(contact_order) + 1;
 		else
 			length = sizeof(GCONTACT_START) +
-                                sizeof(GCAL_DELIMITER) +
-                                strlen(gcalobj->domain) +
+				sizeof(GCAL_DELIMITER) +
+				strlen(gcalobj->domain) +
 				sizeof(GCONTACT_END) +
 				sizeof(query_init) +
 				strlen(gcalobj->user) + 1;
@@ -656,27 +657,27 @@ static char *mount_query_url(struct gcal_resource *gcalobj,
 		if (gcalobj->max_results)
 			snprintf(result, length - 1, "%s%s%s%s%s%s%s",
 				 GCAL_EVENT_START, gcalobj->user,
-                                 GCAL_DELIMITER, gcalobj->domain,
+				 GCAL_DELIMITER, gcalobj->domain,
 				 GCAL_EVENT_END, query_init,
 				 gcalobj->max_results);
 		else
 			snprintf(result, length - 1, "%s%s%s%s%s%s",
 				 GCAL_EVENT_START, gcalobj->user,
-                                 GCAL_DELIMITER, gcalobj->domain,
+				 GCAL_DELIMITER, gcalobj->domain,
 				 GCAL_EVENT_END, query_init);
 
 	} else if (!(strcmp(gcalobj->service, "cp"))) {
 		if (gcalobj->max_results)
 			snprintf(result, length - 1, "%s%s%s%s%s%s%s%s",
 				 GCONTACT_START, gcalobj->user,
-                                 GCAL_DELIMITER, gcalobj->domain,
+				 GCAL_DELIMITER, gcalobj->domain,
 				 GCONTACT_END, query_init,
 				 gcalobj->max_results,
 				 contact_order);
 		else
 			snprintf(result, length - 1, "%s%s%s%s%s%s",
 				 GCONTACT_START, gcalobj->user,
-                                 GCAL_DELIMITER, gcalobj->domain,
+				 GCAL_DELIMITER, gcalobj->domain,
 				 GCONTACT_END, query_init);
 	}
 
@@ -760,7 +761,7 @@ void gcal_cleanup_calendar(struct gcal_resource_array *resource_array)
 	resource_array->entries = NULL;
 }
 
-int gcal_get_calendar_by_index(struct gcal_resource_array *gcal_array, size_t index,
+int gcal_get_calendar_by_index(struct gcal_resource_array *gcal_array, size_t _index,
 			       gcal_t *gcalobj)
 {
 	int	result = -1;
@@ -768,10 +769,10 @@ int gcal_get_calendar_by_index(struct gcal_resource_array *gcal_array, size_t in
 	if (!gcal_array || !gcalobj)
 		goto exit;
 
-	if (index > gcal_array->length)
+	if (_index > gcal_array->length)
 		goto exit;
 
-	*gcalobj = &gcal_array->entries[index];
+	*gcalobj = &gcal_array->entries[_index];
 	result = 0;
 
 exit:
@@ -802,11 +803,11 @@ exit:
 	return -1;
 }
 
-int gcal_calendar_list(struct gcal_resource *gcalobj, 
+int gcal_calendar_list(struct gcal_resource *gcalobj,
 		       struct gcal_resource_array *gcal_array)
 {
-	int				result;
-	size_t				i;
+	int result = 0;
+	size_t i;
 
 	if (gcal_array)
 		gcal_array->length = 0;
@@ -913,8 +914,10 @@ struct gcal_event *gcal_get_entries(struct gcal_resource *gcalobj,
 		goto cleanup;
 
 	ptr_res = malloc(sizeof(struct gcal_event) * result);
-	if (!ptr_res)
+	if (!ptr_res) {
+		*length = 0;
 		goto cleanup;
+	}
 	memset(ptr_res, 0, sizeof(struct gcal_event) * result);
 
 	*length = result;
@@ -952,14 +955,20 @@ void gcal_init_event(struct gcal_event *entry)
 	if (!entry)
 		return;
 
-	entry->common.store_xml = 0;
+	entry->common.store_xml = entry->common.deleted = 0;
 	entry->common.title = entry->common.id = NULL;
 	entry->common.edit_uri = entry->common.etag = NULL;
 	entry->common.xml = entry->common.updated = NULL;
+	entry->common.published = NULL;
 	entry->content = entry->dt_recurrent = entry->dt_start = NULL;
 	entry->dt_end = entry->where = entry->status = NULL;
-
-
+	entry->anyoneCanAddSelf = entry->guestsCanInviteOthers = NULL;
+	entry->guestsCanModify = entry->guestsCanSeeGuests = NULL;
+	entry->sequence = entry->common.visibility = NULL;
+	entry->attendees = NULL;
+	entry->alarms = NULL;
+	entry->alarms_nr = 0;
+	entry->attendees_nr = 0;
 }
 
 void gcal_destroy_entry(struct gcal_event *entry)
@@ -972,15 +981,29 @@ void gcal_destroy_entry(struct gcal_event *entry)
 	clean_string(entry->common.edit_uri);
 	clean_string(entry->common.etag);
 	clean_string(entry->common.updated);
+	clean_string(entry->common.published);
+	clean_string(entry->common.visibility);
 	clean_string(entry->common.xml);
-
 	clean_string(entry->content);
 	clean_string(entry->dt_recurrent);
 	clean_string(entry->dt_start);
 	clean_string(entry->dt_end);
 	clean_string(entry->where);
 	clean_string(entry->status);
-
+	clean_string(entry->anyoneCanAddSelf);
+	clean_string(entry->guestsCanInviteOthers);
+	clean_string(entry->guestsCanModify);
+	clean_string(entry->guestsCanSeeGuests);
+	clean_string(entry->sequence);
+	if(entry->attendees) {
+		if(entry->attendees->email) {
+			clean_string(entry->attendees->email);
+		}
+		free(entry->attendees);
+	}
+	if(entry->alarms) {
+		free(entry->alarms);
+	}
 }
 
 void gcal_destroy_entries(struct gcal_event *entries, size_t length)
@@ -1622,10 +1645,28 @@ char gcal_get_deleted(struct gcal_entry *entry)
 	return -1;
 }
 
+char *gcal_get_published(struct gcal_entry *entry)
+{
+	if (entry)
+		return entry->published;
+
+	return NULL;
+
+}
+
 char *gcal_get_updated(struct gcal_entry *entry)
 {
 	if (entry)
 		return entry->updated;
+
+	return NULL;
+
+}
+
+char *gcal_get_visibility(struct gcal_entry *entry)
+{
+	if (entry)
+		return entry->visibility;
 
 	return NULL;
 

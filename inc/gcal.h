@@ -611,6 +611,17 @@ int gcal_query(struct gcal_resource *gcalobj, const char *parameters,
  */
 char *gcal_get_id(struct gcal_entry *entry);
 
+/** Access to publication/creation timestamp of an entry.
+ *
+ * This timestamp is set when you publish/create an entry.
+ * You can access it using this function.
+ *
+ * @param entry A data entry pointer, see \ref gcal_entry.
+ *
+ * @return A pointer to internal field (*dont* try to free it!).
+ */
+char *gcal_get_published(struct gcal_entry *entry);
+
 /** Access to last updated timestamp of an entry.
  *
  * When an operation (being add/edit/delete) is done in an entry, the timestamp
@@ -621,6 +632,17 @@ char *gcal_get_id(struct gcal_entry *entry);
  * @return A pointer to internal field (*dont* try to free it!).
  */
 char *gcal_get_updated(struct gcal_entry *entry);
+
+/** Access visibility level of an entry.
+ *
+ * Google currently provides 3 levels of visibility for an entry.
+ * (default, public, private). You can retreive it by using this function.
+ *
+ * @param entry A data entry pointer, see \ref gcal_entry.
+ *
+ * @return A pointer to internal field (*dont* try to free it!).
+ */
+char *gcal_get_visibility(struct gcal_entry *entry);
 
 /** Access entry title.
  *

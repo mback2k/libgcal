@@ -51,7 +51,6 @@ START_TEST (test_get_calendar)
 }
 END_TEST
 
-
 START_TEST (test_access_calendar)
 {
 	gcal_t gcal;
@@ -131,6 +130,124 @@ START_TEST (test_access_calendar)
 }
 END_TEST
 
+START_TEST (test_access_specific_calendar)
+{
+	gcal_t				gcal;
+	gcal_t				newcal;
+	struct gcal_resource_array	gcal_array;
+	int				result;
+
+	gcal = gcal_new(GCALENDAR);
+	fail_if(gcal == NULL, "Failed constructing gcal object!");
+
+	result = gcal_get_authentication(gcal, "gcal4tester", "66libgcal");
+	fail_if(gcal_array.length == 0, "Cannot authenticate!");
+
+	result = gcal_calendar_list(gcal, &gcal_array);
+	fail_if(result == -1, "Cannot get calendars list");
+	fail_if(gcal_array.length == 0, "No available calendars");
+
+	/* Accessing calendar given its ID. This one is "another_calendar". */
+	result = gcal_get_calendar(&gcal_array, "99q0mlshet1vol8jd8rksdqa28", "group.calendar.google.com", &newcal);
+	fail_if(result == -1, "Cannot get specified calendar");
+
+	/* Cleanup */
+	gcal_cleanup_calendar(&gcal_array);
+	gcal_delete(gcal);
+}
+END_TEST
+
+START_TEST (test_access_all_calendars)
+{
+	gcal_t				gcal;
+	gcal_t				newcal;
+	gcal_event_t			event;
+	struct gcal_event_array		event_array;
+	struct gcal_resource_array	gcal_array;
+	size_t				nAttendees;
+	size_t				nAlarms;
+	struct gcal_event_attendees	*anAttendee;
+	struct gcal_event_alarms	*anAlarm;
+	size_t				i;
+	size_t				j;
+	size_t				k;
+	int				result;
+	char				*ptr;
+
+	gcal = gcal_new(GCALENDAR);
+	fail_if(gcal == NULL, "Failed constructing gcal object!");
+
+	result = gcal_get_authentication(gcal, "gcal4tester", "66libgcal");
+	fail_if(result == -1, "Cannot authenticate!");
+
+	result = gcal_calendar_list(gcal, &gcal_array);
+	fail_if(result == -1, "Cannot get calendars list");
+	fail_if(gcal_array.length == 0, "No available calendars");
+
+	/* Iterate thru all calendars */
+	for(i = 0; i < gcal_array.length; i++) {
+
+		result = gcal_get_calendar_by_index(&gcal_array, i, &newcal);
+		result = gcal_get_events(newcal, &event_array);
+		fail_if(result == -1, "Cannot get events list");
+
+		/* Iterate thru all events of the i-nth calendar */
+		for(j = 0; j < event_array.length; j++) {
+
+			event = gcal_event_element(&event_array, j);
+
+			/* Common fields are of type 'gcal_entry' */
+			ptr = gcal_event_get_id(event);
+			ptr = gcal_event_get_updated(event);
+			ptr = gcal_event_get_title(event);
+			ptr = gcal_event_get_url(event);
+			ptr = gcal_event_get_etag(event);
+
+			/* This are the fields unique to calendar events */
+			ptr = gcal_event_get_content(event);
+			ptr = gcal_event_get_recurrent(event);
+			ptr = gcal_event_get_published(event);
+			ptr = gcal_event_get_updated(event);
+			ptr = gcal_event_get_visibility(event);
+			ptr = gcal_event_get_start(event);
+			ptr = gcal_event_get_end(event);
+			ptr = gcal_event_get_where(event);
+			ptr = gcal_event_get_status(event);
+			ptr = gcal_event_get_anyoneCanAddSelf(event);
+			ptr = gcal_event_get_guestsCanInviteOthers(event);
+			ptr = gcal_event_get_guestsCanModify(event);
+			ptr = gcal_event_get_guestsCanSeeGuests(event);
+			ptr = gcal_event_get_sequence(event);
+			nAttendees = gcal_event_get_number_of_attendees(event);
+			nAlarms = gcal_event_get_number_of_alarms(event);
+
+			for(k = 0; k < nAttendees; k++) {
+
+				anAttendee = (struct gcal_event_attendees *) gcal_event_get_attendee_by_index(event, k);
+				ptr = anAttendee->email;
+				result = anAttendee->rel;
+				result = anAttendee->type;
+				result = anAttendee->status;
+
+			}
+
+			for(k = 0; k < nAlarms; k++) {
+
+				anAlarm = (struct gcal_event_alarms *) gcal_event_get_alarm_by_index(event, k);
+				result = anAlarm->type;
+				result = anAlarm->minutes;
+
+			}
+		}
+	}
+
+	/* Cleanup */
+	gcal_cleanup_calendar(&gcal_array);
+	gcal_cleanup_events(&event_array);
+	gcal_delete(gcal);
+
+}
+END_TEST
 
 START_TEST (test_oper_event_event)
 {
@@ -355,7 +472,7 @@ START_TEST (test_oper_contact)
 	contact->structured_name_nr = 1;
 	gcal_contact_set_structured_entry(contact->structured_name,0,1,"givenName","John");
 	gcal_contact_set_structured_entry(contact->structured_name,0,1,"familyName","Doe");
-	
+
 	gcal_contact_delete_email_addresses(contact);
 	gcal_contact_add_email_address(contact, "john.doe@foo.bar.com", E_OTHER, 1);
 
@@ -376,11 +493,11 @@ START_TEST (test_oper_contact)
 
 	/* Edit this contact */
 // 	gcal_contact_set_title(contact, "John 'The Generic' Doe");
-	
+
 	gcal_contact_set_structured_entry(contact->structured_name,0,1,"givenName","John");
 	gcal_contact_set_structured_entry(contact->structured_name,0,1,"additionalName","'The Generic'");
 	gcal_contact_set_structured_entry(contact->structured_name,0,1,"familyName","Doe");
-	
+
 	fail_if(result == -1, "Failed editing contact!");
 	gcal_contact_delete_email_addresses(contact);
 	gcal_contact_set_email(contact, "john.super.doe@foo.bar.com");
@@ -675,7 +792,7 @@ START_TEST (test_contact_new_fields)
 	gcal_contact_set_pref_structured_address(contact,1);
 
 	gcal = gcal_new(GCONTACT);
-        gcal_set_store_xml(gcal, 1);
+	gcal_set_store_xml(gcal, 1);
 	result = gcal_get_authentication(gcal, "gcalntester", "77libgcal");
 	fail_if(result == -1, "Authentication should work.");
 
@@ -791,6 +908,8 @@ TCase *gcal_userapi(void)
 
 	tcase_add_test(tc, test_get_calendar);
 	tcase_add_test(tc, test_access_calendar);
+	tcase_add_test(tc, test_access_specific_calendar);
+	tcase_add_test(tc, test_access_all_calendars);
 	tcase_add_test(tc, test_oper_event_event);
 	tcase_add_test(tc, test_query_event_updated);
 	tcase_add_test(tc, test_get_contacts);

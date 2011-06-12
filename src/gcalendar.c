@@ -302,6 +302,7 @@ int gcal_update_event(gcal_t gcal_obj, gcal_event_t event)
 	if ((!gcal_obj) || (!event))
 		goto exit;
 
+	gcal_init_event(&updated);
 	result = gcal_edit_event(gcal_obj, event, &updated);
 	if (result)
 		goto exit;
@@ -430,11 +431,25 @@ char *gcal_event_get_id(gcal_event_t event)
 	return gcal_get_id(&(event->common));
 }
 
+char *gcal_event_get_published(gcal_event_t event)
+{
+	if ((!event))
+		return NULL;
+	return gcal_get_published(&(event->common));
+}
+
 char *gcal_event_get_updated(gcal_event_t event)
 {
 	if ((!event))
 		return NULL;
 	return gcal_get_updated(&(event->common));
+}
+
+char *gcal_event_get_visibility(gcal_event_t event)
+{
+	if ((!event))
+		return NULL;
+	return gcal_get_visibility(&(event->common));
 }
 
 char *gcal_event_get_title(gcal_event_t event)
@@ -466,13 +481,6 @@ char *gcal_event_get_content(gcal_event_t event)
 	return event->content;
 }
 
-char *gcal_event_get_recurrent(gcal_event_t event)
-{
-	if ((!event))
-		return NULL;
-	return event->dt_recurrent;
-}
-
 char *gcal_event_get_start(gcal_event_t event)
 {
 	if ((!event))
@@ -501,6 +509,75 @@ char *gcal_event_get_status(gcal_event_t event)
 	return event->status;
 }
 
+struct gcal_event_attendee *gcal_event_get_attendee_by_index(gcal_event_t event, size_t index)
+{
+  if ((!event) || (!event->attendees) || (index > event->attendees_nr))
+		return NULL;
+	return &(event->attendees[index]);
+}
+
+struct gcal_event_alarms *gcal_event_get_alarm_by_index(gcal_event_t event, size_t index)
+{
+  if ((!event) || (!event->alarms) || (index > event->alarms_nr))
+		return NULL;
+	return &(event->alarms[index]);
+}
+
+size_t gcal_event_get_number_of_attendees(gcal_event_t event)
+{
+	if ((!event))
+		return -1;
+	return (size_t) event->attendees_nr;
+}
+
+size_t gcal_event_get_number_of_alarms(gcal_event_t event)
+{
+	if ((!event))
+		return -1;
+	return (size_t) event->alarms_nr;
+}
+
+char *gcal_event_get_anyoneCanAddSelf(gcal_event_t event)
+{
+	if ((!event))
+		return NULL;
+	return event->anyoneCanAddSelf;
+}
+
+char *gcal_event_get_guestsCanInviteOthers(gcal_event_t event)
+{
+	if ((!event))
+		return NULL;
+	return event->guestsCanInviteOthers;
+}
+
+char *gcal_event_get_guestsCanModify(gcal_event_t event)
+{
+	if ((!event))
+		return NULL;
+	return event->guestsCanModify;
+}
+
+char *gcal_event_get_guestsCanSeeGuests(gcal_event_t event)
+{
+	if ((!event))
+		return NULL;
+	return event->guestsCanSeeGuests;
+}
+
+char *gcal_event_get_sequence(gcal_event_t event)
+{
+	if ((!event))
+		return NULL;
+	return event->sequence;
+}
+
+char *gcal_event_get_recurrent(gcal_event_t event)
+{
+	if ((!event))
+		return NULL;
+	return event->dt_recurrent;
+}
 
 /* Here starts the setters */
 int gcal_event_set_title(gcal_event_t event, const char *field)
