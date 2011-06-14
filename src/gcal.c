@@ -751,7 +751,7 @@ void gcal_cleanup_calendar(struct gcal_resource_array *resource_array)
 	for(i = 0; i < resource_array->length; i++) {
 		_gcal_destroy(&(resource_array->entries[i]), 1);
 	}
-	
+
 	free(resource_array->entries);
 
 	resource_array->length = 0;
@@ -787,15 +787,15 @@ int gcal_get_calendar(struct gcal_resource_array *gcal_array,
 
 	for (i = 0; i < gcal_array->length; i++) {
 		if (gcal_array->entries[i].user && gcal_array->entries[i].domain &&
-		    !strncmp(gcal_array->entries[i].user, user, 
+		    !strncmp(gcal_array->entries[i].user, user,
 			     strlen(gcal_array->entries[i].user)) &&
-		    !strncmp(gcal_array->entries[i].domain, domain, 
+		    !strncmp(gcal_array->entries[i].domain, domain,
 			     strlen(gcal_array->entries[i].domain))) {
 			*gcalobj = &gcal_array->entries[i];
 			return 0;
 		}
 	}
-	
+
 exit:
 	return -1;
 }

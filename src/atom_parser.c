@@ -320,80 +320,105 @@ exit:
 	return result;
 }
 
+/* TODO: move the internal loop code to functions, formating ATM is bad */
 int extract_and_check_alarms(xmlDoc *doc, const unsigned int recurrent,
 			     struct gcal_event_alarms **alarms)
 {
-  xmlXPathObject		*xpath_obj = NULL;
-  xmlNodeSet			*node;
-   xmlChar			*tmp = NULL;
-  struct gcal_event_alarms	*tempval;
-  int				i;
-  int				result = 0;
+	xmlXPathObject *xpath_obj = NULL;
+	xmlNodeSet *node;
+	xmlChar	*tmp = NULL;
+	struct gcal_event_alarms *tempval;
+	int i;
+	int result = 0;
 
-  /* Sanity checks */
-  if (!doc) goto exit;
-  if (!recurrent) goto exit;
-  if (!alarms) goto exit;
+	/* Sanity checks */
+	if (!doc)
+		goto exit;
 
-  if(recurrent == 1) { xpath_obj = execute_xpath_expression(doc, "//atom:entry/gd:reminder", NULL);
-  } else if (recurrent == 0) { xpath_obj = execute_xpath_expression(doc, "//atom:entry/gd:when/gd:reminder", NULL); }
+	if (!recurrent)
+		goto exit;
 
-  if(!xpath_obj) {
-	  fprintf(stderr, "extract_and_check_when_and_alarms");
-	  goto exit;
-  }
+	if (!alarms)
+		goto exit;
 
-  node = xpath_obj->nodesetval;
-  result = node->nodeNr;
+	if (recurrent == 1) {
+		xpath_obj = execute_xpath_expression(doc,
+						     "//atom:entry/gd:reminder", NULL);
+	} else if (recurrent == 0) {
+		xpath_obj = execute_xpath_expression(doc,
+						     "//atom:entry/gd:when/gd:reminder", NULL);
+	}
 
-  tempval = (struct gcal_event_alarms *) malloc (result * sizeof(struct gcal_event_alarms));
-  memset(tempval, 0, sizeof(struct gcal_event_alarms));
+	if (!xpath_obj) {
+		fprintf(stderr, "extract_and_check_when_and_alarms");
+		goto exit;
+	}
 
-  if(!tempval) { goto exit; }
+	node = xpath_obj->nodesetval;
+	result = node->nodeNr;
 
-  if((node) && (node->nodeNr > 0)) {
+	tempval = (struct gcal_event_alarms *) malloc(result * sizeof(struct gcal_event_alarms));
+	memset(tempval, 0, sizeof(struct gcal_event_alarms));
 
-	  for (i = 0; i < node->nodeNr; i++) {
-		  if(xmlHasProp(node->nodeTab[i], "method")) {
-			  tmp = xmlGetProp(node->nodeTab[i], "method");
-			  if(tmp) {
-				  if(!strncmp(tmp, "email", strlen("email"))) { tempval[i].type = GCAL_ALARM_EMAIL; }
-				  else if (!strncmp(tmp, "alert", strlen("alert"))) { tempval[i].type = GCAL_ALARM_ALERT; }
-			  }
-		  }
-		  if(xmlHasProp(node->nodeTab[i], "minutes")) {
-			  tmp = xmlGetProp(node->nodeTab[i], "minutes");
-			  if (tmp) { tempval[i].minutes = atoi(strdup(tmp)); }
-		  }
-	  }
-  }
+	if (!tempval)
+		goto exit;
 
-*alarms = tempval;
+	if ((node) && (node->nodeNr > 0)) {
+
+		for (i = 0; i < node->nodeNr; i++) {
+			if (xmlHasProp(node->nodeTab[i], "method")) {
+
+				tmp = xmlGetProp(node->nodeTab[i], "method");
+				if (tmp) {
+					if (!strncmp(tmp, "email", strlen("email"))) {
+						tempval[i].type = GCAL_ALARM_EMAIL;
+					} else if (!strncmp(tmp, "alert", strlen("alert"))) {
+						tempval[i].type = GCAL_ALARM_ALERT;
+					}
+				}
+			}
+
+			if(xmlHasProp(node->nodeTab[i], "minutes")) {
+				tmp = xmlGetProp(node->nodeTab[i], "minutes");
+				if (tmp) {
+					tempval[i].minutes = atoi(strdup(tmp));
+				}
+			}
+		}
+	}
+
+	*alarms = tempval;
 
 exit:
-xmlFree(tmp);
-xmlXPathFreeObject(xpath_obj);
-return result;
+	xmlFree(tmp);
+	xmlXPathFreeObject(xpath_obj);
+	return result;
 }
 
+/* TODO: move the internal loop code to functions, formating ATM is bad */
 int extract_and_check_attendees(xmlDoc *doc, const char *xpath_expression,
-					 struct gcal_event_attendees **attendees)
+				struct gcal_event_attendees **attendees)
 {
-	xmlXPathObject		*xpath_obj = NULL;
-	xmlNodeSet		*node;
-	xmlNode			*child;
-	xmlChar			*tmp = NULL ;
+	xmlXPathObject *xpath_obj = NULL;
+	xmlNodeSet *node;
+	xmlNode	*child;
+	xmlChar	*tmp = NULL ;
 	struct gcal_event_attendees *tempval;
-	int			result = 0;
-	int			i;
-	size_t			j;
-	char			*pRel = NULL;
+	int result = 0;
+	int i;
+	size_t j;
+	char *pRel = NULL;
 
 
 	/* Sanity checks */
-	if (!doc) goto exit;
-	if (!xpath_expression) goto exit;
-	if (!attendees) goto exit;
+	if (!doc)
+		goto exit;
+
+	if (!xpath_expression)
+		goto exit;
+
+	if (!attendees)
+		goto exit;
 
 	xpath_obj = execute_xpath_expression(doc, xpath_expression, NULL);
 	if (!xpath_obj) {
@@ -404,85 +429,118 @@ int extract_and_check_attendees(xmlDoc *doc, const char *xpath_expression,
 	node = xpath_obj->nodesetval;
 	result = node->nodeNr;
 
-	if((!node) || (node->nodeNr == 0)) { goto exit; }
+	if ((!node) || (node->nodeNr == 0))
+		goto exit;
 
-	tempval = (struct gcal_event_attendees *) malloc (result * sizeof(struct gcal_event_attendees));
+	tempval = (struct gcal_event_attendees *) malloc(result * sizeof(struct gcal_event_attendees));
 	memset(tempval, 0, sizeof(struct gcal_event_attendees));
 
-	if(!tempval) { goto exit; }
+	if (!tempval)
+		goto exit;
 
 	for (i = 0; i < node->nodeNr; i++) {
 
 		if (xmlHasProp(node->nodeTab[i], "email")) {
 			tmp = xmlGetProp(node->nodeTab[i], "email");
-			if (tmp) { tempval[i].email = strdup(tmp);
-			} else { tempval[i].email = strdup(" "); }
-		} else { tempval[i].email = strdup(" "); }
+			if (tmp) {
+				tempval[i].email = strdup(tmp);
+			} else {
+				tempval[i].email = strdup(" ");
+			}
 
-		if(xmlHasProp(node->nodeTab[i], "rel")) {
+		} else {
+			tempval[i].email = strdup(" ");
+		}
+
+		if (xmlHasProp(node->nodeTab[i], "rel")) {
 			tmp = xmlGetProp(node->nodeTab[i], "rel");
 			pRel = strrchr(tmp,'.');
 			pRel+=1;
 			if (pRel) {
-				if (!strncmp(pRel, "attendee", strlen("attendee"))) { tempval[i].rel = GCAL_REL_ATTENDEE; }
-				else if (!strncmp(pRel, "organizer", strlen("organizer"))) { tempval[i].rel = GCAL_REL_ORGANIZER; }
-				else if (!strncmp(pRel, "performer", strlen("performer"))) { tempval[i].rel = GCAL_REL_PERFORMER; }
-				else if (!strncmp(pRel, "speaker", strlen("speaker"))) { tempval[i].rel = GCAL_REL_SPEAKER; }
+				if (!strncmp(pRel, "attendee", strlen("attendee"))) {
+					tempval[i].rel = GCAL_REL_ATTENDEE;
+				} else if (!strncmp(pRel, "organizer", strlen("organizer"))) {
+					tempval[i].rel = GCAL_REL_ORGANIZER;
+				} else if (!strncmp(pRel, "performer", strlen("performer"))) {
+					tempval[i].rel = GCAL_REL_PERFORMER;
+				} else if (!strncmp(pRel, "speaker", strlen("speaker"))) {
+					tempval[i].rel = GCAL_REL_SPEAKER;
+				}
 			}
 		}
 
 		/* Parsing of the attendee's type & status */
 
-		if(tempval[i].rel == GCAL_REL_ORGANIZER) {
+		if (tempval[i].rel == GCAL_REL_ORGANIZER) {
 			/* resolve the status of the organizer that is appart from the those of the attendees */
 			child = node->nodeTab[i]->parent->children;
 
-			for(j= 0;j < xmlChildElementCount(node->nodeTab[i]->parent); j++)
-			{
-				if(!strncmp(child->name, "eventStatus", strlen("eventStatus"))) {
-					if(xmlHasProp(child,"value")) {
+			for (j = 0; j < xmlChildElementCount(node->nodeTab[i]->parent); j++) {
+				if (!strncmp(child->name, "eventStatus", strlen("eventStatus"))) {
+					if (xmlHasProp(child,"value")) {
 						tmp = xmlGetProp(child,"value");
 						pRel = strrchr(tmp, '.');
 						pRel += 1;
-						if(pRel) {
-							if (!strncmp(pRel, "confirmed", strlen("confirmed"))) { tempval[i].status = GCAL_STATUS_CONFIRMED; }
-							else if (!strncmp(pRel, "busy", strlen("busy"))) { tempval[i].status = GCAL_STATUS_BUSY; }
-							else if (!strncmp(pRel, "canceled", strlen("canceled"))) { tempval[i].status = GCAL_STATUS_CANCELED; }
+
+						if (pRel) {
+							if (!strncmp(pRel, "confirmed", strlen("confirmed"))) {
+								tempval[i].status = GCAL_STATUS_CONFIRMED;
+							} else if (!strncmp(pRel, "busy", strlen("busy"))) {
+								tempval[i].status = GCAL_STATUS_BUSY;
+							} else if (!strncmp(pRel, "canceled", strlen("canceled"))) {
+								tempval[i].status = GCAL_STATUS_CANCELED;
+							}
 						}
 					}
+
 					break;
+
 				}
+
 				child=child->next;
 			}
 
 		} else {
-			if(xmlChildElementCount(node->nodeTab[i]) > 0) {
+			if (xmlChildElementCount(node->nodeTab[i]) > 0) {
 				child = (xmlNode *)node->nodeTab[i]->children;
 				//child = xmlFirstElementChild(node->nodeTab[i]->children);
-				for(j = 0;j < xmlChildElementCount(node->nodeTab[i]);j++) {
-					if(!strncmp(child->name, "attendeeStatus", strlen("attendeeStatus"))) {
-						if(xmlHasProp(child,"value")) {
+				for (j = 0; j < xmlChildElementCount(node->nodeTab[i]); j++) {
+
+					if (!strncmp(child->name, "attendeeStatus", strlen("attendeeStatus"))) {
+
+						if (xmlHasProp(child,"value")) {
 							tmp = xmlGetProp(child,"value");
 							pRel = strrchr(tmp,'.');
 							pRel += 1;
 							if (pRel) {
-								if (!strncmp(pRel, "accepted", strlen("accepted"))) { tempval[i].status = GCAL_STATUS_ACCEPTED; }
-								else if (!strncmp(pRel, "declined", strlen("declined"))) { tempval[i].status = GCAL_STATUS_DECLINED; }
-								else if (!strncmp(pRel, "invited", strlen("invited"))) { tempval[i].status = GCAL_STATUS_INVITED; }
-								else if (!strncmp(pRel, "tentative", strlen("tentative"))) { tempval[i].status = GCAL_STATUS_TENTATIVE; }
+								if (!strncmp(pRel, "accepted", strlen("accepted"))) {
+									tempval[i].status = GCAL_STATUS_ACCEPTED;
+								} else if (!strncmp(pRel, "declined", strlen("declined"))) {
+									tempval[i].status = GCAL_STATUS_DECLINED;
+								} else if (!strncmp(pRel, "invited", strlen("invited"))) {
+									tempval[i].status = GCAL_STATUS_INVITED;
+								} else if (!strncmp(pRel, "tentative", strlen("tentative"))) {
+									tempval[i].status = GCAL_STATUS_TENTATIVE;
+								}
 
 							}
 						}
-						break;
-					} else if(!strncmp(child->name, "attendeeType", strlen("attendeeType"))) {
 
-						if(xmlHasProp(child, "value")) {
+						break;
+
+					} else if (!strncmp(child->name, "attendeeType", strlen("attendeeType"))) {
+
+						if (xmlHasProp(child, "value")) {
 							tmp = xmlGetProp(child, "value");
 							pRel = strrchr(tmp,'.');
 							pRel += 1;
+
 							if (pRel) {
-								if (!strncmp(pRel, "optional", strlen("optional"))) { tempval[i].type = GCAL_TYPE_OPTIONAL; }
-								else if (!strncmp(pRel, "required", strlen("required"))) { tempval[i].type = GCAL_TYPE_REQUIRED; }
+								if (!strncmp(pRel, "optional", strlen("optional"))) {
+									tempval[i].type = GCAL_TYPE_OPTIONAL;
+								} else if (!strncmp(pRel, "required", strlen("required"))) {
+									tempval[i].type = GCAL_TYPE_REQUIRED;
+								}
 							}
 						}
 						break;
@@ -501,7 +559,7 @@ exit:
 }
 
 
-
+/* TODO: move the internal loop code to functions, formating ATM is bad */
 static int extract_and_check_multisub(xmlDoc *doc, char *xpath_expression,
 				   int getContent, char *attr1, char* attr2,
 				   struct gcal_structured_subvalues **values,
