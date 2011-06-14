@@ -42,12 +42,9 @@ POSSIBILITY OF SUCH DAMAGE.
  *
  * Lower priority
  * - allow user to subscribe to another person calendar
- * - enable user list and access available calendars
  * - enable user create/edit/delete calendars
- * - enable user to operate in another calendar than its default private one
  * - think a way to securely store passwords
  * - more utests
- * - provide option to use another XML parser (maybe expat?)
  */
 
 #ifdef HAVE_CONFIG_H
