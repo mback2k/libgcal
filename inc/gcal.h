@@ -84,6 +84,14 @@ struct gcal_resource;
  */
 struct gcal_event;
 
+/** Library structure, represents an event alarm.
+ */
+struct gcal_event_alarms;
+
+/** Library structure, represents event attendees.
+ */
+struct gcal_event_attendees;
+
 /** Library structure, represents common data for a google entry (being
  * calendar or contact). It has: id, updated, title, edit_uri.
  */
