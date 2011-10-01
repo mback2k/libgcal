@@ -920,7 +920,6 @@ int atom_extract_calendar(xmlNode *entry, struct gcal_resource *ptr_res)
 	ptr_res->domain = strdup(domain);
 	result = 0;
 
-cleanup:
 	if (url)
 	    free(url);
 	if (doc)

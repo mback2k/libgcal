@@ -258,7 +258,6 @@ int get_calendar_entry(dom_document *doc, int index, struct gcal_resource *res)
 	int			result = -1;
 	xmlXPathObject		*xpath_obj = NULL;
 	xmlNodeSet		*nodes;
-	struct gcal_resource	*resource = NULL;
 
 	xpath_obj = atom_get_entries(doc);
 	if (!xpath_obj)
