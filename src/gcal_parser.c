@@ -674,7 +674,7 @@ int xmlcontact_create(struct gcal_contact *contact, char **xml_contact,
 	}
 
 	/* organization (it has 2 subelements: orgName, orgTitle) */
-	if (contact->org_name && contact->org_name[0] || contact->org_title && contact->org_title[0]) {
+	if ((contact->org_name && contact->org_name[0]) || (contact->org_title && contact->org_title[0])) {
 		if (!(node = xmlNewNode(ns, "organization")))
 			goto cleanup;
 		xmlSetProp(node, BAD_CAST "rel",
