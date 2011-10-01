@@ -56,6 +56,7 @@ POSSIBILITY OF SUCH DAMAGE.
 #include <string.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <sys/time.h>
 #include <curl/curl.h>
 
 #include "internal_gcal.h"
