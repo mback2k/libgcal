@@ -532,7 +532,7 @@ char *gcal_event_get_status(gcal_event_t event);
  * @return Pointer to internal object field (dont free it!) or NULL (in error
  * case or if the field is not set).
  */
-struct gcal_event_attendee *gcal_event_get_attendee_by_index(gcal_event_t event, size_t index);
+struct gcal_event_attendees *gcal_event_get_attendee_by_index(gcal_event_t event, size_t index);
 
 /** Access the number of attendees
  *
