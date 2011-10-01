@@ -509,18 +509,18 @@ char *gcal_event_get_status(gcal_event_t event)
 	return event->status;
 }
 
-struct gcal_event_attendees *gcal_event_get_attendee_by_index(gcal_event_t event, size_t index)
+struct gcal_event_attendees *gcal_event_get_attendee_by_index(gcal_event_t event, size_t event_index)
 {
-  if ((!event) || (!event->attendees) || (index > event->attendees_nr))
+  if ((!event) || (!event->attendees) || (event_index > event->attendees_nr))
 		return NULL;
-	return &(event->attendees[index]);
+	return &(event->attendees[event_index]);
 }
 
-struct gcal_event_alarms *gcal_event_get_alarm_by_index(gcal_event_t event, size_t index)
+struct gcal_event_alarms *gcal_event_get_alarm_by_index(gcal_event_t event, size_t event_index)
 {
-  if ((!event) || (!event->alarms) || (index > event->alarms_nr))
+  if ((!event) || (!event->alarms) || (event_index > event->alarms_nr))
 		return NULL;
-	return &(event->alarms[index]);
+	return &(event->alarms[event_index]);
 }
 
 size_t gcal_event_get_number_of_attendees(gcal_event_t event)

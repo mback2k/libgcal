@@ -253,7 +253,7 @@ exit:
 	return result;
 }
 
-int get_calendar_entry(dom_document *doc, int index, struct gcal_resource *res)
+int get_calendar_entry(dom_document *doc, int entry_index, struct gcal_resource *res)
 {
 	int			result = -1;
 	xmlXPathObject		*xpath_obj = NULL;
@@ -267,10 +267,10 @@ int get_calendar_entry(dom_document *doc, int index, struct gcal_resource *res)
 	if (!nodes)
 		goto cleanup;
 
-	if (index > nodes->nodeNr)
+	if (entry_index > nodes->nodeNr)
 		goto cleanup;
 
-	result = atom_extract_calendar(nodes->nodeTab[index], res);
+	result = atom_extract_calendar(nodes->nodeTab[entry_index], res);
 
 cleanup:
 	xmlXPathFreeObject(xpath_obj);
