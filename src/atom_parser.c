@@ -239,6 +239,7 @@ static int extract_and_check_multi(xmlDoc *doc, char *xpath_expression,
 	xmlXPathObject *xpath_obj;
 	xmlNodeSet *node;
 	xmlChar *tmp;
+	char* pos;
 	int result = -1;
 	int i;
 
@@ -280,13 +281,16 @@ static int extract_and_check_multi(xmlDoc *doc, char *xpath_expression,
 		else if (xmlHasProp(node->nodeTab[i], attr1))
 			(*values)[i] = xmlGetProp(node->nodeTab[i], attr1);
 		else
-			(*values)[i] = strdup(" ");
+			(*values)[i] = strdup("");
 
 		if (attr2) {
 			if (xmlHasProp(node->nodeTab[i], attr2)) {
 				tmp = xmlGetProp(node->nodeTab[i], attr2);
-				if(strchr(tmp,'#'))
-					(*types)[i] = strdup(strchr(tmp,'#') + 1);
+				pos = strchr(tmp, '#');
+				if (pos)
+					(*types)[i] = strdup(pos + 1);
+				else
+					(*types)[i] = strdup("");
 				xmlFree(tmp);
 			}
 			else
@@ -296,8 +300,11 @@ static int extract_and_check_multi(xmlDoc *doc, char *xpath_expression,
 		if (attr3) {
 			if (xmlHasProp(node->nodeTab[i], attr3)) {
 				tmp = xmlGetProp(node->nodeTab[i], attr3);
-				if(strchr(tmp,'#'))
-					(*protocols)[i] = strdup(strchr(tmp,'#') + 1);
+				pos = strchr(tmp, '#');
+				if (pos)
+					(*protocols)[i] = strdup(pos + 1);
+				else
+					(*protocols)[i] = strdup("");
 				xmlFree(tmp);
 			}
 			else
@@ -307,7 +314,7 @@ static int extract_and_check_multi(xmlDoc *doc, char *xpath_expression,
 		if (attr4) {
 			if (xmlHasProp(node->nodeTab[i], attr4)) {
 				tmp = xmlGetProp(node->nodeTab[i], attr4);
-				if (!strcmp(tmp,"true"))
+				if (strcmp(tmp, "true") == 0)
 					*pref = i;
 				xmlFree(tmp);
 			}
