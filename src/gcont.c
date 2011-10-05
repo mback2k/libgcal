@@ -193,7 +193,7 @@ void gcal_init_contact(struct gcal_contact *contact)
 	contact->common.id = contact->common.updated = NULL;
 	contact->common.title = contact->common.xml = NULL;
 	contact->common.edit_uri = contact->common.etag = NULL;
-	contact->emails_field = contact->emails_type = NULL;
+	contact->emails_field = contact->emails_type = contact->emails_label = NULL;
 	contact->emails_nr = contact->pref_email = 0;
 	contact->content = NULL;
 	contact->nickname = NULL;
@@ -226,6 +226,7 @@ void gcal_destroy_contact(struct gcal_contact *contact)
 	clean_string(contact->common.etag);
 	clean_multi_string(contact->emails_field, contact->emails_nr);
 	clean_multi_string(contact->emails_type, contact->emails_nr);
+	clean_multi_string(contact->emails_label, contact->emails_nr);
 	contact->emails_nr = contact->pref_email = 0;
 	clean_string(contact->common.xml);
 

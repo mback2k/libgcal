@@ -624,18 +624,28 @@ int xmlcontact_create(struct gcal_contact *contact, char **xml_contact,
 		for (i = 0; i < contact->emails_nr; i++) {
 			if (!(node = xmlNewNode(ns, "email")))
 				goto cleanup;
-			temp = (char *)malloc((strlen(contact->emails_type[i])+strlen(rel_prefix)+1) * sizeof(char));
-			strcpy(temp, rel_prefix);
-			strcat(temp, contact->emails_type[i]);
-			xmlSetProp(node, BAD_CAST "rel",
-				  BAD_CAST temp);
-			xmlSetProp(node, BAD_CAST "address",
-				  BAD_CAST contact->emails_field[i]);
+
+			if (contact->emails_label[i][0]) {
+				xmlSetProp(node, BAD_CAST "label",
+					  BAD_CAST contact->emails_label[i]);
+			} else {
+				temp = (char *)malloc((strlen(contact->emails_type[i])+strlen(rel_prefix)+1) * sizeof(char));
+				if (temp) {
+					strcpy(temp, rel_prefix);
+					strcat(temp, contact->emails_type[i]);
+					xmlSetProp(node, BAD_CAST "rel",
+						  BAD_CAST temp);
+					free(temp);
+				}
+			}
+
 			if (i == contact->pref_email)
 				xmlSetProp(node, BAD_CAST "primary",
 					  BAD_CAST "true");
+
+			xmlSetProp(node, BAD_CAST "address",
+				  BAD_CAST contact->emails_field[i]);
 			xmlAddChild(root, node);
-			free(temp);
 		}
 	}
 

@@ -271,6 +271,8 @@ struct gcal_contact {
 	char **emails_field;
 	/** Contact email types */
 	char **emails_type;
+	/** Contact email labels */
+	char **emails_label;
 	/** Number of contact emails */
 	int emails_nr;
 	/** Index of the preferred email */

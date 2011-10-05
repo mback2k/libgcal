@@ -397,6 +397,15 @@ char *gcal_contact_get_email(gcal_contact_t contact)
 	return gcal_contact_get_email_address(contact, tmp);
 }
 
+char *gcal_contact_get_email_label(gcal_contact_t contact, int i)
+{
+	if ((!contact))
+		return NULL;
+	if (!(contact->emails_label) || (i >= contact->emails_nr))
+		return NULL;
+	return contact->emails_label[i];
+}
+
 gcal_email_type gcal_contact_get_email_address_type(gcal_contact_t contact, int i)
 {
 	gcal_email_type result = E_INVALID;
@@ -735,11 +744,15 @@ int gcal_contact_delete_email_addresses(gcal_contact_t contact)
 				free(contact->emails_field[temp]);
 			if (contact->emails_type[temp])
 				free(contact->emails_type[temp]);
+			if (contact->emails_label[temp])
+				free(contact->emails_label[temp]);
 		}
 
 		free(contact->emails_field);
 		free(contact->emails_type);
-		contact->emails_field = contact->emails_type = NULL;
+		free(contact->emails_label);
+
+		contact->emails_field = contact->emails_type = contact->emails_label = NULL;
 	}
 
 	contact->emails_nr = contact->pref_email = 0;
@@ -768,6 +781,12 @@ int gcal_contact_add_email_address(gcal_contact_t contact, const char *field,
 						sizeof(char*));
 
 	contact->emails_type[contact->emails_nr] = strdup(gcal_email_type_str[type]);
+
+	contact->emails_label = (char**) realloc(contact->emails_label,
+						(contact->emails_nr+1) *
+						sizeof(char*));
+
+	contact->emails_label[contact->emails_nr] = strdup("");
 
 	if (pref)
 		contact->pref_email = contact->emails_nr;
