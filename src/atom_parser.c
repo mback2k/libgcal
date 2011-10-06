@@ -276,22 +276,39 @@ static int extract_and_check_multi(xmlDoc *doc, char *xpath_expression,
 		*protocols = (char **)malloc(node->nodeNr * sizeof(char*));
 
 	for (i = 0; i < node->nodeNr; i++) {
-		if (getContent)
-			(*values)[i] = xmlNodeGetContent(node->nodeTab[i]);
-		else if (xmlHasProp(node->nodeTab[i], attr1))
-			(*values)[i] = xmlGetProp(node->nodeTab[i], attr1);
+		if (getContent) {
+			tmp = xmlNodeGetContent(node->nodeTab[i]);
+			if (tmp) {
+				(*values)[i] = strdup(tmp);
+				xmlFree(tmp);
+			}
+			else
+				(*values)[i] = strdup("");
+		}
+		else if (xmlHasProp(node->nodeTab[i], attr1)) {
+			tmp = xmlGetProp(node->nodeTab[i], attr1);
+			if (tmp) {
+				(*values)[i] = strdup(tmp);
+				xmlFree(tmp);
+			}
+			else
+				(*values)[i] = strdup("");
+		}
 		else
 			(*values)[i] = strdup("");
 
 		if (attr2) {
 			if (xmlHasProp(node->nodeTab[i], attr2)) {
 				tmp = xmlGetProp(node->nodeTab[i], attr2);
-				pos = strchr(tmp, '#');
-				if (pos)
-					(*types)[i] = strdup(pos + 1);
-				else
+				if (tmp) {
+					pos = strchr(tmp, '#');
+					if (pos)
+						(*types)[i] = strdup(pos + 1);
+					else
+						(*types)[i] = strdup("");
+					xmlFree(tmp);
+				} else
 					(*types)[i] = strdup("");
-				xmlFree(tmp);
 			}
 			else
 				(*types)[i] = strdup("");
@@ -300,12 +317,15 @@ static int extract_and_check_multi(xmlDoc *doc, char *xpath_expression,
 		if (attr3) {
 			if (xmlHasProp(node->nodeTab[i], attr3)) {
 				tmp = xmlGetProp(node->nodeTab[i], attr3);
-				pos = strchr(tmp, '#');
-				if (pos)
-					(*protocols)[i] = strdup(pos + 1);
-				else
+				if (tmp) {
+					pos = strchr(tmp, '#');
+					if (pos)
+						(*protocols)[i] = strdup(pos + 1);
+					else
+						(*protocols)[i] = strdup("");
+					xmlFree(tmp);
+				} else
 					(*protocols)[i] = strdup("");
-				xmlFree(tmp);
 			}
 			else
 				(*protocols)[i] = strdup("");
@@ -314,9 +334,11 @@ static int extract_and_check_multi(xmlDoc *doc, char *xpath_expression,
 		if (attr4) {
 			if (xmlHasProp(node->nodeTab[i], attr4)) {
 				tmp = xmlGetProp(node->nodeTab[i], attr4);
-				if (strcmp(tmp, "true") == 0)
-					*pref = i;
-				xmlFree(tmp);
+				if (tmp) {
+					if (strcmp(tmp, "true") == 0)
+						*pref = i;
+					xmlFree(tmp);
+				}
 			}
 		}
 	}
@@ -374,7 +396,6 @@ int extract_and_check_alarms(xmlDoc *doc, const unsigned int recurrent,
 
 		for (i = 0; i < node->nodeNr; i++) {
 			if (xmlHasProp(node->nodeTab[i], "method")) {
-
 				tmp = xmlGetProp(node->nodeTab[i], "method");
 				if (tmp) {
 					if (!strncmp(tmp, "email", strlen("email"))) {
@@ -382,6 +403,7 @@ int extract_and_check_alarms(xmlDoc *doc, const unsigned int recurrent,
 					} else if (!strncmp(tmp, "alert", strlen("alert"))) {
 						tempval[i].type = GCAL_ALARM_ALERT;
 					}
+					xmlFree(tmp);
 				}
 			}
 
@@ -389,6 +411,7 @@ int extract_and_check_alarms(xmlDoc *doc, const unsigned int recurrent,
 				tmp = xmlGetProp(node->nodeTab[i], "minutes");
 				if (tmp) {
 					tempval[i].minutes = atoi(strdup(tmp));
+					xmlFree(tmp);
 				}
 			}
 		}
@@ -397,7 +420,6 @@ int extract_and_check_alarms(xmlDoc *doc, const unsigned int recurrent,
 	*alarms = tempval;
 
 exit:
-	xmlFree(tmp);
 	xmlXPathFreeObject(xpath_obj);
 	return result;
 }
@@ -451,6 +473,8 @@ int extract_and_check_attendees(xmlDoc *doc, const char *xpath_expression,
 			tmp = xmlGetProp(node->nodeTab[i], "email");
 			if (tmp) {
 				tempval[i].email = strdup(tmp);
+				xmlFree(tmp);
+
 			} else {
 				tempval[i].email = strdup(" ");
 			}
@@ -461,18 +485,23 @@ int extract_and_check_attendees(xmlDoc *doc, const char *xpath_expression,
 
 		if (xmlHasProp(node->nodeTab[i], "rel")) {
 			tmp = xmlGetProp(node->nodeTab[i], "rel");
-			pRel = strrchr(tmp,'.');
-			pRel+=1;
-			if (pRel) {
-				if (!strncmp(pRel, "attendee", strlen("attendee"))) {
-					tempval[i].rel = GCAL_REL_ATTENDEE;
-				} else if (!strncmp(pRel, "organizer", strlen("organizer"))) {
-					tempval[i].rel = GCAL_REL_ORGANIZER;
-				} else if (!strncmp(pRel, "performer", strlen("performer"))) {
-					tempval[i].rel = GCAL_REL_PERFORMER;
-				} else if (!strncmp(pRel, "speaker", strlen("speaker"))) {
-					tempval[i].rel = GCAL_REL_SPEAKER;
+			if (tmp) {
+				pRel = strrchr(tmp,'.');
+				pRel+=1;
+
+				if (pRel) {
+					if (!strncmp(pRel, "attendee", strlen("attendee"))) {
+						tempval[i].rel = GCAL_REL_ATTENDEE;
+					} else if (!strncmp(pRel, "organizer", strlen("organizer"))) {
+						tempval[i].rel = GCAL_REL_ORGANIZER;
+					} else if (!strncmp(pRel, "performer", strlen("performer"))) {
+						tempval[i].rel = GCAL_REL_PERFORMER;
+					} else if (!strncmp(pRel, "speaker", strlen("speaker"))) {
+						tempval[i].rel = GCAL_REL_SPEAKER;
+					}
 				}
+
+				xmlFree(tmp);
 			}
 		}
 
@@ -486,17 +515,21 @@ int extract_and_check_attendees(xmlDoc *doc, const char *xpath_expression,
 				if (!strncmp(child->name, "eventStatus", strlen("eventStatus"))) {
 					if (xmlHasProp(child,"value")) {
 						tmp = xmlGetProp(child,"value");
-						pRel = strrchr(tmp, '.');
-						pRel += 1;
+						if (tmp) {
+							pRel = strrchr(tmp, '.');
+							pRel += 1;
 
-						if (pRel) {
-							if (!strncmp(pRel, "confirmed", strlen("confirmed"))) {
-								tempval[i].status = GCAL_STATUS_CONFIRMED;
-							} else if (!strncmp(pRel, "busy", strlen("busy"))) {
-								tempval[i].status = GCAL_STATUS_BUSY;
-							} else if (!strncmp(pRel, "canceled", strlen("canceled"))) {
-								tempval[i].status = GCAL_STATUS_CANCELED;
+							if (pRel) {
+								if (!strncmp(pRel, "confirmed", strlen("confirmed"))) {
+									tempval[i].status = GCAL_STATUS_CONFIRMED;
+								} else if (!strncmp(pRel, "busy", strlen("busy"))) {
+									tempval[i].status = GCAL_STATUS_BUSY;
+								} else if (!strncmp(pRel, "canceled", strlen("canceled"))) {
+									tempval[i].status = GCAL_STATUS_CANCELED;
+								}
 							}
+
+							xmlFree(tmp);
 						}
 					}
 
@@ -517,19 +550,25 @@ int extract_and_check_attendees(xmlDoc *doc, const char *xpath_expression,
 
 						if (xmlHasProp(child,"value")) {
 							tmp = xmlGetProp(child,"value");
-							pRel = strrchr(tmp,'.');
-							pRel += 1;
-							if (pRel) {
-								if (!strncmp(pRel, "accepted", strlen("accepted"))) {
-									tempval[i].status = GCAL_STATUS_ACCEPTED;
-								} else if (!strncmp(pRel, "declined", strlen("declined"))) {
-									tempval[i].status = GCAL_STATUS_DECLINED;
-								} else if (!strncmp(pRel, "invited", strlen("invited"))) {
-									tempval[i].status = GCAL_STATUS_INVITED;
-								} else if (!strncmp(pRel, "tentative", strlen("tentative"))) {
-									tempval[i].status = GCAL_STATUS_TENTATIVE;
+
+							if (tmp) {
+								pRel = strrchr(tmp,'.');
+								pRel += 1;
+
+								if (pRel) {
+									if (!strncmp(pRel, "accepted", strlen("accepted"))) {
+										tempval[i].status = GCAL_STATUS_ACCEPTED;
+									} else if (!strncmp(pRel, "declined", strlen("declined"))) {
+										tempval[i].status = GCAL_STATUS_DECLINED;
+									} else if (!strncmp(pRel, "invited", strlen("invited"))) {
+										tempval[i].status = GCAL_STATUS_INVITED;
+									} else if (!strncmp(pRel, "tentative", strlen("tentative"))) {
+										tempval[i].status = GCAL_STATUS_TENTATIVE;
+									}
+
 								}
 
+								xmlFree(tmp);
 							}
 						}
 
@@ -539,15 +578,20 @@ int extract_and_check_attendees(xmlDoc *doc, const char *xpath_expression,
 
 						if (xmlHasProp(child, "value")) {
 							tmp = xmlGetProp(child, "value");
-							pRel = strrchr(tmp,'.');
-							pRel += 1;
 
-							if (pRel) {
-								if (!strncmp(pRel, "optional", strlen("optional"))) {
-									tempval[i].type = GCAL_TYPE_OPTIONAL;
-								} else if (!strncmp(pRel, "required", strlen("required"))) {
-									tempval[i].type = GCAL_TYPE_REQUIRED;
+							if (tmp) {
+								pRel = strrchr(tmp,'.');
+								pRel += 1;
+
+								if (pRel) {
+									if (!strncmp(pRel, "optional", strlen("optional"))) {
+										tempval[i].type = GCAL_TYPE_OPTIONAL;
+									} else if (!strncmp(pRel, "required", strlen("required"))) {
+										tempval[i].type = GCAL_TYPE_REQUIRED;
+									}
 								}
+
+								xmlFree(tmp);
 							}
 						}
 						break;
@@ -560,7 +604,6 @@ int extract_and_check_attendees(xmlDoc *doc, const char *xpath_expression,
 
 	*attendees = tempval;
 exit:
-	xmlFree(tmp);
 	xmlXPathFreeObject(xpath_obj);
 	return result;
 }
@@ -635,9 +678,12 @@ static int extract_and_check_multisub(xmlDoc *doc, char *xpath_expression,
 		if (attr1) {
 			if (xmlHasProp(node->nodeTab[i], attr1)) {
 				tmp = xmlGetProp(node->nodeTab[i], attr1);
-				if(strchr(tmp,'#'))
-					(*types)[i] = strdup(strchr(tmp,'#') + 1);
-				xmlFree(tmp);
+				if (tmp) {
+					if(strchr(tmp,'#'))
+						(*types)[i] = strdup(strchr(tmp,'#') + 1);
+					xmlFree(tmp);
+				} else
+					(*types)[i] = strdup("");
 			} else
 				(*types)[i] = strdup("");
 		}
@@ -645,9 +691,11 @@ static int extract_and_check_multisub(xmlDoc *doc, char *xpath_expression,
 		if (attr2) {
 			if (xmlHasProp(node->nodeTab[i], attr2)) {
 				tmp = xmlGetProp(node->nodeTab[i], attr2);
-				if (!strcmp(tmp,"true"))
-					*pref = i;
-				xmlFree(tmp);
+				if (tmp) {
+					if (!strcmp(tmp,"true"))
+						*pref = i;
+					xmlFree(tmp);
+				}
 			}
 		}
 	}

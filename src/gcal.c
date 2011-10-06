@@ -848,6 +848,10 @@ int gcal_calendar_list(struct gcal_resource *gcalobj,
 		result = get_calendar_entry(gcalobj->document, i, &gcal_array->entries[i]);
 		if (result == -1) {
 			free(gcal_array->entries);
+
+			gcal_array->length = 0;
+			gcal_array->entries = NULL;
+
 			goto exit;
 		}
 	}
