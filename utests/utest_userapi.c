@@ -842,48 +842,49 @@ START_TEST (test_contact_new_fields)
 	result = -1;
 	for (i = 0; i < contact_array.length; ++i) {
 		contact_temp = gcal_contact_element(&contact_array, i);
-		if( !strcmp("Dr. James W. Dont Jr.",
-			gcal_contact_get_structured_entry(contact_temp->structured_name,0,1,"fullName")) ) {
+		temp = gcal_contact_get_structured_entry(contact_temp->structured_name,0,1,"fullName");
+		if (temp) {
+			if (strcmp("Dr. James W. Dont Jr.",temp) == 0) {
+				temp = gcal_contact_get_nickname(contact);
+				fail_if(strcmp("The Fox",temp) != 0,
+					"Failed setting/getting right nickname: ---%s---!",temp);
 
-			temp = gcal_contact_get_nickname(contact);
-			fail_if(strcmp("The Fox",temp) != 0,
-				"Failed setting/getting right nickname: ---%s---!",temp);
+				temp = gcal_contact_get_occupation(contact);
+				fail_if(strcmp("Programmer",temp) != 0,
+					"Failed setting/getting right occupation: ---%s---!",temp);
 
-			temp = gcal_contact_get_occupation(contact);
-			fail_if(strcmp("Programmer",temp) != 0,
-				"Failed setting/getting right occupation: ---%s---!",temp);
+				temp = gcal_contact_get_birthday(contact);
+				fail_if(strcmp("1963-11-11",temp) != 0,
+					"Failed setting/getting right birthday: ---%s---!",temp);
 
-			temp = gcal_contact_get_birthday(contact);
-			fail_if(strcmp("1963-11-11",temp) != 0,
-				"Failed setting/getting right birthday: ---%s---!",temp);
+				temp = gcal_contact_get_im(contact);
+				fail_if(strcmp("johnny_skype",temp) != 0,
+					"Failed getting right im address (gcal_contact_get_im): ---%s---!",temp);
 
-			temp = gcal_contact_get_im(contact);
-			fail_if(strcmp("johnny_skype",temp) != 0,
-				"Failed getting right im address (gcal_contact_get_im): ---%s---!",temp);
+				temp = gcal_contact_get_im_address(contact,1);
+				fail_if(strcmp("johnny_aim",temp) != 0,
+					"Failed setting/getting right im address: ---%s---!",temp);
 
-			temp = gcal_contact_get_im_address(contact,1);
-			fail_if(strcmp("johnny_aim",temp) != 0,
-				"Failed setting/getting right im address: ---%s---!",temp);
+				temp = gcal_contact_get_im_protocol(contact,1);
+				fail_if(strcmp("AIM",temp) != 0,
+					"Failed setting/getting right im protocol: ---%s---!",temp);
 
-			temp = gcal_contact_get_im_protocol(contact,1);
-			fail_if(strcmp("AIM",temp) != 0,
-				"Failed setting/getting right im protocol: ---%s---!",temp);
+				temp = gcal_contact_get_homepage(contact);
+				fail_if(strcmp("www.homegage.com",temp) != 0,
+					"Failed setting/getting right homepage: ---%s---!",temp);
 
-			temp = gcal_contact_get_homepage(contact);
-			fail_if(strcmp("www.homegage.com",temp) != 0,
-				"Failed setting/getting right homepage: ---%s---!",temp);
+				temp = gcal_contact_get_blog(contact);
+				fail_if(strcmp("myblog.homegage.com",temp) != 0,
+					"Failed setting/getting right blog address: ---%s---!",temp);
 
-			temp = gcal_contact_get_blog(contact);
-			fail_if(strcmp("myblog.homegage.com",temp) != 0,
-				"Failed setting/getting right blog address: ---%s---!",temp);
+				temp = gcal_contact_get_structured_entry(contact_temp->structured_address,0,2,"region");
+				fail_if(strcmp("Hereorthere",temp) != 0,
+					"Failed setting/getting right region of first address: ---%s---!",temp);
 
-			temp = gcal_contact_get_structured_entry(contact_temp->structured_address,0,2,"region");
-			fail_if(strcmp("Hereorthere",temp) != 0,
-				"Failed setting/getting right region of first address: ---%s---!",temp);
-
-			temp = gcal_contact_get_structured_entry(contact_temp->structured_address,1,2,"postcode");
-			fail_if(strcmp("QQQ 112233-WW",temp) != 0,
-				"Failed setting/getting right postcode of second address: ---%s---!",temp);
+				temp = gcal_contact_get_structured_entry(contact_temp->structured_address,1,2,"postcode");
+				fail_if(strcmp("QQQ 112233-WW",temp) != 0,
+					"Failed setting/getting right postcode of second address: ---%s---!",temp);
+			}
 		}
 	}
 
