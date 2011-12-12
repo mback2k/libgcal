@@ -569,6 +569,15 @@ char *gcal_contact_get_im_address(gcal_contact_t contact, int i)
 	return contact->im_address[i];
 }
 
+char *gcal_contact_get_im_label(gcal_contact_t contact, int i)
+{
+	if ((!contact))
+		return NULL;
+	if (!(contact->im_label) || (i >= contact->im_nr))
+		return NULL;
+	return contact->im_label[i];
+}
+
 gcal_phone_type gcal_contact_get_im_type(gcal_contact_t contact, int i)
 {
 	gcal_im_type result = P_INVALID;
@@ -950,12 +959,17 @@ int gcal_contact_delete_im(gcal_contact_t contact)
 				free(contact->im_address[temp]);
 			if (contact->im_type[temp])
 				free(contact->im_type[temp]);
+			if (contact->im_label[temp])
+				free(contact->im_label[temp]);
 		}
+
 		free(contact->im_protocol);
 		free(contact->im_address);
 		free(contact->im_type);
+		free(contact->im_label);
+
 		contact->im_protocol = contact->im_address = NULL;
-		contact->im_type = NULL;
+		contact->im_type = contact->im_label = NULL;
 	}
 
 	contact->im_nr = contact->im_pref = 0;
@@ -981,6 +995,9 @@ int gcal_contact_add_im(gcal_contact_t contact, const char *protcol,
 
 	contact->im_type = (char**) realloc(contact->im_type, (contact->im_nr+1) * sizeof(char*));
 	contact->im_type[contact->im_nr] = strdup(gcal_im_type_str[type]);
+
+	contact->im_label = (char**) realloc(contact->im_label, (contact->im_nr+1) * sizeof(char*));
+	contact->im_label[contact->im_nr] = strdup("");
 
 	if (pref)
 		contact->im_pref = contact->im_nr;

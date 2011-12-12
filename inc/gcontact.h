@@ -522,6 +522,18 @@ char *gcal_contact_get_im_protocol(gcal_contact_t contact, int i);
  */
 char *gcal_contact_get_im_address(gcal_contact_t contact, int i);
 
+/** Access contact IM label.
+ *
+ * @param contact A contact object, see \ref gcal_contact.
+ *
+ * @param i Number of the IM entry
+ *
+ * @return Pointer to internal object field (dont free it!) or NULL (in error
+ * case or if the field is not set). If the entry hasn't this field in the
+ * atom stream, it will be set to an empty string (i.e. "").
+ */
+char *gcal_contact_get_im_label(gcal_contact_t contact, int i);
+
 /** Access contact IM type.
  *
  * @param contact A contact object, see \ref gcal_contact.

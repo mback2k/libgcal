@@ -307,6 +307,8 @@ struct gcal_contact {
 	char **im_protocol;
 	/** IM types */
 	char **im_type;
+	/** IM labels */
+	char **im_label;
 	/** Number of IM accounts */
 	int im_nr;
 	/** Number of preferred IM account */

@@ -746,23 +746,37 @@ int xmlcontact_create(struct gcal_contact *contact, char **xml_contact,
 		for (i = 0; i < contact->im_nr; i++) {
 			if (!(node = xmlNewNode(ns, "im")))
 				goto cleanup;
-			temp = (char *)malloc((strlen(contact->im_type[i])+strlen(rel_prefix)+1) * sizeof(char));
-			strcpy(temp, rel_prefix);
-			strcat(temp, contact->im_type[i]);
-			xmlSetProp(node, BAD_CAST "rel",
-				  BAD_CAST temp);
+
+			if (contact->im_label[i][0]) {
+				xmlSetProp(node, BAD_CAST "label",
+					  BAD_CAST contact->im_label[i]);
+			} else {
+				temp = (char *)malloc((strlen(contact->im_type[i])+strlen(rel_prefix)+1) * sizeof(char));
+				if (temp) {
+					strcpy(temp, rel_prefix);
+					strcat(temp, contact->im_type[i]);
+					xmlSetProp(node, BAD_CAST "rel",
+							BAD_CAST temp);
+					free(temp);
+				}
+			}
+
 			temp = (char *)malloc((strlen(contact->im_protocol[i])+strlen(rel_prefix)+1) * sizeof(char));
-			strcpy(temp, rel_prefix);
-			strcat(temp, contact->im_protocol[i]);
-			xmlSetProp(node, BAD_CAST "protocol",
-				  BAD_CAST temp);
-			xmlSetProp(node, BAD_CAST "address",
-				  BAD_CAST contact->im_address[i]);
+			if (temp) {
+				strcpy(temp, rel_prefix);
+				strcat(temp, contact->im_protocol[i]);
+				xmlSetProp(node, BAD_CAST "protocol",
+						BAD_CAST temp);
+				free(temp);
+			}
+
 			if (i == contact->im_pref)
 				xmlSetProp(node, BAD_CAST "primary",
 					  BAD_CAST "true");
+
+			xmlSetProp(node, BAD_CAST "address",
+				  BAD_CAST contact->im_address[i]);
 			xmlAddChild(root, node);
-			free(temp);
 		}
 	}
 

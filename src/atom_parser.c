@@ -1132,12 +1132,12 @@ int atom_extract_contact(xmlNode *entry, struct gcal_contact *ptr_entry)
 						    "address",
 						    "rel",
 						    "protocol",
-						    NULL,
+						    "label",
 						    "primary",
 						    &ptr_entry->im_address,
 						    &ptr_entry->im_type,
 						    &ptr_entry->im_protocol,
-						    NULL,
+						    &ptr_entry->im_label,
 						    &ptr_entry->im_pref);
 
 	/* The 'postalAddress' contact field changed in GData-Version: 3.0 API, see:
