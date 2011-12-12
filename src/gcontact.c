@@ -618,7 +618,7 @@ char *gcal_contact_get_structured_entry(gcal_structured_subvalues_t structured_e
 	     temp_structured_entry != NULL;
 	     temp_structured_entry = temp_structured_entry->next_field) {
 
-		if (temp_structured_entry->next_field != NULL) {
+		if (temp_structured_entry->field_key != NULL) {
 			if (!strcmp(temp_structured_entry->field_key, field_key)
 			    && (temp_structured_entry->field_typenr == structured_entry_nr)) {
 				return temp_structured_entry->field_value;
