@@ -297,6 +297,8 @@ struct gcal_contact {
 	char **phone_numbers_field;
 	/** Phone number types */
 	char **phone_numbers_type;
+	/** Phone number labels */
+	char **phone_numbers_label;
 	/** Number of phone numbers */
 	int phone_numbers_nr;
 	/** IM address */

@@ -199,7 +199,7 @@ void gcal_init_contact(struct gcal_contact *contact)
 	contact->nickname = NULL;
 	contact->occupation = NULL;
 	contact->org_name = contact->org_title = NULL;
-	contact->phone_numbers_field = contact->phone_numbers_type = NULL;
+	contact->phone_numbers_field = contact->phone_numbers_type = contact->phone_numbers_label = NULL;
 	contact->phone_numbers_nr = contact->groupMembership_nr = 0;
 	contact->im_protocol = contact->im_address = contact->im_type = NULL;
 	contact->im_nr = contact->im_pref = 0;
@@ -238,6 +238,7 @@ void gcal_destroy_contact(struct gcal_contact *contact)
 	clean_string(contact->org_title);
 	clean_multi_string(contact->phone_numbers_field, contact->phone_numbers_nr);
 	clean_multi_string(contact->phone_numbers_type, contact->phone_numbers_nr);
+	clean_multi_string(contact->phone_numbers_label, contact->phone_numbers_nr);
 	clean_multi_string(contact->groupMembership, contact->groupMembership_nr);
 	contact->phone_numbers_nr = contact->groupMembership_nr = 0;
 	clean_multi_string(contact->im_protocol, contact->im_nr);

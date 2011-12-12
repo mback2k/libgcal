@@ -1116,12 +1116,12 @@ int atom_extract_contact(xmlNode *entry, struct gcal_contact *ptr_entry)
 						    NULL,
 						    "rel",
 						    NULL,
-						    NULL,
+						    "label",
 						    NULL,
 						    &ptr_entry->phone_numbers_field,
 						    &ptr_entry->phone_numbers_type,
 						    NULL,
-						    NULL,
+						    &ptr_entry->phone_numbers_label,
 						    NULL);
 
 	/* Gets contact IM addresses */

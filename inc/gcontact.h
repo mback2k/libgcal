@@ -464,6 +464,18 @@ char *gcal_contact_get_phone_number(gcal_contact_t contact, int i);
 gcal_phone_type gcal_contact_get_phone_number_type(gcal_contact_t contact, int i);
 char *gcal_contact_get_phone(gcal_contact_t contact);
 
+/** Access contact phone number label.
+ *
+ * @param contact A contact object, see \ref gcal_contact.
+ *
+ * @param i Number of phone number entry.
+ *
+ * @return Pointer to internal object field (dont free it!) or NULL (in error
+ * case or if the field is not set). If the entry hasn't this field in the
+ * atom stream, it will be set to an empty string (i.e. "").
+ */
+char *gcal_contact_get_phone_number_label(gcal_contact_t contact, int i);
+
 /** Access contact preferred IM address.
  *
  * @param contact A contact object, see \ref gcal_contact.
