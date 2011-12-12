@@ -376,7 +376,7 @@ char *gcal_contact_get_email(gcal_contact_t contact);
  * case or if the field is not set). If the entry hasn't this field in the
  * atom stream, it will be set to an empty string (i.e. "").
  */
-char *gcal_contact_get_email_label(gcal_contact_t contact, int i);
+char *gcal_contact_get_email_address_label(gcal_contact_t contact, int i);
 
 /** Access contact description.
  *

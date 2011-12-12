@@ -397,7 +397,7 @@ char *gcal_contact_get_email(gcal_contact_t contact)
 	return gcal_contact_get_email_address(contact, tmp);
 }
 
-char *gcal_contact_get_email_label(gcal_contact_t contact, int i)
+char *gcal_contact_get_email_address_label(gcal_contact_t contact, int i)
 {
 	if ((!contact))
 		return NULL;
