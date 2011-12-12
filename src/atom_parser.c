@@ -670,10 +670,15 @@ static int extract_and_check_multisub(xmlDoc *doc, char *xpath_expression,
 						xmlFree(tmp);
 						/* init next entry */
 						tempval = tempval->next_field;
-						tempval->field_typenr = 0;
-						tempval->field_key = NULL;
-						tempval->field_value = NULL;
-						tempval->next_field = NULL;
+						if (tempval) {
+							tempval->field_typenr = 0;
+							tempval->field_key = NULL;
+							tempval->field_value = NULL;
+							tempval->next_field = NULL;
+						} else {
+							/* could not allocate enough memory, break here */
+							break;
+						}
 					}
 				}
 			}
