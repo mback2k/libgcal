@@ -486,10 +486,11 @@ int extract_and_check_attendees(xmlDoc *doc, const char *xpath_expression,
 		if (xmlHasProp(node->nodeTab[i], "rel")) {
 			tmp = xmlGetProp(node->nodeTab[i], "rel");
 			if (tmp) {
-				pRel = strrchr(tmp,'.');
-				pRel+=1;
+				pRel = strrchr(tmp, '.');
 
 				if (pRel) {
+					pRel += 1;
+
 					if (!strncmp(pRel, "attendee", strlen("attendee"))) {
 						tempval[i].rel = GCAL_REL_ATTENDEE;
 					} else if (!strncmp(pRel, "organizer", strlen("organizer"))) {
@@ -517,9 +518,10 @@ int extract_and_check_attendees(xmlDoc *doc, const char *xpath_expression,
 						tmp = xmlGetProp(child,"value");
 						if (tmp) {
 							pRel = strrchr(tmp, '.');
-							pRel += 1;
 
 							if (pRel) {
+								pRel += 1;
+
 								if (!strncmp(pRel, "confirmed", strlen("confirmed"))) {
 									tempval[i].status = GCAL_STATUS_CONFIRMED;
 								} else if (!strncmp(pRel, "busy", strlen("busy"))) {
@@ -552,10 +554,11 @@ int extract_and_check_attendees(xmlDoc *doc, const char *xpath_expression,
 							tmp = xmlGetProp(child,"value");
 
 							if (tmp) {
-								pRel = strrchr(tmp,'.');
-								pRel += 1;
+								pRel = strrchr(tmp, '.');
 
 								if (pRel) {
+									pRel += 1;
+
 									if (!strncmp(pRel, "accepted", strlen("accepted"))) {
 										tempval[i].status = GCAL_STATUS_ACCEPTED;
 									} else if (!strncmp(pRel, "declined", strlen("declined"))) {
@@ -580,10 +583,11 @@ int extract_and_check_attendees(xmlDoc *doc, const char *xpath_expression,
 							tmp = xmlGetProp(child, "value");
 
 							if (tmp) {
-								pRel = strrchr(tmp,'.');
-								pRel += 1;
+								pRel = strrchr(tmp, '.');
 
 								if (pRel) {
+									pRel += 1;
+
 									if (!strncmp(pRel, "optional", strlen("optional"))) {
 										tempval[i].type = GCAL_TYPE_OPTIONAL;
 									} else if (!strncmp(pRel, "required", strlen("required"))) {
