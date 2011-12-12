@@ -476,11 +476,11 @@ int extract_and_check_attendees(xmlDoc *doc, const char *xpath_expression,
 				xmlFree(tmp);
 
 			} else {
-				tempval[i].email = strdup(" ");
+				tempval[i].email = strdup("");
 			}
 
 		} else {
-			tempval[i].email = strdup(" ");
+			tempval[i].email = strdup("");
 		}
 
 		if (xmlHasProp(node->nodeTab[i], "rel")) {
