@@ -344,7 +344,7 @@ char gcal_contact_is_deleted(gcal_contact_t contact);
 
 /* This are the fields unique to contacts */
 
-/** Access contact e-mail.
+/** Access contact e-mail address.
  *
  * Email has an important rule for google contacts, since its the only
  * really required field to being able to add a new entry in user's
@@ -356,15 +356,46 @@ char gcal_contact_is_deleted(gcal_contact_t contact);
  * @return Pointer to internal object field (dont free it!) or NULL (in error
  * case or if the field is not set). If the entry hasn't this field in the
  * atom stream, it will be set to an empty string (i.e. "").
-
  */
-/* TODO: document new functions */
-int gcal_contact_get_emails_count(gcal_contact_t contact);
-int gcal_contact_get_pref_email(gcal_contact_t contact);
-char *gcal_contact_get_email_address(gcal_contact_t contact, int i);
-gcal_email_type gcal_contact_get_email_address_type(gcal_contact_t contact, int i);
-
 char *gcal_contact_get_email(gcal_contact_t contact);
+
+/** Access contact e-mail count.
+ *
+ * @param contact A contact object, see \ref gcal_contact.
+ *
+ * @return Number of e-mail entries.
+ */
+int gcal_contact_get_emails_count(gcal_contact_t contact);
+
+/** Access contact preferred e-mail.
+ *
+ * @param contact A contact object, see \ref gcal_contact.
+ *
+ * @return Number of preferred e-mail.
+ */
+int gcal_contact_get_pref_email(gcal_contact_t contact);
+
+/** Access contact e-mail address.
+ *
+ * @param contact A contact object, see \ref gcal_contact.
+ * 
+ * @param i Number of e-mail entry.
+ *
+ * @return Pointer to internal object field (dont free it!) or NULL (in error
+ * case or if the field is not set). If the entry hasn't this field in the
+ * atom stream, it will be set to an empty string (i.e. "").
+ */
+char *gcal_contact_get_email_address(gcal_contact_t contact, int i);
+
+/** Access contact e-mail address type.
+ *
+ * @param contact A contact object, see \ref gcal_contact.
+ *
+ * @param i Number of e-mail entry.
+ *
+ * @return Type of e-mail.
+ */
+gcal_email_type gcal_contact_get_email_address_type(gcal_contact_t contact, int i);
 
 /** Access contact description.
  *
@@ -388,25 +419,21 @@ char *gcal_contact_get_nickname(gcal_contact_t contact);
 
 /** Access contact organization name.
  *
- *
  * @param contact A contact object, see \ref gcal_contact.
  *
  * @return Pointer to internal object field (dont free it!) or NULL (in error
  * case or if the field is not set). If the entry hasn't this field in the
  * atom stream, it will be set to an empty string (i.e. "").
-
  */
 char *gcal_contact_get_organization(gcal_contact_t contact);
 
 /** Access contact organization title/profission.
  *
- *
  * @param contact A contact object, see \ref gcal_contact.
  *
  * @return Pointer to internal object field (dont free it!) or NULL (in error
  * case or if the field is not set). If the entry hasn't this field in the
  * atom stream, it will be set to an empty string (i.e. "").
-
  */
 char *gcal_contact_get_profission(gcal_contact_t contact);
 
@@ -417,7 +444,6 @@ char *gcal_contact_get_profission(gcal_contact_t contact);
  * @return Pointer to internal object field (dont free it!) or NULL (in error
  * case or if the field is not set). If the entry hasn't this field in the
  * atom stream, it will be set to an empty string (i.e. "").
-
  */
 char *gcal_contact_get_occupation(gcal_contact_t contact);
 
@@ -444,13 +470,38 @@ char *gcal_contact_get_blog(gcal_contact_t contact);
  * @return Pointer to internal object field (dont free it!) or NULL (in error
  * case or if the field is not set). If the entry hasn't this field in the
  * atom stream, it will be set to an empty string (i.e. "").
-
  */
-/* TODO: document new functions */
-int gcal_contact_get_phone_numbers_count(gcal_contact_t contact);
-char *gcal_contact_get_phone_number(gcal_contact_t contact, int i);
-gcal_phone_type gcal_contact_get_phone_number_type(gcal_contact_t contact, int i);
 char *gcal_contact_get_phone(gcal_contact_t contact);
+
+/** Access contact telephone count.
+ *
+ * @param contact A contact object, see \ref gcal_contact.
+ *
+ * @return Number of telephone entries.
+ */
+int gcal_contact_get_phone_numbers_count(gcal_contact_t contact);
+
+/** Access contact telephone.
+ *
+ * @param contact A contact object, see \ref gcal_contact.
+ *
+ * @param i Number of telephone entry.
+ *
+ * @return Pointer to internal object field (dont free it!) or NULL (in error
+ * case or if the field is not set). If the entry hasn't this field in the
+ * atom stream, it will be set to an empty string (i.e. "").
+ */
+char *gcal_contact_get_phone_number(gcal_contact_t contact, int i);
+
+/** Access contact telephone type.
+ *
+ * @param contact A contact object, see \ref gcal_contact.
+ *
+ * @param i Number of telephone entry.
+ *
+ * @return Type of telephone.
+ */
+gcal_phone_type gcal_contact_get_phone_number_type(gcal_contact_t contact, int i);
 
 /** Access contact preferred IM address.
  *
@@ -482,7 +533,7 @@ int gcal_contact_get_pref_im(gcal_contact_t contact);
  *
  * @param contact A contact object, see \ref gcal_contact.
  *
- * @param i Number of the IM entry
+ * @param i Number of the IM entry.
  *
  * @return Pointer to internal object field.
  */
@@ -492,7 +543,7 @@ char *gcal_contact_get_im_protocol(gcal_contact_t contact, int i);
  *
  * @param contact A contact object, see \ref gcal_contact.
  *
- * @param i Number of the IM entry
+ * @param i Number of the IM entry.
  *
  * @return Pointer to internal object field.
  */
@@ -502,7 +553,7 @@ char *gcal_contact_get_im_address(gcal_contact_t contact, int i);
  *
  * @param contact A contact object, see \ref gcal_contact.
  *
- * @param i Number of the IM entry
+ * @param i Number of the IM entry.
  *
  * @return Type of the IM account.
  */
@@ -523,7 +574,7 @@ char *gcal_contact_get_address(gcal_contact_t contact);
  *
  * @param contact A contact object, see \ref gcal_contact.
  *
- * @return Pointer to internal object field
+ * @return Pointer to internal object field.
  */
 gcal_structured_subvalues_t gcal_contact_get_structured_address(gcal_contact_t contact);
 
@@ -531,7 +582,7 @@ gcal_structured_subvalues_t gcal_contact_get_structured_address(gcal_contact_t c
  *
  * @param contact A contact object, see \ref gcal_contact.
  *
- * @return Pointer to internal object field
+ * @return Pointer to internal object field.
  */
 gcal_structured_subvalues_t gcal_contact_get_structured_name(gcal_contact_t contact);
 
@@ -545,7 +596,7 @@ gcal_structured_subvalues_t gcal_contact_get_structured_name(gcal_contact_t cont
  *
  * @param field_key Key of the structured entry.
  *
- * @return Pointer to internal object field
+ * @return Pointer to internal object field.
  */
 char *gcal_contact_get_structured_entry(gcal_structured_subvalues_t structured_entry, int structured_entry_nr, int structured_entry_count, const char *field_key);
 
@@ -553,7 +604,7 @@ char *gcal_contact_get_structured_entry(gcal_structured_subvalues_t structured_e
  *
  * @param contact A contact object, see \ref gcal_contact.
  *
- * @return Number of structured entries
+ * @return Number of structured entries.
  */
 int gcal_contact_get_structured_address_count(gcal_contact_t contact);
 
@@ -561,7 +612,7 @@ int gcal_contact_get_structured_address_count(gcal_contact_t contact);
  *
  * @param contact A contact object, see \ref gcal_contact.
  *
- * @return Pointer to internal object field
+ * @return Pointer to internal object field.
  */
 int *gcal_contact_get_structured_address_count_obj(gcal_contact_t contact);
 
@@ -601,11 +652,16 @@ int gcal_contact_get_pref_structured_address(gcal_contact_t contact);
  * @return Pointer to internal object field (dont free it!) or NULL (in error
  * case or if the field is not set). If the entry hasn't this field in the
  * atom stream, it will be set to an empty string (i.e. "").
+ */
+char *gcal_contact_get_groupMembership(gcal_contact_t contact, int i);
 
+/** Access Google group membership info count.
+ *
+ * @param contact A contact object, see \ref gcal_contact.
+ *
+ * @return Number of group membership entries.
  */
 int gcal_contact_get_groupMembership_count(gcal_contact_t contact);
-/* TODO: document new functions */
-char *gcal_contact_get_groupMembership(gcal_contact_t contact, int i);
 
 /** Access contact birthday.
  *
