@@ -564,6 +564,21 @@ void gcal_set_store_xml(struct gcal_resource *gcalobj, char flag);
  */
 void gcal_set_proxy(struct gcal_resource *gcalobj, char *proxy);
 
+/** Sets network proxytype.
+ *
+ * Use it if you are behind a network proxy and can't directly access
+ * the google server.
+ *
+ * @param gcalobj Pointer to a \ref gcal_resource structure, which has
+ *                 previously got the authentication using
+ *                 \ref gcal_get_authentication.
+ *
+ * @param proxytype Integer specifying the CURL proxytype.
+ *                   CURLPROXY_HTTP (default) or CURLPROXY_SOCKS5.
+ *
+ */
+void gcal_set_proxytype(struct gcal_resource *gcalobj, int proxytype);
+
 /** Sets CA certificate file/directory path.
  *
  * Use it to set the libcurl OpenSSL/NSS CA Certificate file/directory.

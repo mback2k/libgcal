@@ -1570,6 +1570,18 @@ void gcal_set_proxy(struct gcal_resource *gcalobj, char *proxy)
 	curl_easy_setopt(gcalobj->curl, CURLOPT_PROXY, proxy);
 }
 
+void gcal_set_proxytype(struct gcal_resource *gcalobj, int proxytype) 
+{
+	if ((!gcalobj) || (!proxytype)) {
+		if (gcalobj->fout_log)
+			fprintf(gcalobj->fout_log, "Invalid proxytype!\n");
+	} else
+		if (gcalobj->fout_log)
+			fprintf(gcalobj->fout_log, "\n\nproxytype: %d\n\n", proxytype);
+
+	curl_easy_setopt(gcalobj->curl, CURLOPT_PROXYTYPE, proxytype);
+}
+
 void gcal_set_ca_info(struct gcal_resource *gcalobj, char *ca_info)
 {
 	if (!gcalobj)
