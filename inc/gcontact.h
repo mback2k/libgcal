@@ -780,7 +780,7 @@ int gcal_contact_delete_phone_numbers(gcal_contact_t contact);
  *
  * @param contact A contact object, see \ref gcal_contact.
  *
- * @param protcol IM protocol.
+ * @param protocol IM protocol.
  *
  * @param address IM address.
  *
@@ -788,7 +788,7 @@ int gcal_contact_delete_phone_numbers(gcal_contact_t contact);
  *
  * @return 0 for success, -1 otherwise
  */
-int gcal_contact_add_im(gcal_contact_t contact, const char *protcol,
+int gcal_contact_add_im(gcal_contact_t contact, const char *protocol,
 			const char *address, gcal_im_type type, int pref);
 
 /** Deletes contact IM.
