@@ -516,6 +516,24 @@ int gcal_query_updated(struct gcal_resource *gcalobj, char *timestamp,
  */
 int gcal_set_timezone(struct gcal_resource *gcalobj, char *atimezone);
 
+/** Define the location that results should be returned for queries.
+ *
+ * Use it to set your current location, otherwise the configured city for
+ * the user account is used.
+ * The structure copy the string with the timezone.
+ *
+ * @param gcalobj Pointer to a \ref gcal_resource structure, which has
+ *                 previously got the authentication using
+ *                 \ref gcal_get_authentication.
+ *
+ * @param location A pointer to string with the location (e.g. "America/Manaus",
+ * "Europe/Helsinki", "America/Los_Angeles'). It must not has empty spaces on
+ * it.
+ *
+ * @return -1 on error, 0 on success.
+ */
+int gcal_set_location(struct gcal_resource *gcalobj, char *location);
+
 /** Sets gcal XML store mode.
  *
  * Use it if you wish to store the RAW google XML entry data inside
@@ -545,24 +563,6 @@ void gcal_set_store_xml(struct gcal_resource *gcalobj, char flag);
  *
  */
 void gcal_set_proxy(struct gcal_resource *gcalobj, char *proxy);
-
-/** Define the location that results should be returned for queries.
- *
- * Use it to set your current location, otherwise the configured city for
- * the user account is used.
- * The structure copy the string with the timezone.
- *
- * @param gcalobj Pointer to a \ref gcal_resource structure, which has
- *                 previously got the authentication using
- *                 \ref gcal_get_authentication.
- *
- * @param location A pointer to string with the location (e.g. "America/Manaus",
- * "Europe/Helsinki", "America/Los_Angeles'). It must not has empty spaces on
- * it.
- *
- * @return -1 on error, 0 on success.
- */
-int gcal_set_location(struct gcal_resource *gcalobj, char *location);
 
 /** Sets CA certificate file/directory path.
  *
