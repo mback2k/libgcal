@@ -1586,6 +1586,15 @@ void gcal_set_ca_path(struct gcal_resource *gcalobj, char *ca_path)
 	curl_easy_setopt(gcalobj->curl, CURLOPT_CAPATH, ca_path);
 }
 
+void gcal_set_curl_debug_callback(struct gcal_resource *gcalobj, void *debug_callback)
+{
+	if (!gcalobj)
+		return;
+
+	curl_easy_setopt(gcalobj->curl, CURLOPT_DEBUGFUNCTION, debug_callback);
+	curl_easy_setopt(gcalobj->curl, CURLOPT_VERBOSE, debug_callback != NULL ? 1 : 0);
+}
+
 void gcal_deleted(struct gcal_resource *gcalobj, display_deleted_entries opt)
 {
 	if (!gcalobj)

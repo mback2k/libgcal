@@ -590,6 +590,17 @@ void gcal_set_ca_info(struct gcal_resource *gcalobj, char *ca_info);
  */
 void gcal_set_ca_path(struct gcal_resource *gcalobj, char *ca_path);
 
+/** Sets curl debug callback. See CURLOPT_DEBUGFUNCTION.
+ *
+ * @param gcalobj Pointer to a \ref gcal_resource structure, which has
+ *                 previously got the authentication using
+ *                 \ref gcal_get_authentication.
+ *
+ * @param debug_callback See CURLOPT_DEBUGFUNCTION.
+ *
+ */
+void gcal_set_curl_debug_callback(struct gcal_resource *gcalobj, void *debug_callback);
+
 /** Use this to set if deleted entries should be returned or not. Pay attention
  * that this is implemented only for google contacts (google calendar entries
  * doesn't have this query parameter).
