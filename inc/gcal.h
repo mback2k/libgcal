@@ -564,6 +564,32 @@ void gcal_set_proxy(struct gcal_resource *gcalobj, char *proxy);
  */
 int gcal_set_location(struct gcal_resource *gcalobj, char *location);
 
+/** Sets CA certificate file/directory path.
+ *
+ * Use it to set the libcurl OpenSSL/NSS CA Certificate file/directory.
+ *
+ * @param gcalobj Pointer to a \ref gcal_resource structure, which has
+ *                 previously got the authentication using
+ *                 \ref gcal_get_authentication.
+ *
+ * @param ca_info A null terminated string, must be a valid file/directory path.
+ *
+ */
+void gcal_set_ca_info(struct gcal_resource *gcalobj, char *ca_info);
+
+/** Sets CA certificate directory path.
+ *
+ * Use it to set the libcurl OpenSSL/NSS CA Certificate directory path.
+ *
+ * @param gcalobj Pointer to a \ref gcal_resource structure, which has
+ *                 previously got the authentication using
+ *                 \ref gcal_get_authentication.
+ *
+ * @param ca_path A null terminated string, must be a valid directory path.
+ *
+ */
+void gcal_set_ca_path(struct gcal_resource *gcalobj, char *ca_path);
+
 /** Use this to set if deleted entries should be returned or not. Pay attention
  * that this is implemented only for google contacts (google calendar entries
  * doesn't have this query parameter).
