@@ -618,7 +618,7 @@ char *gcal_contact_get_structured_entry(gcal_structured_subvalues_t structured_e
 	     temp_structured_entry != NULL;
 	     temp_structured_entry = temp_structured_entry->next_field) {
 
-		if (temp_structured_entry->next_field != NULL) {
+		if (temp_structured_entry->field_key != NULL) {
 			if (!strcmp(temp_structured_entry->field_key, field_key)
 			    && (temp_structured_entry->field_typenr == structured_entry_nr)) {
 				return temp_structured_entry->field_value;
@@ -931,16 +931,16 @@ int gcal_contact_delete_im(gcal_contact_t contact)
 	return result;
 }
 
-int gcal_contact_add_im(gcal_contact_t contact, const char *protcol,
+int gcal_contact_add_im(gcal_contact_t contact, const char *protocol,
 			const char *address, gcal_im_type type, int pref)
 {
 	int result = -1;
 
-	if ((!contact) || (!protcol) || (!address) || (type<0) || (type>=I_ITEMS_COUNT))
+	if ((!contact) || (!protocol) || (!address) || (type<0) || (type>=I_ITEMS_COUNT))
 		return result;
 
 	contact->im_protocol = (char**) realloc(contact->im_protocol, (contact->im_nr+1) * sizeof(char*));
-	contact->im_protocol[contact->im_nr] = strdup(protcol);
+	contact->im_protocol[contact->im_nr] = strdup(protocol);
 
 	contact->im_address = (char**) realloc(contact->im_address, (contact->im_nr+1) * sizeof(char*));
 	contact->im_address[contact->im_nr] = strdup(address);
