@@ -19,6 +19,7 @@ AC_CONFIG_HEADERS([config.h])
 
 AC_GNU_SOURCE
 AC_CANONICAL_HOST
+AC_LIBTOOL_WIN32_DLL
 
 dnl Checks for programs.
 AC_PROG_MAKE_SET
@@ -80,8 +81,10 @@ AC_SUBST(utestdir, $srcdir/utests)
 AC_SUBST(includedir, $includedir/libgcal)
 
 AC_DEVEL_MACROS
-AC_DEVEL_ABSDIRS
-AC_DEVEL_DEFINE_INSTALL_DIRS
+
+# disabled due to problems with mingw building
+#AC_DEVEL_ABSDIRS
+#AC_DEVEL_DEFINE_INSTALL_DIRS
 
 AC_CONFIG_FILES([Makefile
                  Doxyfile
