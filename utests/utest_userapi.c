@@ -391,6 +391,7 @@ START_TEST (test_access_contacts)
 		j = gcal_contact_get_emails_count(contact);
 		j = gcal_contact_get_pref_email(contact);
 		ptr = gcal_contact_get_email_address(contact, 0);
+		ptr = gcal_contact_get_email_address_label(contact, 0);
 		get = gcal_contact_get_email_address_type(contact, 0);
 		ptr = gcal_contact_get_content(contact);
 		ptr = gcal_contact_get_organization(contact);
@@ -399,9 +400,11 @@ START_TEST (test_access_contacts)
 		j = gcal_contact_get_im_count(contact);
 		ptr = gcal_contact_get_im_address(contact, 0);
 		ptr = gcal_contact_get_im_protocol(contact, 0);
+		ptr = gcal_contact_get_im_label(contact, 0);
 		git = gcal_contact_get_im_type(contact, 0);
 		j = gcal_contact_get_phone_numbers_count(contact);
 		ptr = gcal_contact_get_phone_number(contact, 0);
+		ptr = gcal_contact_get_phone_number_label(contact, 0);
 		gpt = gcal_contact_get_phone_number_type(contact, 0);
 		ptr = gcal_contact_get_address(contact);
 

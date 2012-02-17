@@ -397,6 +397,18 @@ char *gcal_contact_get_email_address(gcal_contact_t contact, int i);
  */
 gcal_email_type gcal_contact_get_email_address_type(gcal_contact_t contact, int i);
 
+/** Access contact e-mail address label.
+ *
+ * @param contact A contact object, see \ref gcal_contact.
+ *
+ * @param i Number of e-mail entry.
+ *
+ * @return Pointer to internal object field (dont free it!) or NULL (in error
+ * case or if the field is not set). If the entry hasn't this field in the
+ * atom stream, it will be set to an empty string (i.e. "").
+ */
+char *gcal_contact_get_email_address_label(gcal_contact_t contact, int i);
+
 /** Access contact description.
  *
  * This the place where contacts notes can be retrieved.
@@ -511,6 +523,18 @@ char *gcal_contact_get_phone_number(gcal_contact_t contact, int i);
  */
 gcal_phone_type gcal_contact_get_phone_number_type(gcal_contact_t contact, int i);
 
+/** Access contact phone number label.
+ *
+ * @param contact A contact object, see \ref gcal_contact.
+ *
+ * @param i Number of phone number entry.
+ *
+ * @return Pointer to internal object field (dont free it!) or NULL (in error
+ * case or if the field is not set). If the entry hasn't this field in the
+ * atom stream, it will be set to an empty string (i.e. "").
+ */
+char *gcal_contact_get_phone_number_label(gcal_contact_t contact, int i);
+
 /** Access contact preferred IM address.
  *
  * @param contact A contact object, see \ref gcal_contact.
@@ -556,6 +580,18 @@ char *gcal_contact_get_im_protocol(gcal_contact_t contact, int i);
  * @return Pointer to internal object field.
  */
 char *gcal_contact_get_im_address(gcal_contact_t contact, int i);
+
+/** Access contact IM label.
+ *
+ * @param contact A contact object, see \ref gcal_contact.
+ *
+ * @param i Number of the IM entry
+ *
+ * @return Pointer to internal object field (dont free it!) or NULL (in error
+ * case or if the field is not set). If the entry hasn't this field in the
+ * atom stream, it will be set to an empty string (i.e. "").
+ */
+char *gcal_contact_get_im_label(gcal_contact_t contact, int i);
 
 /** Access contact IM type.
  *
@@ -757,6 +793,15 @@ int gcal_contact_add_email_address(gcal_contact_t contact, const char *field,
  */
 int gcal_contact_set_email(gcal_contact_t contact, const char *pref_email);
 
+/** Set contact email label.
+ *
+ * @param i Number of the email contact.
+ *
+ * @param label Label for the email contact.
+ *
+ * @return 0 for success, -1 otherwise
+ */
+int gcal_contact_set_email_label(gcal_contact_t contact, int i, const char *label);
 
 /* TODO: document new functions */
 int gcal_contact_delete_email_addresses(gcal_contact_t contact);
@@ -836,6 +881,15 @@ int gcal_contact_add_phone_number(gcal_contact_t contact, const char *field,
  */
 int gcal_contact_set_phone(gcal_contact_t contact, const char *phone);
 
+/** Set contact phone label.
+ *
+ * @param i Number of the phone contact.
+ *
+ * @param label Label for the phone contact.
+ *
+ * @return 0 for success, -1 otherwise
+ */
+int gcal_contact_set_phone_number_label(gcal_contact_t contact, int i, const char *label);
 
 /* TODO: document new functions */
 int gcal_contact_delete_phone_numbers(gcal_contact_t contact);
@@ -854,6 +908,16 @@ int gcal_contact_delete_phone_numbers(gcal_contact_t contact);
  */
 int gcal_contact_add_im(gcal_contact_t contact, const char *protocol,
 			const char *address, gcal_im_type type, int pref);
+
+/** Set contact IM label.
+ *
+ * @param i Number of the IM contact.
+ *
+ * @param label Label for the IM contact.
+ *
+ * @return 0 for success, -1 otherwise
+ */
+int gcal_contact_set_im_label(gcal_contact_t contact, int i, const char *label);
 
 /** Deletes contact IM.
  *

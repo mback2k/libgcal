@@ -271,6 +271,8 @@ struct gcal_contact {
 	char **emails_field;
 	/** Contact email types */
 	char **emails_type;
+	/** Contact email labels */
+	char **emails_label;
 	/** Number of contact emails */
 	int emails_nr;
 	/** Index of the preferred email */
@@ -295,6 +297,8 @@ struct gcal_contact {
 	char **phone_numbers_field;
 	/** Phone number types */
 	char **phone_numbers_type;
+	/** Phone number labels */
+	char **phone_numbers_label;
 	/** Number of phone numbers */
 	int phone_numbers_nr;
 	/** Index of preferred phone number */
@@ -305,6 +309,8 @@ struct gcal_contact {
 	char **im_protocol;
 	/** IM types */
 	char **im_type;
+	/** IM labels */
+	char **im_label;
 	/** Number of IM accounts */
 	int im_nr;
 	/** Number of preferred IM account */

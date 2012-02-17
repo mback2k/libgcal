@@ -397,6 +397,15 @@ char *gcal_contact_get_email(gcal_contact_t contact)
 	return gcal_contact_get_email_address(contact, tmp);
 }
 
+char *gcal_contact_get_email_address_label(gcal_contact_t contact, int i)
+{
+	if ((!contact))
+		return NULL;
+	if (!(contact->emails_label) || (i >= contact->emails_nr))
+		return NULL;
+	return contact->emails_label[i];
+}
+
 gcal_email_type gcal_contact_get_email_address_type(gcal_contact_t contact, int i)
 {
 	gcal_email_type result = E_INVALID;
@@ -500,6 +509,15 @@ char *gcal_contact_get_phone(gcal_contact_t contact)
 	return res;
 }
 
+char *gcal_contact_get_phone_number_label(gcal_contact_t contact, int i)
+{
+	if ((!contact))
+		return NULL;
+	if (!(contact->phone_numbers_label) || (i >= contact->phone_numbers_nr))
+		return NULL;
+	return contact->phone_numbers_label[i];
+}
+
 gcal_phone_type gcal_contact_get_phone_number_type(gcal_contact_t contact, int i)
 {
 	gcal_phone_type result = P_INVALID;
@@ -561,6 +579,15 @@ char *gcal_contact_get_im_address(gcal_contact_t contact, int i)
 	if (!(contact->im_address) || (i >= contact->im_nr))
 		return NULL;
 	return contact->im_address[i];
+}
+
+char *gcal_contact_get_im_label(gcal_contact_t contact, int i)
+{
+	if ((!contact))
+		return NULL;
+	if (!(contact->im_label) || (i >= contact->im_nr))
+		return NULL;
+	return contact->im_label[i];
 }
 
 gcal_phone_type gcal_contact_get_im_type(gcal_contact_t contact, int i)
@@ -747,11 +774,15 @@ int gcal_contact_delete_email_addresses(gcal_contact_t contact)
 				free(contact->emails_field[temp]);
 			if (contact->emails_type[temp])
 				free(contact->emails_type[temp]);
+			if (contact->emails_label[temp])
+				free(contact->emails_label[temp]);
 		}
 
 		free(contact->emails_field);
 		free(contact->emails_type);
-		contact->emails_field = contact->emails_type = NULL;
+		free(contact->emails_label);
+
+		contact->emails_field = contact->emails_type = contact->emails_label = NULL;
 	}
 
 	contact->emails_nr = contact->pref_email = 0;
@@ -781,6 +812,12 @@ int gcal_contact_add_email_address(gcal_contact_t contact, const char *field,
 
 	contact->emails_type[contact->emails_nr] = strdup(gcal_email_type_str[type]);
 
+	contact->emails_label = (char**) realloc(contact->emails_label,
+						(contact->emails_nr+1) *
+						sizeof(char*));
+
+	contact->emails_label[contact->emails_nr] = strdup("");
+
 	if (pref)
 		contact->pref_email = contact->emails_nr;
 
@@ -796,6 +833,25 @@ int gcal_contact_set_email(gcal_contact_t contact, const char *pref_email)
 	int res;
 	res = gcal_contact_add_email_address(contact, pref_email, E_HOME, 1);
 	return res;
+}
+
+int gcal_contact_set_email_label(gcal_contact_t contact, int i, const char *label)
+{
+	int result = -1;
+
+	if ((!contact) || (!label))
+		return result;
+	if (!(contact->emails_label) || (i >= contact->emails_nr))
+		return result;
+
+	if (contact->emails_label[i])
+		free(contact->emails_label[i]);
+
+	contact->emails_label[i] = strdup(label);
+	if (contact->emails_label[i])
+		result = 0;
+
+	return result;
 }
 
 int gcal_contact_set_url(gcal_contact_t contact, const char *field)
@@ -865,12 +921,15 @@ int gcal_contact_delete_phone_numbers(gcal_contact_t contact)
 				free(contact->phone_numbers_field[temp]);
 			if (contact->phone_numbers_type[temp])
 				free(contact->phone_numbers_type[temp]);
+			if (contact->phone_numbers_label[temp])
+				free(contact->phone_numbers_label[temp]);
 		}
 
 		free(contact->phone_numbers_field);
 		free(contact->phone_numbers_type);
-		contact->phone_numbers_field = NULL;
-		contact->phone_numbers_type = NULL;
+		free(contact->phone_numbers_label);
+
+		contact->phone_numbers_field = contact->phone_numbers_type = contact->phone_numbers_label = NULL;
 	}
 
 	contact->phone_numbers_nr = contact->pref_phone_number = 0;
@@ -894,6 +953,9 @@ int gcal_contact_add_phone_number(gcal_contact_t contact, const char *field,
 	contact->phone_numbers_type = (char**) realloc(contact->phone_numbers_type, (contact->phone_numbers_nr+1) * sizeof(char*));
 	contact->phone_numbers_type[contact->phone_numbers_nr] = strdup(gcal_phone_type_str[type]);
 
+	contact->phone_numbers_label = (char**) realloc(contact->phone_numbers_label, (contact->phone_numbers_nr+1) * sizeof(char*));
+	contact->phone_numbers_label[contact->phone_numbers_nr] = strdup("");
+
 	contact->phone_numbers_nr++;
 
 	result = 0;
@@ -912,6 +974,25 @@ int gcal_contact_set_phone(gcal_contact_t contact, const char *phone)
 	return res;
 }
 
+int gcal_contact_set_phone_number_label(gcal_contact_t contact, int i, const char *label)
+{
+	int result = -1;
+
+	if ((!contact) || (!label))
+		return result;
+	if (!(contact->phone_numbers_label) || (i >= contact->phone_numbers_nr))
+		return result;
+
+	if (contact->phone_numbers_label[i])
+		free(contact->phone_numbers_label[i]);
+
+	contact->phone_numbers_label[i] = strdup(label);
+	if (contact->phone_numbers_label[i])
+		result = 0;
+
+	return result;
+}
+
 int gcal_contact_delete_im(gcal_contact_t contact)
 {
 	int result = -1;
@@ -928,12 +1009,17 @@ int gcal_contact_delete_im(gcal_contact_t contact)
 				free(contact->im_address[temp]);
 			if (contact->im_type[temp])
 				free(contact->im_type[temp]);
+			if (contact->im_label[temp])
+				free(contact->im_label[temp]);
 		}
+
 		free(contact->im_protocol);
 		free(contact->im_address);
 		free(contact->im_type);
+		free(contact->im_label);
+
 		contact->im_protocol = contact->im_address = NULL;
-		contact->im_type = NULL;
+		contact->im_type = contact->im_label = NULL;
 	}
 
 	contact->im_nr = contact->im_pref = 0;
@@ -960,12 +1046,34 @@ int gcal_contact_add_im(gcal_contact_t contact, const char *protocol,
 	contact->im_type = (char**) realloc(contact->im_type, (contact->im_nr+1) * sizeof(char*));
 	contact->im_type[contact->im_nr] = strdup(gcal_im_type_str[type]);
 
+	contact->im_label = (char**) realloc(contact->im_label, (contact->im_nr+1) * sizeof(char*));
+	contact->im_label[contact->im_nr] = strdup("");
+
 	if (pref)
 		contact->im_pref = contact->im_nr;
 
 	contact->im_nr++;
 
 	result = 0;
+
+	return result;
+}
+
+int gcal_contact_set_im_label(gcal_contact_t contact, int i, const char *label)
+{
+	int result = -1;
+
+	if ((!contact) || (!label))
+		return result;
+	if (!(contact->im_label) || (i >= contact->im_nr))
+		return result;
+
+	if (contact->im_label[i])
+		free(contact->im_label[i]);
+
+	contact->im_label[i] = strdup(label);
+	if (contact->im_label[i])
+		result = 0;
 
 	return result;
 }

@@ -193,16 +193,16 @@ void gcal_init_contact(struct gcal_contact *contact)
 	contact->common.id = contact->common.updated = NULL;
 	contact->common.title = contact->common.xml = NULL;
 	contact->common.edit_uri = contact->common.etag = NULL;
-	contact->emails_field = contact->emails_type = NULL;
+	contact->emails_field = contact->emails_type = contact->emails_label = NULL;
 	contact->emails_nr = contact->pref_email = 0;
 	contact->content = NULL;
 	contact->nickname = NULL;
 	contact->occupation = NULL;
 	contact->org_name = contact->org_title = NULL;
-	contact->phone_numbers_field = contact->phone_numbers_type = NULL;
+	contact->phone_numbers_field = contact->phone_numbers_type = contact->phone_numbers_label = NULL;
 	contact->phone_numbers_nr = contact->pref_phone_number = 0;
 	contact->groupMembership_nr = 0;
-	contact->im_protocol = contact->im_address = contact->im_type = NULL;
+	contact->im_protocol = contact->im_address = contact->im_type = contact->im_label = NULL;
 	contact->im_nr = contact->im_pref = 0;
 	contact->post_address = NULL;
 	contact->groupMembership = NULL;
@@ -227,6 +227,7 @@ void gcal_destroy_contact(struct gcal_contact *contact)
 	clean_string(contact->common.etag);
 	clean_multi_string(contact->emails_field, contact->emails_nr);
 	clean_multi_string(contact->emails_type, contact->emails_nr);
+	clean_multi_string(contact->emails_label, contact->emails_nr);
 	contact->emails_nr = contact->pref_email = 0;
 	clean_string(contact->common.xml);
 
@@ -238,11 +239,13 @@ void gcal_destroy_contact(struct gcal_contact *contact)
 	clean_string(contact->org_title);
 	clean_multi_string(contact->phone_numbers_field, contact->phone_numbers_nr);
 	clean_multi_string(contact->phone_numbers_type, contact->phone_numbers_nr);
+	clean_multi_string(contact->phone_numbers_label, contact->phone_numbers_nr);
 	clean_multi_string(contact->groupMembership, contact->groupMembership_nr);
 	contact->phone_numbers_nr = contact->groupMembership_nr = 0;
 	clean_multi_string(contact->im_protocol, contact->im_nr);
 	clean_multi_string(contact->im_address, contact->im_nr);
 	clean_multi_string(contact->im_type, contact->im_nr);
+	clean_multi_string(contact->im_label, contact->im_nr);
 	contact->im_nr = contact->im_pref = 0;
 	clean_string(contact->post_address);
 	clean_string(contact->homepage);
