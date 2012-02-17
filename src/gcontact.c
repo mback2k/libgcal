@@ -823,6 +823,25 @@ int gcal_contact_set_email(gcal_contact_t contact, const char *pref_email)
 	return res;
 }
 
+int gcal_contact_set_email_label(gcal_contact_t contact, int i, const char *label)
+{
+	int result = -1;
+
+	if ((!contact) || (!label))
+		return result;
+	if (!(contact->emails_label) || (i >= contact->emails_nr))
+		return result;
+
+	if (contact->emails_label[i])
+		free(contact->emails_label[i]);
+
+	contact->emails_label[i] = strdup(label);
+	if (contact->emails_label[i])
+		result = 0;
+
+	return result;
+}
+
 int gcal_contact_set_url(gcal_contact_t contact, const char *field)
 {
 	int result = -1;

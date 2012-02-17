@@ -729,6 +729,15 @@ int gcal_contact_add_email_address(gcal_contact_t contact, const char *field,
  */
 int gcal_contact_set_email(gcal_contact_t contact, const char *pref_email);
 
+/** Set contact email label.
+ *
+ * @param i Number of the email contact.
+ *
+ * @param label Label for the email contact.
+ *
+ * @return 0 for success, -1 otherwise
+ */
+int gcal_contact_set_email_label(gcal_contact_t contact, int i, const char *label);
 
 /* TODO: document new functions */
 int gcal_contact_delete_email_addresses(gcal_contact_t contact);
