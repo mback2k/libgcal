@@ -468,6 +468,13 @@ int gcal_contact_get_phone_numbers_count(gcal_contact_t contact)
 	return contact->phone_numbers_nr;
 }
 
+int gcal_contact_get_pref_phone_number(gcal_contact_t contact)
+{
+	if ((!contact))
+		return -1;
+	return contact->pref_phone_number;
+}
+
 char *gcal_contact_get_phone_number(gcal_contact_t contact, int i)
 {
 	if ((!contact))
@@ -481,10 +488,15 @@ char *gcal_contact_get_phone(gcal_contact_t contact)
 {
 	if ((!contact))
 		return NULL;
+	if (!(contact->phone_numbers_field))
+		return NULL;
 
 	char *res;
-	/* The prefered phone is *always* the first */
-	res = gcal_contact_get_phone_number(contact, 0);
+	int pref_phone_number;
+	pref_phone_number = gcal_contact_get_pref_phone_number(contact);
+	if (pref_phone_number == -1)
+		pref_phone_number = 0;
+	res = gcal_contact_get_phone_number(contact, pref_phone_number);
 	return res;
 }
 
@@ -861,7 +873,7 @@ int gcal_contact_delete_phone_numbers(gcal_contact_t contact)
 		contact->phone_numbers_type = NULL;
 	}
 
-	contact->phone_numbers_nr = 0;
+	contact->phone_numbers_nr = contact->pref_phone_number = 0;
 
 	result = 0;
 

@@ -200,7 +200,8 @@ void gcal_init_contact(struct gcal_contact *contact)
 	contact->occupation = NULL;
 	contact->org_name = contact->org_title = NULL;
 	contact->phone_numbers_field = contact->phone_numbers_type = NULL;
-	contact->phone_numbers_nr = contact->groupMembership_nr = 0;
+	contact->phone_numbers_nr = contact->pref_phone_number = 0;
+	contact->groupMembership_nr = 0;
 	contact->im_protocol = contact->im_address = contact->im_type = NULL;
 	contact->im_nr = contact->im_pref = 0;
 	contact->post_address = NULL;

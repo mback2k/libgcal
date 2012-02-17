@@ -448,6 +448,7 @@ char *gcal_contact_get_blog(gcal_contact_t contact);
  */
 /* TODO: document new functions */
 int gcal_contact_get_phone_numbers_count(gcal_contact_t contact);
+int gcal_contact_get_pref_phone_number(gcal_contact_t contact);
 char *gcal_contact_get_phone_number(gcal_contact_t contact, int i);
 gcal_phone_type gcal_contact_get_phone_number_type(gcal_contact_t contact, int i);
 char *gcal_contact_get_phone(gcal_contact_t contact);

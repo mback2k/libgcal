@@ -718,7 +718,9 @@ int xmlcontact_create(struct gcal_contact *contact, char **xml_contact,
 			strcat(temp, contact->phone_numbers_type[i]);
 			xmlSetProp(node, BAD_CAST "rel",
 				  BAD_CAST temp);
-
+			if (i == contact->pref_phone_number)
+				xmlSetProp(node, BAD_CAST "primary",
+					  BAD_CAST "true");
 			xmlNodeAddContent(node, contact->phone_numbers_field[i]);
 			xmlAddChild(root, node);
 			free(temp);
