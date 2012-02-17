@@ -845,6 +845,16 @@ int gcal_contact_delete_phone_numbers(gcal_contact_t contact);
 int gcal_contact_add_im(gcal_contact_t contact, const char *protcol,
 			const char *address, gcal_im_type type, int pref);
 
+/** Set contact IM label.
+ *
+ * @param i Number of the IM contact.
+ *
+ * @param label Label for the IM contact.
+ *
+ * @return 0 for success, -1 otherwise
+ */
+int gcal_contact_set_im_label(gcal_contact_t contact, int i, const char *label);
+
 /** Deletes contact IM.
  *
  * @param contact A contact object, see \ref gcal_contact.

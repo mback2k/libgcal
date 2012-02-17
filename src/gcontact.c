@@ -1047,6 +1047,25 @@ int gcal_contact_add_im(gcal_contact_t contact, const char *protcol,
 	return result;
 }
 
+int gcal_contact_set_im_label(gcal_contact_t contact, int i, const char *label)
+{
+	int result = -1;
+
+	if ((!contact) || (!label))
+		return result;
+	if (!(contact->im_label) || (i >= contact->im_nr))
+		return result;
+
+	if (contact->im_label[i])
+		free(contact->im_label[i]);
+
+	contact->im_label[i] = strdup(label);
+	if (contact->im_label[i])
+		result = 0;
+
+	return result;
+}
+
 int gcal_contact_set_address(gcal_contact_t contact, const char *field)
 {
 	int result = -1;
