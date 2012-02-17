@@ -817,6 +817,15 @@ int gcal_contact_add_phone_number(gcal_contact_t contact, const char *field,
  */
 int gcal_contact_set_phone(gcal_contact_t contact, const char *phone);
 
+/** Set contact phone label.
+ *
+ * @param i Number of the phone contact.
+ *
+ * @param label Label for the phone contact.
+ *
+ * @return 0 for success, -1 otherwise
+ */
+int gcal_contact_set_phone_number_label(gcal_contact_t contact, int i, const char *label);
 
 /* TODO: document new functions */
 int gcal_contact_delete_phone_numbers(gcal_contact_t contact);

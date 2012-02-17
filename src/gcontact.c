@@ -962,6 +962,25 @@ int gcal_contact_set_phone(gcal_contact_t contact, const char *phone)
 	return res;
 }
 
+int gcal_contact_set_phone_number_label(gcal_contact_t contact, int i, const char *label)
+{
+	int result = -1;
+
+	if ((!contact) || (!label))
+		return result;
+	if (!(contact->phone_numbers_label) || (i >= contact->phone_numbers_nr))
+		return result;
+
+	if (contact->phone_numbers_label[i])
+		free(contact->phone_numbers_label[i]);
+
+	contact->phone_numbers_label[i] = strdup(label);
+	if (contact->phone_numbers_label[i])
+		result = 0;
+
+	return result;
+}
+
 int gcal_contact_delete_im(gcal_contact_t contact)
 {
 	int result = -1;
