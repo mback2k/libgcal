@@ -481,6 +481,14 @@ char *gcal_contact_get_phone(gcal_contact_t contact);
  */
 int gcal_contact_get_phone_numbers_count(gcal_contact_t contact);
 
+/** Access contact preferred telephone.
+ *
+ * @param contact A contact object, see \ref gcal_contact.
+ *
+ * @return Number of preferred telephone.
+ */
+int gcal_contact_get_pref_phone_number(gcal_contact_t contact);
+
 /** Access contact telephone.
  *
  * @param contact A contact object, see \ref gcal_contact.

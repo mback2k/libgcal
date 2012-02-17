@@ -297,6 +297,8 @@ struct gcal_contact {
 	char **phone_numbers_type;
 	/** Number of phone numbers */
 	int phone_numbers_nr;
+	/** Index of preferred phone number */
+	int pref_phone_number;
 	/** IM address */
 	char **im_address;
 	/** IM protocol */
