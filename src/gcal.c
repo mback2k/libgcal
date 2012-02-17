@@ -1572,7 +1572,43 @@ void gcal_set_proxy(struct gcal_resource *gcalobj, char *proxy)
 			fprintf(gcalobj->fout_log, "\n\nproxy: %s\n\n", proxy);
 
 	curl_easy_setopt(gcalobj->curl, CURLOPT_PROXY, proxy);
+}
 
+void gcal_set_proxytype(struct gcal_resource *gcalobj, int proxytype) 
+{
+	if ((!gcalobj) || (!proxytype)) {
+		if (gcalobj->fout_log)
+			fprintf(gcalobj->fout_log, "Invalid proxytype!\n");
+	} else
+		if (gcalobj->fout_log)
+			fprintf(gcalobj->fout_log, "\n\nproxytype: %d\n\n", proxytype);
+
+	curl_easy_setopt(gcalobj->curl, CURLOPT_PROXYTYPE, proxytype);
+}
+
+void gcal_set_ca_info(struct gcal_resource *gcalobj, char *ca_info)
+{
+	if (!gcalobj)
+		return;
+
+	curl_easy_setopt(gcalobj->curl, CURLOPT_CAINFO, ca_info);
+}
+
+void gcal_set_ca_path(struct gcal_resource *gcalobj, char *ca_path)
+{
+	if (!gcalobj)
+		return;
+
+	curl_easy_setopt(gcalobj->curl, CURLOPT_CAPATH, ca_path);
+}
+
+void gcal_set_curl_debug_callback(struct gcal_resource *gcalobj, void *debug_callback)
+{
+	if (!gcalobj)
+		return;
+
+	curl_easy_setopt(gcalobj->curl, CURLOPT_DEBUGFUNCTION, debug_callback);
+	curl_easy_setopt(gcalobj->curl, CURLOPT_VERBOSE, debug_callback != NULL ? 1 : 0);
 }
 
 void gcal_deleted(struct gcal_resource *gcalobj, display_deleted_entries opt)

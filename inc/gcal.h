@@ -516,6 +516,24 @@ int gcal_query_updated(struct gcal_resource *gcalobj, char *timestamp,
  */
 int gcal_set_timezone(struct gcal_resource *gcalobj, char *atimezone);
 
+/** Define the location that results should be returned for queries.
+ *
+ * Use it to set your current location, otherwise the configured city for
+ * the user account is used.
+ * The structure copy the string with the timezone.
+ *
+ * @param gcalobj Pointer to a \ref gcal_resource structure, which has
+ *                 previously got the authentication using
+ *                 \ref gcal_get_authentication.
+ *
+ * @param location A pointer to string with the location (e.g. "America/Manaus",
+ * "Europe/Helsinki", "America/Los_Angeles'). It must not has empty spaces on
+ * it.
+ *
+ * @return -1 on error, 0 on success.
+ */
+int gcal_set_location(struct gcal_resource *gcalobj, char *location);
+
 /** Sets gcal XML store mode.
  *
  * Use it if you wish to store the RAW google XML entry data inside
@@ -546,23 +564,57 @@ void gcal_set_store_xml(struct gcal_resource *gcalobj, char flag);
  */
 void gcal_set_proxy(struct gcal_resource *gcalobj, char *proxy);
 
-/** Define the location that results should be returned for queries.
+/** Sets network proxytype.
  *
- * Use it to set your current location, otherwise the configured city for
- * the user account is used.
- * The structure copy the string with the timezone.
+ * Use it if you are behind a network proxy and can't directly access
+ * the google server.
  *
  * @param gcalobj Pointer to a \ref gcal_resource structure, which has
  *                 previously got the authentication using
  *                 \ref gcal_get_authentication.
  *
- * @param location A pointer to string with the location (e.g. "America/Manaus",
- * "Europe/Helsinki", "America/Los_Angeles'). It must not has empty spaces on
- * it.
+ * @param proxytype Integer specifying the CURL proxytype.
+ *                   CURLPROXY_HTTP (default) or CURLPROXY_SOCKS5.
  *
- * @return -1 on error, 0 on success.
  */
-int gcal_set_location(struct gcal_resource *gcalobj, char *location);
+void gcal_set_proxytype(struct gcal_resource *gcalobj, int proxytype);
+
+/** Sets CA certificate file/directory path.
+ *
+ * Use it to set the libcurl OpenSSL/NSS CA Certificate file/directory.
+ *
+ * @param gcalobj Pointer to a \ref gcal_resource structure, which has
+ *                 previously got the authentication using
+ *                 \ref gcal_get_authentication.
+ *
+ * @param ca_info A null terminated string, must be a valid file/directory path.
+ *
+ */
+void gcal_set_ca_info(struct gcal_resource *gcalobj, char *ca_info);
+
+/** Sets CA certificate directory path.
+ *
+ * Use it to set the libcurl OpenSSL/NSS CA Certificate directory path.
+ *
+ * @param gcalobj Pointer to a \ref gcal_resource structure, which has
+ *                 previously got the authentication using
+ *                 \ref gcal_get_authentication.
+ *
+ * @param ca_path A null terminated string, must be a valid directory path.
+ *
+ */
+void gcal_set_ca_path(struct gcal_resource *gcalobj, char *ca_path);
+
+/** Sets curl debug callback. See CURLOPT_DEBUGFUNCTION.
+ *
+ * @param gcalobj Pointer to a \ref gcal_resource structure, which has
+ *                 previously got the authentication using
+ *                 \ref gcal_get_authentication.
+ *
+ * @param debug_callback See CURLOPT_DEBUGFUNCTION.
+ *
+ */
+void gcal_set_curl_debug_callback(struct gcal_resource *gcalobj, void *debug_callback);
 
 /** Use this to set if deleted entries should be returned or not. Pay attention
  * that this is implemented only for google contacts (google calendar entries
